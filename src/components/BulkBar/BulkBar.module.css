@@ -1,0 +1,166 @@
+.bulkBar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 4px 15px 60px 24px rgba(0, 0, 0, 0.15);
+  animation: bulkSlide .18s ease;
+  white-space: nowrap;
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.countCheckbox {
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.countText {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-400);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.divider {
+  width: 0.5px;
+  height: 16px;
+  background: var(--neutral-150);
+  flex-shrink: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+  min-width: 32px;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border: 0.5px solid var(--neutral-200);
+  background: #fff;
+  color: var(--neutral-300);
+  transition: all .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn:hover {
+  border-color: var(--primary-200);
+  background: var(--primary-50);
+  color: var(--primary-300);
+}
+
+/* Reusable action button — same as table row action buttons */
+.actionBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--neutral-300);
+  transition: all .15s;
+  position: relative;
+  flex-shrink: 0;
+  padding: 4px;
+}
+
+.actionBtn:hover {
+  background: var(--neutral-50);
+  color: var(--primary-300);
+}
+
+.closeBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--neutral-300);
+  transition: all .15s;
+  flex-shrink: 0;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+}
+
+.closeBtn:hover {
+  background: var(--neutral-50);
+  color: var(--neutral-400);
+}
+
+.moreWrap { position: relative; }
+
+.moreDropdown {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  min-width: 220px;
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-100);
+  border-radius: 6px;
+  box-shadow: 0 12px 60px rgba(0,0,0,.06);
+  z-index: 300;
+  padding: 8px;
+}
+
+.moreTitle {
+  padding: 4px 8px 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-300);
+}
+
+.moreItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  height: 32px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-500);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  text-align: left;
+  transition: background .1s;
+}
+
+.moreItem:hover { background: var(--neutral-50); }
+.moreItem.danger { color: #D92D20; }
+
+.moreDivider {
+  height: 0.5px;
+  background: var(--neutral-150);
+  margin: 4px 0;
+}

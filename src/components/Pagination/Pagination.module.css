@@ -1,0 +1,63 @@
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: var(--neutral-0);
+  border-top: 1px solid var(--neutral-150);
+  flex-shrink: 0;
+}
+
+.btn {
+  min-width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--neutral-150);
+  border-radius: 6px;
+  background: var(--neutral-0);
+  color: var(--neutral-400);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn:hover { background: var(--neutral-50); }
+.btn.active { background: var(--primary-300); color: #fff; border-color: var(--primary-300); }
+
+.ellipsis {
+  color: var(--neutral-300);
+  font-size: 14px;
+}
+
+.perPage {
+  padding: 6px 10px;
+  border: 1px solid var(--neutral-150);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--neutral-400);
+  background: var(--neutral-0);
+  cursor: pointer;
+  outline: none;
+}
+
+.goBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--primary-300);
+  border: 1px solid var(--primary-200);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.goBtn:hover { background: var(--primary-50); }

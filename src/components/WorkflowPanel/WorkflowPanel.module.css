@@ -1,0 +1,336 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(22,24,29,.45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  z-index: 200;
+}
+
+.panel {
+  width: 520px;
+  height: 100vh;
+  background: var(--neutral-0);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -8px 0 24px rgba(0,0,0,.12);
+  animation: slideIn .2s ease;
+}
+
+.header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--neutral-150);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.patientInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--neutral-400);
+}
+
+.meta {
+  font-size: 13px;
+  color: var(--neutral-300);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--neutral-300);
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+}
+
+.closeBtn:hover { background: var(--neutral-50); }
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.step {
+  border: 1px solid var(--neutral-150);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.stepHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: var(--neutral-50);
+  cursor: pointer;
+  user-select: none;
+}
+
+.stepHeader:hover { background: var(--neutral-75); }
+
+.stepNum {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.stepNum.pending { background: var(--neutral-100); color: var(--neutral-300); }
+.stepNum.active { background: var(--primary-300); color: #fff; }
+.stepNum.done { background: #ECFDF5; color: #059669; }
+
+.stepTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-400);
+  flex: 1;
+}
+
+.stepBadge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.stepBadge.todo { background: var(--neutral-100); color: var(--neutral-300); }
+.stepBadge.inProgress { background: var(--primary-100); color: var(--primary-300); }
+.stepBadge.done { background: #ECFDF5; color: #059669; }
+
+.chevron {
+  transition: transform .2s;
+  color: var(--neutral-300);
+  flex-shrink: 0;
+}
+
+.chevron.open { transform: rotate(180deg); }
+
+.stepBody {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.info {
+  font-size: 14px;
+  color: var(--neutral-300);
+  line-height: 1.6;
+}
+
+.info strong { color: var(--neutral-400); font-weight: 500; }
+
+.script {
+  background: var(--primary-50);
+  border: 1px solid var(--primary-200);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: var(--neutral-400);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.question {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-400);
+}
+
+.options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.optBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all .15s;
+}
+
+.optYes { background: #ECFDF5; color: #059669; border-color: #A7F3D0; }
+.optYes:hover { background: #D1FAE5; }
+.optNo { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
+.optNo:hover { background: #FEE2E2; }
+.optLater { background: var(--neutral-50); color: var(--neutral-400); border-color: var(--neutral-150); }
+.optLater:hover { background: var(--neutral-75); }
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.checkItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--neutral-50);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--neutral-400);
+  transition: background .1s;
+}
+
+.checkItem:hover { background: var(--neutral-75); }
+.checkItem.checked { background: #ECFDF5; }
+.checkItem.checked span { text-decoration: line-through; color: var(--neutral-300); }
+
+.checkBox {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid var(--neutral-150);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+
+.checkItem.checked .checkBox {
+  background: #059669;
+  border-color: #059669;
+}
+
+.tocTypeToggle {
+  display: flex;
+  gap: 6px;
+}
+
+.tocTypeBtn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--neutral-150);
+  background: var(--neutral-0);
+  color: var(--neutral-300);
+  transition: all .15s;
+}
+
+.tocTypeBtn.active {
+  background: var(--primary-100);
+  color: var(--primary-300);
+  border-color: var(--primary-200);
+}
+
+.scheduleRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.scheduleLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-400);
+}
+
+.scheduleInput {
+  padding: 8px 12px;
+  border: 1px solid var(--neutral-150);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--neutral-400);
+  outline: none;
+  width: 100%;
+}
+
+.scheduleInput:focus {
+  border-color: var(--primary-300);
+  box-shadow: 0 0 0 2px rgba(140,90,226,.12);
+}
+
+.scheduleRow2 {
+  display: flex;
+  gap: 10px;
+}
+
+.footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--neutral-150);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  color: var(--primary-300);
+  border: 1px solid var(--primary-200);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btnSecondary:hover { background: var(--primary-50); }
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--primary-300);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btnPrimary:hover { background: var(--primary-400); }
+
+.laceBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}

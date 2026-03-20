@@ -1,0 +1,84 @@
+.agentColTd {
+  background: rgba(140,90,226,0.025);
+  padding: 10px 14px;
+  vertical-align: middle;
+}
+
+.agentColTd:first-of-type { border-left: 2px solid var(--primary-200); }
+.agentColTd:last-of-type { border-right: 2px solid var(--primary-200); }
+
+.statusCompact { display: flex; flex-direction: column; gap: 3px; }
+
+.oncallPulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #059669;
+  animation: oncallPulse 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.scheduledSub { font-size: 12px; color: var(--neutral-300); }
+
+.goalsPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--neutral-300);
+  position: relative;
+  cursor: default;
+  margin-top: 2px;
+}
+
+.goalsFill {
+  height: 4px;
+  border-radius: 3px;
+  background: var(--neutral-100);
+  width: 36px;
+  overflow: hidden;
+}
+
+.goalsFillInner {
+  height: 100%;
+  background: #059669;
+  border-radius: 3px;
+}
+
+.goalsText { font-size: 12px; font-weight: 500; color: var(--neutral-300); }
+
+.attemptsWrapper { position: relative; display: inline-block; }
+.attemptsBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #D72825;
+  background: #FFF5F5;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: default;
+  border: 0.5px solid rgba(215,40,37,0.2);
+}
+
+.nextAction { font-size: 13px; color: var(--neutral-400); max-width: 240px; line-height: 1.5; }
+.medDone { display: inline-flex; align-items: center; gap: 3px; color: #059669; font-size: 12px; font-weight: 500; }
+.medLink { display: inline-flex; align-items: center; gap: 3px; color: var(--primary-300); font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+.medLink:hover { text-decoration: underline; }
+
+.aiCell { display: flex; flex-wrap: wrap; gap: 4px; max-width: 280px; }
+.aiOverflowBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--neutral-50);
+  color: var(--neutral-300);
+  border: 0.5px solid rgba(111,122,144,0.2);
+  cursor: default;
+  white-space: nowrap;
+}

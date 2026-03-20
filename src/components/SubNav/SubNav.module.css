@@ -1,0 +1,93 @@
+.subnav {
+  width: 200px;
+  flex-shrink: 0;
+  background: var(--neutral-0);
+  border-right: 1px solid var(--neutral-150);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.2s ease;
+  position: relative;
+}
+
+.subnav.collapsed {
+  width: 0;
+  border-right: none;
+}
+
+.sectionLabel {
+  padding: 16px 16px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--neutral-300);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
+}
+
+.sectionLabel button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--neutral-300);
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  font-size: 16px;
+  align-items: center;
+}
+
+.sectionLabel button:hover {
+  color: var(--primary-300);
+  background: var(--primary-100);
+}
+
+.subLabel {
+  padding: 6px 16px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--neutral-200);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+.item {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-400);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background .1s;
+  white-space: nowrap;
+}
+
+.item:hover { background: var(--neutral-50); }
+
+.item.active {
+  background: var(--primary-50);
+  color: var(--primary-300);
+  font-weight: 500;
+  border-left: 3px solid var(--primary-300);
+  padding-left: 13px;
+}
+
+.count {
+  font-size: 11px;
+  color: var(--neutral-200);
+  background: var(--neutral-50);
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 0.5px solid var(--neutral-150);
+}
+
+.item.active .count {
+  background: var(--primary-100);
+  color: var(--primary-300);
+  border-color: rgba(140,90,226,0.2);
+}

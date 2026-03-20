@@ -1,0 +1,94 @@
+.patient {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: var(--primary-100);
+  border: 0.5px solid var(--primary-200);
+  color: var(--primary-300);
+  font-size: 14px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+}
+
+.patient.lg {
+  width: 42px;
+  height: 42px;
+  font-size: 15px;
+}
+
+.provider {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--secondary-100);
+  border: 1.5px solid var(--secondary-200);
+  color: var(--secondary-300);
+  font-size: 14px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.assignee {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--secondary-100);
+  border: 1px solid var(--secondary-200);
+  color: var(--secondary-300);
+  font-size: 12px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.agent {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.agent.erica { background: radial-gradient(circle at 30% 40%, #EF4444, #F97316, #10B981); }
+.agent.ricardo { background: radial-gradient(circle at 40% 60%, #3B82F6, #6366F1, #1E1B4B); }
+.agent.maria { background: radial-gradient(circle at 60% 40%, #F59E0B, #EF4444, #7C3AED); }
+.agent.jia { background: radial-gradient(circle at 50% 50%, #F472B6, #EC4899, #FCA5A5); }
+.agent.dubois { background: radial-gradient(circle at 40% 50%, #F97316, #FBBF24, #EF4444); }
+
+.invokeAgent {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.invokeAgent.erica { background: radial-gradient(circle at 30% 40%, #EF4444, #F97316, #10B981); }
+.invokeAgent.ricardo { background: radial-gradient(circle at 40% 60%, #3B82F6, #6366F1, #1E1B4B); }
+.invokeAgent.maria { background: radial-gradient(circle at 60% 40%, #F59E0B, #EF4444, #7C3AED); }
+.invokeAgent.jia { background: radial-gradient(circle at 50% 50%, #F472B6, #EC4899, #FCA5A5); }
+.invokeAgent.dubois { background: radial-gradient(circle at 40% 50%, #F97316, #FBBF24, #EF4444); }
+
+.callCard {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: var(--primary-100);
+  border: 0.5px solid var(--primary-200);
+  color: var(--primary-300);
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

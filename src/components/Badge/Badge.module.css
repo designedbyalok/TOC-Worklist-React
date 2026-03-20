@@ -1,0 +1,78 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 0.5px solid transparent;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* LACE */
+.lace-high { background: var(--status-error-light); color: var(--status-error); border-color: rgba(215,40,37,0.2); }
+.lace-medium { background: var(--status-warning-light); color: var(--status-warning); border-color: rgba(217,165,11,0.2); }
+.lace-low { background: var(--status-success-light); color: var(--status-success); border-color: rgba(0,155,83,0.2); }
+
+/* TOC Status */
+.toc-enrolled { background: var(--status-success-light); color: var(--status-success); border-color: rgba(0,155,83,0.2); }
+.toc-engaged { background: var(--status-info-light); color: var(--status-info); border-color: rgba(20,94,204,0.2); }
+.toc-attempted { background: var(--status-warning-light); color: var(--status-warning); border-color: rgba(217,165,11,0.2); }
+.toc-new { background: var(--neutral-50); color: var(--neutral-300); border-color: rgba(111,122,144,0.2); }
+.toc-oncall { background: var(--primary-100); color: var(--primary-300); border-color: rgba(140,90,226,0.2); }
+
+/* Agent Status */
+.status-completed { background: var(--status-success-light); color: var(--status-success); border-color: rgba(0,155,83,0.2); }
+.status-oncall { background: var(--status-success-light); color: var(--status-success); border-color: rgba(0,155,83,0.2); }
+.status-scheduled { background: var(--status-info-light); color: var(--status-info); border-color: rgba(20,94,204,0.2); }
+.status-queued { background: var(--status-warning-light); color: var(--status-warning); border-color: rgba(217,165,11,0.2); }
+.status-failed { background: var(--status-error-light); color: var(--status-error); border-color: rgba(215,40,37,0.2); }
+.status-review { background: var(--status-warning-light); color: var(--status-warning); border-color: rgba(217,165,11,0.2); }
+
+/* AI Tags */
+.ai-risk { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+.ai-care { background: var(--primary-100); color: var(--primary-300); border-color: rgba(140,90,226,0.2); }
+.ai-social { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,0.2); }
+.ai-med { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
+.ai-neutral { background: var(--neutral-50); color: var(--neutral-300); border-color: rgba(111,122,144,0.2); }
+
+/* Outreach */
+.outreach-48h { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+.outreach-7d { background: #F4F8FE; color: #145ECC; border-color: rgba(20,94,204,0.2); }
+
+/* Yes/No */
+.yes { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+.no { background: var(--neutral-50); color: var(--neutral-300); border-color: rgba(111,122,144,0.2); }
+
+/* Care Plan */
+.care-plan-none { background: var(--neutral-50); color: var(--neutral-300); border-color: rgba(111,122,144,0.2); }
+.care-plan-updated { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
+.care-plan-pending { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,0.2); }
+
+/* Language */
+.lang {
+  background: var(--primary-100);
+  color: var(--primary-300);
+  border-color: rgba(140,90,226,0.2);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  cursor: default;
+}
+
+/* Overflow */
+.overflow {
+  background: var(--neutral-50);
+  color: var(--neutral-300);
+  border-color: rgba(111,122,144,0.2);
+  cursor: default;
+}

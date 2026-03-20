@@ -1,0 +1,136 @@
+.card {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 350;
+  width: 380px;
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.14);
+  overflow: hidden;
+  transform: translateX(calc(100% + 48px));
+  opacity: 0;
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1), opacity 0.28s ease;
+}
+
+.card.visible {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #059669;
+}
+
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #059669;
+  animation: pulse-green 1.4s infinite;
+}
+
+.expandBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--neutral-300);
+  font-size: 16px;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+}
+
+.expandBtn:hover { background: var(--neutral-50); }
+
+.patient {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 10px;
+}
+
+.patientName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-400);
+}
+
+.patientName a {
+  color: var(--primary-300);
+  text-decoration: none;
+  font-size: 13px;
+  margin-left: 4px;
+}
+
+.patientName a:hover { text-decoration: underline; }
+
+.patientMeta {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--neutral-300);
+  margin-top: 1px;
+}
+
+.divider {
+  height: 0.5px;
+  background: var(--neutral-150);
+  margin: 0 14px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+}
+
+.actionBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--neutral-300);
+  border-radius: 8px;
+}
+
+.actionBtn:hover { background: var(--neutral-50); color: var(--neutral-400); }
+
+.sep {
+  width: 0.5px;
+  height: 20px;
+  background: var(--neutral-150);
+  flex-shrink: 0;
+}
+
+.endBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #DC2626;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.endBtn:hover { background: #B91C1C; }
