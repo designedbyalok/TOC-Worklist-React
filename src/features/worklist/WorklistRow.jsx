@@ -1,7 +1,9 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '../../components/Icon/Icon';
 import { Avatar } from '../../components/Avatar/Avatar';
 import { Badge } from '../../components/Badge/Badge';
+import { OutreachPopover } from '../../components/OutreachPopover/OutreachPopover';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './WorklistRow.module.css';
 
@@ -23,9 +25,42 @@ function OutreachCell({ patient }) {
   const dots = patient.outreachDots || ['pending','pending','pending'];
   const hasSuccess = dots.includes('success');
   const hasFailed = dots.includes('failed') && !hasSuccess;
+  const [showPop, setShowPop] = useState(false);
+  const [popPos, setPopPos] = useState({ top: 0, left: 0 });
+  const cellRef = useRef(null);
+  const showTimer = useRef(null);
+  const hideTimer = useRef(null);
+
+  const handleMouseEnter = useCallback(() => {
+    clearTimeout(hideTimer.current);
+    showTimer.current = setTimeout(() => {
+      if (!cellRef.current) return;
+      const rect = cellRef.current.getBoundingClientRect();
+      const popH = 280;
+      let top = rect.bottom + 4;
+      let left = rect.left;
+      if (top + popH > window.innerHeight) top = rect.top - popH - 4;
+      if (left + 380 > window.innerWidth) left = window.innerWidth - 388;
+      setPopPos({ top, left });
+      setShowPop(true);
+    }, 200);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    clearTimeout(showTimer.current);
+    hideTimer.current = setTimeout(() => setShowPop(false), 300);
+  }, []);
+
+  const handlePopEnter = useCallback(() => {
+    clearTimeout(hideTimer.current);
+  }, []);
+
+  const handlePopLeave = useCallback(() => {
+    setShowPop(false);
+  }, []);
 
   return (
-    <div className={styles.outreachWl}>
+    <div className={styles.outreachWl} ref={cellRef} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <div className={styles.outreachWlMain}>
         {hasSuccess ? (
           <>
@@ -53,6 +88,10 @@ function OutreachCell({ patient }) {
       <div className={styles.dotsRow}>
         {dots.map((d, i) => <div key={i} className={`${styles.dot} ${styles[d]}`} />)}
       </div>
+      {showPop && createPortal(
+        <OutreachPopover patient={patient} pos={popPos} onMouseEnter={handlePopEnter} onMouseLeave={handlePopLeave} />,
+        document.body
+      )}
     </div>
   );
 }
@@ -105,6 +144,8 @@ function DropdownMenu({ patientId, onClose }) {
 export function WorklistRow({ patient, isSelected, onSelect }) {
   const openWorkflow = useAppStore(s => s.openWorkflow);
   const openCallPopover = useAppStore(s => s.openCallPopover);
+  const openDetail = useAppStore(s => s.openDetail);
+  const openLiveDrawer = useAppStore(s => s.openLiveDrawer);
   const [showDropdown, setShowDropdown] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
   const dropBtnRef = useRef(null);
@@ -114,21 +155,36 @@ export function WorklistRow({ patient, isSelected, onSelect }) {
     if (!showDropdown) return;
     const clickHandler = () => setShowDropdown(false);
     const closeHandler = (e) => { if (e.detail !== patient.id) setShowDropdown(false); };
-    document.addEventListener('click', clickHandler);
-    document.addEventListener('close-all-dropdowns', closeHandler);
+    // Use requestAnimationFrame to avoid the opening click from immediately closing
+    const raf = requestAnimationFrame(() => {
+      document.addEventListener('click', clickHandler);
+      document.addEventListener('close-all-dropdowns', closeHandler);
+    });
     return () => {
+      cancelAnimationFrame(raf);
       document.removeEventListener('click', clickHandler);
       document.removeEventListener('close-all-dropdowns', closeHandler);
     };
   }, [showDropdown, patient.id]);
 
   const handleRowClick = () => {
-    if (patient.status === 'completed') return; // no detail drawer in this impl
+    if (patient.status === 'completed') {
+      openDetail(patient.id);
+      return;
+    }
+    if (patient.status === 'oncall') {
+      openLiveDrawer(patient.id);
+      return;
+    }
     openWorkflow(patient.id);
   };
 
   const handleCallClick = (e) => {
     e.stopPropagation();
+    if (patient.status === 'oncall') {
+      openLiveDrawer(patient.id);
+      return;
+    }
     openCallPopover(patient.id, callBtnRef);
   };
 
@@ -224,7 +280,11 @@ export function WorklistRow({ patient, isSelected, onSelect }) {
         </td>
         <td className={`${styles.td} ${styles.stickyRight}`} onClick={e => e.stopPropagation()}>
           <div className={styles.actionsCell}>
-            <button className={styles.actionBtn} title="View details" onClick={() => openWorkflow(p.id)}>
+            <button className={styles.actionBtn} title="View details" onClick={() => {
+              if (p.status === 'completed') openDetail(p.id);
+              else if (p.status === 'oncall') openLiveDrawer(p.id);
+              else openWorkflow(p.id);
+            }}>
               <Icon name="solar:document-text-linear" size={18} />
             </button>
             <button
@@ -245,10 +305,11 @@ export function WorklistRow({ patient, isSelected, onSelect }) {
               >
                 <Icon name="solar:menu-dots-linear" size={18} />
               </button>
-              {showDropdown && (
+              {showDropdown && createPortal(
                 <div style={{ position: 'fixed', top: dropdownPos.top, right: dropdownPos.right, zIndex: 9999 }}>
                   <DropdownMenu patientId={p.id} onClose={() => setShowDropdown(false)} />
-                </div>
+                </div>,
+                document.body
               )}
             </div>
           </div>

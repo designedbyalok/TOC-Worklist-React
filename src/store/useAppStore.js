@@ -45,6 +45,8 @@ export const useAppStore = create((set, get) => ({
   toastSuccess: false,
   queueTabDot: false,
   callTimerRef: null,
+  detailPatient: null,
+  liveDrawerPatient: null,
 
   // Actions
   setActiveTab: (tab) => set({ activeTab: tab }),
@@ -192,6 +194,18 @@ export const useAppStore = create((set, get) => ({
     set({ toast: msg });
     setTimeout(() => set(s => s.toast === msg ? { toast: null } : {}), 2800);
   },
+
+  closeToast: () => set({ toast: null }),
+  closeToastSuccess: () => set({ toastSuccess: false }),
+
+  openDetail: (patientId) => {
+    const p = get().patients.find(x => x.id === patientId);
+    if (p) set({ detailPatient: p });
+  },
+  closeDetail: () => set({ detailPatient: null }),
+
+  openLiveDrawer: (patientId) => set({ liveDrawerPatient: patientId }),
+  closeLiveDrawer: () => set({ liveDrawerPatient: null }),
 
   setShowInvokeModal: (v) => set({ showInvokeModal: v }),
   setShowCreateNew: (v) => set({ showCreateNew: v }),

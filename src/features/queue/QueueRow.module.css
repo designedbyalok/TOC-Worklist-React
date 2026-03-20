@@ -82,3 +82,103 @@
   cursor: default;
   white-space: nowrap;
 }
+
+/* Goals Tooltip */
+.goalsTooltip {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px);
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-150);
+  border-radius: 10px;
+  min-width: 320px;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  overflow: hidden;
+}
+.goalsPill:hover .goalsTooltip { display: block; }
+.goalsTooltipHeader {
+  padding: 12px 16px;
+  background: var(--neutral-50);
+  border-bottom: 1px solid var(--neutral-150);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-400);
+}
+.goalRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--neutral-100);
+  font-size: 14px;
+}
+.goalRow:last-child { border-bottom: none; }
+.goalRowLabel { flex: 1; color: var(--neutral-400); }
+.goalBadge { font-size: 12px; font-weight: 500; padding: 2px 10px; border-radius: 4px; }
+.goalPass { background: #ECFDF5; color: #059669; }
+.goalFail { background: #FEF2F2; color: #DC2626; }
+
+/* Attempts Tooltip */
+.attemptsTooltip {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px);
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-150);
+  border-radius: 10px;
+  min-width: 340px;
+  z-index: 50;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  overflow: hidden;
+}
+.attemptsWrapper:hover .attemptsTooltip { display: block; }
+.attemptsTooltipHeader {
+  padding: 12px 16px;
+  background: var(--neutral-50);
+  border-bottom: 1px solid var(--neutral-150);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-400);
+}
+.attemptRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--neutral-100);
+}
+.attemptRow:last-child { border-bottom: none; }
+.attemptDetail { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.attemptOutcome { font-size: 14px; color: var(--neutral-400); }
+.attemptTime { font-size: 12px; color: var(--neutral-200); }
+.attemptNumBadge {
+  font-size: 12px;
+  font-weight: 500;
+  color: #D72825;
+  background: #FFF5F5;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 0.5px solid rgba(215,40,37,0.2);
+}
+
+/* AI Overflow Tooltip */
+.aiOverflowWrap { position: relative; display: inline-flex; }
+.aiOverflowTooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-150);
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  max-width: 320px;
+  z-index: 250;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.aiOverflowWrap:hover .aiOverflowTooltip { display: flex; }

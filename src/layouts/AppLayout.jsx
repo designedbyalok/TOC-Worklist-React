@@ -8,6 +8,8 @@ import { WorkflowPanel } from '../components/WorkflowPanel/WorkflowPanel';
 import { ActiveCallCard } from '../components/ActiveCallCard/ActiveCallCard';
 import { CallPopover } from '../components/CallPopover/CallPopover';
 import { InvokeAgentModal } from '../components/InvokeAgentModal/InvokeAgentModal';
+import { DetailDrawer } from '../components/DetailDrawer/DetailDrawer';
+import { LiveDrawer } from '../components/LiveDrawer/LiveDrawer';
 import { WorklistTable } from '../features/worklist/WorklistTable';
 import { QueueTable } from '../features/queue/QueueTable';
 import { useAppStore } from '../store/useAppStore';
@@ -15,21 +17,27 @@ import styles from './AppLayout.module.css';
 
 function Toast() {
   const toast = useAppStore(s => s.toast);
+  const closeToast = useAppStore(s => s.closeToast);
   if (!toast) return null;
   return (
     <div style={{
       position: 'fixed', bottom: 88, left: '50%', transform: 'translateX(-50%)',
       background: 'var(--neutral-500)', color: '#fff', padding: '12px 20px', borderRadius: 8,
       fontSize: 14, fontWeight: 500, boxShadow: '0 4px 12px rgba(0,0,0,.2)', zIndex: 400,
-      whiteSpace: 'nowrap'
+      whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 12
     }}>
       {toast}
+      <button onClick={closeToast} style={{
+        background: 'none', border: 'none', color: '#fff', cursor: 'pointer',
+        fontSize: 16, padding: 0, display: 'flex', opacity: 0.8, lineHeight: 1,
+      }}>✕</button>
     </div>
   );
 }
 
 function ToastSuccess() {
   const toastSuccess = useAppStore(s => s.toastSuccess);
+  const closeToastSuccess = useAppStore(s => s.closeToastSuccess);
   if (!toastSuccess) return null;
   return (
     <div style={{
@@ -39,6 +47,10 @@ function ToastSuccess() {
       display: 'flex', alignItems: 'center', gap: 12, whiteSpace: 'nowrap'
     }}>
       TOC Agent Invoked Successfully
+      <button onClick={closeToastSuccess} style={{
+        background: 'none', border: 'none', color: '#fff', cursor: 'pointer',
+        fontSize: 16, padding: 0, display: 'flex', opacity: 0.8, lineHeight: 1,
+      }}>✕</button>
     </div>
   );
 }
@@ -50,6 +62,8 @@ export function AppLayout() {
   const showInvokeModal = useAppStore(s => s.showInvokeModal);
   const showFilterBar = useAppStore(s => s.showFilterBar);
   const callPopoverPatient = useAppStore(s => s.callPopoverPatient);
+  const detailPatient = useAppStore(s => s.detailPatient);
+  const liveDrawerPatient = useAppStore(s => s.liveDrawerPatient);
 
   return (
     <div className={styles.app}>
@@ -69,6 +83,8 @@ export function AppLayout() {
       {callPopoverPatient && <CallPopover />}
       <ActiveCallCard />
       {showInvokeModal && <InvokeAgentModal />}
+      {detailPatient && <DetailDrawer />}
+      {liveDrawerPatient && <LiveDrawer />}
       <Toast />
       <ToastSuccess />
     </div>

@@ -41,6 +41,18 @@ function StatusCell({ patient: p }) {
               <div className={styles.goalsFillInner} style={{ width: `${pct}%` }} />
             </div>
             <span className={styles.goalsText}>{goals.met}/{goals.total}</span>
+            {p.goalsDetail && (
+              <div className={styles.goalsTooltip}>
+                <div className={styles.goalsTooltipHeader}>Goals Tracking</div>
+                {p.goalsDetail.map((g, i) => (
+                  <div key={i} className={styles.goalRow}>
+                    <Icon name={g.pass ? "solar:check-circle-bold" : "solar:close-circle-bold"} size={14} color={g.pass ? "#059669" : "#DC2626"} />
+                    <span className={styles.goalRowLabel}>{g.name}</span>
+                    <span className={`${styles.goalBadge} ${g.pass ? styles.goalPass : styles.goalFail}`}>{g.pass ? 'Pass' : 'Fail'}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -86,6 +98,19 @@ function StatusCell({ patient: p }) {
               <Icon name="solar:history-bold" size={14} />
               {attempts.length} att.
             </span>
+            <div className={styles.attemptsTooltip}>
+              <div className={styles.attemptsTooltipHeader}>Attempt History</div>
+              {attempts.map((a, i) => (
+                <div key={i} className={styles.attemptRow}>
+                  <Icon name="solar:phone-calling-bold" size={16} color="#DC2626" />
+                  <div className={styles.attemptDetail}>
+                    <div className={styles.attemptOutcome}>{a.outcome}</div>
+                    <div className={styles.attemptTime}>{a.time}</div>
+                  </div>
+                  <span className={styles.attemptNumBadge}>#{i + 1}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -125,7 +150,14 @@ function AiInsightsCell({ insights }) {
         <Badge key={i} variant={AI_VARIANT_MAP[t.cls] || 'ai-neutral'} label={t.label} icon={t.icon} />
       ))}
       {overflow.length > 0 && (
-        <span className={styles.aiOverflowBadge}>+{overflow.length}</span>
+        <div className={styles.aiOverflowWrap}>
+          <span className={styles.aiOverflowBadge}>+{overflow.length}</span>
+          <div className={styles.aiOverflowTooltip}>
+            {overflow.map((t, i) => (
+              <Badge key={i} variant={AI_VARIANT_MAP[t.cls] || 'ai-neutral'} label={t.label} icon={t.icon} />
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
@@ -134,15 +166,26 @@ function AiInsightsCell({ insights }) {
 export function QueueRow({ patient }) {
   const openWorkflow = useAppStore(s => s.openWorkflow);
   const openCallPopover = useAppStore(s => s.openCallPopover);
+  const openLiveDrawer = useAppStore(s => s.openLiveDrawer);
   const showToast = useAppStore(s => s.showToast);
   const callBtnRef = useRef(null);
 
   const p = patient;
   const outreachBadgeVariant = p.outreachType === '48h' ? 'outreach-48h' : 'outreach-7d';
 
-  const handleRowClick = () => openWorkflow(p.id);
+  const handleRowClick = () => {
+    if (p.status === 'oncall') {
+      openLiveDrawer(p.id);
+      return;
+    }
+    openWorkflow(p.id);
+  };
   const handleCallClick = (e) => {
     e.stopPropagation();
+    if (p.status === 'oncall') {
+      openLiveDrawer(p.id);
+      return;
+    }
     openCallPopover(p.id, callBtnRef);
   };
 

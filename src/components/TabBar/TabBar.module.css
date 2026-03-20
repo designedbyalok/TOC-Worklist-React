@@ -37,6 +37,12 @@
   border-radius: 50%;
   background: var(--secondary-300);
   animation: tabDotPulse 1.4s infinite;
+  cursor: pointer;
+}
+
+@keyframes tabDotPulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(.75); }
 }
 
 .right {

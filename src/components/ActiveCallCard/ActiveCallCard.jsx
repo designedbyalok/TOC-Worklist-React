@@ -51,7 +51,7 @@ export function ActiveCallCard() {
 
       <div className={styles.actions}>
         <button className={styles.actionBtn} title="Mute">
-          <Icon name="solar:microphone-slash-linear" size={18} />
+          <Icon name="solar:muted-linear" size={18} />
         </button>
         <div className={styles.sep} />
         <button className={styles.actionBtn} title="Hold">
@@ -59,7 +59,7 @@ export function ActiveCallCard() {
         </button>
         <div className={styles.sep} />
         <button className={styles.actionBtn} title="Transfer">
-          <Icon name="solar:transfer-horizontal-linear" size={18} />
+          <Icon name="solar:phone-calling-rounded-linear" size={18} />
         </button>
         <div className={styles.sep} />
         <button className={styles.actionBtn} title="Add Participant">
@@ -67,7 +67,7 @@ export function ActiveCallCard() {
         </button>
         <div className={styles.sep} />
         <button className={styles.actionBtn} title="Keypad">
-          <Icon name="solar:keyboard-linear" size={18} />
+          <Icon name="tabler:dialpad" size={18} />
         </button>
         <div className={styles.sep} />
         <button className={styles.actionBtn} title="More">

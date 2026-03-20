@@ -1,4 +1,5 @@
 import { useAppStore } from '../../store/useAppStore';
+import { Icon } from '../../components/Icon/Icon';
 import { QueueRow } from './QueueRow';
 import { QueueEmptyState } from './QueueEmptyState';
 
@@ -48,6 +49,7 @@ export function QueueTable() {
             </th>
             <th style={{ ...agentTh, minWidth: 280, borderRight: '2px solid var(--primary-200)' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <Icon name="solar:magic-stick-3-bold" size={14} />
                 AI Insights
               </span>
             </th>

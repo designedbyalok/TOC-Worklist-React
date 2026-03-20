@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Avatar } from '../Avatar/Avatar';
+import { Icon } from '../Icon/Icon';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './InvokeAgentModal.module.css';
 
@@ -50,6 +51,9 @@ export function InvokeAgentModal() {
                 <div className={styles.agentName}>{agent.name}</div>
                 <div className={styles.agentRole}>{agent.role}</div>
               </div>
+              {selected === agent.name && (
+                <Icon name="solar:play-bold" size={14} color="var(--primary-300)" />
+              )}
             </label>
           ))}
         </div>
