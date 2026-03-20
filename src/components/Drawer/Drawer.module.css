@@ -1,0 +1,93 @@
+/* ── Shared Drawer Shell ──
+   Standard floating panel: 700px wide, 8px inset, 16px radius.
+   All right-side drawers must use this component.
+*/
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .25);
+  z-index: 400;
+}
+
+.panel {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  bottom: 8px;
+  width: 700px;
+  background: #fff;
+  z-index: 401;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn .25s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .12), 0 0 0 1px rgba(0, 0, 0, .04);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+  flex-shrink: 0;
+}
+
+.headerTitle {
+  font-size: 20px;
+  font-weight: 500;
+  color: #3a485f;
+  margin: 0;
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8a94a8;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background .15s, color .15s;
+}
+.closeBtn:hover {
+  background: #f0f2f5;
+  color: #3a485f;
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 24px 24px;
+}
+
+.footer {
+  padding: 16px 24px;
+  border-top: 0.5px solid #d0d6e1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
