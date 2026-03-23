@@ -10,8 +10,9 @@ export function TabBar() {
   const setShowFilterBar = useAppStore(s => s.setShowFilterBar);
   const queueTabDot = useAppStore(s => s.queueTabDot);
   const clearQueueTabDot = useAppStore(s => s.clearQueueTabDot);
+  const searchQuery = useAppStore(s => s.searchQuery);
+  const setSearchQuery = useAppStore(s => s.setSearchQuery);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchVal, setSearchVal] = useState('');
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -58,10 +59,10 @@ export function TabBar() {
                 autoFocus
                 type="text"
                 placeholder="Search by member name…"
-                value={searchVal}
-                onChange={e => setSearchVal(e.target.value)}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
               />
-              <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchVal(''); }}>✕</button>
+              <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>✕</button>
             </div>
           ) : (
             <button className={styles.iconBtn} title="Search" onClick={() => setSearchOpen(true)}>

@@ -191,5 +191,355 @@ export const patients = [
     startDate: '08/15/2025', lastAdmission: '09/15/2025', assignee: 'Ignacio Beer', assigneeInitials: 'IB',
     readmission: 'Yes', tasks: 1, carePlanStatus: 'none',
     dischargeDate: '11/01/2025', facility: 'ER – Eastside', admitReason: 'Urinary tract infection', attempts: []
+  },
+  {
+    id: 'p8', initials: 'DW', name: 'Diana Welch',
+    gender: 'F', age: '55y 2m', memberId: '#2468029990001', enrolled: true, language: 'en',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','success','pending'],
+    lace: 'High', tocType: 'IP',
+    outreachType: '48h', outreachLeft: '6h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/16/2025 09:00 AM', goals: null,
+    nextAction: 'Follow-up medication check',
+    aiInsights: [
+      { label: 'Diabetes Mgmt', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' },
+      { label: 'Med Non-Adherence', cls: 'ai-tag-med', icon: 'solar:pill-bold' }
+    ],
+    tocStatus: 'enrolled', dueOn: '08/01/2025', outreachAttended: 2, outreachDate: '11/13/25', nextOutreach: '11/20/2025',
+    startDate: '08/20/2025', lastAdmission: '09/20/2025', assignee: 'Robin Bang', assigneeInitials: 'RB',
+    readmission: 'No', tasks: 1, carePlanStatus: 'updated',
+    dischargeDate: '11/05/2025', facility: 'Memorial Hospital', admitReason: 'Diabetic ketoacidosis', attempts: []
+  },
+  {
+    id: 'p9', initials: 'JR', name: 'James Rivera',
+    gender: 'M', age: '72y 0m', memberId: '#2468029990002', enrolled: true, language: 'en',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','pending','pending'],
+    lace: 'High', tocType: 'IP',
+    outreachType: '48h', outreachLeft: '1h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/14/2025 02:00 PM', goals: null,
+    nextAction: 'Confirm PCP appointment',
+    aiInsights: [
+      { label: 'Readmission Risk', cls: 'ai-tag-risk', icon: 'solar:danger-triangle-bold' },
+      { label: 'Fall Risk', cls: 'ai-tag-social', icon: 'solar:running-2-bold' }
+    ],
+    tocStatus: 'engaged', dueOn: '07/15/2025', outreachAttended: 1, outreachDate: '11/12/25', nextOutreach: '11/18/2025',
+    startDate: '08/10/2025', lastAdmission: '09/10/2025', assignee: 'Ignacio Beer', assigneeInitials: 'IB',
+    readmission: 'Yes', tasks: 2, carePlanStatus: 'pending',
+    dischargeDate: '11/04/2025', facility: 'VA Medical Center', admitReason: 'COPD exacerbation', attempts: []
+  },
+  {
+    id: 'p10', initials: 'SN', name: 'Sandra Nguyen',
+    gender: 'F', age: '45y 11m', memberId: '#2468029990003', enrolled: false, language: 'vi',
+    agentAssigned: '', agentRole: '', outreachDots: ['failed','pending','pending'],
+    lace: 'Medium', tocType: 'ED',
+    outreachType: '7d', outreachLeft: '3d left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/15/2025 01:00 PM', goals: null,
+    nextAction: 'Retry outreach – language barrier noted',
+    aiInsights: [
+      { label: 'Language Barrier', cls: 'ai-tag-social', icon: 'solar:user-block-bold' },
+      { label: 'Care Coordination', cls: 'ai-tag-care', icon: 'solar:clipboard-list-bold' }
+    ],
+    tocStatus: 'attempted', dueOn: '09/01/2025', outreachAttended: 0, outreachDate: null, nextOutreach: '11/15/2025',
+    startDate: '08/25/2025', lastAdmission: '09/25/2025', assignee: 'You', assigneeInitials: 'ME',
+    readmission: 'No', tasks: 1, carePlanStatus: 'none',
+    dischargeDate: '11/03/2025', facility: 'ER – Downtown', admitReason: 'Abdominal pain', attempts: [
+      { time: '11/06/2025 09:00 AM', outcome: 'No answer – language barrier' }
+    ]
+  },
+  {
+    id: 'p11', initials: 'PK', name: 'Peter Kim',
+    gender: 'M', age: '68y 3m', memberId: '#2468029990004', enrolled: true, language: 'ko',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','success','success'],
+    lace: 'Low', tocType: 'IP',
+    outreachType: '7d', outreachLeft: '6d left', onCall: false, callDuration: null,
+    status: 'completed', goals: { met: 3, total: 3 },
+    nextAction: 'All goals met – discharge complete',
+    aiInsights: [
+      { label: 'Post-Surgical', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' }
+    ],
+    tocStatus: 'enrolled', dueOn: '07/20/2025', outreachAttended: 3, outreachDate: '11/10/25', nextOutreach: '11/17/2025',
+    startDate: '08/01/2025', lastAdmission: '09/01/2025', assignee: 'Robin Bang', assigneeInitials: 'RB',
+    readmission: 'No', tasks: 0, carePlanStatus: 'updated',
+    dischargeDate: '10/28/2025', facility: 'Mercy Hospital', admitReason: 'Cardiac stent placement', attempts: []
+  },
+  {
+    id: 'p12', initials: 'ML', name: 'Maria Lopez',
+    gender: 'F', age: '57y 6m', memberId: '#2468029990005', enrolled: true, language: 'es',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','failed','pending'],
+    lace: 'High', tocType: 'IP',
+    outreachType: '48h', outreachLeft: '8h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/14/2025 11:00 AM', goals: null,
+    nextAction: 'Reschedule missed appointment',
+    aiInsights: [
+      { label: 'Transport Barrier', cls: 'ai-tag-social', icon: 'solar:bus-bold' },
+      { label: 'Readmission Risk', cls: 'ai-tag-risk', icon: 'solar:danger-triangle-bold' }
+    ],
+    tocStatus: 'engaged', dueOn: '08/05/2025', outreachAttended: 1, outreachDate: '11/11/25', nextOutreach: '11/16/2025',
+    startDate: '08/12/2025', lastAdmission: '09/12/2025', assignee: 'Ignacio Beer', assigneeInitials: 'IB',
+    readmission: 'Yes', tasks: 1, carePlanStatus: 'pending',
+    dischargeDate: '11/02/2025', facility: 'Community General', admitReason: 'Heart failure', attempts: []
+  },
+  {
+    id: 'p13', initials: 'BT', name: 'Brian Thompson',
+    gender: 'M', age: '43y 8m', memberId: '#2468029990006', enrolled: false, language: 'en',
+    agentAssigned: '', agentRole: '', outreachDots: ['pending','pending','pending'],
+    lace: 'Low', tocType: 'ED',
+    outreachType: '7d', outreachLeft: '5d 4h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/16/2025 03:30 PM', goals: null,
+    nextAction: 'Initial outreach pending',
+    aiInsights: [
+      { label: 'Substance Use', cls: 'ai-tag-risk', icon: 'solar:danger-triangle-bold' }
+    ],
+    tocStatus: 'new', dueOn: '11/20/2025', outreachAttended: 0, outreachDate: null, nextOutreach: '11/16/2025',
+    startDate: '09/01/2025', lastAdmission: '10/01/2025', assignee: 'You', assigneeInitials: 'ME',
+    readmission: 'No', tasks: 0, carePlanStatus: 'none',
+    dischargeDate: '11/06/2025', facility: 'ER – Westside', admitReason: 'Laceration repair', attempts: []
+  },
+  {
+    id: 'p14', initials: 'EG', name: 'Elena Garcia',
+    gender: 'F', age: '74y 1m', memberId: '#2468029990007', enrolled: true, language: 'es',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','success','pending'],
+    lace: 'High', tocType: 'IP',
+    outreachType: '48h', outreachLeft: '3h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/13/2025 10:00 AM', goals: null,
+    nextAction: 'Medication reconciliation needed',
+    aiInsights: [
+      { label: 'Polypharmacy', cls: 'ai-tag-med', icon: 'solar:pill-bold' },
+      { label: 'Readmission Risk', cls: 'ai-tag-risk', icon: 'solar:danger-triangle-bold' },
+      { label: 'Needs CCM Plan', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' }
+    ],
+    tocStatus: 'enrolled', dueOn: '07/25/2025', outreachAttended: 2, outreachDate: '11/12/25', nextOutreach: '11/15/2025',
+    startDate: '08/05/2025', lastAdmission: '09/05/2025', assignee: 'Robin Bang', assigneeInitials: 'RB',
+    readmission: 'Yes', tasks: 2, carePlanStatus: 'updated',
+    dischargeDate: '11/01/2025', facility: 'St. Mary Hospital', admitReason: 'Stroke (ischemic)', attempts: []
+  },
+  {
+    id: 'p15', initials: 'RJ', name: 'Robert Johnson',
+    gender: 'M', age: '62y 4m', memberId: '#2468029990008', enrolled: false, language: 'en',
+    agentAssigned: '', agentRole: '', outreachDots: ['failed','failed','pending'],
+    lace: 'Medium', tocType: 'IP',
+    outreachType: '7d', outreachLeft: '2d left', onCall: false, callDuration: null,
+    status: 'failed', goals: null,
+    nextAction: 'Escalate to supervisor – multiple failed attempts',
+    aiInsights: [
+      { label: 'Social Isolation', cls: 'ai-tag-social', icon: 'solar:user-block-bold' },
+      { label: 'Depression Screen', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' }
+    ],
+    tocStatus: 'attempted', dueOn: '08/20/2025', outreachAttended: 0, outreachDate: null, nextOutreach: '11/14/2025',
+    startDate: '08/18/2025', lastAdmission: '09/18/2025', assignee: 'Ignacio Beer', assigneeInitials: 'IB',
+    readmission: 'No', tasks: 1, carePlanStatus: 'none',
+    dischargeDate: '11/03/2025', facility: 'Veterans Hospital', admitReason: 'Major depressive episode',
+    attempts: [
+      { time: '11/07/2025 09:30 AM', outcome: 'No answer' },
+      { time: '11/07/2025 02:00 PM', outcome: 'No answer – voicemail left' }
+    ]
+  },
+  {
+    id: 'p16', initials: 'AW', name: 'Alice Walker',
+    gender: 'F', age: '51y 10m', memberId: '#2468029990009', enrolled: true, language: 'en',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','pending','pending'],
+    lace: 'Medium', tocType: 'ED',
+    outreachType: '7d', outreachLeft: '4d left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/15/2025 09:30 AM', goals: null,
+    nextAction: 'Schedule follow-up with specialist',
+    aiInsights: [
+      { label: 'Asthma Action Plan', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' }
+    ],
+    tocStatus: 'engaged', dueOn: '09/10/2025', outreachAttended: 1, outreachDate: '11/12/25', nextOutreach: '11/19/2025',
+    startDate: '08/22/2025', lastAdmission: '09/22/2025', assignee: 'You', assigneeInitials: 'ME',
+    readmission: 'No', tasks: 0, carePlanStatus: 'pending',
+    dischargeDate: '11/04/2025', facility: 'ER – Central', admitReason: 'Allergic reaction', attempts: []
+  },
+  {
+    id: 'p17', initials: 'CH', name: 'Carlos Hernandez',
+    gender: 'M', age: '69y 5m', memberId: '#2468029990010', enrolled: true, language: 'es',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','success','success'],
+    lace: 'High', tocType: 'IP',
+    outreachType: '48h', outreachLeft: '0h left', onCall: false, callDuration: null,
+    status: 'completed', goals: { met: 3, total: 3 },
+    nextAction: 'All goals met',
+    aiInsights: [
+      { label: 'Cardiac Rehab', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' }
+    ],
+    tocStatus: 'enrolled', dueOn: '07/10/2025', outreachAttended: 3, outreachDate: '11/10/25', nextOutreach: '11/17/2025',
+    startDate: '07/28/2025', lastAdmission: '08/28/2025', assignee: 'Robin Bang', assigneeInitials: 'RB',
+    readmission: 'No', tasks: 0, carePlanStatus: 'updated',
+    dischargeDate: '10/30/2025', facility: 'Heart Center', admitReason: 'Myocardial infarction', attempts: []
+  },
+  {
+    id: 'p18', initials: 'NP', name: 'Nancy Patel',
+    gender: 'F', age: '58y 0m', memberId: '#2468029990011', enrolled: false, language: 'hi',
+    agentAssigned: '', agentRole: '', outreachDots: ['failed','pending','pending'],
+    lace: 'Medium', tocType: 'IP',
+    outreachType: '7d', outreachLeft: '3d 8h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/14/2025 04:00 PM', goals: null,
+    nextAction: 'Retry outreach with interpreter',
+    aiInsights: [
+      { label: 'Language Barrier', cls: 'ai-tag-social', icon: 'solar:user-block-bold' },
+      { label: 'Financial Aid', cls: 'ai-tag-social', icon: 'solar:wallet-money-bold' }
+    ],
+    tocStatus: 'attempted', dueOn: '09/15/2025', outreachAttended: 0, outreachDate: null, nextOutreach: '11/14/2025',
+    startDate: '08/28/2025', lastAdmission: '09/28/2025', assignee: 'Ignacio Beer', assigneeInitials: 'IB',
+    readmission: 'No', tasks: 1, carePlanStatus: 'none',
+    dischargeDate: '11/02/2025', facility: 'Unity Hospital', admitReason: 'Gallbladder surgery',
+    attempts: [
+      { time: '11/06/2025 11:00 AM', outcome: 'No answer – interpreter needed' }
+    ]
+  },
+  {
+    id: 'p19', initials: 'TM', name: 'Thomas Moore',
+    gender: 'M', age: '47y 9m', memberId: '#2468029990012', enrolled: false, language: 'en',
+    agentAssigned: '', agentRole: '', outreachDots: ['pending','pending','pending'],
+    lace: 'Low', tocType: 'ED',
+    outreachType: '7d', outreachLeft: '6d left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/17/2025 10:00 AM', goals: null,
+    nextAction: 'Initial contact – new patient',
+    aiInsights: [
+      { label: 'Substance Use', cls: 'ai-tag-risk', icon: 'solar:danger-triangle-bold' },
+      { label: 'Mental Health', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' }
+    ],
+    tocStatus: 'new', dueOn: '11/25/2025', outreachAttended: 0, outreachDate: null, nextOutreach: '11/17/2025',
+    startDate: '09/05/2025', lastAdmission: '10/05/2025', assignee: 'You', assigneeInitials: 'ME',
+    readmission: 'No', tasks: 0, carePlanStatus: 'none',
+    dischargeDate: '11/07/2025', facility: 'ER – South', admitReason: 'Anxiety/panic attack', attempts: []
+  },
+  {
+    id: 'p20', initials: 'LB', name: 'Lisa Brown',
+    gender: 'F', age: '63y 7m', memberId: '#2468029990013', enrolled: true, language: 'en',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','success','pending'],
+    lace: 'High', tocType: 'IP',
+    outreachType: '48h', outreachLeft: '5h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/14/2025 09:00 AM', goals: null,
+    nextAction: 'Verify home care setup',
+    aiInsights: [
+      { label: 'Fall Risk', cls: 'ai-tag-social', icon: 'solar:running-2-bold' },
+      { label: 'PT Needed', cls: 'ai-tag-neutral', icon: 'solar:running-2-bold' }
+    ],
+    tocStatus: 'enrolled', dueOn: '08/10/2025', outreachAttended: 2, outreachDate: '11/12/25', nextOutreach: '11/16/2025',
+    startDate: '08/08/2025', lastAdmission: '09/08/2025', assignee: 'Robin Bang', assigneeInitials: 'RB',
+    readmission: 'No', tasks: 1, carePlanStatus: 'updated',
+    dischargeDate: '11/01/2025', facility: 'Orthopedic Center', admitReason: 'Hip replacement surgery', attempts: []
+  },
+  {
+    id: 'p21', initials: 'KS', name: 'Kevin Singh',
+    gender: 'M', age: '56y 2m', memberId: '#2468029990014', enrolled: false, language: 'pa',
+    agentAssigned: '', agentRole: '', outreachDots: ['failed','failed','failed'],
+    lace: 'Medium', tocType: 'IP',
+    outreachType: '7d', outreachLeft: '1d left', onCall: false, callDuration: null,
+    status: 'failed', goals: null,
+    nextAction: 'Final attempt – consider home visit',
+    aiInsights: [
+      { label: 'Language Barrier', cls: 'ai-tag-social', icon: 'solar:user-block-bold' },
+      { label: 'Care Coordination', cls: 'ai-tag-care', icon: 'solar:clipboard-list-bold' }
+    ],
+    tocStatus: 'attempted', dueOn: '08/25/2025', outreachAttended: 0, outreachDate: null, nextOutreach: '11/12/2025',
+    startDate: '08/15/2025', lastAdmission: '09/15/2025', assignee: 'Ignacio Beer', assigneeInitials: 'IB',
+    readmission: 'Yes', tasks: 2, carePlanStatus: 'none',
+    dischargeDate: '11/01/2025', facility: 'Regional Medical Center', admitReason: 'Pneumonia with sepsis',
+    attempts: [
+      { time: '11/04/2025 08:00 AM', outcome: 'No answer' },
+      { time: '11/05/2025 10:00 AM', outcome: 'No answer – voicemail left' },
+      { time: '11/06/2025 03:00 PM', outcome: 'Wrong number' }
+    ]
+  },
+  {
+    id: 'p22', initials: 'JC', name: 'Jennifer Chen',
+    gender: 'F', age: '41y 3m', memberId: '#2468029990015', enrolled: true, language: 'zh',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','pending','pending'],
+    lace: 'Low', tocType: 'ED',
+    outreachType: '7d', outreachLeft: '5d 6h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/16/2025 11:30 AM', goals: null,
+    nextAction: 'Follow up on discharge instructions',
+    aiInsights: [
+      { label: 'Anxiety Mgmt', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' }
+    ],
+    tocStatus: 'engaged', dueOn: '10/01/2025', outreachAttended: 1, outreachDate: '11/13/25', nextOutreach: '11/20/2025',
+    startDate: '09/10/2025', lastAdmission: '10/10/2025', assignee: 'You', assigneeInitials: 'ME',
+    readmission: 'No', tasks: 0, carePlanStatus: 'pending',
+    dischargeDate: '11/06/2025', facility: 'ER – University', admitReason: 'Migraine with aura', attempts: []
+  },
+  {
+    id: 'p23', initials: 'WD', name: 'William Davis',
+    gender: 'M', age: '77y 11m', memberId: '#2468029990016', enrolled: true, language: 'en',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','success','success'],
+    lace: 'High', tocType: 'IP',
+    outreachType: '48h', outreachLeft: '0h left', onCall: false, callDuration: null,
+    status: 'completed', goals: { met: 2, total: 3 },
+    nextAction: 'Pending – medication review incomplete',
+    aiInsights: [
+      { label: 'Readmission Risk', cls: 'ai-tag-risk', icon: 'solar:danger-triangle-bold' },
+      { label: 'Polypharmacy', cls: 'ai-tag-med', icon: 'solar:pill-bold' },
+      { label: 'Fall Risk', cls: 'ai-tag-social', icon: 'solar:running-2-bold' }
+    ],
+    tocStatus: 'enrolled', dueOn: '07/05/2025', outreachAttended: 3, outreachDate: '11/09/25', nextOutreach: '11/16/2025',
+    startDate: '07/20/2025', lastAdmission: '08/20/2025', assignee: 'Robin Bang', assigneeInitials: 'RB',
+    readmission: 'Yes', tasks: 1, carePlanStatus: 'updated',
+    dischargeDate: '10/25/2025', facility: 'St. Mary Hospital', admitReason: 'Congestive heart failure', attempts: []
+  },
+  {
+    id: 'p24', initials: 'AF', name: 'Angela Foster',
+    gender: 'F', age: '53y 5m', memberId: '#2468029990017', enrolled: false, language: 'en',
+    agentAssigned: '', agentRole: '', outreachDots: ['pending','pending','pending'],
+    lace: 'Low', tocType: 'ED',
+    outreachType: '7d', outreachLeft: '6d 2h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/18/2025 01:00 PM', goals: null,
+    nextAction: 'Initial outreach – new referral',
+    aiInsights: [
+      { label: 'Financial Aid', cls: 'ai-tag-social', icon: 'solar:wallet-money-bold' }
+    ],
+    tocStatus: 'new', dueOn: '11/28/2025', outreachAttended: 0, outreachDate: null, nextOutreach: '11/18/2025',
+    startDate: '09/15/2025', lastAdmission: '10/15/2025', assignee: 'Ignacio Beer', assigneeInitials: 'IB',
+    readmission: 'No', tasks: 0, carePlanStatus: 'none',
+    dischargeDate: '11/08/2025', facility: 'ER – Lake View', admitReason: 'Back pain – spinal stenosis', attempts: []
+  },
+  {
+    id: 'p25', initials: 'RM', name: 'Ricardo Martinez',
+    gender: 'M', age: '60y 8m', memberId: '#2468029990018', enrolled: true, language: 'es',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','failed','pending'],
+    lace: 'Medium', tocType: 'IP',
+    outreachType: '7d', outreachLeft: '2d 4h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/14/2025 03:30 PM', goals: null,
+    nextAction: 'Reschedule ToC appointment',
+    aiInsights: [
+      { label: 'Diabetes Mgmt', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' },
+      { label: 'Transport Barrier', cls: 'ai-tag-social', icon: 'solar:bus-bold' }
+    ],
+    tocStatus: 'engaged', dueOn: '09/01/2025', outreachAttended: 1, outreachDate: '11/11/25', nextOutreach: '11/18/2025',
+    startDate: '08/20/2025', lastAdmission: '09/20/2025', assignee: 'You', assigneeInitials: 'ME',
+    readmission: 'No', tasks: 1, carePlanStatus: 'pending',
+    dischargeDate: '11/03/2025', facility: 'Community Hospital', admitReason: 'Uncontrolled diabetes', attempts: []
+  },
+  {
+    id: 'p26', initials: 'HJ', name: 'Helen Jackson',
+    gender: 'F', age: '70y 6m', memberId: '#2468029990019', enrolled: true, language: 'en',
+    agentAssigned: '', agentRole: '', outreachDots: ['success','success','pending'],
+    lace: 'High', tocType: 'IP',
+    outreachType: '48h', outreachLeft: '4h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/13/2025 11:30 AM', goals: null,
+    nextAction: 'Review lab results with patient',
+    aiInsights: [
+      { label: 'Readmission Risk', cls: 'ai-tag-risk', icon: 'solar:danger-triangle-bold' },
+      { label: 'Needs CCM Plan', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' }
+    ],
+    tocStatus: 'enrolled', dueOn: '07/28/2025', outreachAttended: 2, outreachDate: '11/12/25', nextOutreach: '11/15/2025',
+    startDate: '08/03/2025', lastAdmission: '09/03/2025', assignee: 'Robin Bang', assigneeInitials: 'RB',
+    readmission: 'Yes', tasks: 1, carePlanStatus: 'updated',
+    dischargeDate: '11/01/2025', facility: 'Cardiology Center', admitReason: 'Atrial fibrillation', attempts: []
+  },
+  {
+    id: 'p27', initials: 'DO', name: 'David Ortiz',
+    gender: 'M', age: '54y 1m', memberId: '#2468029990020', enrolled: false, language: 'es',
+    agentAssigned: '', agentRole: '', outreachDots: ['pending','pending','pending'],
+    lace: 'Low', tocType: 'ED',
+    outreachType: '7d', outreachLeft: '5d 10h left', onCall: false, callDuration: null,
+    status: 'scheduled', scheduledTime: '11/17/2025 02:30 PM', goals: null,
+    nextAction: 'Initial outreach – new admission',
+    aiInsights: [
+      { label: 'Substance Use', cls: 'ai-tag-risk', icon: 'solar:danger-triangle-bold' },
+      { label: 'Mental Health', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' }
+    ],
+    tocStatus: 'new', dueOn: '11/22/2025', outreachAttended: 0, outreachDate: null, nextOutreach: '11/17/2025',
+    startDate: '09/08/2025', lastAdmission: '10/08/2025', assignee: 'Ignacio Beer', assigneeInitials: 'IB',
+    readmission: 'No', tasks: 0, carePlanStatus: 'none',
+    dischargeDate: '11/07/2025', facility: 'ER – Harbor', admitReason: 'Alcohol withdrawal', attempts: []
   }
 ];

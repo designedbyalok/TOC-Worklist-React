@@ -1,5 +1,8 @@
 import { create } from 'zustand';
-import { patients as initialPatients } from '../data/patients';
+import { supabase } from '../lib/supabase';
+import { dbToJs, updatesToDb } from '../lib/patientMapper';
+import { patients as fallbackPatients } from '../data/patients';
+import { generateFlowFromPrompt } from '../lib/flowGenerator';
 
 function parseDuration(str) {
   const parts = (str || '00:00').split(':').map(Number);
@@ -16,17 +19,41 @@ function nextDate(lace) {
   return d.toISOString().split('T')[0];
 }
 
+// Restore navigation state from sessionStorage on reload
+const _savedPage = sessionStorage.getItem('activePage') || 'population';
+const _savedTab = sessionStorage.getItem('activeTab') || 'worklist';
+const _savedSettingsTab = sessionStorage.getItem('settingsTab');
+
 export const useAppStore = create((set, get) => ({
-  // Navigation
-  activeTab: 'worklist',
+  // Top-level navigation (sidebar) — restored from sessionStorage
+  activePage: _savedPage === 'builder' ? 'settings' : _savedPage,
+  // Tab navigation within pages
+  activeTab: _savedTab,
   subnavCollapsed: false,
   viewBy: 'window',
 
   // Table
-  patients: initialPatients.map(p => ({ ...p })),
+  patients: [],
+  patientsLoading: true,
+  patientsError: null,
   selectedIds: [],
   currentPage: 1,
-  perPage: 25,
+  perPage: 10,
+  searchQuery: '',
+
+  // Agents (settings)
+  agents: [],
+  agentsLoading: true,
+  settingsTab: _savedSettingsTab || 'agents',
+  showCreateAgent: false,
+
+  // Agent Builder (canvas)
+  builderAgent: null,       // { id, name, prompt } of the agent being edited
+  builderFlow: null,        // { id, nodes, edges, viewport, version }
+  builderFlowLoading: false,
+  builderSelectedNode: null, // id of currently selected node
+  builderVersions: [],      // list of saved versions
+  builderPrompt: '',        // original creation prompt
 
   // UI state
   workflowPatient: null,
@@ -48,10 +75,244 @@ export const useAppStore = create((set, get) => ({
   detailPatient: null,
   liveDrawerPatient: null,
 
+  // ─── Supabase: Fetch patients ───
+  fetchPatients: async () => {
+    set({ patientsLoading: true, patientsError: null });
+    const { data, error } = await supabase
+      .from('patients')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.warn('Supabase fetch failed, using fallback data:', error.message);
+      set({
+        patients: fallbackPatients.map(p => ({ ...p })),
+        patientsLoading: false,
+        patientsError: error.message,
+      });
+    } else {
+      const patients = data.map(dbToJs);
+      // Sort by numeric part of id (p1, p2, ... p10, p11, ...)
+      patients.sort((a, b) => {
+        const na = parseInt(a.id.replace(/\D/g, ''), 10);
+        const nb = parseInt(b.id.replace(/\D/g, ''), 10);
+        return na - nb;
+      });
+      set({
+        patients,
+        patientsLoading: false,
+      });
+    }
+  },
+
+  // ─── Supabase: Persist a patient update ───
+  persistPatient: async (id, updates) => {
+    const dbUpdates = updatesToDb(updates);
+    const { error } = await supabase
+      .from('patients')
+      .update(dbUpdates)
+      .eq('id', id);
+
+    if (error) {
+      console.error('Failed to persist patient update:', error.message);
+    }
+  },
+
   // Actions
-  setActiveTab: (tab) => set({ activeTab: tab }),
+  setActivePage: (page) => { sessionStorage.setItem('activePage', page); set({ activePage: page }); },
+  setActiveTab: (tab) => { sessionStorage.setItem('activeTab', tab); set({ activeTab: tab }); },
+  setSettingsTab: (tab) => { sessionStorage.setItem('settingsTab', tab); set({ settingsTab: tab }); },
+  setShowCreateAgent: (v) => set({ showCreateAgent: v }),
   toggleSubnav: () => set(s => ({ subnavCollapsed: !s.subnavCollapsed })),
   setViewBy: (v) => set({ viewBy: v }),
+
+  fetchAgents: async () => {
+    set({ agentsLoading: true });
+    const { data, error } = await supabase
+      .from('agents')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.warn('Failed to fetch agents:', error.message);
+      set({ agents: [], agentsLoading: false });
+    } else {
+      // Sort by numeric part of id for consistent order
+      data.sort((a, b) => {
+        const na = parseInt(a.id.replace(/\D/g, ''), 10);
+        const nb = parseInt(b.id.replace(/\D/g, ''), 10);
+        return na - nb;
+      });
+      set({ agents: data, agentsLoading: false });
+    }
+  },
+
+  updateAgent: async (id, updates) => {
+    set(s => ({
+      agents: s.agents.map(a => a.id === id ? { ...a, ...updates } : a)
+    }));
+    await supabase.from('agents').update(updates).eq('id', id);
+  },
+
+  // ─── Agent Builder actions ───
+  openBuilder: (agent, prompt) => {
+    sessionStorage.setItem('activePage', 'builder');
+    set({ builderAgent: agent, activePage: 'builder', builderSelectedNode: null, builderPrompt: prompt || '' });
+    get().fetchFlow(agent.id, prompt);
+  },
+
+  closeBuilder: () => {
+    sessionStorage.setItem('activePage', 'settings');
+    set({ builderAgent: null, builderFlow: null, builderSelectedNode: null, builderVersions: [], builderPrompt: '', activePage: 'settings' });
+  },
+
+  setBuilderSelectedNode: (nodeId) => set({ builderSelectedNode: nodeId }),
+
+  fetchFlow: async (agentId, prompt) => {
+    set({ builderFlowLoading: true });
+
+    // Generate flow from prompt or use defaults
+    const generated = prompt ? generateFlowFromPrompt(prompt) : null;
+
+    const defaultNodes = generated?.nodes || [
+      { id: 'start', type: 'startNode', position: { x: 200, y: 300 }, data: { label: 'Starts Here' } },
+      { id: 'n1', type: 'conversationNode', position: { x: 380, y: 240 }, data: { label: 'Introduction & Patient Verification', prompt: 'Hello, this is the Fold Health care support assistant calling as part of your Transitions of Care follow-up program.\n\nI\'m reaching out because you were recently discharged from the hospital, and we want to make sure you\'re recovering safely.\n\nIs now a good time to talk for about 5 minutes?', nodeType: 'conversation', verified: true, transitions: [{ condition: 'If yes', target: 'Identity Verification' }, { condition: 'If no', target: 'Reschedule Node' }], guardrails: 'Do not share any patient data with the caller.' } },
+      { id: 'n2', type: 'conversationNode', position: { x: 600, y: 100 }, data: { label: 'Identity Verification Node', prompt: 'To make sure I\'m speaking with the right person, could you please confirm your full name and date of birth?', nodeType: 'conversation', verified: true, transitions: [{ condition: 'Verified', target: 'Discharge Confirmation' }, { condition: 'Not verified', target: 'Transfer to Staff' }] } },
+      { id: 'n3', type: 'conversationNode', position: { x: 550, y: 500 }, data: { label: 'Reschedule Node', prompt: 'No problem. When would be a better time for us to call you back?', nodeType: 'conversation', transitions: [{ condition: 'Save callback time', target: 'End' }] } },
+      { id: 'end', type: 'endNode', position: { x: 900, y: 300 }, data: { label: 'End' } },
+    ];
+    const defaultEdges = generated?.edges || [
+      { id: 'e-start-n1', source: 'start', target: 'n1', type: 'smoothstep', animated: true },
+      { id: 'e-n1-n2', source: 'n1', target: 'n2', sourceHandle: 't-0', type: 'smoothstep' },
+      { id: 'e-n1-n3', source: 'n1', target: 'n3', sourceHandle: 't-1', type: 'smoothstep' },
+      { id: 'e-n3-end', source: 'n3', target: 'end', sourceHandle: 't-0', type: 'smoothstep' },
+    ];
+
+    try {
+      const { data, error } = await supabase
+        .from('agent_flows')
+        .select('*')
+        .eq('agent_id', agentId)
+        .eq('is_current', true)
+        .single();
+
+      if (error || !data) {
+        // Try to create a new flow in the DB
+        const { data: newFlow, error: insertErr } = await supabase.from('agent_flows').insert({
+          agent_id: agentId,
+          version: '1.0',
+          nodes: defaultNodes,
+          edges: defaultEdges,
+          is_current: true,
+        }).select().single();
+
+        if (insertErr) {
+          // DB table may not exist yet - use local flow
+          console.warn('agent_flows table not ready, using local flow:', insertErr.message);
+          set({
+            builderFlow: { id: 'local', nodes: defaultNodes, edges: defaultEdges, viewport: { x: 0, y: 0, zoom: 1 }, version: '1.0', agent_id: agentId },
+            builderFlowLoading: false,
+          });
+          return;
+        }
+
+        set({
+          builderFlow: newFlow || { id: 'local', nodes: defaultNodes, edges: defaultEdges, viewport: { x: 0, y: 0, zoom: 1 }, version: '1.0' },
+          builderFlowLoading: false,
+        });
+      } else {
+        set({ builderFlow: data, builderFlowLoading: false });
+      }
+
+      // Fetch all versions
+      const { data: versions } = await supabase
+        .from('agent_flows')
+        .select('id, version, created_at, is_current')
+        .eq('agent_id', agentId)
+        .order('created_at', { ascending: false });
+
+      if (versions) set({ builderVersions: versions });
+    } catch (err) {
+      console.warn('Flow fetch error, using defaults:', err);
+      set({
+        builderFlow: { id: 'local', nodes: defaultNodes, edges: defaultEdges, viewport: { x: 0, y: 0, zoom: 1 }, version: '1.0' },
+        builderFlowLoading: false,
+      });
+    }
+  },
+
+  saveFlow: async (nodes, edges, viewport) => {
+    const { builderFlow, builderAgent } = get();
+    if (!builderFlow || !builderAgent) return;
+
+    const updates = { nodes, edges, viewport, updated_at: new Date().toISOString() };
+    set(s => ({ builderFlow: { ...s.builderFlow, ...updates } }));
+
+    await supabase.from('agent_flows').update(updates).eq('id', builderFlow.id);
+    return true;
+  },
+
+  createFlowVersion: async (nodes, edges, viewport) => {
+    const { builderFlow, builderAgent } = get();
+    if (!builderFlow || !builderAgent) return;
+
+    // Mark old as not current
+    await supabase.from('agent_flows').update({ is_current: false }).eq('id', builderFlow.id);
+
+    // Parse version
+    const parts = (builderFlow.version || '1.0').split('.');
+    const newVersion = parts[0] + '.' + (parseInt(parts[1] || 0) + 1);
+
+    const { data: newFlow } = await supabase.from('agent_flows').insert({
+      agent_id: builderAgent.id,
+      version: newVersion,
+      nodes,
+      edges,
+      viewport,
+      is_current: true,
+    }).select().single();
+
+    if (newFlow) {
+      set({ builderFlow: newFlow });
+      // Refresh versions list
+      const { data: versions } = await supabase
+        .from('agent_flows')
+        .select('id, version, created_at, is_current')
+        .eq('agent_id', builderAgent.id)
+        .order('created_at', { ascending: false });
+      if (versions) set({ builderVersions: versions });
+
+      // Also update agent version
+      await supabase.from('agents').update({ version: newVersion }).eq('id', builderAgent.id);
+    }
+    return newVersion;
+  },
+
+  switchFlowVersion: async (flowId) => {
+    const { builderAgent } = get();
+    if (!builderAgent) return;
+
+    // Unset current
+    await supabase.from('agent_flows').update({ is_current: false }).eq('agent_id', builderAgent.id).eq('is_current', true);
+    // Set new current
+    await supabase.from('agent_flows').update({ is_current: true }).eq('id', flowId);
+    // Re-fetch
+    get().fetchFlow(builderAgent.id);
+  },
+
+  updateNodeData: (nodeId, dataUpdates) => {
+    set(s => {
+      if (!s.builderFlow) return {};
+      const nodes = s.builderFlow.nodes.map(n =>
+        n.id === nodeId ? { ...n, data: { ...n.data, ...dataUpdates } } : n
+      );
+      return { builderFlow: { ...s.builderFlow, nodes } };
+    });
+  },
+
+  setCurrentPage: (page) => set({ currentPage: page }),
+  setPerPage: (pp) => set({ perPage: pp, currentPage: 1 }),
+  setSearchQuery: (q) => set({ searchQuery: q, currentPage: 1 }),
 
   selectPatient: (id) => set(s => ({
     selectedIds: s.selectedIds.includes(id)
@@ -78,9 +339,14 @@ export const useAppStore = create((set, get) => ({
     stepStates: { ...s.stepStates, [stepId]: state }
   })),
 
-  updatePatient: (id, updates) => set(s => ({
-    patients: s.patients.map(p => p.id === id ? { ...p, ...updates } : p)
-  })),
+  updatePatient: (id, updates) => {
+    // Optimistic local update
+    set(s => ({
+      patients: s.patients.map(p => p.id === id ? { ...p, ...updates } : p)
+    }));
+    // Persist to Supabase in background
+    get().persistPatient(id, updates);
+  },
 
   saveWorkflow: () => {
     const { workflowPatient, stepStates } = get();
@@ -96,11 +362,16 @@ export const useAppStore = create((set, get) => ({
     } else if (stepStates.s2 === 'done') {
       updates = { nextAction: 'Complete medication reconciliation' };
     }
+    // Optimistic local update
     set(s => ({
       patients: s.patients.map(p => p.id === workflowPatient.id ? { ...p, ...updates } : p),
       workflowPatient: null,
       toast: 'Workflow saved successfully'
     }));
+    // Persist to Supabase
+    if (Object.keys(updates).length > 0) {
+      get().persistPatient(workflowPatient.id, updates);
+    }
   },
 
   invokeAgent: (patientIds, agentName, agentRole) => {
@@ -126,7 +397,21 @@ export const useAppStore = create((set, get) => ({
       return newP;
     });
     set({ patients: updated, selectedIds: [], showInvokeModal: false, toastSuccess: true, queueTabDot: true });
-    // Start timers
+
+    // Persist each changed patient to Supabase
+    for (const p of updated) {
+      if (patientIds.includes(p.id)) {
+        get().persistPatient(p.id, {
+          agentAssigned: p.agentAssigned,
+          agentRole: p.agentRole,
+          status: p.status,
+          onCall: p.onCall,
+          callDuration: p.callDuration,
+          nextAction: p.nextAction,
+        });
+      }
+    }
+
     get().startCallTimers();
     setTimeout(() => set({ toastSuccess: false }), 3500);
   },
@@ -149,6 +434,8 @@ export const useAppStore = create((set, get) => ({
           return { ...p, callDuration: formatDuration(secs) };
         })
       }));
+      // Note: call duration ticks are NOT persisted every second (too noisy).
+      // They get persisted when the call ends.
     }, 1000);
     set({ callTimerRef: ref });
   },
@@ -159,13 +446,16 @@ export const useAppStore = create((set, get) => ({
   startActiveCall: (patientId) => {
     const state = get();
     if (state.activeCallTimerRef) clearInterval(state.activeCallTimerRef);
+    const updates = { status: 'oncall', onCall: true, callDuration: '00:00' };
     set(s => ({
-      patients: s.patients.map(p => p.id === patientId ? { ...p, status: 'oncall', onCall: true, callDuration: '00:00' } : p),
+      patients: s.patients.map(p => p.id === patientId ? { ...p, ...updates } : p),
       activeCallPatient: patientId,
       activeCallSeconds: 0,
       callPopoverPatient: null,
       callPopoverBtnRef: null
     }));
+    get().persistPatient(patientId, updates);
+
     const ref = setInterval(() => {
       set(s => {
         const newSecs = s.activeCallSeconds + 1;
@@ -180,14 +470,18 @@ export const useAppStore = create((set, get) => ({
   },
 
   endActiveCall: () => {
-    const { activeCallTimerRef, activeCallPatient } = get();
+    const { activeCallTimerRef, activeCallPatient, activeCallSeconds } = get();
     if (activeCallTimerRef) clearInterval(activeCallTimerRef);
+    const updates = { status: 'scheduled', onCall: false, callDuration: formatDuration(activeCallSeconds) };
     set(s => ({
-      patients: s.patients.map(p => p.id === activeCallPatient ? { ...p, status: 'scheduled', onCall: false } : p),
+      patients: s.patients.map(p => p.id === activeCallPatient ? { ...p, ...updates } : p),
       activeCallPatient: null,
       activeCallSeconds: 0,
       activeCallTimerRef: null
     }));
+    if (activeCallPatient) {
+      get().persistPatient(activeCallPatient, updates);
+    }
   },
 
   showToast: (msg) => {

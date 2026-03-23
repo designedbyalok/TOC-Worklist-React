@@ -1,17 +1,18 @@
 import { Icon } from '../Icon/Icon';
+import { useAppStore } from '../../store/useAppStore';
 import styles from './Sidebar.module.css';
 
 const NAV_ITEMS = [
-  { icon: 'solar:home-2-linear', label: 'Home' },
-  { icon: 'solar:users-group-rounded-bold', label: 'Population', badge: 8, active: true },
-  { icon: 'solar:calendar-linear', label: 'Calendar' },
-  { icon: 'solar:checklist-minimalistic-linear', label: 'Tasks' },
-  { icon: 'solar:chat-round-dots-linear', label: 'Messages', badge: 8 },
-  { icon: 'solar:phone-linear', label: 'Calls' },
-  { icon: 'solar:user-speak-linear', label: 'Leads' },
-  { icon: 'solar:target-linear', label: 'Campaign' },
-  { icon: 'solar:chart-2-linear', label: 'Analytics' },
-  { icon: 'solar:settings-linear', label: 'Settings' },
+  { icon: 'solar:home-2-linear', label: 'Home', page: 'home' },
+  { icon: 'solar:users-group-rounded-bold', label: 'Population', badge: 8, page: 'population' },
+  { icon: 'solar:calendar-linear', label: 'Calendar', page: 'calendar' },
+  { icon: 'solar:checklist-minimalistic-linear', label: 'Tasks', page: 'tasks' },
+  { icon: 'solar:chat-round-dots-linear', label: 'Messages', badge: 8, page: 'messages' },
+  { icon: 'solar:phone-linear', label: 'Calls', page: 'calls' },
+  { icon: 'solar:user-speak-linear', label: 'Leads', page: 'leads' },
+  { icon: 'solar:target-linear', label: 'Campaign', page: 'campaign' },
+  { icon: 'solar:chart-2-linear', label: 'Analytics', page: 'analytics' },
+  { icon: 'solar:settings-linear', label: 'Settings', page: 'settings' },
 ];
 
 const BOTTOM_ITEMS = [
@@ -19,6 +20,18 @@ const BOTTOM_ITEMS = [
 ];
 
 export function Sidebar() {
+  const activePage = useAppStore(s => s.activePage);
+  const setActivePage = useAppStore(s => s.setActivePage);
+  const setCurrentPage = useAppStore(s => s.setCurrentPage);
+
+  const handleClick = (e, page) => {
+    e.preventDefault();
+    if (page) {
+      setActivePage(page);
+      setCurrentPage(1);
+    }
+  };
+
   return (
     <nav className={styles.sidebar}>
       <div className={styles.logo}>
@@ -31,10 +44,10 @@ export function Sidebar() {
       {NAV_ITEMS.map((item) => (
         <a
           key={item.label}
-          className={[styles.item, item.active ? styles.active : ''].filter(Boolean).join(' ')}
+          className={[styles.item, activePage === item.page ? styles.active : ''].filter(Boolean).join(' ')}
           href="#"
           title={item.label}
-          onClick={e => e.preventDefault()}
+          onClick={e => handleClick(e, item.page)}
         >
           {item.badge && <span className={styles.badge}>{item.badge}</span>}
           <div className={styles.itemInner}>

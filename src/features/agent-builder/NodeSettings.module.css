@@ -1,0 +1,335 @@
+/* ── NodeSettings right panel ── */
+.panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  background: #fff;
+  overflow-y: auto;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #E9ECF1;
+  flex-shrink: 0;
+}
+.headerTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #16181D;
+}
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.saveTextBtn {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8C5AE2;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: background .12s;
+}
+.saveTextBtn:hover { background: #F5F0FF; }
+
+/* Node identity */
+.nodeIdentity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+}
+.nodeIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.nodeNameDisplay {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #16181D;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nodeNameInputEditing {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #16181D;
+  border: 1px solid #8C5AE2;
+  border-radius: 6px;
+  outline: none;
+  padding: 4px 8px;
+  background: #FCFAFF;
+  font-family: inherit;
+  line-height: 1.3;
+}
+.editBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: background .12s;
+  flex-shrink: 0;
+}
+.editBtn:hover { background: #F5F0FF; }
+
+.divider {
+  height: 1px;
+  background: #E9ECF1;
+  margin: 0;
+}
+
+/* Sections */
+.section {
+  padding: 14px 16px;
+}
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.sectionLabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #16181D;
+  margin-bottom: 8px;
+}
+.sectionHeader .sectionLabel {
+  margin-bottom: 0;
+}
+.addBtn {
+  font-size: 11px;
+  font-weight: 500;
+  color: #8C5AE2;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 6px;
+  transition: background .12s;
+}
+.addBtn:hover { background: #F5F0FF; }
+
+/* Textarea */
+.textarea {
+  width: 100%;
+  border: 1px solid #D0D6E1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  font-family: 'Inter', sans-serif;
+  color: #3A485F;
+  line-height: 1.55;
+  resize: vertical;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  background: #fff;
+}
+.textarea:focus {
+  border-color: #8C5AE2;
+  box-shadow: 0 0 0 3px rgba(140,90,226,.08);
+}
+
+/* Transition blocks */
+.transitionBlock {
+  background: #F6F7F8;
+  border: 1px solid #E9ECF1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.transitionField {
+  margin-bottom: 8px;
+}
+.transitionField:last-of-type {
+  margin-bottom: 0;
+}
+.fieldLabel {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6F7A90;
+  margin-bottom: 4px;
+}
+.fieldInput {
+  width: 100%;
+  border: 1px solid #D0D6E1;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  color: #16181D;
+  outline: none;
+  background: #fff;
+  transition: border-color .15s, box-shadow .15s;
+}
+.fieldInput:focus {
+  border-color: #8C5AE2;
+  box-shadow: 0 0 0 3px rgba(140,90,226,.08);
+}
+
+/* ── Custom Select Dropdown ── */
+.customSelect {
+  position: relative;
+  width: 100%;
+}
+.customSelectTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: 1px solid #D0D6E1;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  color: #16181D;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+  text-align: left;
+}
+.customSelectTrigger:hover {
+  border-color: #8C5AE2;
+}
+.customSelectTriggerOpen {
+  border-color: #8C5AE2;
+  box-shadow: 0 0 0 3px rgba(140,90,226,.08);
+}
+.customSelectValue {
+  color: #16181D;
+}
+.customSelectPlaceholder {
+  color: #8A94A8;
+}
+.customSelectDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #E9ECF1;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 50;
+}
+.customSelectItem {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #3A485F;
+  cursor: pointer;
+  transition: background .1s;
+}
+.customSelectItem:hover {
+  background: #F5F0FF;
+}
+.customSelectItemActive {
+  background: #F5F0FF;
+  color: #8C5AE2;
+  font-weight: 500;
+}
+.customSelectEmpty {
+  padding: 12px;
+  font-size: 11px;
+  color: #8A94A8;
+  text-align: center;
+}
+
+.removeTransitionBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 4px;
+  display: flex;
+  opacity: 0.5;
+  transition: opacity .12s, background .12s;
+}
+.removeTransitionBtn:hover {
+  opacity: 1;
+  background: rgba(215,40,37,.08);
+}
+
+.emptyTransitions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 0;
+  font-size: 11px;
+  color: #8A94A8;
+}
+
+/* Delete section */
+.deleteSection {
+  padding: 12px 16px;
+  margin-top: auto;
+  border-top: 1px solid #E9ECF1;
+}
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #D72825;
+  background: none;
+  border: 1px solid #E9ECF1;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .12s, border-color .12s;
+  font-family: 'Inter', sans-serif;
+}
+.deleteBtn:hover {
+  background: #FFF5F5;
+  border-color: #D72825;
+}
+
+/* End node info */
+.endNodeInfo {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  background: #F6F7F8;
+  border: 1px solid #E9ECF1;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #6F7A90;
+  line-height: 1.5;
+}
+.endNodeInfo svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}

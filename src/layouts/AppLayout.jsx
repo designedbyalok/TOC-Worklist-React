@@ -12,6 +12,9 @@ import { DetailDrawer } from '../components/DetailDrawer/DetailDrawer';
 import { LiveDrawer } from '../components/LiveDrawer/LiveDrawer';
 import { WorklistTable } from '../features/worklist/WorklistTable';
 import { QueueTable } from '../features/queue/QueueTable';
+import { SettingsLayout } from '../features/settings/SettingsLayout';
+import { CreateAgentDrawer } from '../features/settings/CreateAgentDrawer';
+import { AgentCanvas } from '../features/agent-builder/AgentCanvas';
 import { useAppStore } from '../store/useAppStore';
 import styles from './AppLayout.module.css';
 
@@ -55,19 +58,13 @@ function ToastSuccess() {
   );
 }
 
-export function AppLayout() {
+function PopulationView() {
   const subnavCollapsed = useAppStore(s => s.subnavCollapsed);
   const activeTab = useAppStore(s => s.activeTab);
-  const workflowPatient = useAppStore(s => s.workflowPatient);
-  const showInvokeModal = useAppStore(s => s.showInvokeModal);
   const showFilterBar = useAppStore(s => s.showFilterBar);
-  const callPopoverPatient = useAppStore(s => s.callPopoverPatient);
-  const detailPatient = useAppStore(s => s.detailPatient);
-  const liveDrawerPatient = useAppStore(s => s.liveDrawerPatient);
 
   return (
-    <div className={styles.app}>
-      <Sidebar />
+    <>
       <SubNav collapsed={subnavCollapsed} />
       <div className={styles.main}>
         <TopBar />
@@ -78,7 +75,47 @@ export function AppLayout() {
           <Pagination />
         </div>
       </div>
+    </>
+  );
+}
 
+function SettingsView() {
+  return (
+    <div className={styles.main}>
+      <TopBar />
+      <div className={styles.content}>
+        <SettingsLayout />
+      </div>
+    </div>
+  );
+}
+
+export function AppLayout() {
+  const activePage = useAppStore(s => s.activePage);
+  const showCreateAgent = useAppStore(s => s.showCreateAgent);
+  const workflowPatient = useAppStore(s => s.workflowPatient);
+  const showInvokeModal = useAppStore(s => s.showInvokeModal);
+  const callPopoverPatient = useAppStore(s => s.callPopoverPatient);
+  const detailPatient = useAppStore(s => s.detailPatient);
+  const liveDrawerPatient = useAppStore(s => s.liveDrawerPatient);
+
+  // Agent Builder is a full-screen takeover
+  if (activePage === 'builder') {
+    return (
+      <div className={styles.app}>
+        <Sidebar />
+        <AgentCanvas />
+        <Toast />
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.app}>
+      <Sidebar />
+      {activePage === 'settings' ? <SettingsView /> : <PopulationView />}
+
+      {showCreateAgent && <CreateAgentDrawer />}
       {workflowPatient && <WorkflowPanel />}
       {callPopoverPatient && <CallPopover />}
       <ActiveCallCard />

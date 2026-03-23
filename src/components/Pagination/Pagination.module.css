@@ -25,7 +25,8 @@
   font-family: 'Inter', sans-serif;
 }
 
-.btn:hover { background: var(--neutral-50); }
+.btn:hover:not(:disabled) { background: var(--neutral-50); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn.active { background: var(--primary-300); color: #fff; border-color: var(--primary-300); }
 
 .ellipsis {
@@ -43,6 +44,33 @@
   background: var(--neutral-0);
   cursor: pointer;
   outline: none;
+}
+
+.goToWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.goToInput {
+  width: 48px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--neutral-150);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--neutral-400);
+  background: var(--neutral-0);
+  outline: none;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.goToInput::-webkit-outer-spin-button,
+.goToInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .goBtn {

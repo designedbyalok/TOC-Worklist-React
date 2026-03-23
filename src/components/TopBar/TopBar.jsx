@@ -8,29 +8,44 @@ import styles from './TopBar.module.css';
 export function TopBar() {
   const toggleSubnav = useAppStore(s => s.toggleSubnav);
   const subnavCollapsed = useAppStore(s => s.subnavCollapsed);
+  const activePage = useAppStore(s => s.activePage);
   const showCreateNew = useAppStore(s => s.showCreateNew);
   const setShowCreateNew = useAppStore(s => s.setShowCreateNew);
   const btnRef = useRef(null);
 
+  const isSettings = activePage === 'settings';
+
   return (
     <header className={styles.topbar}>
       <div className={styles.left}>
-        <button
-          className={styles.iconBtn}
-          title="Toggle panel"
-          onClick={toggleSubnav}
-        >
-          <Icon
-            name={subnavCollapsed ? 'solar:alt-arrow-right-linear' : 'solar:sidebar-minimalistic-linear'}
-            size={20}
-          />
-        </button>
+        {!isSettings && (
+          <button
+            className={styles.iconBtn}
+            title="Toggle panel"
+            onClick={toggleSubnav}
+          >
+            <Icon
+              name={subnavCollapsed ? 'solar:alt-arrow-right-linear' : 'solar:sidebar-minimalistic-linear'}
+              size={20}
+            />
+          </button>
+        )}
         <nav className={styles.breadcrumb}>
-          <a className={styles.breadcrumbLink} href="#" onClick={e => e.preventDefault()}>Population</a>
-          <span className={styles.sep}>/</span>
-          <a className={styles.breadcrumbLink} href="#" onClick={e => e.preventDefault()}>Worklists</a>
-          <span className={styles.sep}>/</span>
-          <span className={styles.breadcrumbCurrent}>TOC</span>
+          {isSettings ? (
+            <>
+              <a className={styles.breadcrumbLink} href="#" onClick={e => e.preventDefault()}>Settings</a>
+              <span className={styles.sep}>/</span>
+              <span className={styles.breadcrumbCurrent}>Automation</span>
+            </>
+          ) : (
+            <>
+              <a className={styles.breadcrumbLink} href="#" onClick={e => e.preventDefault()}>Population</a>
+              <span className={styles.sep}>/</span>
+              <a className={styles.breadcrumbLink} href="#" onClick={e => e.preventDefault()}>Worklists</a>
+              <span className={styles.sep}>/</span>
+              <span className={styles.breadcrumbCurrent}>TOC</span>
+            </>
+          )}
         </nav>
       </div>
 
