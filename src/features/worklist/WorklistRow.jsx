@@ -281,9 +281,8 @@ export function WorklistRow({ patient, isSelected, onSelect }) {
         <td className={`${styles.td} ${styles.stickyRight}`} onClick={e => e.stopPropagation()}>
           <div className={styles.actionsCell}>
             <button className={styles.actionBtn} title="View details" onClick={() => {
-              if (p.status === 'completed') openDetail(p.id);
-              else if (p.status === 'oncall') openLiveDrawer(p.id);
-              else openWorkflow(p.id);
+              if (p.status === 'oncall') openLiveDrawer(p.id);
+              else openDetail(p.id);
             }}>
               <Icon name="solar:document-text-linear" size={18} />
             </button>

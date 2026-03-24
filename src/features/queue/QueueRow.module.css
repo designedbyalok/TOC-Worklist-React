@@ -68,7 +68,7 @@
 .medLink { display: inline-flex; align-items: center; gap: 3px; color: var(--primary-300); font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; }
 .medLink:hover { text-decoration: underline; }
 
-.aiCell { display: flex; flex-wrap: wrap; gap: 4px; max-width: 280px; }
+.aiCell { display: flex; flex-wrap: wrap; gap: 4px; }
 .aiOverflowBadge {
   display: inline-flex;
   align-items: center;

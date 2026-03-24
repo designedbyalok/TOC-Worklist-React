@@ -17,20 +17,68 @@
   animation: livePulse 1.5s infinite;
 }
 
-.patientBlock {
-  margin-bottom: 12px;
+/* ── Call Info Card (matches DetailDrawer) ── */
+.callCard {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  margin-bottom: 16px;
 }
 
-.patientName { font-size: 18px; font-weight: 600; color: #3a485f; }
-.patientMeta { font-size: 13px; color: #6f7a90; margin-top: 2px; }
-.timer { font-size: 24px; font-weight: 600; color: #3a485f; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.callCardLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
 
+.callIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.callInfo { flex: 1; }
+
+.callLine1 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3a485f;
+  flex-wrap: wrap;
+}
+
+.callLine1Detail { font-weight: 400; color: #6f7a90; }
+.callTimer { font-weight: 600; color: #059669; font-variant-numeric: tabular-nums; }
+.dot { color: #8a94a8; font-size: 10px; }
+
+.callLine2 {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6f7a90;
+  margin-top: 4px;
+}
+
+/* ── Action Buttons ── */
 .actions {
   display: flex;
   gap: 8px;
   padding: 12px 0;
   border-bottom: 0.5px solid #d0d6e1;
-  margin-bottom: 16px;
+  margin-bottom: 4px;
 }
 
 .actionBtn {
@@ -51,6 +99,17 @@
 .actionBtn:hover { border-color: #c4b5fd; background: #f5f0ff; color: #8c5ae2; }
 .actionBtn.active { background: #ede5fb; color: #8c5ae2; border-color: #c4b5fd; }
 
+/* ── Section Headers (shared pattern with DetailDrawer) ── */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  cursor: pointer;
+  border-bottom: 0.5px solid #e9ecf1;
+  user-select: none;
+}
+
 .sectionTitle {
   display: flex;
   align-items: center;
@@ -58,10 +117,17 @@
   font-size: 14px;
   font-weight: 500;
   color: #3a485f;
-  margin-bottom: 12px;
 }
 
-.goalsSection { margin-bottom: 24px; }
+.chevron {
+  transition: transform .2s;
+  color: #8a94a8;
+  display: flex;
+}
+.chevronOpen { transform: rotate(90deg); }
+
+/* ── Goals Section ── */
+.goalsSection { margin-bottom: 8px; }
 
 .goalRow {
   display: flex;
@@ -77,7 +143,8 @@
 .goalLabel { flex: 1; }
 .goalTime { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #009b53; font-weight: 500; }
 
-.transcriptSection { }
+/* ── Transcript Section ── */
+.transcriptSection { padding-top: 8px; }
 
 .message {
   display: flex;

@@ -24,11 +24,17 @@ export function Sidebar() {
   const setActivePage = useAppStore(s => s.setActivePage);
   const setCurrentPage = useAppStore(s => s.setCurrentPage);
 
+  const showToast = useAppStore(s => s.showToast);
+  const implementedPages = ['population', 'settings'];
+
   const handleClick = (e, page) => {
     e.preventDefault();
-    if (page) {
+    if (!page) return;
+    if (implementedPages.includes(page)) {
       setActivePage(page);
       setCurrentPage(1);
+    } else {
+      showToast(`${page.charAt(0).toUpperCase() + page.slice(1)} – coming soon`);
     }
   };
 

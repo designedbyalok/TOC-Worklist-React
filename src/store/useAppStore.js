@@ -41,6 +41,10 @@ export const useAppStore = create((set, get) => ({
   perPage: 10,
   searchQuery: '',
 
+  // Filters
+  activeFilters: {},  // { gender: 'F', language: 'es', lace: 'High', ... }
+  activeSubnavList: 'TOC',  // which SubNav list is selected
+
   // Agents (settings)
   agents: [],
   agentsLoading: true,
@@ -86,12 +90,28 @@ export const useAppStore = create((set, get) => ({
     if (error) {
       console.warn('Supabase fetch failed, using fallback data:', error.message);
       set({
-        patients: fallbackPatients.map(p => ({ ...p })),
+        patients: fallbackPatients.map(p => ({
+          ...p,
+          agentAssigned: '',
+          agentRole: '',
+          onCall: false,
+          status: (p.status === 'oncall' || p.status === 'queued') ? 'scheduled' : p.status,
+          callDuration: (p.status === 'oncall') ? null : p.callDuration,
+        })),
         patientsLoading: false,
         patientsError: error.message,
       });
     } else {
-      const patients = data.map(dbToJs);
+      const patients = data.map(dbToJs).map(p => ({
+        ...p,
+        // Reset transient agent/call state on fresh load —
+        // queue should be empty until agents are explicitly invoked
+        agentAssigned: '',
+        agentRole: '',
+        onCall: false,
+        status: (p.status === 'oncall' || p.status === 'queued') ? 'scheduled' : p.status,
+        callDuration: (p.status === 'oncall') ? null : p.callDuration,
+      }));
       // Sort by numeric part of id (p1, p2, ... p10, p11, ...)
       patients.sort((a, b) => {
         const na = parseInt(a.id.replace(/\D/g, ''), 10);
@@ -124,7 +144,19 @@ export const useAppStore = create((set, get) => ({
   setSettingsTab: (tab) => { sessionStorage.setItem('settingsTab', tab); set({ settingsTab: tab }); },
   setShowCreateAgent: (v) => set({ showCreateAgent: v }),
   toggleSubnav: () => set(s => ({ subnavCollapsed: !s.subnavCollapsed })),
-  setViewBy: (v) => set({ viewBy: v }),
+  setViewBy: (v) => set({ viewBy: v, currentPage: 1 }),
+  setActiveFilters: (filters) => set({ activeFilters: filters, currentPage: 1 }),
+  setFilter: (key, value) => set(s => {
+    const next = { ...s.activeFilters };
+    if (value === null || value === undefined) {
+      delete next[key];
+    } else {
+      next[key] = value;
+    }
+    return { activeFilters: next, currentPage: 1 };
+  }),
+  clearAllFilters: () => set({ activeFilters: {}, currentPage: 1 }),
+  setActiveSubnavList: (list) => set({ activeSubnavList: list, currentPage: 1 }),
 
   fetchAgents: async () => {
     set({ agentsLoading: true });
@@ -414,6 +446,27 @@ export const useAppStore = create((set, get) => ({
 
     get().startCallTimers();
     setTimeout(() => set({ toastSuccess: false }), 3500);
+  },
+
+  abortAllAgents: () => {
+    const state = get();
+    // Stop all call timers
+    if (state.callTimerRef) {
+      clearInterval(state.callTimerRef);
+    }
+    const updated = state.patients.map(p => {
+      if (!p.agentAssigned) return p;
+      const newP = { ...p, agentAssigned: '', agentRole: '', onCall: false, status: p.status === 'oncall' || p.status === 'queued' ? 'scheduled' : p.status };
+      return newP;
+    });
+    set({ patients: updated, callTimerRef: null, queueTabDot: false, toast: 'All agent runs aborted' });
+    // Persist changes
+    for (const p of updated) {
+      if (p.agentAssigned === '') {
+        get().persistPatient(p.id, { agentAssigned: '', agentRole: '', onCall: false, status: p.status });
+      }
+    }
+    setTimeout(() => set(s => s.toast === 'All agent runs aborted' ? { toast: null } : {}), 2800);
   },
 
   startCallTimers: () => {

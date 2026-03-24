@@ -11,12 +11,15 @@ export function LiveDrawer() {
   const showToast = useAppStore(s => s.showToast);
   const [listenActive, setListenActive] = useState(false);
   const [muteActive, setMuteActive] = useState(false);
+  const [openSections, setOpenSections] = useState({ goals: true, transcript: true });
 
   const p = patients.find(x => x.id === liveDrawerPatient);
   if (!p) return null;
 
   const goals = p.liveGoals || [];
   const transcript = p.liveTranscript || [];
+
+  const toggleSection = (key) => setOpenSections(s => ({ ...s, [key]: !s[key] }));
 
   const liveTag = (
     <div className={styles.liveTag}>
@@ -27,11 +30,28 @@ export function LiveDrawer() {
 
   return (
     <Drawer title={liveTag} onClose={closeLiveDrawer}>
-      {/* Patient info + timer */}
-      <div className={styles.patientBlock}>
-        <div className={styles.patientName}>{p.name}</div>
-        <div className={styles.patientMeta}>{p.facility} • {p.admitReason}</div>
-        <div className={styles.timer}>{p.callDuration || '00:00'}</div>
+      {/* Call Info Card — matches DetailDrawer */}
+      <div className={styles.callCard}>
+        <div className={styles.callCardLeft}>
+          <div className={styles.callIcon}>
+            <Icon name="solar:phone-calling-bold" size={24} color="#059669" />
+          </div>
+          <div className={styles.callInfo}>
+            <div className={styles.callLine1}>
+              Live Call
+              <span className={styles.dot}>•</span>
+              <span className={styles.callLine1Detail}>{p.name}</span>
+              <span className={styles.dot}>•</span>
+              <span className={styles.callTimer}>{p.callDuration || '00:00'}</span>
+            </div>
+            <div className={styles.callLine2}>
+              Via: <Icon name="solar:bot-bold" size={13} color="#8c5ae2" /> {p.agentAssigned || 'Anna'} → To: {p.name}
+            </div>
+            {p.facility && (
+              <div className={styles.callLine2}>{p.facility} • {p.admitReason}</div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Action buttons */}
@@ -56,58 +76,76 @@ export function LiveDrawer() {
         </button>
       </div>
 
-      {/* Goals Section */}
-      <div className={styles.goalsSection}>
-        <div className={styles.sectionTitle}>
+      {/* Goals Section — collapsible */}
+      <div className={styles.sectionHeader} onClick={() => toggleSection('goals')}>
+        <span className={styles.sectionTitle}>
           <Icon name="solar:target-bold" size={15} color="#8c5ae2" />
           Goals Tracking
-        </div>
-        {goals.map((g, i) => (
-          <div key={i} className={`${styles.goalRow} ${g.done ? styles.completed : ''}`}>
-            <Icon
-              name={g.done ? "solar:check-circle-bold" : "solar:clock-circle-linear"}
-              size={16}
-              color={g.done ? "#009b53" : "#8a94a8"}
-            />
-            <span className={styles.goalLabel}>{g.name}</span>
-            {g.done && g.time && (
-              <span className={styles.goalTime}>
-                <Icon name="solar:check-circle-bold" size={12} color="#009b53" /> {g.time}
-              </span>
-            )}
-          </div>
-        ))}
+        </span>
+        <span className={`${styles.chevron} ${openSections.goals ? styles.chevronOpen : ''}`}>
+          <Icon name="solar:alt-arrow-right-linear" size={16} />
+        </span>
       </div>
+      {openSections.goals && (
+        <div className={styles.goalsSection}>
+          {goals.length > 0 ? goals.map((g, i) => (
+            <div key={i} className={`${styles.goalRow} ${g.done ? styles.completed : ''}`}>
+              <Icon
+                name={g.done ? "solar:check-circle-bold" : "solar:clock-circle-linear"}
+                size={16}
+                color={g.done ? "#009b53" : "#8a94a8"}
+              />
+              <span className={styles.goalLabel}>{g.name}</span>
+              {g.done && g.time && (
+                <span className={styles.goalTime}>
+                  <Icon name="solar:check-circle-bold" size={12} color="#009b53" /> {g.time}
+                </span>
+              )}
+            </div>
+          )) : (
+            <div style={{ padding: '12px 0', fontSize: 13, color: 'var(--neutral-300)' }}>
+              No goals data available yet.
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* Transcript */}
-      <div className={styles.transcriptSection}>
-        <div className={styles.sectionTitle}>
+      {/* Transcript — collapsible */}
+      <div className={styles.sectionHeader} onClick={() => toggleSection('transcript')}>
+        <span className={styles.sectionTitle}>
           <Icon name="solar:chat-round-dots-bold" size={15} color="#8c5ae2" />
           Live Transcript
-        </div>
-        {transcript.map((msg, i) => (
-          <div key={i} className={`${styles.message} ${styles[msg.sender]}`}>
-            {msg.sender === 'agent' && (
-              <div className={styles.msgAvatar}>
-                <Icon name="solar:bot-bold" size={12} color="#8c5ae2" />
-              </div>
-            )}
-            <div className={styles.msgContent}>
-              <div className={styles.msgSender}>{msg.name}</div>
-              <div className={styles.msgBubble}>{msg.text}</div>
-              <div className={styles.msgTime}>{msg.time}</div>
-            </div>
-          </div>
-        ))}
-        {/* Typing indicator */}
-        <div className={styles.typing}>
-          <Icon name="solar:bot-bold" size={14} color="#8c5ae2" />
-          <span>{p.agentAssigned || 'Anna'} is speaking</span>
-          <span className={styles.typingDots}>
-            <span>.</span><span>.</span><span>.</span>
-          </span>
-        </div>
+        </span>
+        <span className={`${styles.chevron} ${openSections.transcript ? styles.chevronOpen : ''}`}>
+          <Icon name="solar:alt-arrow-right-linear" size={16} />
+        </span>
       </div>
+      {openSections.transcript && (
+        <div className={styles.transcriptSection}>
+          {transcript.map((msg, i) => (
+            <div key={i} className={`${styles.message} ${styles[msg.sender]}`}>
+              {msg.sender === 'agent' && (
+                <div className={styles.msgAvatar}>
+                  <Icon name="solar:bot-bold" size={12} color="#8c5ae2" />
+                </div>
+              )}
+              <div className={styles.msgContent}>
+                <div className={styles.msgSender}>{msg.name}</div>
+                <div className={styles.msgBubble}>{msg.text}</div>
+                <div className={styles.msgTime}>{msg.time}</div>
+              </div>
+            </div>
+          ))}
+          {/* Typing indicator */}
+          <div className={styles.typing}>
+            <Icon name="solar:bot-bold" size={14} color="#8c5ae2" />
+            <span>{p.agentAssigned || 'Anna'} is speaking</span>
+            <span className={styles.typingDots}>
+              <span>.</span><span>.</span><span>.</span>
+            </span>
+          </div>
+        </div>
+      )}
     </Drawer>
   );
 }

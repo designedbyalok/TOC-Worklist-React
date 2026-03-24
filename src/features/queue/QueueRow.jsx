@@ -66,10 +66,7 @@ function StatusCell({ patient: p }) {
           label={callDuration || '00:00'}
           icon="solar:phone-calling-bold"
           dot={false}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}
-        >
-          <span className={styles.oncallPulse} />
-        </Badge>
+        />
       </div>
     );
   }

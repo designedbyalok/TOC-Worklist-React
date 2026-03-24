@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { Icon } from '../../components/Icon/Icon';
 import { QueueRow } from './QueueRow';
@@ -5,11 +6,53 @@ import { QueueEmptyState } from './QueueEmptyState';
 
 export function QueueTable() {
   const patients = useAppStore(s => s.patients);
-  const invokedPatients = patients.filter(p => p.agentAssigned);
+  const searchQuery = useAppStore(s => s.searchQuery);
+  const activeFilters = useAppStore(s => s.activeFilters);
+  const currentPage = useAppStore(s => s.currentPage);
+  const perPage = useAppStore(s => s.perPage);
 
-  if (!invokedPatients.length) {
-    return <QueueEmptyState />;
+  // Filter to only agent-assigned patients, then apply search + filters
+  const filteredQueue = useMemo(() => {
+    let result = patients.filter(p => p.agentAssigned);
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.memberId?.toLowerCase().includes(q) ||
+        p.initials?.toLowerCase().includes(q)
+      );
+    }
+
+    for (const [key, value] of Object.entries(activeFilters)) {
+      if (value) {
+        result = result.filter(p => p[key] === value);
+      }
+    }
+
+    return result;
+  }, [patients, searchQuery, activeFilters]);
+
+  if (!filteredQueue.length) {
+    // Check if there are any invoked patients at all (before filters)
+    const anyInvoked = patients.some(p => p.agentAssigned);
+    if (!anyInvoked) return <QueueEmptyState />;
+    // There are invoked patients but filters hide them
+    return (
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, textAlign: 'center', paddingBottom: 64 }}>
+          <Icon name="solar:filter-linear" size={40} color="var(--neutral-200)" />
+          <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)' }}>No matching agents</div>
+          <div style={{ fontSize: 13, color: 'var(--neutral-300)', lineHeight: 1.5 }}>
+            Active filters hide all queued patients. Try adjusting your filters.
+          </div>
+        </div>
+      </div>
+    );
   }
+
+  const startIdx = (currentPage - 1) * perPage;
+  const paginatedQueue = filteredQueue.slice(startIdx, startIdx + perPage);
 
   const thBase = {
     fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)',
@@ -35,7 +78,7 @@ export function QueueTable() {
             <th style={{ ...thBase, padding: '8px 12px', position: 'sticky', left: 36, zIndex: 4, borderRight: '1px solid var(--neutral-150)' }}>Members</th>
             <th style={thBase}>LACE Acuity</th>
             <th style={thBase}>Outreach Window</th>
-            <th style={{ ...agentTh, minWidth: 180, borderLeft: '2px solid var(--primary-200)' }}>
+            <th style={{ ...agentTh, borderLeft: '2px solid var(--primary-200)' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1L8.5 5H13L9.5 7.5L11 11L7 8.5L3 11L4.5 7.5L1 5H5.5L7 1Z" fill="currentColor"/></svg>
                 Status
@@ -66,7 +109,7 @@ export function QueueTable() {
           </tr>
         </thead>
         <tbody>
-          {invokedPatients.map(p => (
+          {paginatedQueue.map(p => (
             <QueueRow key={p.id} patient={p} />
           ))}
         </tbody>

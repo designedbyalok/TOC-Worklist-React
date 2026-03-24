@@ -1,10 +1,10 @@
 .filterBar {
   background: var(--neutral-0);
   border-bottom: 1px solid var(--neutral-150);
-  padding: 12px 24px;
+  padding: 10px 24px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
   animation: filterSlide .15s ease;
 }
@@ -14,6 +14,11 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.chipWrap {
+  position: relative;
 }
 
 .chip {
@@ -36,6 +41,93 @@
 .chip:hover { border-color: var(--primary-200); background: var(--primary-50); }
 .chip.active { border-color: var(--primary-300); background: var(--primary-100); color: var(--primary-300); }
 
+.chipValue {
+  font-weight: 600;
+  color: var(--primary-300);
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chipClear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--primary-200);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 2px;
+}
+
+.chipClear:hover {
+  background: var(--primary-300);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 180px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-150);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  z-index: 100;
+  padding: 4px;
+  animation: dropIn .12s ease;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--neutral-400);
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.dropdownItem:hover {
+  background: var(--primary-50);
+  color: var(--primary-300);
+}
+
+.dropdownItem.selected {
+  background: var(--primary-100);
+  color: var(--primary-300);
+  font-weight: 600;
+}
+
+.dropdownCheck {
+  width: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-300);
+  font-size: 12px;
+}
+
 .clearAll {
   font-size: 13px;
   color: var(--neutral-300);
@@ -48,6 +140,19 @@
 }
 
 .clearAll:hover { color: var(--primary-300); }
+
+.activeCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: var(--primary-100);
+  color: var(--primary-300);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+}
 
 .viewByToggle {
   display: inline-flex;
@@ -76,3 +181,8 @@
 .viewByBtn:last-child { border-right: none; }
 .viewByBtn:hover { background: var(--neutral-50); }
 .viewByBtn.active { background: var(--primary-100); color: var(--primary-300); }
+
+@keyframes filterSlide {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 200px; }
+}

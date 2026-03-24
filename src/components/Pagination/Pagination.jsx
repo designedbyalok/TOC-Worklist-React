@@ -3,25 +3,46 @@ import { useAppStore } from '../../store/useAppStore';
 import { Icon } from '../Icon/Icon';
 import styles from './Pagination.module.css';
 
-export function Pagination({ totalItems: totalItemsProp }) {
+export function Pagination() {
   const currentPage = useAppStore(s => s.currentPage);
   const perPage = useAppStore(s => s.perPage);
   const patients = useAppStore(s => s.patients);
   const searchQuery = useAppStore(s => s.searchQuery);
+  const activeTab = useAppStore(s => s.activeTab);
+  const activeFilters = useAppStore(s => s.activeFilters);
+  const viewBy = useAppStore(s => s.viewBy);
   const setCurrentPage = useAppStore(s => s.setCurrentPage);
   const setPerPage = useAppStore(s => s.setPerPage);
 
-  const derivedTotal = useMemo(() => {
-    if (!searchQuery.trim()) return patients.length;
-    const q = searchQuery.toLowerCase().trim();
-    return patients.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.memberId?.toLowerCase().includes(q) ||
-      p.initials?.toLowerCase().includes(q)
-    ).length;
-  }, [patients, searchQuery]);
+  // Derive the total count based on what's actually being shown
+  const totalItems = useMemo(() => {
+    let result = patients;
 
-  const totalItems = totalItemsProp ?? derivedTotal;
+    // For queue tab, only count patients with agents assigned
+    if (activeTab === 'queue') {
+      result = result.filter(p => p.agentAssigned);
+      return result.length;
+    }
+
+    // For worklist tab, apply search + filters
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.memberId?.toLowerCase().includes(q) ||
+        p.initials?.toLowerCase().includes(q)
+      );
+    }
+
+    // Apply active filters
+    for (const [key, value] of Object.entries(activeFilters)) {
+      if (value) {
+        result = result.filter(p => p[key] === value);
+      }
+    }
+
+    return result.length;
+  }, [patients, searchQuery, activeTab, activeFilters]);
 
   const [goToInput, setGoToInput] = useState('');
 
@@ -64,6 +85,11 @@ export function Pagination({ totalItems: totalItemsProp }) {
     }
     return pages;
   };
+
+  // Don't show pagination for queue with empty state
+  if (activeTab === 'queue' && totalItems === 0) return null;
+  // Don't show pagination for outreach status grouped view (uses collapsible sections)
+  if (activeTab === 'worklist' && viewBy === 'status') return null;
 
   return (
     <div className={styles.pagination}>

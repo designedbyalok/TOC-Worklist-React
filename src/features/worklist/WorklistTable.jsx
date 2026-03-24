@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { WorklistRow } from './WorklistRow';
 import { BulkBar } from '../../components/BulkBar/BulkBar';
 import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
 import { Icon } from '../../components/Icon/Icon';
 
-function EmptySearch({ query }) {
+function EmptySearch() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -16,9 +16,93 @@ function EmptySearch({ query }) {
         No results found
       </p>
       <p style={{ fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 320 }}>
-        No members match "<span style={{ fontWeight: 600, color: 'var(--neutral-400)' }}>{query}</span>". Try a different name or clear the search.
+        No members match your current filters. Try adjusting the filters or clearing them.
       </p>
     </div>
+  );
+}
+
+function parseTimeLeft(str) {
+  if (!str) return Infinity;
+  let mins = 0;
+  const d = str.match(/(\d+)d/);
+  const h = str.match(/(\d+)h/);
+  const m = str.match(/(\d+)m/);
+  if (d) mins += parseInt(d[1]) * 1440;
+  if (h) mins += parseInt(h[1]) * 60;
+  if (m) mins += parseInt(m[1]);
+  return mins;
+}
+
+const STATUS_SECTIONS = [
+  { key: 'oncall', label: 'Ongoing Call', icon: 'solar:phone-calling-bold', color: '#059669', dot: true },
+  { key: 'queued', label: 'In Queue', icon: 'solar:clock-circle-bold', color: '#8B5CF6', dot: true },
+  { key: 'scheduled', label: 'Scheduled', icon: 'solar:calendar-bold', color: '#2563EB', dot: true },
+  { key: 'attention', label: 'Needs Attention', icon: 'solar:danger-triangle-bold', color: '#D97706', dot: false },
+  { key: 'enrolled', label: 'Enrolled', icon: 'solar:verified-check-bold', color: '#059669', dot: false },
+  { key: 'completed', label: 'Completed', icon: 'solar:check-circle-bold', color: '#059669', dot: false },
+];
+
+const SECTION_ORDER = { oncall: 0, queued: 1, scheduled: 2, attention: 3, enrolled: 4, completed: 5 };
+
+function getStatusSection(patient) {
+  if (patient.status === 'oncall') return 'oncall';
+  if (patient.status === 'queued') return 'queued';
+  if (patient.status === 'failed' || patient.status === 'review') return 'attention';
+  if (patient.status === 'completed') return 'completed';
+  if (patient.tocStatus === 'enrolled') return 'enrolled';
+  return 'scheduled';
+}
+
+const DEFAULT_VISIBLE = 3;
+
+function SectionHeader({ section, count, colSpan, isExpanded, onToggle, hasMore }) {
+  return (
+    <tr>
+      <td colSpan={colSpan} style={{
+        padding: '10px 14px',
+        background: 'var(--neutral-25, #FAFAFA)',
+        borderBottom: '1px solid var(--neutral-150)',
+        borderTop: '1px solid var(--neutral-150)',
+      }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          fontSize: 13, fontWeight: 600, color: section.color,
+          fontFamily: "'Inter', sans-serif",
+        }}>
+          {section.dot ? (
+            <span style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: section.color, flexShrink: 0,
+            }} />
+          ) : (
+            <Icon name={section.icon} size={15} color={section.color} />
+          )}
+          {section.label}
+          <span style={{
+            fontSize: 11, fontWeight: 500, color: 'var(--neutral-300)',
+            background: 'var(--neutral-100)', padding: '1px 6px',
+            borderRadius: 4, marginLeft: 2,
+          }}>
+            {count}
+          </span>
+          {hasMore && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggle(); }}
+              style={{
+                marginLeft: 'auto', background: 'none', border: 'none',
+                fontSize: 12, fontWeight: 500, color: 'var(--primary-300)',
+                cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+              }}
+            >
+              {isExpanded ? 'Show less' : `Show all ${count}`}
+              <Icon name={isExpanded ? 'solar:alt-arrow-up-linear' : 'solar:alt-arrow-down-linear'} size={14} />
+            </button>
+          )}
+        </div>
+      </td>
+    </tr>
   );
 }
 
@@ -33,22 +117,49 @@ export function WorklistTable() {
   const currentPage = useAppStore(s => s.currentPage);
   const perPage = useAppStore(s => s.perPage);
   const searchQuery = useAppStore(s => s.searchQuery);
+  const activeFilters = useAppStore(s => s.activeFilters);
+  const [expandedSections, setExpandedSections] = useState({});
 
-  // Filter patients by search query
+  const toggleExpand = (key) => setExpandedSections(s => ({ ...s, [key]: !s[key] }));
+
   const filteredPatients = useMemo(() => {
-    if (!searchQuery.trim()) return patients;
-    const q = searchQuery.toLowerCase().trim();
-    return patients.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.memberId?.toLowerCase().includes(q) ||
-      p.initials?.toLowerCase().includes(q)
-    );
-  }, [patients, searchQuery]);
+    let result = patients;
 
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.memberId?.toLowerCase().includes(q) ||
+        p.initials?.toLowerCase().includes(q)
+      );
+    }
+
+    for (const [key, value] of Object.entries(activeFilters)) {
+      if (value) {
+        result = result.filter(p => p[key] === value);
+      }
+    }
+
+    if (viewBy === 'window') {
+      result = [...result].sort((a, b) => parseTimeLeft(a.outreachLeft) - parseTimeLeft(b.outreachLeft));
+    } else {
+      result = [...result].sort((a, b) => {
+        const sa = SECTION_ORDER[getStatusSection(a)] ?? 5;
+        const sb = SECTION_ORDER[getStatusSection(b)] ?? 5;
+        if (sa !== sb) return sa - sb;
+        return parseTimeLeft(a.outreachLeft) - parseTimeLeft(b.outreachLeft);
+      });
+    }
+
+    return result;
+  }, [patients, searchQuery, activeFilters, viewBy]);
+
+  // For window view, paginate normally
   const startIdx = (currentPage - 1) * perPage;
   const paginatedPatients = filteredPatients.slice(startIdx, startIdx + perPage);
 
-  const allIds = paginatedPatients.map(p => p.id);
+  const visiblePatients = viewBy === 'status' ? filteredPatients : paginatedPatients;
+  const allIds = visiblePatients.map(p => p.id);
   const allSelected = allIds.length > 0 && allIds.every(id => selectedIds.includes(id));
   const someSelected = selectedIds.length > 0 && !allSelected;
 
@@ -58,23 +169,53 @@ export function WorklistTable() {
   };
 
   const thStyle = {
-    padding: '8px 14px',
-    fontSize: 12,
-    fontWeight: 500,
-    color: 'var(--neutral-300)',
-    borderBottom: '1px solid var(--neutral-150)',
-    background: 'var(--neutral-0)',
-    position: 'sticky',
-    top: 0,
-    zIndex: 2,
-    textAlign: 'left',
-    whiteSpace: 'nowrap',
-    userSelect: 'none',
+    padding: '8px 14px', fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)',
+    borderBottom: '1px solid var(--neutral-150)', background: 'var(--neutral-0)',
+    position: 'sticky', top: 0, zIndex: 2, textAlign: 'left',
+    whiteSpace: 'nowrap', userSelect: 'none',
   };
 
-  if (patientsLoading) {
-    return <TableSkeleton rows={perPage} />;
-  }
+  const colCount = 12;
+
+  if (patientsLoading) return <TableSkeleton rows={perPage} />;
+
+  const buildStatusGroupedRows = () => {
+    const rows = [];
+    const groups = {};
+    for (const p of filteredPatients) {
+      const sec = getStatusSection(p);
+      if (!groups[sec]) groups[sec] = [];
+      groups[sec].push(p);
+    }
+
+    for (const section of STATUS_SECTIONS) {
+      const sectionPatients = groups[section.key];
+      if (!sectionPatients?.length) continue;
+
+      const isExpanded = expandedSections[section.key];
+      const hasMore = sectionPatients.length > DEFAULT_VISIBLE;
+      const visible = isExpanded ? sectionPatients : sectionPatients.slice(0, DEFAULT_VISIBLE);
+
+      rows.push(
+        <SectionHeader
+          key={`section-${section.key}`}
+          section={section}
+          count={sectionPatients.length}
+          colSpan={colCount}
+          isExpanded={isExpanded}
+          onToggle={() => toggleExpand(section.key)}
+          hasMore={hasMore}
+        />
+      );
+
+      for (const p of visible) {
+        rows.push(
+          <WorklistRow key={p.id} patient={p} isSelected={selectedIds.includes(p.id)} onSelect={selectPatient} />
+        );
+      }
+    }
+    return rows;
+  };
 
   return (
     <div style={{ flex: 1, overflow: 'auto', background: 'var(--neutral-0)', position: 'relative', overscrollBehavior: 'none' }}>
@@ -82,12 +223,7 @@ export function WorklistTable() {
         <thead>
           <tr>
             <th style={{ ...thStyle, width: 36, padding: '8px 10px', position: 'sticky', top: 0, left: 0, zIndex: 4 }}>
-              <input
-                type="checkbox"
-                checked={allSelected}
-                ref={el => { if (el) el.indeterminate = someSelected; }}
-                onChange={handleSelectAll}
-              />
+              <input type="checkbox" checked={allSelected} ref={el => { if (el) el.indeterminate = someSelected; }} onChange={handleSelectAll} />
             </th>
             <th style={{ ...thStyle, padding: '8px 12px', position: 'sticky', top: 0, left: 36, zIndex: 4, borderRight: '1px solid var(--neutral-150)' }}>Members</th>
             <th style={thStyle}>LACE Acuity</th>
@@ -103,21 +239,16 @@ export function WorklistTable() {
           </tr>
         </thead>
         <tbody>
-          {paginatedPatients.map(p => (
-            <WorklistRow
-              key={p.id}
-              patient={p}
-              isSelected={selectedIds.includes(p.id)}
-              onSelect={selectPatient}
-            />
-          ))}
+          {viewBy === 'status'
+            ? buildStatusGroupedRows()
+            : paginatedPatients.map(p => (
+                <WorklistRow key={p.id} patient={p} isSelected={selectedIds.includes(p.id)} onSelect={selectPatient} />
+              ))
+          }
         </tbody>
       </table>
 
-      {filteredPatients.length === 0 && searchQuery.trim() && (
-        <EmptySearch query={searchQuery.trim()} />
-      )}
-
+      {filteredPatients.length === 0 && <EmptySearch />}
       <BulkBar />
     </div>
   );

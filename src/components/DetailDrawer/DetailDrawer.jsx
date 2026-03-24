@@ -83,6 +83,9 @@ export function DetailDrawer() {
             <div className={styles.callLine2}>
               Via: <Icon name="solar:bot-bold" size={13} color="#8c5ae2" /> Anna (581) 824-1591 → To: {p.name} (581) 824-1591
             </div>
+            {p.facility && (
+              <div className={styles.callLine2}>{p.facility} • {p.admitReason}</div>
+            )}
           </div>
         </div>
         <div className={styles.callCardActions}>
@@ -98,9 +101,9 @@ export function DetailDrawer() {
           <Icon name="solar:alt-arrow-right-linear" size={16} />
         </span>
       </div>
-      {openSections.goals && p.goalsDetail && (
+      {openSections.goals && (
         <div className={styles.goalsContainer}>
-          {p.goalsDetail.map((g, i) => (
+          {p.goalsDetail?.length > 0 ? p.goalsDetail.map((g, i) => (
             <div key={i} className={styles.goalRow}>
               <span className={styles.goalIcon}>
                 <Icon name={g.pass ? "solar:check-circle-bold" : "solar:close-circle-bold"}
@@ -114,7 +117,11 @@ export function DetailDrawer() {
                 {g.pass ? 'Pass' : 'Fail'}
               </span>
             </div>
-          ))}
+          )) : (
+            <div style={{ padding: '16px', fontSize: 13, color: 'var(--neutral-300)', textAlign: 'center' }}>
+              No goals data available for this patient yet.
+            </div>
+          )}
         </div>
       )}
 
@@ -128,6 +135,11 @@ export function DetailDrawer() {
           <Icon name="solar:alt-arrow-right-linear" size={16} />
         </span>
       </div>
+      {openSections.summary && !p.callSummary && (
+        <div style={{ padding: '16px', fontSize: 13, color: 'var(--neutral-300)', textAlign: 'center' }}>
+          No call summary generated yet. Summary will appear after a completed call.
+        </div>
+      )}
       {openSections.summary && p.callSummary && (
         <div className={styles.summaryContainer}>
           <div className={styles.summaryInner}>
@@ -161,7 +173,12 @@ export function DetailDrawer() {
           <Icon name="solar:alt-arrow-right-linear" size={16} />
         </span>
       </div>
-      {openSections.transcript && p.callTranscript && (
+      {openSections.transcript && (!p.callTranscript || p.callTranscript.length === 0) && (
+        <div style={{ padding: '16px', fontSize: 13, color: 'var(--neutral-300)', textAlign: 'center' }}>
+          No call recording available. Recording will appear after a completed call.
+        </div>
+      )}
+      {openSections.transcript && p.callTranscript?.length > 0 && (
         <div className={styles.recordingContainer}>
           {/* Audio Player */}
           <div className={styles.audioPlayer}>
