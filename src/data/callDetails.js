@@ -1,0 +1,1429 @@
+export const callDetails = [
+  // ===== p1 – Ralph Halvorson (completed) =====
+  // Ongoing record (call in progress before completion)
+  {
+    id: 'cd1',
+    patientId: 'p1',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/28/2025 10:55',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:10' },
+      { name: 'Schedule ToC Appointment', done: true, time: '2:05' },
+      { name: 'Medication Review', done: true, time: '3:42' }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Ralph, this is Fold Health calling for your follow-up after your recent hospital stay. How are you feeling today?", time: '10:55 AM' },
+      { sender: 'patient', name: 'Ralph Halvorson', text: 'Better than last week, but still some shortness of breath.', time: '10:55 AM' },
+      { sender: 'agent', name: 'Anna', text: "I'm glad to hear you're improving. Let me go through a few things with you to make sure your recovery is on track.", time: '10:56 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/28/2025'
+  },
+  // Completed record
+  {
+    id: 'cd2',
+    patientId: 'p1',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/28/2025 10:55',
+    endedAt: '11/28/2025 11:00',
+    duration: '05:29',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book follow-up appointment with PCP or care coordinator.', pass: true },
+      { name: 'Medication Review', desc: 'Review current medications and identify any discrepancies.', pass: true }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient reported ongoing fatigue and mild shortness of breath. No new symptoms identified.',
+        'Confirmed taking prescribed medications as instructed but occasional forgetfulness with evening dose.',
+        'Advised to maintain hydration and incorporate light physical activity.',
+        'Expressed concern about upcoming lab results and asked for timeline clarification.'
+      ],
+      actionItems: [
+        'Schedule follow-up call next week to review lab results.',
+        'Send medication reminder tips via email or app notification.',
+        'Share resources on fatigue management and mindfulness practices.'
+      ]
+    },
+    callTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello, this is the Fold Health care support assistant calling as part of your Transitions of Care follow-up program. I'm reaching out because you were recently discharged from the hospital, and we want to make sure you're recovering safely. Is now a good time to talk for about 5 minutes?", time: '9:28 PM' },
+      { sender: 'patient', name: 'Ralph Halvorson', text: 'Yes, sure', time: '9:28 PM' },
+      { sender: 'agent', name: 'Anna', text: "That is great. To make sure I'm speaking with the right person, could you please confirm your full name and date of birth?", time: '9:29 PM' },
+      { sender: 'patient', name: 'Ralph Halvorson', text: 'My name is Ralph Halvorson. And my date of birth is March fifteenth nineteen seventy-three.', time: '9:29 PM' },
+      { sender: 'agent', name: 'Anna', text: 'Thank you Ralph. Can you confirm what day you returned home from the hospital or facility?', time: '9:30 PM' }
+    ],
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/28/2025'
+  },
+
+  // ===== p2 – Terri Schulist (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd3',
+    patientId: 'p2',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/15/2025 10:30',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '2:28' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello, this is the Fold Health care support assistant. I'm calling to follow up after your recent hospital stay. Is this a good time?", time: '9:45 PM' },
+      { sender: 'patient', name: 'Terri Schulist', text: 'Yes, go ahead.', time: '9:45 PM' },
+      { sender: 'agent', name: 'Anna', text: "Great. I'd like to ask you a few questions about how you've been feeling since discharge. Have you experienced any new symptoms or worsening of existing ones?", time: '9:46 PM' },
+      { sender: 'patient', name: 'Terri Schulist', text: "I've been taking all my medications, but I'm not sure about the new antibiotic dosage.", time: '9:47 PM' },
+      { sender: 'agent', name: 'Anna', text: "Let me verify that for you. The antibiotic should be taken twice daily with food. Would you like me to send the instructions in Spanish?", time: '9:47 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/15/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd4',
+    patientId: 'p2',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/12/2025 09:30',
+    endedAt: '11/12/2025 09:36',
+    duration: '06:00',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book follow-up appointment for pneumonia recovery.', pass: false },
+      { name: 'Medication Review', desc: 'Review antibiotic regimen and supportive medications.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient reached successfully for initial outreach after pneumonia hospitalization.',
+        'Confirmed taking antibiotics but expressed confusion about dosage timing.',
+        'Language preference noted as Spanish for future communications.'
+      ],
+      actionItems: [
+        'Send medication instructions in Spanish.',
+        'Schedule follow-up call to complete remaining goals.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/12/2025'
+  },
+
+  // ===== p3 – Annette Brave (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd5',
+    patientId: 'p3',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/15/2025 11:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:15' },
+      { name: 'Schedule ToC Appointment', done: true, time: '3:02' },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hi Annette, this is Fold Health calling. We're following up on your recent ER visit. How are you feeling today?", time: '10:12 AM' },
+      { sender: 'patient', name: 'Annette Brave', text: "I'm doing better, the chest pain hasn't come back.", time: '10:12 AM' },
+      { sender: 'agent', name: 'Anna', text: "That's good to hear. We'd like to offer you enrollment in our Transitional Care program. Would you be interested?", time: '10:13 AM' },
+      { sender: 'patient', name: 'Annette Brave', text: 'Yes, that sounds helpful. Sign me up.', time: '10:13 AM' },
+      { sender: 'patient', name: 'Annette Brave', text: "When is my follow-up appointment? I want to make sure I don't miss it.", time: '10:14 AM' },
+      { sender: 'agent', name: 'Anna', text: "Your follow-up is scheduled for next Tuesday at 2 PM with Dr. Chen. I'll send you a reminder the day before.", time: '10:14 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/15/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd6',
+    patientId: 'p3',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/12/2025 10:00',
+    endedAt: '11/12/2025 10:05',
+    duration: '05:15',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact after ER discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book follow-up appointment for chest pain evaluation.', pass: false },
+      { name: 'Medication Review', desc: 'Review medications prescribed after ACS rule-out.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Initial contact made following ER visit for chest pain.',
+        'Patient reports chest pain has not recurred since discharge.',
+        'Patient interested in Transitional Care enrollment.'
+      ],
+      actionItems: [
+        'Enroll patient in ToC program.',
+        'Schedule follow-up to complete remaining goals.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/12/2025'
+  },
+
+  // ===== p4 – Glenn Bauch (failed) =====
+  // Ongoing record
+  {
+    id: 'cd7',
+    patientId: 'p4',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/05/2025 14:30',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: false, time: null },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello, this is Anna from Fold Health calling for Glenn Bauch regarding post-discharge follow-up. Is Glenn available?", time: '2:30 PM' },
+      { sender: 'agent', name: 'Anna', text: "Unable to reach patient. Leaving voicemail with callback number and will retry.", time: '2:31 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/05/2025'
+  },
+  // Attempt 1
+  {
+    id: 'cd8',
+    patientId: 'p4',
+    callType: 'voicemail',
+    agentName: 'Anna',
+    startedAt: '11/05/2025 08:15',
+    endedAt: '11/05/2025 08:16',
+    duration: '00:45',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'No answer – voicemail left',
+    attemptNumber: 1,
+    createdAt: '11/05/2025'
+  },
+  // Attempt 2
+  {
+    id: 'cd9',
+    patientId: 'p4',
+    callType: 'voicemail',
+    agentName: 'Anna',
+    startedAt: '11/05/2025 10:45',
+    endedAt: '11/05/2025 10:46',
+    duration: '00:30',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'No answer',
+    attemptNumber: 2,
+    createdAt: '11/05/2025'
+  },
+  // Attempt 3
+  {
+    id: 'cd10',
+    patientId: 'p4',
+    callType: 'voicemail',
+    agentName: 'Anna',
+    startedAt: '11/05/2025 14:30',
+    endedAt: '11/05/2025 14:31',
+    duration: '00:30',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'Line busy',
+    attemptNumber: 3,
+    createdAt: '11/05/2025'
+  },
+
+  // ===== p5 – Marcus Ziemann (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd11',
+    patientId: 'p5',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/13/2025 15:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '0:45' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Marcus, I'm calling from Fold Health to check in after your recent ER visit for asthma. Are you doing okay?", time: '11:30 AM' },
+      { sender: 'patient', name: 'Marcus Ziemann', text: 'Better now, but I ran out of my inhaler refill.', time: '11:30 AM' },
+      { sender: 'agent', name: 'Anna', text: "I can help with that. Let me verify your current medications and make sure everything is in order.", time: '11:31 AM' },
+      { sender: 'patient', name: 'Marcus Ziemann', text: "I ran out of my rescue inhaler last night. Can you help me get a refill?", time: '11:32 AM' },
+      { sender: 'agent', name: 'Anna', text: "I'll contact your pharmacy right away to process the refill. In the meantime, if you experience severe shortness of breath, please call 911.", time: '11:32 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/13/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd12',
+    patientId: 'p5',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/12/2025 11:00',
+    endedAt: '11/12/2025 11:05',
+    duration: '05:30',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact after ER discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book follow-up for severe asthma management.', pass: false },
+      { name: 'Medication Review', desc: 'Verify rescue inhaler and controller medication supply.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient reached after ER visit for severe asthma attack.',
+        'Running low on rescue inhaler and needs refill coordination.',
+        'Medication reconciliation partially completed.'
+      ],
+      actionItems: [
+        'Coordinate inhaler refill with pharmacy.',
+        'Schedule follow-up to complete asthma action plan review.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/12/2025'
+  },
+
+  // ===== p6 – Ms. Lloyd Pagac (scheduled, no success in outreachDots) =====
+  {
+    id: 'cd13',
+    patientId: 'p6',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/12/2025 10:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:05' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello, this is Fold Health calling for your post-discharge follow-up after your knee replacement at St. Luke's. How is your recovery going?", time: '10:00 AM' },
+      { sender: 'patient', name: 'Ms. Lloyd Pagac', text: "It's been tough but physical therapy is helping. The pain is manageable with medication.", time: '10:00 AM' },
+      { sender: 'agent', name: 'Anna', text: "Glad to hear PT is going well. Let me review your current medications and make sure everything is on track.", time: '10:01 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/12/2025'
+  },
+
+  // ===== p7 – Kendra Crona (scheduled, no success in outreachDots) =====
+  {
+    id: 'cd14',
+    patientId: 'p7',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/13/2025 14:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:12' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Kendra, this is Fold Health calling to follow up after your recent ER visit at ER – Eastside for a urinary tract infection. How are you feeling?", time: '2:00 PM' },
+      { sender: 'patient', name: 'Kendra Crona', text: "Better, but I still have some discomfort. I'm finishing the antibiotics they gave me.", time: '2:00 PM' },
+      { sender: 'agent', name: 'Anna', text: "It's important to complete the full antibiotic course. Let me check on your follow-up appointment and review your medications.", time: '2:01 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/13/2025'
+  },
+
+  // ===== p8 – Diana Welch (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd15',
+    patientId: 'p8',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/16/2025 09:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:08' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Diana, this is Fold Health calling for your post-discharge follow-up after your stay at Memorial Hospital for diabetic ketoacidosis. How are you managing?", time: '9:00 AM' },
+      { sender: 'patient', name: 'Diana Welch', text: "I'm checking my blood sugar regularly now. The insulin doses are a bit confusing though.", time: '9:00 AM' },
+      { sender: 'agent', name: 'Anna', text: "I understand, insulin management can be tricky. Let me review your dosing schedule and make sure we get you set up with an endocrinology follow-up.", time: '9:01 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/16/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd16',
+    patientId: 'p8',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/13/2025 09:00',
+    endedAt: '11/13/2025 09:06',
+    duration: '06:15',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book endocrinology follow-up for diabetes management.', pass: false },
+      { name: 'Medication Review', desc: 'Review insulin regimen and blood sugar monitoring.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient recovering from diabetic ketoacidosis episode.',
+        'Checking blood sugar regularly but confused about insulin dosing schedule.',
+        'Needs endocrinology follow-up appointment.'
+      ],
+      actionItems: [
+        'Schedule endocrinology follow-up.',
+        'Send insulin dosing guide and blood sugar log template.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/13/2025'
+  },
+
+  // ===== p9 – James Rivera (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd17',
+    patientId: 'p9',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/14/2025 14:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:20' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello James, this is Fold Health calling to follow up after your recent stay at the VA Medical Center for COPD. How is your breathing today?", time: '2:00 PM' },
+      { sender: 'patient', name: 'James Rivera', text: "It's been better with the new inhaler, but I get winded going up stairs.", time: '2:00 PM' },
+      { sender: 'agent', name: 'Anna', text: "That's common during recovery. Let's make sure your PCP appointment is confirmed and review your inhaler technique.", time: '2:01 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/14/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd18',
+    patientId: 'p9',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/12/2025 14:00',
+    endedAt: '11/12/2025 14:06',
+    duration: '05:45',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Confirm PCP follow-up for COPD management.', pass: false },
+      { name: 'Medication Review', desc: 'Review inhaler technique and COPD medications.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient reached after COPD exacerbation hospitalization at VA Medical Center.',
+        'Breathing improved with new inhaler but still experiences shortness of breath with activity.',
+        'PCP appointment needs confirmation.'
+      ],
+      actionItems: [
+        'Confirm PCP follow-up appointment.',
+        'Review inhaler technique on next call.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/12/2025'
+  },
+
+  // ===== p10 – Sandra Nguyen (scheduled, no success in outreachDots) =====
+  {
+    id: 'cd19',
+    patientId: 'p10',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/15/2025 13:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:15' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Sandra, this is Fold Health calling to follow up after your ER visit at ER – Downtown for abdominal pain. Do you have an interpreter available or would you prefer Vietnamese?", time: '1:00 PM' },
+      { sender: 'patient', name: 'Sandra Nguyen', text: "My daughter can help translate. The stomach pain is mostly gone now.", time: '1:00 PM' },
+      { sender: 'agent', name: 'Anna', text: "That's good to hear. Let me go over your discharge instructions and make sure you have a follow-up appointment scheduled.", time: '1:01 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/15/2025'
+  },
+
+  // ===== p11 – Peter Kim (completed) =====
+  // Ongoing record
+  {
+    id: 'cd20',
+    patientId: 'p11',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/10/2025 09:30',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:10' },
+      { name: 'Schedule ToC Appointment', done: true, time: '2:05' },
+      { name: 'Medication Review', done: true, time: '3:42' }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Peter, this is Anna from Fold Health calling for your post-discharge follow-up after your cardiac stent procedure. How are you feeling?", time: '9:30 AM' },
+      { sender: 'patient', name: 'Peter Kim', text: "Much better, thank you. The chest pain is completely gone now.", time: '9:30 AM' },
+      { sender: 'agent', name: 'Anna', text: "That's wonderful to hear. Have you been taking your aspirin and clopidogrel as prescribed by your cardiologist?", time: '9:31 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/10/2025'
+  },
+  // Completed record
+  {
+    id: 'cd21',
+    patientId: 'p11',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/10/2025 09:30',
+    endedAt: '11/10/2025 09:36',
+    duration: '06:12',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book follow-up appointment with cardiologist.', pass: true },
+      { name: 'Medication Review', desc: 'Review post-stent antiplatelet medications.', pass: true }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient recovering well from cardiac stent placement with no chest pain recurrence.',
+        'Confirmed taking dual antiplatelet therapy (aspirin + clopidogrel) as prescribed.',
+        'Follow-up with cardiologist scheduled for next week.',
+        'Advised to avoid heavy lifting for 2 more weeks per surgical guidelines.'
+      ],
+      actionItems: [
+        'Confirm cardiology follow-up appointment.',
+        'Send cardiac rehabilitation program information.',
+        'Schedule 30-day post-discharge check-in call.'
+      ]
+    },
+    callTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Peter, this is Anna from Fold Health calling for your post-discharge follow-up after your cardiac stent procedure. How are you feeling?", time: '9:30 AM' },
+      { sender: 'patient', name: 'Peter Kim', text: "Much better, thank you. The chest pain is completely gone now.", time: '9:30 AM' },
+      { sender: 'agent', name: 'Anna', text: "That's wonderful to hear. Have you been taking your aspirin and clopidogrel as prescribed by your cardiologist?", time: '9:31 AM' },
+      { sender: 'patient', name: 'Peter Kim', text: "Yes, every morning with breakfast. My wife helps me remember.", time: '9:31 AM' },
+      { sender: 'agent', name: 'Anna', text: "Great compliance, Peter. I see you have a cardiology follow-up scheduled. Remember to avoid heavy lifting for at least two more weeks. Is there anything else you need help with?", time: '9:32 AM' }
+    ],
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/10/2025'
+  },
+
+  // ===== p12 – Maria Lopez (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd22',
+    patientId: 'p12',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/14/2025 11:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:10' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Maria, this is Fold Health calling to follow up after your hospitalization at Community General for heart failure. How are you feeling at home?", time: '11:00 AM' },
+      { sender: 'patient', name: 'Maria Lopez', text: "I'm okay, but I feel short of breath when I walk too much. I'm trying to take my pills every day.", time: '11:00 AM' },
+      { sender: 'agent', name: 'Anna', text: "It's very important to stay on your medications. Let me help schedule your cardiology follow-up and review your prescriptions.", time: '11:01 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/14/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd23',
+    patientId: 'p12',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/11/2025 11:00',
+    endedAt: '11/11/2025 11:06',
+    duration: '05:50',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book cardiology follow-up for heart failure management.', pass: false },
+      { name: 'Medication Review', desc: 'Review heart failure medications and diuretics.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient reached after heart failure hospitalization.',
+        'Reports shortness of breath with exertion and is trying to adhere to medications.',
+        'Transportation barrier noted for follow-up appointments.'
+      ],
+      actionItems: [
+        'Arrange transportation for cardiology follow-up.',
+        'Schedule follow-up call to complete medication review.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/11/2025'
+  },
+
+  // ===== p13 – Brian Thompson (scheduled, no success in outreachDots) =====
+  {
+    id: 'cd24',
+    patientId: 'p13',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/16/2025 15:30',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:03' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Brian, this is Fold Health calling to check in after your recent ER visit at ER – Westside for a laceration repair. How is the wound healing?", time: '3:30 PM' },
+      { sender: 'patient', name: 'Brian Thompson', text: "It's healing okay. I've been keeping it clean and changing the bandage like they told me.", time: '3:30 PM' },
+      { sender: 'agent', name: 'Anna', text: "Great job with wound care. Let me make sure you have a follow-up scheduled to check on healing and remove any stitches if needed.", time: '3:31 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/16/2025'
+  },
+
+  // ===== p14 – Elena Garcia (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd25',
+    patientId: 'p14',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/13/2025 10:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:18' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Elena, this is Fold Health calling for your post-discharge follow-up from St. Mary Hospital after your stroke. How are you recovering?", time: '10:00 AM' },
+      { sender: 'patient', name: 'Elena Garcia', text: "I'm doing therapy every day. My right hand is still weak but getting better slowly.", time: '10:00 AM' },
+      { sender: 'agent', name: 'Anna', text: "Recovery takes time, and it sounds like you're making progress. Let me review your medications, especially the blood thinner, and schedule your neurology follow-up.", time: '10:01 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/13/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd26',
+    patientId: 'p14',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/12/2025 10:00',
+    endedAt: '11/12/2025 10:07',
+    duration: '06:30',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book neurology follow-up for post-stroke care.', pass: false },
+      { name: 'Medication Review', desc: 'Review anticoagulant therapy and stroke prevention medications.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient recovering from ischemic stroke with ongoing rehabilitation.',
+        'Right hand weakness persists but showing gradual improvement with daily therapy.',
+        'Blood thinner and stroke prevention medications need review.'
+      ],
+      actionItems: [
+        'Schedule neurology follow-up appointment.',
+        'Review anticoagulant dosing and medication reconciliation.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/12/2025'
+  },
+
+  // ===== p15 – Robert Johnson (failed) =====
+  // Ongoing record
+  {
+    id: 'cd27',
+    patientId: 'p15',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/07/2025 09:30',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: false, time: null },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello, this is Anna from Fold Health calling for Robert Johnson regarding post-discharge follow-up from Veterans Hospital. Is Robert available?", time: '9:30 AM' },
+      { sender: 'agent', name: 'Anna', text: "Unable to reach patient after multiple attempts. Leaving voicemail with crisis support resources and callback number.", time: '9:31 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/07/2025'
+  },
+  // Attempt 1
+  {
+    id: 'cd28',
+    patientId: 'p15',
+    callType: 'voicemail',
+    agentName: 'Anna',
+    startedAt: '11/07/2025 09:30',
+    endedAt: '11/07/2025 09:31',
+    duration: '00:30',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'No answer',
+    attemptNumber: 1,
+    createdAt: '11/07/2025'
+  },
+  // Attempt 2
+  {
+    id: 'cd29',
+    patientId: 'p15',
+    callType: 'voicemail',
+    agentName: 'Anna',
+    startedAt: '11/07/2025 14:00',
+    endedAt: '11/07/2025 14:01',
+    duration: '00:45',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'No answer – voicemail left',
+    attemptNumber: 2,
+    createdAt: '11/07/2025'
+  },
+
+  // ===== p16 – Alice Walker (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd30',
+    patientId: 'p16',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/15/2025 09:30',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:07' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Alice, this is Fold Health calling to follow up after your ER visit at ER – Central for an allergic reaction. How are you doing?", time: '9:30 AM' },
+      { sender: 'patient', name: 'Alice Walker', text: "Much better. The swelling went down and I have my EpiPen now just in case.", time: '9:30 AM' },
+      { sender: 'agent', name: 'Anna', text: "Good to hear you have your EpiPen. Let's schedule an allergy specialist follow-up and review your action plan for future reactions.", time: '9:31 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/15/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd31',
+    patientId: 'p16',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/12/2025 09:30',
+    endedAt: '11/12/2025 09:35',
+    duration: '05:10',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact after ER discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book allergy specialist follow-up.', pass: false },
+      { name: 'Medication Review', desc: 'Review EpiPen prescription and allergy action plan.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient recovering from allergic reaction treated at ER.',
+        'Swelling has resolved and patient has EpiPen on hand.',
+        'Needs allergy specialist referral for further evaluation.'
+      ],
+      actionItems: [
+        'Schedule allergy specialist follow-up.',
+        'Send allergy action plan resources.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/12/2025'
+  },
+
+  // ===== p17 – Carlos Hernandez (completed) =====
+  // Ongoing record
+  {
+    id: 'cd32',
+    patientId: 'p17',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/10/2025 14:15',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:10' },
+      { name: 'Schedule ToC Appointment', done: true, time: '2:05' },
+      { name: 'Medication Review', done: true, time: '3:42' }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hola Carlos, this is Anna from Fold Health. I'm calling to check on your recovery after your heart attack. How are you doing?", time: '2:15 PM' },
+      { sender: 'patient', name: 'Carlos Hernandez', text: "Getting better every day. I started the cardiac rehab program last week.", time: '2:15 PM' },
+      { sender: 'agent', name: 'Anna', text: "That's excellent progress. Are you taking all your medications regularly — the metoprolol and atorvastatin?", time: '2:16 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/10/2025'
+  },
+  // Completed record
+  {
+    id: 'cd33',
+    patientId: 'p17',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/10/2025 14:15',
+    endedAt: '11/10/2025 14:23',
+    duration: '07:45',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book follow-up with cardiac rehab program.', pass: true },
+      { name: 'Medication Review', desc: 'Review cardiac medications and lifestyle modifications.', pass: true }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient reports feeling stronger each day since MI hospitalization.',
+        'Started cardiac rehabilitation program and attending sessions regularly.',
+        'Taking all prescribed medications including beta-blocker and statin.',
+        'Family involved in care and monitoring dietary changes.'
+      ],
+      actionItems: [
+        'Follow up on cardiac rehab progress in 2 weeks.',
+        'Send heart-healthy diet resources in Spanish.',
+        'Coordinate with PCP for comprehensive metabolic panel.'
+      ]
+    },
+    callTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hola Carlos, this is Anna from Fold Health. I'm calling to check on your recovery after your heart attack. How are you doing?", time: '2:15 PM' },
+      { sender: 'patient', name: 'Carlos Hernandez', text: "Getting better every day. I started the cardiac rehab program last week.", time: '2:15 PM' },
+      { sender: 'agent', name: 'Anna', text: "That's excellent progress. Are you taking all your medications regularly — the metoprolol and atorvastatin?", time: '2:16 PM' },
+      { sender: 'patient', name: 'Carlos Hernandez', text: "Yes, my daughter set up reminders on my phone. She's been very helpful with the diet changes too.", time: '2:16 PM' },
+      { sender: 'agent', name: 'Anna', text: "Family support makes a huge difference. I'll send some heart-healthy recipes in Spanish for your family. Keep up the great work with cardiac rehab!", time: '2:17 PM' }
+    ],
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/10/2025'
+  },
+
+  // ===== p18 – Nancy Patel (scheduled, no success in outreachDots) =====
+  {
+    id: 'cd34',
+    patientId: 'p18',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/14/2025 16:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:22' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Nancy, this is Fold Health calling to follow up after your gallbladder surgery at Unity Hospital. How are you recovering?", time: '4:00 PM' },
+      { sender: 'patient', name: 'Nancy Patel', text: "The incision is healing well. I'm having some trouble with the diet changes after the surgery.", time: '4:00 PM' },
+      { sender: 'agent', name: 'Anna', text: "Dietary adjustments after gallbladder removal are very common. Let me review your post-surgical instructions and schedule a follow-up with your surgeon.", time: '4:01 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/14/2025'
+  },
+
+  // ===== p19 – Thomas Moore (scheduled, no success in outreachDots) =====
+  {
+    id: 'cd35',
+    patientId: 'p19',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/17/2025 10:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:14' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Thomas, this is Fold Health calling to follow up after your recent ER visit at ER – South for a panic attack. How have you been feeling?", time: '10:00 AM' },
+      { sender: 'patient', name: 'Thomas Moore', text: "I've had a couple more anxiety episodes but nothing as bad as the one that brought me to the ER.", time: '10:00 AM' },
+      { sender: 'agent', name: 'Anna', text: "I'm glad it hasn't been as severe. Let's get you connected with a mental health provider and review any medications you were prescribed.", time: '10:01 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/17/2025'
+  },
+
+  // ===== p20 – Lisa Brown (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd36',
+    patientId: 'p20',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/14/2025 09:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:06' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Lisa, this is Fold Health calling to follow up after your hip replacement surgery at Orthopedic Center. How is your mobility?", time: '9:00 AM' },
+      { sender: 'patient', name: 'Lisa Brown', text: "I'm using the walker and doing my exercises. The physical therapist comes three times a week.", time: '9:00 AM' },
+      { sender: 'agent', name: 'Anna', text: "That's wonderful progress. Let me confirm your orthopedic follow-up and make sure your pain medication is adequate.", time: '9:01 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/14/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd37',
+    patientId: 'p20',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/12/2025 09:00',
+    endedAt: '11/12/2025 09:06',
+    duration: '05:45',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book orthopedic follow-up for hip replacement recovery.', pass: false },
+      { name: 'Medication Review', desc: 'Review pain management and post-surgical medications.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient recovering from hip replacement surgery with physical therapy support.',
+        'Using walker and performing prescribed exercises regularly.',
+        'Pain manageable with current medication regimen.'
+      ],
+      actionItems: [
+        'Confirm orthopedic follow-up appointment.',
+        'Assess pain medication adequacy on next call.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/12/2025'
+  },
+
+  // ===== p21 – Kevin Singh (failed) =====
+  // Ongoing record
+  {
+    id: 'cd38',
+    patientId: 'p21',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/06/2025 15:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: false, time: null },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello, this is Anna from Fold Health calling for Kevin Singh regarding post-discharge follow-up from Regional Medical Center for pneumonia with sepsis. Is Kevin available?", time: '3:00 PM' },
+      { sender: 'agent', name: 'Anna', text: "Unable to reach patient. Wrong number on file. Escalating to care coordinator for updated contact information and possible home visit.", time: '3:01 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/06/2025'
+  },
+  // Attempt 1
+  {
+    id: 'cd39',
+    patientId: 'p21',
+    callType: 'voicemail',
+    agentName: 'Anna',
+    startedAt: '11/04/2025 08:00',
+    endedAt: '11/04/2025 08:01',
+    duration: '00:30',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'No answer',
+    attemptNumber: 1,
+    createdAt: '11/04/2025'
+  },
+  // Attempt 2
+  {
+    id: 'cd40',
+    patientId: 'p21',
+    callType: 'voicemail',
+    agentName: 'Anna',
+    startedAt: '11/05/2025 10:00',
+    endedAt: '11/05/2025 10:01',
+    duration: '00:45',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'No answer – voicemail left',
+    attemptNumber: 2,
+    createdAt: '11/05/2025'
+  },
+  // Attempt 3
+  {
+    id: 'cd41',
+    patientId: 'p21',
+    callType: 'voicemail',
+    agentName: 'Anna',
+    startedAt: '11/06/2025 15:00',
+    endedAt: '11/06/2025 15:01',
+    duration: '00:30',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'Wrong number',
+    attemptNumber: 3,
+    createdAt: '11/06/2025'
+  },
+
+  // ===== p22 – Jennifer Chen (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd42',
+    patientId: 'p22',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/16/2025 11:30',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:09' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Jennifer, this is Fold Health calling to follow up after your ER visit at ER – University for a migraine with aura. How have your headaches been?", time: '11:30 AM' },
+      { sender: 'patient', name: 'Jennifer Chen', text: "I had one mild headache since then, but the new medication seems to be helping.", time: '11:30 AM' },
+      { sender: 'agent', name: 'Anna', text: "That's encouraging. Let me schedule a neurology follow-up and review your migraine action plan and preventive medications.", time: '11:31 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/16/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd43',
+    patientId: 'p22',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/13/2025 11:30',
+    endedAt: '11/13/2025 11:36',
+    duration: '05:20',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact after ER discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book neurology follow-up for migraine management.', pass: false },
+      { name: 'Medication Review', desc: 'Review migraine preventive and acute medications.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient reached after ER visit for migraine with aura.',
+        'New medication appears to be helping reduce headache frequency.',
+        'Needs neurology follow-up for ongoing migraine management.'
+      ],
+      actionItems: [
+        'Schedule neurology follow-up.',
+        'Send migraine trigger diary template.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/13/2025'
+  },
+
+  // ===== p23 – William Davis (completed) =====
+  // Ongoing record
+  {
+    id: 'cd44',
+    patientId: 'p23',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/09/2025 11:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:10' },
+      { name: 'Schedule ToC Appointment', done: true, time: '2:05' },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello William, this is Anna from Fold Health. I'm following up after your recent hospitalization for heart failure. How have you been feeling at home?", time: '11:00 AM' },
+      { sender: 'patient', name: 'William Davis', text: "Okay mostly, but my ankles are a bit swollen in the evenings.", time: '11:00 AM' },
+      { sender: 'agent', name: 'Anna', text: "Are you monitoring your weight daily as your doctor recommended? Any gain of more than 2 pounds in a day should be reported.", time: '11:01 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/09/2025'
+  },
+  // Completed record
+  {
+    id: 'cd45',
+    patientId: 'p23',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/09/2025 11:00',
+    endedAt: '11/09/2025 11:08',
+    duration: '08:15',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book follow-up appointment with PCP.', pass: true },
+      { name: 'Medication Review', desc: 'Review heart failure medications and daily weight monitoring.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient reports mild swelling in ankles, monitoring daily weight as instructed.',
+        'Confirmed taking furosemide and lisinopril but missed evening dose occasionally.',
+        'PCP follow-up scheduled but patient concerned about transportation.',
+        'Needs clarification on fluid intake restrictions.'
+      ],
+      actionItems: [
+        'Schedule follow-up call to review medication adherence.',
+        'Arrange transportation assistance for PCP appointment.',
+        'Send educational materials on CHF self-management and fluid restriction.'
+      ]
+    },
+    callTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello William, this is Anna from Fold Health. I'm following up after your recent hospitalization for heart failure. How have you been feeling at home?", time: '11:00 AM' },
+      { sender: 'patient', name: 'William Davis', text: "Okay mostly, but my ankles are a bit swollen in the evenings.", time: '11:00 AM' },
+      { sender: 'agent', name: 'Anna', text: "Are you monitoring your weight daily as your doctor recommended? Any gain of more than 2 pounds in a day should be reported.", time: '11:01 AM' },
+      { sender: 'patient', name: 'William Davis', text: "Yes, I check every morning. It's been stable so far. But I sometimes forget my evening pills.", time: '11:01 AM' },
+      { sender: 'agent', name: 'Anna', text: "Setting a phone alarm for your evening dose can really help. I also want to make sure you have transportation to your upcoming PCP appointment. Can we arrange that?", time: '11:02 AM' }
+    ],
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/09/2025'
+  },
+
+  // ===== p24 – Angela Foster (scheduled, no success in outreachDots) =====
+  {
+    id: 'cd46',
+    patientId: 'p24',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/18/2025 13:00',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:11' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Angela, this is Fold Health calling to follow up after your ER visit at ER – Lake View for back pain related to spinal stenosis. How is your pain level?", time: '1:00 PM' },
+      { sender: 'patient', name: 'Angela Foster', text: "The pain is manageable with the medication they gave me, but I'm worried about needing surgery.", time: '1:00 PM' },
+      { sender: 'agent', name: 'Anna', text: "Let's get you a follow-up with a spine specialist to discuss your options. I'll also review your current pain management plan.", time: '1:01 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/18/2025'
+  },
+
+  // ===== p25 – Ricardo Martinez (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd47',
+    patientId: 'p25',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/14/2025 15:30',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:16' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Ricardo, this is Fold Health calling to follow up after your stay at Community Hospital for uncontrolled diabetes. How are your blood sugar levels?", time: '3:30 PM' },
+      { sender: 'patient', name: 'Ricardo Martinez', text: "They've been better since I started the new insulin. I'm checking every morning and before dinner.", time: '3:30 PM' },
+      { sender: 'agent', name: 'Anna', text: "That's great discipline. Let me schedule your endocrinology follow-up and make sure your insulin dosing is optimized.", time: '3:31 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/14/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd48',
+    patientId: 'p25',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/11/2025 15:30',
+    endedAt: '11/11/2025 15:36',
+    duration: '06:00',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book endocrinology follow-up for diabetes management.', pass: false },
+      { name: 'Medication Review', desc: 'Review insulin regimen and blood sugar monitoring plan.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient reached after hospitalization for uncontrolled diabetes.',
+        'Blood sugar levels improving with new insulin regimen.',
+        'Patient monitoring blood sugar twice daily as instructed.'
+      ],
+      actionItems: [
+        'Schedule endocrinology follow-up.',
+        'Arrange transportation assistance for appointment.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/11/2025'
+  },
+
+  // ===== p26 – Helen Jackson (scheduled, has success in outreachDots) =====
+  {
+    id: 'cd49',
+    patientId: 'p26',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/13/2025 11:30',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:19' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello Helen, this is Fold Health calling to follow up after your stay at Cardiology Center for atrial fibrillation. How is your heart rhythm feeling?", time: '11:30 AM' },
+      { sender: 'patient', name: 'Helen Jackson', text: "I still feel the fluttering sometimes, but the new medication has helped a lot. I'm also watching my blood pressure.", time: '11:30 AM' },
+      { sender: 'agent', name: 'Anna', text: "It's good you're monitoring that. Let me review your anticoagulant dosing and schedule your cardiology follow-up to check your rhythm.", time: '11:31 AM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/13/2025'
+  },
+  // Previous successful outreach
+  {
+    id: 'cd50',
+    patientId: 'p26',
+    callType: 'completed',
+    agentName: 'Anna',
+    startedAt: '11/12/2025 11:30',
+    endedAt: '11/12/2025 11:37',
+    duration: '06:45',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
+      { name: 'Schedule ToC Appointment', desc: 'Book cardiology follow-up for atrial fibrillation monitoring.', pass: false },
+      { name: 'Medication Review', desc: 'Review anticoagulant therapy and rate control medications.', pass: false }
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient recovering from atrial fibrillation hospitalization.',
+        'Still experiencing occasional fluttering but new medication helping significantly.',
+        'Monitoring blood pressure at home regularly.'
+      ],
+      actionItems: [
+        'Schedule cardiology follow-up for rhythm check.',
+        'Review anticoagulant dosing on next call.'
+      ]
+    },
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/12/2025'
+  },
+
+  // ===== p27 – David Ortiz (scheduled, no success in outreachDots) =====
+  {
+    id: 'cd51',
+    patientId: 'p27',
+    callType: 'ongoing',
+    agentName: 'Anna',
+    startedAt: '11/17/2025 14:30',
+    endedAt: null,
+    duration: null,
+    liveGoals: [
+      { name: 'Patient Outreach', done: true, time: '1:04' },
+      { name: 'Schedule ToC Appointment', done: false, time: null },
+      { name: 'Medication Review', done: false, time: null }
+    ],
+    liveTranscript: [
+      { sender: 'agent', name: 'Anna', text: "Hello David, this is Fold Health calling to follow up after your recent ER visit at ER – Harbor. How have you been feeling since discharge?", time: '2:30 PM' },
+      { sender: 'patient', name: 'David Ortiz', text: "I'm doing okay. I started attending the outpatient program they recommended.", time: '2:30 PM' },
+      { sender: 'agent', name: 'Anna', text: "That's a really positive step. Let me help connect you with ongoing support resources and schedule a follow-up with your care team.", time: '2:31 PM' }
+    ],
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/17/2025'
+  }
+];

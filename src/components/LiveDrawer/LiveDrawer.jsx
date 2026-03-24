@@ -8,6 +8,7 @@ export function LiveDrawer() {
   const liveDrawerPatient = useAppStore(s => s.liveDrawerPatient);
   const closeLiveDrawer = useAppStore(s => s.closeLiveDrawer);
   const patients = useAppStore(s => s.patients);
+  const callDetails = useAppStore(s => s.callDetails);
   const showToast = useAppStore(s => s.showToast);
   const [listenActive, setListenActive] = useState(false);
   const [muteActive, setMuteActive] = useState(false);
@@ -16,8 +17,10 @@ export function LiveDrawer() {
   const p = patients.find(x => x.id === liveDrawerPatient);
   if (!p) return null;
 
-  const goals = p.liveGoals || [];
-  const transcript = p.liveTranscript || [];
+  // Resolve call data from call_details (ongoing record) with fallback to patient fields
+  const ongoingCall = callDetails.find(c => c.patientId === p.id && c.callType === 'ongoing');
+  const goals = ongoingCall?.liveGoals || p.liveGoals || [];
+  const transcript = ongoingCall?.liveTranscript || p.liveTranscript || [];
 
   const toggleSection = (key) => setOpenSections(s => ({ ...s, [key]: !s[key] }));
 

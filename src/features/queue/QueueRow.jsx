@@ -28,8 +28,12 @@ function TocStatusBadge({ status }) {
   return <Badge variant={cfg.variant} label={cfg.label} icon={cfg.icon} />;
 }
 
-function StatusCell({ patient: p }) {
-  const { status, goals, goalsDetail, attempts, scheduledTime, callDuration } = p;
+function StatusCell({ patient: p, voicemailCalls }) {
+  const { status, goals, goalsDetail, scheduledTime, callDuration } = p;
+  // Use voicemail call records for attempt history, fallback to patient.attempts
+  const attempts = voicemailCalls?.length > 0
+    ? voicemailCalls.map((c, i) => ({ time: c.startedAt, outcome: c.outcome }))
+    : (p.attempts || []);
   if (status === 'completed') {
     const pct = goals ? Math.round((goals.met / goals.total) * 100) : 0;
     return (
@@ -165,9 +169,11 @@ export function QueueRow({ patient }) {
   const openCallPopover = useAppStore(s => s.openCallPopover);
   const openLiveDrawer = useAppStore(s => s.openLiveDrawer);
   const showToast = useAppStore(s => s.showToast);
+  const callDetails = useAppStore(s => s.callDetails);
   const callBtnRef = useRef(null);
 
   const p = patient;
+  const voicemailCalls = callDetails.filter(c => c.patientId === p.id && c.callType === 'voicemail');
   const outreachBadgeVariant = p.outreachType === '48h' ? 'outreach-48h' : 'outreach-7d';
 
   const handleRowClick = () => {
@@ -238,7 +244,7 @@ export function QueueRow({ patient }) {
       </td>
       {/* Agent columns */}
       <td className={styles.agentColTd} style={{ background: 'var(--agent-col-bg)', borderLeft: '2px solid var(--primary-200)' }}>
-        <StatusCell patient={p} />
+        <StatusCell patient={p} voicemailCalls={voicemailCalls} />
       </td>
       <td className={styles.agentColTd} style={{ background: 'var(--agent-col-bg)' }}>
         <NextActionCell patient={p} />

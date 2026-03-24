@@ -20,6 +20,7 @@ function formatTime(secs) {
 
 export function DetailDrawer() {
   const detailPatient = useAppStore(s => s.detailPatient);
+  const detailPatientCalls = useAppStore(s => s.detailPatientCalls);
   const closeDetail = useAppStore(s => s.closeDetail);
   const showToast = useAppStore(s => s.showToast);
   const [openSections, setOpenSections] = useState({ goals: true, summary: true, transcript: true });
@@ -60,6 +61,19 @@ export function DetailDrawer() {
   if (!detailPatient) return null;
   const p = detailPatient;
 
+  // Resolve call data from call_details records
+  const completedCall = (detailPatientCalls || []).find(c => c.callType === 'completed');
+  const callRecord = completedCall || {};
+  const goalsDetail = callRecord.goalsDetail || goalsDetail || [];
+  const callSummary = callRecord.callSummary || callSummary || null;
+  const callTranscript = callRecord.callTranscript || callTranscript || [];
+  const callDate = callRecord.startedAt || p.callDate || null;
+  const callDurationFull = callRecord.duration || p.callDurationFull || null;
+  const agentName = callRecord.agentName || 'Anna';
+
+  // Show voicemail attempts if available
+  const voicemailCalls = (detailPatientCalls || []).filter(c => c.callType === 'voicemail');
+
   const toggleSection = (key) => setOpenSections(s => ({ ...s, [key]: !s[key] }));
   const progress = TOTAL_DURATION > 0 ? elapsed / TOTAL_DURATION : 0;
   const progressBarIdx = Math.floor(progress * WAVE_BARS.length);
@@ -76,12 +90,12 @@ export function DetailDrawer() {
             <div className={styles.callLine1}>
               Outgoing Call
               <span className={styles.dot}>•</span>
-              <span className={styles.callLine1Detail}>{p.callDate || '11/28/2023 10:55'}</span>
+              <span className={styles.callLine1Detail}>{callDate || '11/28/2023 10:55'}</span>
               <span className={styles.dot}>•</span>
-              <span className={styles.callLine1Detail}>{p.callDurationFull || '05:20'}s</span>
+              <span className={styles.callLine1Detail}>{callDurationFull || '05:20'}s</span>
             </div>
             <div className={styles.callLine2}>
-              Via: <Icon name="solar:bot-bold" size={13} color="#8c5ae2" /> Anna (581) 824-1591 → To: {p.name} (581) 824-1591
+              Via: <Icon name="solar:bot-bold" size={13} color="#8c5ae2" /> {agentName} (581) 824-1591 → To: {p.name} (581) 824-1591
             </div>
             {p.facility && (
               <div className={styles.callLine2}>{p.facility} • {p.admitReason}</div>
@@ -103,7 +117,7 @@ export function DetailDrawer() {
       </div>
       {openSections.goals && (
         <div className={styles.goalsContainer}>
-          {p.goalsDetail?.length > 0 ? p.goalsDetail.map((g, i) => (
+          {goalsDetail?.length > 0 ? goalsDetail.map((g, i) => (
             <div key={i} className={styles.goalRow}>
               <span className={styles.goalIcon}>
                 <Icon name={g.pass ? "solar:check-circle-bold" : "solar:close-circle-bold"}
@@ -135,21 +149,21 @@ export function DetailDrawer() {
           <Icon name="solar:alt-arrow-right-linear" size={16} />
         </span>
       </div>
-      {openSections.summary && !p.callSummary && (
+      {openSections.summary && !callSummary && (
         <div style={{ padding: '16px', fontSize: 13, color: 'var(--neutral-300)', textAlign: 'center' }}>
           No call summary generated yet. Summary will appear after a completed call.
         </div>
       )}
-      {openSections.summary && p.callSummary && (
+      {openSections.summary && callSummary && (
         <div className={styles.summaryContainer}>
           <div className={styles.summaryInner}>
             <div className={styles.summaryLabel}>Key Points Discussed:</div>
             <ul className={styles.summaryList}>
-              {p.callSummary.keyPoints.map((pt, i) => <li key={i}>{pt}</li>)}
+              {callSummary.keyPoints.map((pt, i) => <li key={i}>{pt}</li>)}
             </ul>
             <div className={styles.summaryLabel} style={{ marginTop: 12 }}>Action Items:</div>
             <ol className={styles.summaryList}>
-              {p.callSummary.actionItems.map((a, i) => <li key={i}>{a}</li>)}
+              {callSummary.actionItems.map((a, i) => <li key={i}>{a}</li>)}
             </ol>
             <div className={styles.summaryFooter}>
               <span className={styles.generatedText}>Generated on: 03/24/26, 07:23 pm</span>
@@ -173,12 +187,12 @@ export function DetailDrawer() {
           <Icon name="solar:alt-arrow-right-linear" size={16} />
         </span>
       </div>
-      {openSections.transcript && (!p.callTranscript || p.callTranscript.length === 0) && (
+      {openSections.transcript && (!callTranscript || callTranscript.length === 0) && (
         <div style={{ padding: '16px', fontSize: 13, color: 'var(--neutral-300)', textAlign: 'center' }}>
           No call recording available. Recording will appear after a completed call.
         </div>
       )}
-      {openSections.transcript && p.callTranscript?.length > 0 && (
+      {openSections.transcript && callTranscript?.length > 0 && (
         <div className={styles.recordingContainer}>
           {/* Audio Player */}
           <div className={styles.audioPlayer}>
@@ -240,7 +254,7 @@ export function DetailDrawer() {
                 <Icon name="solar:phone-calling-linear" size={14} />
                 Outgoing Call Connected from Anna <span className={styles.connTime}>9:28 PM</span>
               </div>
-              {p.callTranscript.map((msg, i) => (
+              {callTranscript.map((msg, i) => (
                 <div key={i} className={`${styles.message} ${styles[msg.sender]}`}>
                   {msg.sender === 'agent' && (
                     <div className={styles.msgAvatar}>

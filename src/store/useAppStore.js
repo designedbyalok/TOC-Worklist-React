@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
 import { dbToJs, updatesToDb } from '../lib/patientMapper';
+import { callDetailDbToJs, callDetailJsToDb } from '../lib/callDetailsMapper';
 import { patients as fallbackPatients } from '../data/patients';
+import { callDetails as fallbackCallDetails } from '../data/callDetails';
 import { generateFlowFromPrompt } from '../lib/flowGenerator';
 
 function parseDuration(str) {
@@ -45,6 +47,9 @@ export const useAppStore = create((set, get) => ({
   activeFilters: {},  // { gender: 'F', language: 'es', lace: 'High', ... }
   activeSubnavList: 'TOC',  // which SubNav list is selected
 
+  // Call Details
+  callDetails: [],
+
   // Agents (settings)
   agents: [],
   agentsLoading: true,
@@ -77,6 +82,7 @@ export const useAppStore = create((set, get) => ({
   queueTabDot: false,
   callTimerRef: null,
   detailPatient: null,
+  detailPatientCalls: [],
   liveDrawerPatient: null,
 
   // ─── Supabase: Fetch patients ───
@@ -123,6 +129,47 @@ export const useAppStore = create((set, get) => ({
         patientsLoading: false,
       });
     }
+  },
+
+  // ─── Supabase: Fetch call details ───
+  fetchCallDetails: async () => {
+    const { data, error } = await supabase
+      .from('call_details')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('call_details fetch failed, using fallback:', error.message);
+      set({ callDetails: fallbackCallDetails.map(c => ({ ...c })) });
+    } else {
+      set({ callDetails: data.map(callDetailDbToJs) });
+    }
+  },
+
+  // Helper: get call records for a patient
+  getCallsForPatient: (patientId) => {
+    return get().callDetails.filter(c => c.patientId === patientId);
+  },
+
+  // Helper: get latest call of a specific type
+  getLatestCall: (patientId, callType) => {
+    return get().callDetails.find(c => c.patientId === patientId && c.callType === callType);
+  },
+
+  // Create a new call record (on agent invoke)
+  createCallRecord: (record) => {
+    set(s => ({ callDetails: [record, ...s.callDetails] }));
+    // Persist to Supabase in background
+    supabase.from('call_details').insert(callDetailJsToDb(record)).then(({ error }) => {
+      if (error) console.warn('Failed to persist call record:', error.message);
+    });
+  },
+
+  // Update an existing call record
+  updateCallRecord: (callId, updates) => {
+    set(s => ({
+      callDetails: s.callDetails.map(c => c.id === callId ? { ...c, ...updates } : c)
+    }));
   },
 
   // ─── Supabase: Persist a patient update ───
@@ -430,7 +477,7 @@ export const useAppStore = create((set, get) => ({
     });
     set({ patients: updated, selectedIds: [], showInvokeModal: false, toastSuccess: true, queueTabDot: true });
 
-    // Persist each changed patient to Supabase
+    // Create call records for invoked patients and persist to Supabase
     for (const p of updated) {
       if (patientIds.includes(p.id)) {
         get().persistPatient(p.id, {
@@ -441,6 +488,28 @@ export const useAppStore = create((set, get) => ({
           callDuration: p.callDuration,
           nextAction: p.nextAction,
         });
+
+        // Create an ongoing call record if patient went to oncall
+        if (p.status === 'oncall') {
+          // Find existing ongoing template from fallback data
+          const existing = get().callDetails.find(c => c.patientId === p.id && c.callType === 'ongoing');
+          const callId = 'cd-live-' + p.id + '-' + Date.now();
+          get().createCallRecord({
+            id: callId,
+            patientId: p.id,
+            callType: 'ongoing',
+            agentName: agentName,
+            startedAt: new Date().toLocaleString(),
+            duration: '00:00',
+            liveGoals: existing?.liveGoals || [
+              { name: 'Patient Outreach', done: false, time: null },
+              { name: 'Schedule ToC Appointment', done: false, time: null },
+              { name: 'Medication Review', done: false, time: null },
+            ],
+            liveTranscript: existing?.liveTranscript || [],
+            createdAt: new Date().toISOString(),
+          });
+        }
       }
     }
 
@@ -547,9 +616,12 @@ export const useAppStore = create((set, get) => ({
 
   openDetail: (patientId) => {
     const p = get().patients.find(x => x.id === patientId);
-    if (p) set({ detailPatient: p });
+    if (p) {
+      const patientCalls = get().callDetails.filter(c => c.patientId === patientId);
+      set({ detailPatient: p, detailPatientCalls: patientCalls });
+    }
   },
-  closeDetail: () => set({ detailPatient: null }),
+  closeDetail: () => set({ detailPatient: null, detailPatientCalls: [] }),
 
   openLiveDrawer: (patientId) => set({ liveDrawerPatient: patientId }),
   closeLiveDrawer: () => set({ liveDrawerPatient: null }),

@@ -6,10 +6,12 @@ import { useAppStore } from './store/useAppStore';
 
 function App() {
   const fetchPatients = useAppStore(s => s.fetchPatients);
+  const fetchCallDetails = useAppStore(s => s.fetchCallDetails);
 
   useEffect(() => {
     fetchPatients();
-  }, [fetchPatients]);
+    fetchCallDetails();
+  }, [fetchPatients, fetchCallDetails]);
 
   return (
     <>
