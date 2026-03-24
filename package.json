@@ -12,6 +12,7 @@
   "dependencies": {
     "@iconify/react": "^6.0.2",
     "@supabase/supabase-js": "^2.99.3",
+    "@vercel/analytics": "^2.0.1",
     "@xyflow/react": "^12.10.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
