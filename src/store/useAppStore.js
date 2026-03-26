@@ -5,6 +5,8 @@ import { callDetailDbToJs, callDetailJsToDb } from '../lib/callDetailsMapper';
 import { patients as fallbackPatients } from '../data/patients';
 import { callDetails as fallbackCallDetails } from '../data/callDetails';
 import { generateFlowFromPrompt } from '../lib/flowGenerator';
+import { kpiRowToJs, tsRowToJs, tableRowToJs, barRowToJs, configRowToJs, groupTimeSeries } from '../lib/analyticsMapper';
+import { FALLBACK_KPIS, FALLBACK_TIME_SERIES, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS, FALLBACK_CONFIGS } from '../data/analyticsFallbacks';
 
 function parseDuration(str) {
   const parts = (str || '00:00').split(':').map(Number);
@@ -98,8 +100,8 @@ export const useAppStore = create((set, get) => ({
       set({
         patients: fallbackPatients.map(p => ({
           ...p,
-          agentAssigned: '',
-          agentRole: '',
+          agentAssigned: p.status === 'completed' ? (p.agentAssigned || '') : '',
+          agentRole: p.status === 'completed' ? (p.agentRole || '') : '',
           onCall: false,
           status: (p.status === 'oncall' || p.status === 'queued') ? 'scheduled' : p.status,
           callDuration: (p.status === 'oncall') ? null : p.callDuration,
@@ -112,8 +114,9 @@ export const useAppStore = create((set, get) => ({
         ...p,
         // Reset transient agent/call state on fresh load —
         // queue should be empty until agents are explicitly invoked
-        agentAssigned: '',
-        agentRole: '',
+        // But preserve agent assignment for completed patients so they show in queue
+        agentAssigned: p.status === 'completed' ? (p.agentAssigned || 'Anna') : '',
+        agentRole: p.status === 'completed' ? (p.agentRole || 'TOC Outreach') : '',
         onCall: false,
         status: (p.status === 'oncall' || p.status === 'queued') ? 'scheduled' : p.status,
         callDuration: (p.status === 'oncall') ? null : p.callDuration,
@@ -433,7 +436,7 @@ export const useAppStore = create((set, get) => ({
     const allDone = ['s1','s2','s3','s4'].every(s => stepStates[s] === 'done');
     let updates = {};
     if (allDone) {
-      updates = { status: 'completed', goals: workflowPatient.goals || { met: 3, total: 4 }, nextAction: 'All workflow steps completed' };
+      updates = { status: 'completed', goals: workflowPatient.goals || { met: 3, total: 4 }, nextAction: '__MED_REVIEW__' };
     } else if (stepStates.s4 === 'done') {
       updates = { status: 'scheduled', nextAction: 'Follow-up appointment confirmed' };
     } else if (stepStates.s3 === 'done') {
@@ -632,4 +635,110 @@ export const useAppStore = create((set, get) => ({
   clearQueueTabDot: () => set({ queueTabDot: false }),
 
   nextDate,
+
+  // ─── Analytics Data Layer ───
+  analyticsCache: {},
+  analyticsLoading: {},
+  analyticsError: {},
+  analyticsPeriod: '2026-03',
+  analyticsTenant: 'default',
+  analyticsPersona: 'all',
+  analyticsPractice: 'all',
+
+  setAnalyticsPeriod: (p) => { set({ analyticsPeriod: p, analyticsCache: {} }); },
+  setAnalyticsTenant: (t) => { set({ analyticsTenant: t, analyticsCache: {} }); },
+  setAnalyticsPersona: (p) => { set({ analyticsPersona: p, analyticsCache: {} }); },
+  setAnalyticsPractice: (p) => { set({ analyticsPractice: p, analyticsCache: {} }); },
+  invalidateAnalyticsCache: () => set({ analyticsCache: {} }),
+
+  fetchAnalytics: async (cacheKey, queryFn) => {
+    const cache = get().analyticsCache[cacheKey];
+    if (cache && Date.now() - cache.fetchedAt < 5 * 60 * 1000) return cache.data;
+    set(s => ({
+      analyticsLoading: { ...s.analyticsLoading, [cacheKey]: true },
+      analyticsError: { ...s.analyticsError, [cacheKey]: null },
+    }));
+    try {
+      const data = await queryFn();
+      set(s => ({
+        analyticsCache: { ...s.analyticsCache, [cacheKey]: { data, fetchedAt: Date.now() } },
+        analyticsLoading: { ...s.analyticsLoading, [cacheKey]: false },
+      }));
+      return data;
+    } catch (err) {
+      set(s => ({
+        analyticsLoading: { ...s.analyticsLoading, [cacheKey]: false },
+        analyticsError: { ...s.analyticsError, [cacheKey]: err.message },
+      }));
+      return null;
+    }
+  },
+
+  fetchViewKpis: async (viewId) => {
+    const { analyticsTenant: t, analyticsPeriod: p } = get();
+    const key = `kpis:${viewId}:${p}`;
+    return get().fetchAnalytics(key, async () => {
+      const { data, error } = await supabase
+        .from('analytics_kpis').select('*')
+        .eq('tenant_id', t).eq('view_key', viewId).eq('period', p)
+        .maybeSingle();
+      if (error || !data) return FALLBACK_KPIS[viewId] || { kpis: [], insight: null };
+      return kpiRowToJs(data);
+    });
+  },
+
+  fetchTimeSeries: async (seriesKeys) => {
+    const { analyticsTenant: t, analyticsPeriod: p } = get();
+    const key = `ts:${seriesKeys.join(',')}:${p}`;
+    return get().fetchAnalytics(key, async () => {
+      const { data, error } = await supabase
+        .from('analytics_time_series').select('*')
+        .eq('tenant_id', t).in('series_key', seriesKeys).eq('period', p);
+      if (error || !data?.length) {
+        const result = {};
+        seriesKeys.forEach(k => { if (FALLBACK_TIME_SERIES[k]) result[k] = FALLBACK_TIME_SERIES[k]; });
+        return result;
+      }
+      return groupTimeSeries(data);
+    });
+  },
+
+  fetchViewTable: async (viewId, tableKey) => {
+    const { analyticsTenant: t, analyticsPeriod: p } = get();
+    const key = `tbl:${tableKey}:${p}`;
+    return get().fetchAnalytics(key, async () => {
+      const { data, error } = await supabase
+        .from('analytics_tables').select('*')
+        .eq('tenant_id', t).eq('table_key', tableKey).eq('period', p)
+        .maybeSingle();
+      if (error || !data) return FALLBACK_TABLES[tableKey] || { columns: [], rows: [] };
+      return tableRowToJs(data);
+    });
+  },
+
+  fetchProgressBars: async (viewId, barKey) => {
+    const { analyticsTenant: t, analyticsPeriod: p } = get();
+    const key = `bar:${barKey}:${p}`;
+    return get().fetchAnalytics(key, async () => {
+      const { data, error } = await supabase
+        .from('analytics_progress_bars').select('*')
+        .eq('tenant_id', t).eq('bar_key', barKey).eq('period', p)
+        .maybeSingle();
+      if (error || !data) return FALLBACK_PROGRESS_BARS[barKey] || [];
+      return barRowToJs(data);
+    });
+  },
+
+  fetchConfig: async (configKey) => {
+    const { analyticsTenant: t } = get();
+    const key = `cfg:${configKey}`;
+    return get().fetchAnalytics(key, async () => {
+      const { data, error } = await supabase
+        .from('analytics_configs').select('*')
+        .eq('tenant_id', t).eq('config_key', configKey)
+        .maybeSingle();
+      if (error || !data) return FALLBACK_CONFIGS[configKey] || {};
+      return configRowToJs(data);
+    });
+  },
 }));

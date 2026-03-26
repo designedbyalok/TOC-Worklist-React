@@ -1,0 +1,388 @@
+/* ═══════════════════════════════════════════════════════════════
+   ANALYTICS LAYOUT — Fold Health Design System
+
+   Font scale (Inter):
+     400 = Regular  — body text, table cells, nav items
+     500 = Medium   — all emphasis (titles, headers, KPI labels, hero values)
+   ═══════════════════════════════════════════════════════════════ */
+
+.wrap { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+
+/* ──────────────────────────────────────────────
+   Page Navigator — matches Settings SubNav
+   180px, 14px regular, 16px outline icons
+   ────────────────────────────────────────────── */
+.pageNav {
+  width: 210px; flex-shrink: 0; background: var(--neutral-0);
+  border-right: 0.5px solid var(--neutral-150);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.pnHeader { display: none; }
+.pnScroll { flex: 1; overflow-y: auto; padding: 0; }
+.pnSection {
+  font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .7px;
+  color: var(--neutral-200); padding: 16px 16px 4px;
+}
+.pnItem {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; cursor: pointer; color: var(--neutral-300);
+  font-size: 14px; font-weight: 400; line-height: 1.2;
+  transition: background .12s, color .12s; user-select: none;
+  border: none; border-left: 2px solid transparent; background: none;
+  width: 100%; text-align: left; font-family: 'Inter', sans-serif;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pnItem svg { flex-shrink: 0; }
+.pnItem:hover { background: var(--neutral-50); }
+.pnItem.active {
+  color: var(--primary-300); background: var(--primary-100);
+  border-left-color: var(--primary-300); border-radius: 0;
+}
+
+/* ── Canvas ── */
+.canvas {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  background: var(--neutral-50); padding: 20px 24px; min-width: 0;
+}
+
+/* ── Recency Bar ── */
+.recency {
+  display: flex; align-items: center; gap: 10px; padding: 7px 14px;
+  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 6px;
+  font-size: 12px; font-weight: 400; color: var(--neutral-300); margin-bottom: 16px;
+}
+.recDot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.recDot.ok { background: var(--status-success); }
+.recDot.warn { background: var(--status-warning); }
+.recDot.stale { background: var(--status-error); }
+.recLabel { font-weight: 500; color: var(--neutral-400); font-size: 12px; }
+.recSep { width: 1px; height: 10px; background: var(--neutral-150); }
+
+/* ── View header + filter bar ── */
+.viewHeader {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.viewTitle { font-size: 15px; font-weight: 500; color: var(--neutral-500); letter-spacing: -.2px; }
+.viewSub { font-size: 12px; font-weight: 400; color: var(--neutral-200); margin-top: 2px; }
+.filterBar {
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.filterSelect {
+  background: var(--neutral-0); border: 1px solid var(--neutral-150);
+  border-radius: 6px; padding: 6px 10px; font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 400; color: var(--neutral-400); cursor: pointer; outline: none;
+}
+.filterSelect:focus { border-color: var(--primary-300); box-shadow: 0 0 0 2px rgba(140,90,226,.12); }
+.filterBtn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--neutral-0); border: 1px solid var(--neutral-150);
+  border-radius: 6px; padding: 6px 12px; font-family: 'Inter', sans-serif;
+  font-size: 14px; font-weight: 500; color: var(--neutral-400); cursor: pointer;
+  transition: all .12s;
+}
+.filterBtn:hover { border-color: var(--neutral-200); color: var(--neutral-500); }
+
+/* ──────────────────────────────────────────────
+   KPI Cards
+   ────────────────────────────────────────────── */
+.kpiGrid { display: grid; gap: 12px; margin-bottom: 14px; }
+.kpiGrid.cols4 { grid-template-columns: repeat(4, 1fr); }
+.kpiGrid.cols5 { grid-template-columns: repeat(5, 1fr); }
+.kpiCard {
+  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 8px;
+  padding: 14px; position: relative; overflow: hidden; transition: border-color .15s;
+}
+.kpiCard:hover { border-color: var(--primary-200); }
+.kpiAccent { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+.kpiEyebrow {
+  font-size: 10px; color: var(--neutral-300); font-weight: 500; margin-bottom: 4px;
+  text-transform: uppercase; letter-spacing: .4px;
+}
+.kpiHero {
+  font-size: 24px; font-weight: 500; color: var(--neutral-500);
+  letter-spacing: -.4px; line-height: 1.15;
+  font-family: 'Inter', sans-serif;
+}
+.kpiHero.small { font-size: 18px; }
+.kpiDelta {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 12px; font-weight: 500; margin-top: 5px; padding: 2px 7px; border-radius: 10px;
+}
+.kpiDelta.pos { background: var(--status-success-light); color: var(--status-success); }
+.kpiDelta.neg { background: var(--status-error-light); color: var(--status-error); }
+.kpiDelta.neu { background: var(--neutral-75); color: var(--neutral-300); }
+.kpiSub { font-size: 12px; font-weight: 400; color: var(--neutral-200); margin-top: 3px; }
+
+/* ──────────────────────────────────────────────
+   Cards
+   ────────────────────────────────────────────── */
+.card {
+  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 8px;
+  overflow: hidden; margin-bottom: 14px;
+}
+.cardHeader {
+  padding: 12px 14px; display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--neutral-150); flex-wrap: wrap;
+}
+.cardTitle { font-size: 14px; font-weight: 500; color: var(--neutral-400); }
+.cardSub { font-size: 12px; font-weight: 400; color: var(--neutral-200); }
+.cardActions { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+/* Card body: padded for content, flush (0) for pure tables */
+.cardBody { padding: 12px 14px; }
+.cardBodyFlush { padding: 0; }
+
+/* ── Grids ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
+
+/* ──────────────────────────────────────────────
+   Tables — matched to Worklist reference
+   th: 12px medium, no uppercase, neutral-300, white bg
+   td: 14px regular, neutral-400
+   padding: 8px 14px (same as worklist)
+   FIX #2, #4, #6
+   ────────────────────────────────────────────── */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl th {
+  font-size: 12px; font-weight: 500; letter-spacing: normal;
+  text-transform: none;
+  color: var(--neutral-300); padding: 8px 14px; text-align: left;
+  border-bottom: 1px solid var(--neutral-150); background: var(--neutral-0);
+  white-space: nowrap; position: sticky; top: 0; z-index: 1;
+  font-family: 'Inter', sans-serif;
+}
+.tbl th.r { text-align: right; }
+.tbl td {
+  padding: 8px 14px; font-size: 14px; font-weight: 400; color: var(--neutral-400);
+  border-bottom: 1px solid var(--neutral-100);
+  font-family: 'Inter', sans-serif;
+}
+.tbl td.r { text-align: right; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tbody tr { transition: background .1s; }
+.tbl tbody tr:hover td { background: var(--neutral-50); }
+.tblWrap { overflow-x: auto; max-height: 400px; overflow-y: auto; }
+/* FIX #6: Primary column — medium (500) not semi-bold (600) */
+.fw600 { font-weight: 500; color: var(--neutral-400); }
+.mono { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 400; }
+.valG { color: var(--status-success); font-weight: 500; }
+.valR { color: var(--status-error); font-weight: 500; }
+.valA { color: var(--status-warning); font-weight: 500; }
+
+/* ──────────────────────────────────────────────
+   Insight Banner
+   ────────────────────────────────────────────── */
+.insight {
+  background: var(--neutral-0); border: 1px solid var(--neutral-150);
+  border-left: 3px solid var(--primary-300); border-radius: 8px;
+  padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 14px;
+}
+.insight.amber { border-left-color: var(--status-warning); }
+.insight.red { border-left-color: var(--status-error); }
+.insight.green { border-left-color: var(--status-success); }
+.insightIcon {
+  width: 28px; height: 28px; background: var(--primary-100); border-radius: 6px;
+  display: grid; place-items: center; flex-shrink: 0; margin-top: 1px;
+}
+.insight.amber .insightIcon { background: var(--status-warning-light); }
+.insight.red .insightIcon { background: var(--status-error-light); }
+.insight.green .insightIcon { background: var(--status-success-light); }
+.insightBody { flex: 1; min-width: 0; }
+.insightEyebrow {
+  font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .8px;
+  color: var(--primary-300); margin-bottom: 2px;
+}
+.insight.amber .insightEyebrow { color: var(--status-warning); }
+.insight.red .insightEyebrow { color: var(--status-error); }
+.insight.green .insightEyebrow { color: var(--status-success); }
+.insightText { font-size: 14px; font-weight: 400; color: var(--neutral-400); line-height: 1.5; }
+.insightBtns { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+
+/* ── Buttons ── */
+.btn {
+  font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 6px;
+  cursor: pointer; border: none; font-family: 'Inter', sans-serif; transition: all .15s;
+  white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;
+}
+.btnPrimary { background: var(--primary-300); color: #fff; }
+.btnPrimary:hover { background: var(--primary-400); }
+.btnGhost { background: transparent; color: var(--primary-300); border: 1px solid var(--primary-200); }
+.btnGhost:hover { background: var(--primary-100); }
+.btnNeutral { background: var(--neutral-0); color: var(--neutral-400); border: 1px solid var(--neutral-150); }
+.btnNeutral:hover { border-color: var(--neutral-200); }
+.btnDanger { background: var(--status-error-light); color: var(--status-error); border: 1px solid var(--status-error-light); }
+
+/* ── Progress Bar ── */
+.prRow { margin-bottom: 14px; }
+.prRow:last-child { margin-bottom: 0; }
+.prHead { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.prLabel { font-size: 14px; font-weight: 400; color: var(--neutral-400); }
+.prValue { font-size: 14px; font-weight: 500; color: var(--neutral-500); }
+.prTrack { height: 4px; background: var(--neutral-75); border-radius: 10px; overflow: hidden; margin-bottom: 4px; }
+.prFill { height: 100%; border-radius: 10px; transition: width .7s cubic-bezier(.4,0,.2,1); }
+.prFill.purple { background: var(--primary-300); }
+.prFill.green { background: var(--status-success); }
+.prFill.amber { background: var(--status-warning); }
+.prFill.red { background: var(--status-error); }
+.prSub { font-size: 12px; font-weight: 400; color: var(--neutral-200); }
+
+/* ── Status Pills — matches Badge component ── */
+.stPill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 500; padding: 3px 8px; border-radius: 4px;
+  white-space: nowrap; border: 0.5px solid transparent;
+}
+.stGreen { background: var(--status-success-light); color: var(--status-success); border-color: rgba(0,155,83,0.2); }
+.stAmber { background: var(--status-warning-light); color: var(--status-warning); border-color: rgba(217,165,11,0.2); }
+.stRed { background: var(--status-error-light); color: var(--status-error); border-color: rgba(215,40,37,0.2); }
+.stNeutral { background: var(--neutral-50); color: var(--neutral-300); border-color: rgba(111,122,144,0.2); }
+
+/* ── Funnel ── */
+.funnel { display: flex; gap: 0; margin: 8px 0; overflow: hidden; border-radius: 6px; }
+.funnelStep {
+  flex: 1; text-align: center; padding: 12px 8px;
+  background: var(--neutral-75); border-right: 1px solid var(--neutral-150);
+  position: relative;
+}
+.funnelStep:last-child { border-right: none; }
+.funnelNum { font-size: 16px; font-weight: 500; color: var(--neutral-500); }
+.funnelLabel { font-size: 12px; font-weight: 400; color: var(--neutral-300); margin-top: 2px; }
+.funnelPct { font-size: 12px; font-weight: 400; color: var(--neutral-200); margin-top: 1px; }
+
+/* ── Tabs (underline style) ── */
+.tabRow { display: flex; border-bottom: 1px solid var(--neutral-150); margin-bottom: 14px; }
+.tab {
+  font-size: 14px; font-weight: 500; color: var(--neutral-300); padding: 8px 14px;
+  cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  white-space: nowrap; transition: all .12s; user-select: none;
+  background: none; border-top: none; border-left: none; border-right: none;
+  font-family: 'Inter', sans-serif;
+}
+.tab:hover { color: var(--neutral-400); }
+.tab.active { color: var(--primary-300); border-bottom-color: var(--primary-300); font-weight: 500; }
+
+/* ── Sub tabs / toggles — matches AgentCanvas toolbar ── */
+.subTabs {
+  display: flex; gap: 2px;
+  background: var(--neutral-75); border-radius: 8px; padding: 3px;
+}
+.subTab {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 14px; font-size: 14px; font-weight: 500; cursor: pointer;
+  border-radius: 6px; color: var(--neutral-300); transition: all .15s;
+  white-space: nowrap; user-select: none; border: none; background: transparent;
+  font-family: 'Inter', sans-serif;
+}
+.subTab:hover { color: var(--neutral-400); }
+.subTab.active {
+  background: var(--neutral-0); color: var(--neutral-500);
+  box-shadow: 0 1px 3px rgba(0,0,0,.08); font-weight: 500;
+}
+
+/* ── Rule Card ── */
+.ruleCard {
+  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 6px;
+  padding: 10px 14px; margin-bottom: 8px;
+}
+.ruleTrigger {
+  font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .3px;
+  color: var(--neutral-300); margin-bottom: 3px;
+}
+.ruleAction { font-size: 14px; font-weight: 500; color: var(--primary-300); }
+
+/* ── Pipeline Row ── */
+.pipelineRow {
+  display: flex; align-items: center; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid var(--neutral-100); font-size: 14px; font-weight: 400;
+}
+.pipelineRow:last-child { border-bottom: none; }
+.pipelineDot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.pipelineDot.ok { background: var(--status-success); }
+.pipelineDot.warn { background: var(--status-warning); }
+.pipelineName { width: 130px; font-weight: 500; color: var(--neutral-400); flex-shrink: 0; font-size: 14px; }
+.pipelineInfo { flex: 1; color: var(--neutral-300); font-size: 14px; font-weight: 400; }
+
+/* ── Context Note ── */
+.ctx {
+  background: var(--neutral-50); border: 1px solid var(--neutral-100); border-radius: 6px;
+  padding: 8px 14px; font-size: 14px; font-weight: 400; color: var(--neutral-400);
+  display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; margin-bottom: 10px;
+}
+
+/* ── Prod metrics ── */
+.prodStrip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 14px; }
+.prodCard {
+  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 8px;
+  padding: 12px 14px;
+}
+.prodLabel {
+  font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .4px;
+  color: var(--neutral-200); margin-bottom: 2px;
+}
+.prodVal { font-size: 16px; font-weight: 500; color: var(--neutral-500); }
+.prodTarget { font-size: 11px; font-weight: 400; color: var(--neutral-200); margin-left: 3px; }
+
+/* ── ROI Strip ── */
+.roiStrip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+.roiCard {
+  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 8px;
+  padding: 12px 14px; cursor: pointer; transition: border-color .15s;
+}
+.roiCard:hover { border-color: var(--primary-200); }
+
+/* ── Sim levers ── */
+.simWrap { display: grid; grid-template-columns: 360px 1fr; gap: 14px; align-items: start; }
+.levGroup { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--neutral-150); }
+.levGroup:last-of-type { border-bottom: none; margin-bottom: 0; }
+.levLabel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+.levName { font-size: 14px; font-weight: 500; color: var(--neutral-500); }
+.levVal { font-size: 14px; font-weight: 500; color: var(--primary-300); }
+.levSub { font-size: 12px; font-weight: 400; color: var(--neutral-200); margin-bottom: 6px; line-height: 1.4; }
+.simRange { width: 100%; accent-color: var(--primary-300); cursor: pointer; height: 4px; }
+.simKpiRow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+.simKpiCard {
+  background: var(--neutral-75); border: 1px solid var(--neutral-150); border-radius: 6px;
+  padding: 8px; text-align: center;
+}
+.simKpiLabel {
+  font-size: 10px; font-weight: 500; color: var(--neutral-200); text-transform: uppercase;
+  letter-spacing: .4px; margin-bottom: 3px;
+}
+.simKpiCurr { font-size: 12px; font-weight: 400; color: var(--neutral-300); }
+.simKpiProj { font-size: 14px; font-weight: 500; color: var(--neutral-500); }
+
+/* ── NLQ card ── */
+.nlqCard {
+  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 6px;
+  padding: 10px 14px; cursor: pointer; transition: all .15s;
+}
+.nlqCard:hover { border-color: var(--primary-200); background: var(--primary-100); }
+.nlqTitle { font-size: 14px; font-weight: 500; color: var(--neutral-500); }
+.nlqDesc { font-size: 12px; font-weight: 400; color: var(--neutral-300); margin-top: 3px; }
+
+/* ── Donut ── */
+.donutWrap { display: flex; align-items: center; gap: 14px; }
+.donutLegend { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+.donutRow { display: flex; align-items: center; gap: 6px; }
+.donutDot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.donutLabel { font-size: 14px; font-weight: 400; color: var(--neutral-300); flex: 1; }
+.donutVal { font-size: 14px; font-weight: 500; color: var(--neutral-500); }
+
+/* ── Tags — matches Badge component ── */
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 500; padding: 3px 8px;
+  border-radius: 4px; margin: 1px; white-space: nowrap;
+  border: 0.5px solid transparent;
+}
+.tagStars { background: var(--primary-100); color: var(--primary-300); border-color: rgba(140,90,226,0.2); }
+.tagHedis { background: var(--status-success-light); color: var(--status-success); border-color: rgba(0,155,83,0.2); }
+.tagAco { background: var(--status-warning-light); color: var(--status-warning); border-color: rgba(217,165,11,0.2); }
+
+/* ── Scrollbar ── */
+.canvas::-webkit-scrollbar { width: 5px; height: 5px; }
+.canvas::-webkit-scrollbar-thumb { background: var(--neutral-150); border-radius: 4px; }
+.pnScroll::-webkit-scrollbar { width: 4px; }
+.pnScroll::-webkit-scrollbar-thumb { background: var(--neutral-150); border-radius: 4px; }

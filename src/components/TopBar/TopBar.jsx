@@ -14,11 +14,12 @@ export function TopBar() {
   const btnRef = useRef(null);
 
   const isSettings = activePage === 'settings';
+  const isAnalytics = activePage === 'analytics';
 
   return (
     <header className={styles.topbar}>
       <div className={styles.left}>
-        {!isSettings && (
+        {!isSettings && !isAnalytics && (
           <button
             className={styles.iconBtn}
             title="Toggle panel"
@@ -31,7 +32,13 @@ export function TopBar() {
           </button>
         )}
         <nav className={styles.breadcrumb}>
-          {isSettings ? (
+          {isAnalytics ? (
+            <>
+              <a className={styles.breadcrumbLink} href="#" onClick={e => e.preventDefault()}>Analytics</a>
+              <span className={styles.sep}>/</span>
+              <span className={styles.breadcrumbCurrent}>Fold Insights</span>
+            </>
+          ) : isSettings ? (
             <>
               <a className={styles.breadcrumbLink} href="#" onClick={e => e.preventDefault()}>Settings</a>
               <span className={styles.sep}>/</span>

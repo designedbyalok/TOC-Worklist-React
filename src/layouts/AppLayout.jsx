@@ -15,6 +15,7 @@ import { QueueTable } from '../features/queue/QueueTable';
 import { SettingsLayout } from '../features/settings/SettingsLayout';
 import { CreateAgentDrawer } from '../features/settings/CreateAgentDrawer';
 import { AgentCanvas } from '../features/agent-builder/AgentCanvas';
+import { AnalyticsLayout } from '../features/analytics/AnalyticsLayout';
 import { useAppStore } from '../store/useAppStore';
 import styles from './AppLayout.module.css';
 
@@ -90,6 +91,17 @@ function SettingsView() {
   );
 }
 
+function AnalyticsView() {
+  return (
+    <div className={styles.main}>
+      <TopBar />
+      <div className={styles.content}>
+        <AnalyticsLayout />
+      </div>
+    </div>
+  );
+}
+
 export function AppLayout() {
   const activePage = useAppStore(s => s.activePage);
   const showCreateAgent = useAppStore(s => s.showCreateAgent);
@@ -113,7 +125,7 @@ export function AppLayout() {
   return (
     <div className={styles.app}>
       <Sidebar />
-      {activePage === 'settings' ? <SettingsView /> : <PopulationView />}
+      {activePage === 'analytics' ? <AnalyticsView /> : activePage === 'settings' ? <SettingsView /> : <PopulationView />}
 
       {showCreateAgent && <CreateAgentDrawer />}
       {workflowPatient && <WorkflowPanel />}

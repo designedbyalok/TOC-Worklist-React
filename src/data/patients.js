@@ -2,7 +2,7 @@ export const patients = [
   {
     id: 'p1', initials: 'RH', name: 'Ralph Halvorson',
     gender: 'M', age: '52y 5m', memberId: '#2468029989898', enrolled: true, language: 'en',
-    agentAssigned: '', agentRole: '', outreachDots: ['success','pending','pending'],
+    agentAssigned: 'Anna', agentRole: 'TOC Outreach', outreachDots: ['success','pending','pending'],
     lace: 'High', tocType: 'IP',
     outreachType: '48h', outreachLeft: '2h left', onCall: false, callDuration: null,
     status: 'completed', goals: { met: 3, total: 3 },

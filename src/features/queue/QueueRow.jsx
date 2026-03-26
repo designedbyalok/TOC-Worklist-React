@@ -176,7 +176,13 @@ export function QueueRow({ patient }) {
   const voicemailCalls = callDetails.filter(c => c.patientId === p.id && c.callType === 'voicemail');
   const outreachBadgeVariant = p.outreachType === '48h' ? 'outreach-48h' : 'outreach-7d';
 
+  const openDetail = useAppStore(s => s.openDetail);
+
   const handleRowClick = () => {
+    if (p.status === 'completed') {
+      openDetail(p.id);
+      return;
+    }
     if (p.status === 'oncall') {
       openLiveDrawer(p.id);
       return;
