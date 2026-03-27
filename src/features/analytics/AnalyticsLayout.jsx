@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Icon } from '../../components/Icon/Icon';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/select';
 import { useAppStore } from '../../store/useAppStore';
 import { PAGES, VIEW_TITLES } from './analyticsData';
 import { ExecutiveView } from './views/ExecutiveView';
@@ -130,20 +131,22 @@ export function AnalyticsLayout() {
             <div className={s.viewSub}>{meta.sub}</div>
           </div>
           <div className={s.filterBar}>
-            <select
-              className={s.filterSelect}
-              value={analyticsPeriod}
-              onChange={e => setAnalyticsPeriod(e.target.value)}
-            >
-              {PERIODS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
-            </select>
-            <select
-              className={s.filterSelect}
-              value={analyticsPractice}
-              onChange={e => setAnalyticsPractice(e.target.value)}
-            >
-              {PRACTICES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
-            </select>
+            <Select value={analyticsPeriod} onValueChange={setAnalyticsPeriod}>
+              <SelectTrigger className={s.filterSelect}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PERIODS.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={analyticsPractice} onValueChange={setAnalyticsPractice}>
+              <SelectTrigger className={s.filterSelect}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PRACTICES.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
             <button className={s.filterBtn} onClick={() => showToast('Exporting report...')}>
               <Icon name="solar:download-minimalistic-linear" size={14} />
               Export

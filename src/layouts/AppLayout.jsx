@@ -106,7 +106,6 @@ export function AppLayout() {
   const activePage = useAppStore(s => s.activePage);
   const showCreateAgent = useAppStore(s => s.showCreateAgent);
   const workflowPatient = useAppStore(s => s.workflowPatient);
-  const showInvokeModal = useAppStore(s => s.showInvokeModal);
   const callPopoverPatient = useAppStore(s => s.callPopoverPatient);
   const detailPatient = useAppStore(s => s.detailPatient);
   const liveDrawerPatient = useAppStore(s => s.liveDrawerPatient);
@@ -131,7 +130,7 @@ export function AppLayout() {
       {workflowPatient && <WorkflowPanel />}
       {callPopoverPatient && <CallPopover />}
       <ActiveCallCard />
-      {showInvokeModal && <InvokeAgentModal />}
+      <InvokeAgentModal />
       {detailPatient && <DetailDrawer />}
       {liveDrawerPatient && <LiveDrawer />}
       <Toast />

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Icon } from '../../components/Icon/Icon';
 import { Avatar } from '../../components/Avatar/Avatar';
 import { Badge } from '../../components/Badge/Badge';
+import { Checkbox } from '../../components/ui/checkbox';
 import { useAppStore } from '../../store/useAppStore';
 import rowStyles from '../worklist/WorklistRow.module.css';
 import styles from './QueueRow.module.css';
@@ -214,7 +215,7 @@ export function QueueRow({ patient }) {
     >
       <td style={{ ...tdBase, width: 36, padding: '8px 10px', position: 'sticky', left: 0, zIndex: 3, background: 'var(--neutral-0)' }}
         onClick={e => e.stopPropagation()}>
-        <input type="checkbox" />
+        <Checkbox />
       </td>
       <td style={{ ...tdBase, padding: '8px 12px', position: 'sticky', left: 36, zIndex: 3, background: 'var(--neutral-0)', borderRight: '1px solid var(--neutral-150)' }}>
         <div className={rowStyles.patientCell}>

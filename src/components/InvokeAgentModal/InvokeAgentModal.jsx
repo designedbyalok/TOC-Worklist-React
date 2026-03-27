@@ -2,7 +2,15 @@ import { useState } from 'react';
 import { Avatar } from '../Avatar/Avatar';
 import { Icon } from '../Icon/Icon';
 import { useAppStore } from '../../store/useAppStore';
-import styles from './InvokeAgentModal.module.css';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '../ui/dialog';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 
 const AGENTS = [
   { name: 'Ricardo', role: 'SNP Agent' },
@@ -16,11 +24,8 @@ export function InvokeAgentModal() {
   const [selected, setSelected] = useState(null);
   const selectedIds = useAppStore(s => s.selectedIds);
   const invokeAgent = useAppStore(s => s.invokeAgent);
+  const showInvokeModal = useAppStore(s => s.showInvokeModal);
   const setShowInvokeModal = useAppStore(s => s.setShowInvokeModal);
-
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) setShowInvokeModal(false);
-  };
 
   const handleConfirm = () => {
     if (!selected) return;
@@ -28,46 +33,69 @@ export function InvokeAgentModal() {
     invokeAgent(selectedIds, agent.name, agent.role);
   };
 
+  const handleOpenChange = (open) => {
+    if (!open) {
+      setShowInvokeModal(false);
+      setSelected(null);
+    }
+  };
+
   return (
-    <div className={styles.overlay} onClick={handleOverlayClick}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
-        <div className={styles.title}>Select Agent to Invoke</div>
-        <div className={styles.agentList}>
+    <Dialog open={showInvokeModal} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-[360px] p-4 gap-3">
+        <DialogHeader>
+          <DialogTitle className="text-[15px] font-medium text-[var(--neutral-400)] px-1">
+            Select Agent to Invoke
+          </DialogTitle>
+          <DialogDescription className="sr-only">
+            Choose an agent to invoke for the selected patients.
+          </DialogDescription>
+        </DialogHeader>
+
+        <RadioGroup
+          value={selected}
+          onValueChange={setSelected}
+          className="grid gap-1"
+        >
           {AGENTS.map(agent => (
             <label
               key={agent.name}
-              className={[styles.agentRow, selected === agent.name ? styles.selected : ''].filter(Boolean).join(' ')}
-              onClick={() => setSelected(agent.name)}
+              className={[
+                'flex items-center gap-2.5 px-2 py-1 rounded-lg cursor-pointer border-[1.5px] transition-all duration-150',
+                selected === agent.name
+                  ? 'bg-[var(--primary-50)] border-[var(--primary-200)]'
+                  : 'border-transparent hover:bg-[var(--primary-50)]',
+              ].join(' ')}
             >
-              <input
-                type="radio"
-                name="invokeAgent"
-                value={agent.name}
-                checked={selected === agent.name}
-                onChange={() => setSelected(agent.name)}
-              />
+              <RadioGroupItem value={agent.name} />
               <Avatar variant="invokeAgent" agentName={agent.name} />
-              <div className={styles.agentInfo}>
-                <div className={styles.agentName}>{agent.name}</div>
-                <div className={styles.agentRole}>{agent.role}</div>
+              <div className="flex-1">
+                <div className="text-sm font-medium text-[var(--neutral-400)]">{agent.name}</div>
+                <div className="text-xs text-[var(--neutral-300)] mt-px">{agent.role}</div>
               </div>
               {selected === agent.name && (
                 <Icon name="solar:play-bold" size={14} color="var(--primary-300)" />
               )}
             </label>
           ))}
-        </div>
-        <div className={styles.footer}>
-          <button className={styles.cancelBtn} onClick={() => setShowInvokeModal(false)}>Cancel</button>
+        </RadioGroup>
+
+        <DialogFooter className="flex-row gap-2.5 mt-0 sm:flex-row">
           <button
-            className={styles.confirmBtn}
+            className="flex-1 h-8 rounded px-2 text-[13px] font-medium border border-[var(--neutral-150)] bg-[var(--neutral-0)] text-[var(--neutral-400)] hover:bg-[var(--neutral-50)] hover:border-[var(--neutral-200)] transition-all duration-150 cursor-pointer"
+            onClick={() => setShowInvokeModal(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className="flex-1 h-8 rounded px-2 text-[13px] font-medium border border-[var(--primary-300)] bg-[var(--primary-300)] text-white hover:bg-[var(--primary-400)] hover:border-[var(--primary-400)] transition-all duration-150 cursor-pointer disabled:bg-[var(--neutral-100)] disabled:border-[var(--neutral-100)] disabled:text-[var(--neutral-200)] disabled:cursor-not-allowed"
             disabled={!selected}
             onClick={handleConfirm}
           >
             Invoke Agent
           </button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

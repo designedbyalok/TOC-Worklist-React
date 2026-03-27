@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Icon } from '../../components/Icon/Icon';
 import { Avatar } from '../../components/Avatar/Avatar';
 import { Badge } from '../../components/Badge/Badge';
+import { Checkbox } from '../../components/ui/checkbox';
 import { OutreachPopover } from '../../components/OutreachPopover/OutreachPopover';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './WorklistRow.module.css';
@@ -214,10 +215,9 @@ export function WorklistRow({ patient, isSelected, onSelect }) {
     <>
       <tr className={styles.row} onClick={handleRowClick}>
         <td className={`${styles.checkTd} ${styles.stickyLeft}`} style={{ left: 0 }} onClick={e => e.stopPropagation()}>
-          <input
-            type="checkbox"
+          <Checkbox
             checked={isSelected}
-            onChange={() => onSelect(p.id)}
+            onCheckedChange={() => onSelect(p.id)}
           />
         </td>
         <td className={`${styles.membersTd} ${styles.stickyLeft}`} style={{ left: 36 }}>

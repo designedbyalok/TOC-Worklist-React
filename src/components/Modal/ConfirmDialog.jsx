@@ -1,10 +1,18 @@
-import { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from '../ui/alert-dialog';
 import { Icon } from '../Icon/Icon';
-import styles from './ConfirmDialog.module.css';
 
 /**
  * Reusable confirmation dialog — matches Fold Health design system.
+ * Backed by shadcn AlertDialog (Radix) in controlled mode.
  *
  * @param {object}   props
  * @param {string}   props.icon        – Iconify name for the top icon (default: warning)
@@ -30,46 +38,48 @@ export function ConfirmDialog({
   onCancel,
   loading = false,
 }) {
-  const panelRef = useRef(null);
-
-  // Trap focus & close on Escape
-  useEffect(() => {
-    const handler = (e) => {
-      if (e.key === 'Escape' && onCancel) onCancel();
-    };
-    document.addEventListener('keydown', handler);
-    return () => document.removeEventListener('keydown', handler);
-  }, [onCancel]);
-
-  // Auto-focus the cancel button
-  useEffect(() => {
-    if (panelRef.current) panelRef.current.querySelector('button')?.focus();
-  }, []);
-
-  return createPortal(
-    <div className={styles.overlay} onClick={onCancel}>
-      <div className={styles.dialog} ref={panelRef} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.iconWrap}>
+  return (
+    <AlertDialog open onOpenChange={(open) => { if (!open) onCancel?.(); }}>
+      <AlertDialogContent className="flex flex-col items-center gap-4 p-5 max-w-[340px]">
+        {/* Icon */}
+        <div className="flex items-center justify-center w-6 h-6 shrink-0">
           <Icon name={icon} size={24} color={iconColor} />
         </div>
-        <div className={styles.textBlock}>
-          <div className={styles.title}>{title}</div>
-          {description && <div className={styles.description}>{description}</div>}
-        </div>
-        <div className={styles.actions}>
-          <button className={styles.cancelBtn} onClick={onCancel} disabled={loading}>
+
+        {/* Text */}
+        <AlertDialogHeader className="items-center text-center gap-1">
+          <AlertDialogTitle className="text-base font-medium text-[#3A485F] leading-tight">
+            {title}
+          </AlertDialogTitle>
+          {description && (
+            <AlertDialogDescription className="text-sm font-normal text-[#8A94A8] leading-snug">
+              {description}
+            </AlertDialogDescription>
+          )}
+        </AlertDialogHeader>
+
+        {/* Actions */}
+        <AlertDialogFooter className="flex-row justify-center w-full max-w-[320px] gap-2 mt-0">
+          <AlertDialogCancel
+            onClick={onCancel}
+            disabled={loading}
+            className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium font-['Inter'] bg-white border border-[#E9ECF1] text-[#3A485F] hover:bg-[#F6F7F8] hover:border-[#D0D6E1] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
             {cancelLabel}
-          </button>
-          <button
-            className={`${styles.confirmBtn} ${variant === 'error' ? styles.confirmBtnError : styles.confirmBtnPrimary}`}
+          </AlertDialogCancel>
+          <AlertDialogAction
             onClick={onConfirm}
             disabled={loading}
+            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium font-['Inter'] disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+              variant === 'error'
+                ? 'bg-[#FFF5F5] border border-[#E9ECF1] text-[#D72825] hover:bg-[#FFEDED] hover:border-[#D72825]'
+                : 'bg-[#8C5AE2] border border-[#8C5AE2] text-white hover:bg-[#7B4BD4]'
+            }`}
           >
-            {loading ? 'Deleting…' : confirmLabel}
-          </button>
-        </div>
-      </div>
-    </div>,
-    document.body
+            {loading ? 'Deleting\u2026' : confirmLabel}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

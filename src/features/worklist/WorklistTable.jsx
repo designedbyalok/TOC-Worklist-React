@@ -4,6 +4,7 @@ import { WorklistRow } from './WorklistRow';
 import { BulkBar } from '../../components/BulkBar/BulkBar';
 import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
 import { Icon } from '../../components/Icon/Icon';
+import { Checkbox } from '../../components/ui/checkbox';
 
 function EmptySearch() {
   return (
@@ -163,8 +164,8 @@ export function WorklistTable() {
   const allSelected = allIds.length > 0 && allIds.every(id => selectedIds.includes(id));
   const someSelected = selectedIds.length > 0 && !allSelected;
 
-  const handleSelectAll = (e) => {
-    if (e.target.checked) selectAll(allIds);
+  const handleSelectAll = (checked) => {
+    if (checked) selectAll(allIds);
     else clearSelected();
   };
 
@@ -223,7 +224,7 @@ export function WorklistTable() {
         <thead>
           <tr>
             <th style={{ ...thStyle, width: 36, padding: '8px 10px', position: 'sticky', top: 0, left: 0, zIndex: 4 }}>
-              <input type="checkbox" checked={allSelected} ref={el => { if (el) el.indeterminate = someSelected; }} onChange={handleSelectAll} />
+              <Checkbox checked={someSelected ? 'indeterminate' : allSelected} onCheckedChange={handleSelectAll} />
             </th>
             <th style={{ ...thStyle, padding: '8px 12px', position: 'sticky', top: 0, left: 36, zIndex: 4, borderRight: '1px solid var(--neutral-150)' }}>Members</th>
             <th style={thStyle}>LACE Acuity</th>

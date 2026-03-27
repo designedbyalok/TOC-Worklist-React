@@ -1,8 +1,10 @@
 @import './tokens/tokens.css';
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* NOTE: Tailwind CSS 4 preflight handles box-sizing/margin/padding reset in @layer base.
+   Do NOT add an unlayered * reset here — it would override Tailwind utility classes. */
 
 body {
+  line-height: 1.2;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 14px;
   font-weight: 400;

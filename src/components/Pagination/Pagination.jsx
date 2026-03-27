@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { Icon } from '../Icon/Icon';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 import styles from './Pagination.module.css';
 
 export function Pagination() {
@@ -53,8 +54,8 @@ export function Pagination() {
     setCurrentPage(p);
   };
 
-  const handlePerPageChange = (e) => {
-    setPerPage(Number(e.target.value));
+  const handlePerPageChange = (val) => {
+    setPerPage(Number(val));
   };
 
   const handleGoToPage = () => {
@@ -123,15 +124,16 @@ export function Pagination() {
         <Icon name="solar:alt-arrow-right-linear" size={18} />
       </button>
 
-      <select
-        className={styles.perPage}
-        value={perPage}
-        onChange={handlePerPageChange}
-      >
-        <option value={10}>10 / Page</option>
-        <option value={25}>25 / Page</option>
-        <option value={50}>50 / Page</option>
-      </select>
+      <Select value={String(perPage)} onValueChange={handlePerPageChange}>
+        <SelectTrigger className={styles.perPage}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="10">10 / Page</SelectItem>
+          <SelectItem value="25">25 / Page</SelectItem>
+          <SelectItem value="50">50 / Page</SelectItem>
+        </SelectContent>
+      </Select>
 
       <div className={styles.goToWrapper}>
         <input

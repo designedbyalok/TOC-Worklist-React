@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { Icon } from '../../components/Icon/Icon';
+import { Checkbox } from '../../components/ui/checkbox';
 import { QueueRow } from './QueueRow';
 import { QueueEmptyState } from './QueueEmptyState';
 
@@ -73,7 +74,7 @@ export function QueueTable() {
         <thead>
           <tr>
             <th style={{ ...thBase, width: 36, padding: '8px 10px', position: 'sticky', left: 0, zIndex: 4 }}>
-              <input type="checkbox" />
+              <Checkbox />
             </th>
             <th style={{ ...thBase, padding: '8px 12px', position: 'sticky', left: 36, zIndex: 4, borderRight: '1px solid var(--neutral-150)' }}>Members</th>
             <th style={thBase}>LACE Acuity</th>

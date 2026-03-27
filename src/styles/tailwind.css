@@ -1,0 +1,60 @@
+@import "tailwindcss";
+@source "../../src";
+
+/* ═══════════════════════════════════════════════════════════
+   Fold Health → shadcn/ui Theme Mapping
+   Maps existing CSS custom properties to Tailwind/shadcn theme.
+   Source of truth: src/tokens/tokens.css
+   ═══════════════════════════════════════════════════════════ */
+
+@theme inline {
+  /* ── Core backgrounds & foregrounds ── */
+  --color-background: var(--neutral-0);            /* #FFFFFF */
+  --color-foreground: var(--neutral-400);           /* #3A485F */
+  --color-muted: var(--neutral-75);                 /* #F3F4F7 */
+  --color-muted-foreground: var(--neutral-300);     /* #6F7A90 */
+  --color-popover: var(--neutral-0);               /* #FFFFFF */
+  --color-popover-foreground: var(--neutral-400);   /* #3A485F */
+  --color-card: var(--neutral-0);                  /* #FFFFFF */
+  --color-card-foreground: var(--neutral-400);      /* #3A485F */
+
+  /* ── Borders & inputs ── */
+  --color-border: var(--neutral-150);               /* #D0D6E1 */
+  --color-input: var(--neutral-150);                /* #D0D6E1 */
+  --color-ring: var(--primary-200);                /* #D7C0FF */
+
+  /* ── Primary (Purple) ── */
+  --color-primary: var(--primary-300);             /* #8C5AE2 */
+  --color-primary-foreground: var(--neutral-0);     /* #FFFFFF */
+
+  /* ── Secondary (Orange) ── */
+  --color-secondary: var(--secondary-300);         /* #F47A3E */
+  --color-secondary-foreground: var(--neutral-0);   /* #FFFFFF */
+
+  /* ── Accent ── */
+  --color-accent: var(--primary-100);              /* #F5F0FF */
+  --color-accent-foreground: var(--primary-400);   /* #5020A0 */
+
+  /* ── Destructive (Error) ── */
+  --color-destructive: var(--status-error);        /* #D72825 */
+  --color-destructive-foreground: var(--neutral-0); /* #FFFFFF */
+
+  /* ── Status colors for direct use ── */
+  --color-success: var(--status-success);          /* #009B53 */
+  --color-success-light: var(--status-success-light); /* #F5FFFA */
+  --color-warning: var(--status-warning);          /* #D9A50B */
+  --color-warning-light: var(--status-warning-light); /* #FFFCF5 */
+  --color-error: var(--status-error);              /* #D72825 */
+  --color-error-light: var(--status-error-light);  /* #FFF5F5 */
+  --color-info: var(--status-info);                /* #145ECC */
+  --color-info-light: var(--status-info-light);    /* #F4F8FE */
+
+  /* ── Border radius ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* ── Font ── */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}

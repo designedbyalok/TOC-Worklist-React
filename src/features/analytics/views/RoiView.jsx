@@ -3,6 +3,7 @@ import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_CONFIGS } from '../../../data/analyticsFallbacks';
 import { Card, safeConfigData } from './shared';
 import { SavingsAreaChart } from './charts';
+import { Slider } from '../../../components/ui/slider';
 import s from '../AnalyticsLayout.module.css';
 
 const DEFAULT_FALLBACK = FALLBACK_CONFIGS.roi_levers || { levers: [], baselines: {} };
@@ -62,12 +63,11 @@ export function RoiView({ showToast }) {
                 <span className={s.levVal}>{sliders[lev.key] || 0}{lev.unit}</span>
               </div>
               <div className={s.levSub}>{lev.sub}</div>
-              <input
-                type="range"
+              <Slider
                 min={0}
                 max={100}
-                value={sliders[lev.key] || 0}
-                onChange={(e) => setSlider(lev.key, Number(e.target.value))}
+                value={[sliders[lev.key] || 0]}
+                onValueChange={([val]) => setSlider(lev.key, val)}
                 className={s.simRange}
               />
             </div>
