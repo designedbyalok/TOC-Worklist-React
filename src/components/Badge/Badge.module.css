@@ -76,3 +76,55 @@
   border-color: rgba(111,122,144,0.2);
   cursor: default;
 }
+
+/* ── Compliance Badges ── */
+.compliance-pass { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
+.compliance-fail { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+.compliance-warn { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,0.2); }
+.compliance-na { background: var(--neutral-50); color: var(--neutral-300); border-color: rgba(111,122,144,0.2); }
+.compliance-emergency { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.25); font-weight: 600; }
+
+/* ── Priority Badges ── */
+.priority-critical { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+.priority-high { background: #FFF8F5; color: #E8742C; border-color: rgba(232,116,44,0.2); }
+.priority-medium { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,0.2); }
+.priority-low { background: var(--neutral-50); color: var(--neutral-300); border-color: rgba(111,122,144,0.2); }
+
+/* ── Outreach Category Badges ── */
+.outreach-appointment { background: #F4F8FE; color: #145ECC; border-color: rgba(20,94,204,0.2); }
+.outreach-refill { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
+.outreach-care-gap { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,0.2); }
+.outreach-post-visit { background: var(--primary-100); color: var(--primary-300); border-color: rgba(140,90,226,0.2); }
+.outreach-waitlist { background: var(--neutral-50); color: var(--neutral-300); border-color: rgba(111,122,144,0.2); }
+
+/* ── Escalation Badges ── */
+.escalation-confidence { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+.escalation-sentiment { background: #FFF8F5; color: #E8742C; border-color: rgba(232,116,44,0.2); }
+.escalation-loops { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,0.2); }
+.escalation-max-turns { background: var(--neutral-50); color: var(--neutral-400); border-color: rgba(111,122,144,0.2); }
+.escalation-emergency { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.25); font-weight: 600; }
+
+/* ── Security Badges ── */
+.security-pass { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
+.security-fail { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+.security-alert { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.25); font-weight: 600; animation: securityPulse 2s infinite; }
+
+/* ── Quality Score ── */
+.quality-good { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
+.quality-fair { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,0.2); }
+.quality-poor { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+
+/* ── Sentiment ── */
+.sentiment-positive { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
+.sentiment-neutral { background: var(--neutral-50); color: var(--neutral-300); border-color: rgba(111,122,144,0.2); }
+.sentiment-negative { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+
+/* ── System Health ── */
+.health-ok { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
+.health-degraded { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,0.2); }
+.health-down { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+
+@keyframes securityPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .7; }
+}

@@ -3,6 +3,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { WorklistRow } from './WorklistRow';
 import { BulkBar } from '../../components/BulkBar/BulkBar';
 import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
+import { ErrorState } from '../../components/ErrorState/ErrorState';
 import { Icon } from '../../components/Icon/Icon';
 import { Checkbox } from '../../components/ui/checkbox';
 
@@ -41,16 +42,15 @@ const STATUS_SECTIONS = [
   { key: 'scheduled', label: 'Scheduled', icon: 'solar:calendar-bold', color: '#2563EB', dot: true },
   { key: 'attention', label: 'Needs Attention', icon: 'solar:danger-triangle-bold', color: '#D97706', dot: false },
   { key: 'enrolled', label: 'Enrolled', icon: 'solar:verified-check-bold', color: '#059669', dot: false },
-  { key: 'completed', label: 'Completed', icon: 'solar:check-circle-bold', color: '#059669', dot: false },
 ];
 
-const SECTION_ORDER = { oncall: 0, queued: 1, scheduled: 2, attention: 3, enrolled: 4, completed: 5 };
+const SECTION_ORDER = { oncall: 0, queued: 1, scheduled: 2, attention: 3, enrolled: 4 };
 
 function getStatusSection(patient) {
   if (patient.status === 'oncall') return 'oncall';
   if (patient.status === 'queued') return 'queued';
   if (patient.status === 'failed' || patient.status === 'review') return 'attention';
-  if (patient.status === 'completed') return 'completed';
+  if (patient.status === 'completed') return 'enrolled';
   if (patient.tocStatus === 'enrolled') return 'enrolled';
   return 'scheduled';
 }
@@ -110,6 +110,8 @@ function SectionHeader({ section, count, colSpan, isExpanded, onToggle, hasMore 
 export function WorklistTable() {
   const patients = useAppStore(s => s.patients);
   const patientsLoading = useAppStore(s => s.patientsLoading);
+  const patientsError = useAppStore(s => s.patientsError);
+  const fetchPatients = useAppStore(s => s.fetchPatients);
   const selectedIds = useAppStore(s => s.selectedIds);
   const selectPatient = useAppStore(s => s.selectPatient);
   const selectAll = useAppStore(s => s.selectAll);
@@ -137,7 +139,7 @@ export function WorklistTable() {
 
     for (const [key, value] of Object.entries(activeFilters)) {
       if (value) {
-        result = result.filter(p => p[key] === value);
+        result = result.filter(p => String(p[key]) === String(value));
       }
     }
 
@@ -179,6 +181,7 @@ export function WorklistTable() {
   const colCount = 12;
 
   if (patientsLoading) return <TableSkeleton rows={perPage} />;
+  if (patientsError) return <ErrorState title="Failed to load patients" message={patientsError} onRetry={fetchPatients} />;
 
   const buildStatusGroupedRows = () => {
     const rows = [];

@@ -58,11 +58,12 @@
   overflow: hidden;
 }
 
-.agent.erica { background: radial-gradient(circle at 30% 40%, #EF4444, #F97316, #10B981); }
-.agent.ricardo { background: radial-gradient(circle at 40% 60%, #3B82F6, #6366F1, #1E1B4B); }
-.agent.maria { background: radial-gradient(circle at 60% 40%, #F59E0B, #EF4444, #7C3AED); }
-.agent.jia { background: radial-gradient(circle at 50% 50%, #F472B6, #EC4899, #FCA5A5); }
-.agent.dubois { background: radial-gradient(circle at 40% 50%, #F97316, #FBBF24, #EF4444); }
+.agent { background: var(--primary-100); border: 0.5px solid var(--primary-200); display: flex; align-items: center; justify-content: center; color: var(--primary-300); font-size: 11px; font-weight: 600; }
+.agent.erica { background: radial-gradient(circle at 30% 40%, #EF4444, #F97316, #10B981); border: none; }
+.agent.ricardo { background: radial-gradient(circle at 40% 60%, #3B82F6, #6366F1, #1E1B4B); border: none; }
+.agent.maria { background: radial-gradient(circle at 60% 40%, #F59E0B, #EF4444, #7C3AED); border: none; }
+.agent.jia { background: radial-gradient(circle at 50% 50%, #F472B6, #EC4899, #FCA5A5); border: none; }
+.agent.dubois { background: radial-gradient(circle at 40% 50%, #F97316, #FBBF24, #EF4444); border: none; }
 
 .invokeAgent {
   width: 40px;

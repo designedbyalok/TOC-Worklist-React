@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Icon } from '../Icon/Icon';
 import { Drawer } from '../Drawer/Drawer';
+import { ComplianceBadges } from '../ComplianceBadges/ComplianceBadges';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './DetailDrawer.module.css';
 
@@ -107,6 +108,131 @@ export function DetailDrawer() {
           <button className={styles.callCardBtn}><Icon name="solar:menu-dots-linear" size={16} /></button>
         </div>
       </div>
+
+      {/* ── Compliance & Quality Section ── */}
+      <ComplianceBadges compliance={callRecord.compliance} />
+
+      {/* Quality Score */}
+      {callRecord.qualityScore && (
+        <div className={styles.qualityCard}>
+          <div className={styles.qualityHeader}>
+            <Icon name="solar:star-bold" size={14} color="#D9A50B" />
+            <span className={styles.qualityLabel}>Quality Score</span>
+            <span className={`${styles.qualityOverall} ${
+              callRecord.qualityScore.overall >= 85 ? styles.qualityGood :
+              callRecord.qualityScore.overall >= 70 ? styles.qualityFair : styles.qualityPoor
+            }`}>
+              {callRecord.qualityScore.overall}%
+            </span>
+          </div>
+          <div className={styles.qualityBars}>
+            {[
+              { label: 'Intent Accuracy', val: callRecord.qualityScore.intentAccuracy },
+              { label: 'Outcome', val: callRecord.qualityScore.outcomeAppropriateness },
+              { label: 'Escalation', val: callRecord.qualityScore.escalationTimeliness },
+              { label: 'Compliance', val: callRecord.qualityScore.complianceDisclosure },
+            ].map(b => (
+              <div key={b.label} className={styles.qualityBarRow}>
+                <span className={styles.qualityBarLabel}>{b.label}</span>
+                <div className={styles.qualityBarTrack}>
+                  <div className={styles.qualityBarFill} style={{ width: `${b.val}%`, background: b.val >= 85 ? '#009B53' : b.val >= 70 ? '#D9A50B' : '#D72825' }} />
+                </div>
+                <span className={styles.qualityBarVal}>{b.val}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Sentiment Score */}
+      {callRecord.sentimentScore && (
+        <div className={styles.sentimentRow}>
+          <Icon name={
+            callRecord.sentimentScore.label === 'positive' ? 'solar:emoji-funny-circle-bold' :
+            callRecord.sentimentScore.label === 'negative' ? 'solar:emoji-sad-circle-bold' :
+            'solar:emoji-funny-square-bold'
+          } size={16} color={
+            callRecord.sentimentScore.label === 'positive' ? '#009B53' :
+            callRecord.sentimentScore.label === 'negative' ? '#D72825' : '#D9A50B'
+          } />
+          <span className={styles.sentimentLabel}>Sentiment</span>
+          <span className={`${styles.sentimentValue} ${styles[`sentiment_${callRecord.sentimentScore.label}`]}`}>
+            {callRecord.sentimentScore.overall}% {callRecord.sentimentScore.label}
+          </span>
+        </div>
+      )}
+
+      {/* Escalation Details */}
+      {callRecord.escalation && (
+        <div className={styles.escalationCard}>
+          <div className={styles.escalationHeader}>
+            <Icon name="solar:danger-triangle-bold" size={14} color="#D72825" />
+            <span>Escalation Triggered</span>
+          </div>
+          <div className={styles.escalationDetail}>
+            <span className={styles.escalationTrigger}>
+              {callRecord.escalation.trigger === 'sentiment' && 'Negative Sentiment'}
+              {callRecord.escalation.trigger === 'confidence' && 'Low Confidence'}
+              {callRecord.escalation.trigger === 'loops' && 'Conversation Loop'}
+              {callRecord.escalation.trigger === 'max-turns' && 'Max Turns Reached'}
+              {callRecord.escalation.trigger === 'emergency' && 'Emergency Detected'}
+            </span>
+            <span className={styles.escalationDesc}>{callRecord.escalation.detail}</span>
+            {callRecord.escalation.confidence && (
+              <span className={styles.escalationMeta}>Confidence: {callRecord.escalation.confidence}%</span>
+            )}
+            {callRecord.escalation.sentiment && (
+              <span className={styles.escalationMeta}>Sentiment: {(callRecord.escalation.sentiment * 100).toFixed(0)}%</span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Sub-Agents Invoked */}
+      {callRecord.subAgentsInvoked && (
+        <div className={styles.subAgentsRow}>
+          <span className={styles.subAgentsLabel}>Sub-Agents:</span>
+          {callRecord.subAgentsInvoked.map(sa => (
+            <span key={sa} className={styles.subAgentTag}>
+              <Icon name="solar:bot-bold" size={11} /> {sa}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Detected Intents */}
+      {callRecord.detectedIntents && (
+        <div className={styles.subAgentsRow}>
+          <span className={styles.subAgentsLabel}>Intents:</span>
+          {callRecord.detectedIntents.map(intent => (
+            <span key={intent} className={styles.intentTag}>{intent}</span>
+          ))}
+        </div>
+      )}
+
+      {/* Security Badges */}
+      {callRecord.security && (
+        <div className={styles.securityRow}>
+          <span className={`${styles.secBadge} ${callRecord.security.piiScrubbed ? styles.secPass : styles.secFail}`}>
+            <Icon name="solar:shield-check-bold" size={12} />
+            {callRecord.security.piiScrubbed ? 'PII Scrubbed' : 'PII Present'}
+          </span>
+          <span className={styles.secBadge}>
+            <Icon name="solar:map-point-bold" size={12} />
+            {callRecord.security.stateCompliance}
+          </span>
+          <span className={styles.secBadge}>
+            <Icon name="solar:clock-circle-bold" size={12} />
+            {callRecord.security.dataRetentionDays}d retention
+          </span>
+          {callRecord.security.promptInjectionDetected && (
+            <span className={`${styles.secBadge} ${styles.secAlert}`}>
+              <Icon name="solar:danger-triangle-bold" size={12} />
+              Injection Alert
+            </span>
+          )}
+        </div>
+      )}
 
       {/* ── Goals Tracking ── */}
       <div className={styles.sectionHeader} onClick={() => toggleSection('goals')}>

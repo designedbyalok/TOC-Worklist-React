@@ -10,8 +10,16 @@ import { CallPopover } from '../components/CallPopover/CallPopover';
 import { InvokeAgentModal } from '../components/InvokeAgentModal/InvokeAgentModal';
 import { DetailDrawer } from '../components/DetailDrawer/DetailDrawer';
 import { LiveDrawer } from '../components/LiveDrawer/LiveDrawer';
+import { SystemHealthStrip } from '../components/SystemHealthStrip/SystemHealthStrip';
+import { DegradedBanner } from '../components/DegradedBanner/DegradedBanner';
+import { GoalDetailDrawer } from '../features/settings/panels/GoalDetailDrawer';
+import { GoalWizardDrawer } from '../features/settings/panels/GoalWizardDrawer';
+import { GroupDetailDrawer } from '../features/settings/panels/GroupDetailDrawer';
+import { AgentRulesDrawer } from '../features/settings/panels/AgentRulesDrawer';
+import { BusinessHoursDrawer } from '../features/settings/panels/BusinessHoursDrawer';
 import { WorklistTable } from '../features/worklist/WorklistTable';
 import { QueueTable } from '../features/queue/QueueTable';
+import { QueueSummaryBar } from '../features/queue/QueueSummaryBar';
 import { SettingsLayout } from '../features/settings/SettingsLayout';
 import { CreateAgentDrawer } from '../features/settings/CreateAgentDrawer';
 import { AgentCanvas } from '../features/agent-builder/AgentCanvas';
@@ -69,9 +77,12 @@ function PopulationView() {
       <SubNav collapsed={subnavCollapsed} />
       <div className={styles.main}>
         <TopBar />
+        <DegradedBanner />
+        <SystemHealthStrip />
         <div className={styles.content}>
           <TabBar />
           {showFilterBar && <FilterBar />}
+          {activeTab === 'queue' && <QueueSummaryBar />}
           {activeTab === 'worklist' ? <WorklistTable /> : <QueueTable />}
           <Pagination />
         </div>
@@ -109,6 +120,11 @@ export function AppLayout() {
   const callPopoverPatient = useAppStore(s => s.callPopoverPatient);
   const detailPatient = useAppStore(s => s.detailPatient);
   const liveDrawerPatient = useAppStore(s => s.liveDrawerPatient);
+  const goalDetailId = useAppStore(s => s.goalDetailId);
+  const goalWizardOpen = useAppStore(s => s.goalWizardOpen);
+  const chatGroupDetailId = useAppStore(s => s.chatGroupDetailId);
+  const agentRulesGroupId = useAppStore(s => s.agentRulesGroupId);
+  const businessHoursOpen = useAppStore(s => s.businessHoursOpen);
 
   // Agent Builder is a full-screen takeover
   if (activePage === 'builder') {
@@ -133,6 +149,11 @@ export function AppLayout() {
       <InvokeAgentModal />
       {detailPatient && <DetailDrawer />}
       {liveDrawerPatient && <LiveDrawer />}
+      {goalDetailId && <GoalDetailDrawer />}
+      {goalWizardOpen && <GoalWizardDrawer />}
+      {chatGroupDetailId && <GroupDetailDrawer />}
+      {agentRulesGroupId && <AgentRulesDrawer />}
+      {businessHoursOpen && <BusinessHoursDrawer />}
       <Toast />
       <ToastSuccess />
     </div>

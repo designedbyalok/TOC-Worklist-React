@@ -1,4 +1,22 @@
-export const patients = [
+// TCPA / compliance enrichment per patient
+const PATIENT_TCPA = {
+  p1:  { tcpaOptIn: true, tcpaTimezone: 'ET', preferredCallWindow: '8:00 AM – 9:00 PM', outreachCategory: 'post-visit', priority: 2 },
+  p2:  { tcpaOptIn: true, tcpaTimezone: 'CT', preferredCallWindow: '9:00 AM – 6:00 PM', outreachCategory: 'post-visit', priority: 1 },
+  p3:  { tcpaOptIn: true, tcpaTimezone: 'ET', preferredCallWindow: '8:00 AM – 9:00 PM', outreachCategory: 'post-visit', priority: 2 },
+  p4:  { tcpaOptIn: false, tcpaTimezone: 'PT', preferredCallWindow: '10:00 AM – 5:00 PM', outreachCategory: 'post-visit', priority: 1 },
+  p5:  { tcpaOptIn: true, tcpaTimezone: 'ET', preferredCallWindow: '8:00 AM – 9:00 PM', outreachCategory: 'refill', priority: 2 },
+  p6:  { tcpaOptIn: true, tcpaTimezone: 'MT', preferredCallWindow: '9:00 AM – 7:00 PM', outreachCategory: 'post-visit', priority: 3 },
+  p7:  { tcpaOptIn: true, tcpaTimezone: 'CT', preferredCallWindow: '8:00 AM – 9:00 PM', outreachCategory: 'care-gap', priority: 3 },
+  p8:  { tcpaOptIn: true, tcpaTimezone: 'ET', preferredCallWindow: '8:00 AM – 9:00 PM', outreachCategory: 'post-visit', priority: 2 },
+  p9:  { tcpaOptIn: true, tcpaTimezone: 'ET', preferredCallWindow: '10:00 AM – 6:00 PM', outreachCategory: 'post-visit', priority: 2 },
+  p10: { tcpaOptIn: true, tcpaTimezone: 'PT', preferredCallWindow: '9:00 AM – 8:00 PM', outreachCategory: 'appointment', priority: 3 },
+  p11: { tcpaOptIn: true, tcpaTimezone: 'ET', preferredCallWindow: '8:00 AM – 9:00 PM', outreachCategory: 'post-visit', priority: 1 },
+  p12: { tcpaOptIn: true, tcpaTimezone: 'CT', preferredCallWindow: '8:00 AM – 9:00 PM', outreachCategory: 'care-gap', priority: 3 },
+  p13: { tcpaOptIn: false, tcpaTimezone: 'ET', preferredCallWindow: '10:00 AM – 4:00 PM', outreachCategory: 'waitlist', priority: 4 },
+  p14: { tcpaOptIn: true, tcpaTimezone: 'PT', preferredCallWindow: '9:00 AM – 7:00 PM', outreachCategory: 'post-visit', priority: 1 },
+};
+
+const _rawPatients = [
   {
     id: 'p1', initials: 'RH', name: 'Ralph Halvorson',
     gender: 'M', age: '52y 5m', memberId: '#2468029989898', enrolled: true, language: 'en',
@@ -824,3 +842,8 @@ export const patients = [
     ]
   }
 ];
+
+export const patients = _rawPatients.map(p => ({
+  ...p,
+  ...(PATIENT_TCPA[p.id] || { tcpaOptIn: true, tcpaTimezone: 'ET', preferredCallWindow: '8:00 AM – 9:00 PM', outreachCategory: 'post-visit', priority: 3 }),
+}));

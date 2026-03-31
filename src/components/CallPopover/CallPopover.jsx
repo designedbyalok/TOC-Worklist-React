@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { Icon } from '../Icon/Icon';
 import { Avatar } from '../Avatar/Avatar';
+import { TcpaIndicator } from '../ComplianceBadges/ComplianceBadges';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './CallPopover.module.css';
 
-const LANG_MAP = { en: 'English', es: 'Spanish', zh: 'Chinese', yue: 'Cantonese' };
+const LANG_MAP = { en: 'English', es: 'Spanish', zh: 'Chinese', yue: 'Cantonese', ko: 'Korean', vi: 'Vietnamese', hi: 'Hindi', pa: 'Punjabi' };
 
 export function CallPopover() {
   const callPopoverPatient = useAppStore(s => s.callPopoverPatient);
@@ -50,7 +51,7 @@ export function CallPopover() {
       <div className={styles.header}>
         <div>
           <div className={styles.title}>Call {p.name}</div>
-          <div className={styles.sub}>Prefer time 10 AM - 5 PM | M-F</div>
+          <TcpaIndicator patient={p} />
           <div className={styles.sub}>Speaks: {LANG_MAP[p.language] || 'English'}</div>
         </div>
         <button className={styles.closeBtn} onClick={closeCallPopover}>

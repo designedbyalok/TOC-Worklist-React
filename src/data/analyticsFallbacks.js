@@ -570,6 +570,116 @@ export const FALLBACK_TABLES = {
     ],
   },
 
+  // Financial — High Cost Claimants
+  high_cost_claimants: {
+    columns: ['Member ID', 'Diagnosis', 'Total Cost', 'IP Admits', 'Status'],
+    rows: [
+      { member_id: 'M-10042', diagnosis: 'CHF + CKD Stage IV', total_cost: '$142,800', ip_admits: 4, status: 'red' },
+      { member_id: 'M-10187', diagnosis: 'ESRD on Dialysis', total_cost: '$128,400', ip_admits: 3, status: 'red' },
+      { member_id: 'M-10298', diagnosis: 'Metastatic Lung CA', total_cost: '$118,200', ip_admits: 5, status: 'red' },
+      { member_id: 'M-10415', diagnosis: 'CHF + COPD + DM', total_cost: '$96,400', ip_admits: 3, status: 'amber' },
+      { member_id: 'M-10523', diagnosis: 'Liver Cirrhosis', total_cost: '$84,600', ip_admits: 2, status: 'amber' },
+    ],
+  },
+
+  // Readmissions — Top DRGs
+  top_drgs: {
+    columns: ['DRG', 'Description', 'Admits', 'Readmit%'],
+    rows: [
+      { drg: '291', description: 'Heart Failure & Shock w MCC', admits: 142, readmit_pct: '24.1%' },
+      { drg: '190', description: 'COPD w MCC', admits: 98, readmit_pct: '19.8%' },
+      { drg: '871', description: 'Septicemia w/o MV >96h w MCC', admits: 64, readmit_pct: '18.8%' },
+      { drg: '193', description: 'Pneumonia w MCC', admits: 86, readmit_pct: '12.1%' },
+      { drg: '470', description: 'Major Hip/Knee Joint w/o MCC', admits: 76, readmit_pct: '5.3%' },
+    ],
+  },
+
+  // Readmissions — Top Facilities
+  top_facilities_readmit: {
+    columns: ['Facility', 'Discharges', 'Readmit%', 'vs Avg'],
+    rows: [
+      { facility: 'Valley General Hospital', discharges: 248, readmit_pct: '22.4%', vs_avg: '+4.0pp' },
+      { facility: 'St. Mary Medical Center', discharges: 312, readmit_pct: '19.2%', vs_avg: '+0.8pp' },
+      { facility: 'Riverside Community', discharges: 186, readmit_pct: '16.8%', vs_avg: '-1.6pp' },
+      { facility: 'Lakeview Regional', discharges: 224, readmit_pct: '14.2%', vs_avg: '-4.2pp' },
+      { facility: 'Summit Medical', discharges: 198, readmit_pct: '12.6%', vs_avg: '-5.8pp' },
+    ],
+  },
+
+  // ED & Outpatient — Chief Complaints
+  ed_chief_complaints: {
+    columns: ['Chief Complaint', 'Visits', 'Share%', 'Avoidable%'],
+    rows: [
+      { complaint: 'Chest Pain / Dyspnea', visits: 412, share_pct: '14.2%', avoidable_pct: '18%' },
+      { complaint: 'Abdominal Pain', visits: 348, share_pct: '12.0%', avoidable_pct: '42%' },
+      { complaint: 'Back / Musculoskeletal Pain', visits: 286, share_pct: '9.8%', avoidable_pct: '61%' },
+      { complaint: 'Headache / Dizziness', visits: 224, share_pct: '7.7%', avoidable_pct: '54%' },
+      { complaint: 'URI / Cough / Fever', visits: 196, share_pct: '6.7%', avoidable_pct: '72%' },
+    ],
+  },
+
+  // ED & Outpatient — Top ED Facilities
+  ed_top_facilities: {
+    columns: ['Facility', 'ED Visits', 'Avoid%', 'Avg Cost'],
+    rows: [
+      { facility: 'Valley General ED', visits: 842, avoid_pct: '38%', avg_cost: '$1,840' },
+      { facility: 'St. Mary ED', visits: 624, avoid_pct: '32%', avg_cost: '$1,620' },
+      { facility: 'Riverside ED', visits: 518, avoid_pct: '28%', avg_cost: '$1,480' },
+      { facility: 'Lakeview ED', visits: 386, avoid_pct: '24%', avg_cost: '$1,540' },
+      { facility: 'Summit Urgent Care', visits: 312, avoid_pct: '18%', avg_cost: '$980' },
+    ],
+  },
+
+  // ED & Outpatient — Org Hierarchy
+  op_ed_org_hierarchy: {
+    columns: ['Practice', 'ED/1K', 'Avoid%', 'OP/1K', 'AWV%'],
+    rows: [
+      { practice: 'Patel Family Medicine', ed_per_1k: '312', avoid_pct: '28%', op_per_1k: '1,420', awv_pct: '71%' },
+      { practice: 'Riverside Medical Group', ed_per_1k: '368', avoid_pct: '34%', op_per_1k: '1,280', awv_pct: '48%' },
+      { practice: 'Valley Primary Care', ed_per_1k: '424', avoid_pct: '41%', op_per_1k: '1,180', awv_pct: '52%' },
+      { practice: 'Lakeview Health Partners', ed_per_1k: '298', avoid_pct: '24%', op_per_1k: '1,380', awv_pct: '68%' },
+      { practice: 'Summit Internal Medicine', ed_per_1k: '342', avoid_pct: '30%', op_per_1k: '1,340', awv_pct: '61%' },
+    ],
+  },
+
+  // SNF Quality Scorecard (extended with CMS Stars)
+  snf_quality_scorecard: {
+    columns: ['SNF', 'Admits', 'Readmit%', 'Avg LOS', 'CMS Stars', 'Status'],
+    rows: [
+      { snf: 'Valley SNF', admits: 24, readmit_pct: '34%', avg_los: '18.2d', cms_stars: 2, status: 'red' },
+      { snf: 'Summit Post-Acute', admits: 18, readmit_pct: '19%', avg_los: '15.6d', cms_stars: 3, status: 'amber' },
+      { snf: 'Meadow Creek SNF', admits: 28, readmit_pct: '14%', avg_los: '13.2d', cms_stars: 3, status: 'amber' },
+      { snf: 'Riverside SNF', admits: 42, readmit_pct: '12%', avg_los: '12.4d', cms_stars: 4, status: 'green' },
+      { snf: 'Lakeview SNF', admits: 38, readmit_pct: '9%', avg_los: '11.8d', cms_stars: 5, status: 'green' },
+    ],
+  },
+
+  // Risk — Open HCC Suspects
+  open_hcc_suspects: {
+    columns: ['Member ID', 'HCC Category', 'Description', 'Est. Revenue Impact', 'Last Coded Date', 'Action'],
+    rows: [
+      { member_id: 'M-10042', hcc_category: 'HCC 85', description: 'Congestive Heart Failure', revenue_impact: '$4,820', last_coded: '2024-11-15', action: 'Schedule AWV' },
+      { member_id: 'M-10187', hcc_category: 'HCC 18', description: 'Diabetes w/ Chronic Complications', revenue_impact: '$3,640', last_coded: '2024-09-22', action: 'Schedule AWV' },
+      { member_id: 'M-10298', hcc_category: 'HCC 111', description: 'COPD', revenue_impact: '$3,180', last_coded: '2024-10-08', action: 'Chart Review' },
+      { member_id: 'M-10415', hcc_category: 'HCC 138', description: 'Peripheral Artery Disease', revenue_impact: '$2,940', last_coded: '2024-08-30', action: 'Schedule AWV' },
+      { member_id: 'M-10523', hcc_category: 'HCC 40', description: 'Rheumatoid Arthritis', revenue_impact: '$2,560', last_coded: '2024-12-01', action: 'Chart Review' },
+      { member_id: 'M-10634', hcc_category: 'HCC 10', description: 'Lymphatic Cancers', revenue_impact: '$5,120', last_coded: '2024-07-18', action: 'Schedule AWV' },
+    ],
+  },
+
+  // Care — Programs Detail
+  programs_detail: {
+    columns: ['Program', 'Eligible', 'Engaged', 'Last Outreach', 'Pref Mode', 'Language', 'Pref Day', 'Outreach%', 'Engage%', 'Action'],
+    rows: [
+      { program: 'CCM', eligible: 6100, engaged: 4823, last_outreach: '03/24/2026', pref_mode: 'Phone', language: 'English', pref_day: 'Tue', outreach_pct: '84%', engage_pct: '79%', action: 'Expand' },
+      { program: 'TCM', eligible: 2480, engaged: 2156, last_outreach: '03/25/2026', pref_mode: 'Phone', language: 'English', pref_day: 'Wed', outreach_pct: '91%', engage_pct: '87%', action: 'Monitor' },
+      { program: 'AWV', eligible: 8420, engaged: 5120, last_outreach: '03/22/2026', pref_mode: 'SMS', language: 'Multi', pref_day: 'Mon', outreach_pct: '72%', engage_pct: '61%', action: 'Campaign' },
+      { program: 'ED Diversion', eligible: 2100, engaged: 1842, last_outreach: '03/23/2026', pref_mode: 'Phone', language: 'English', pref_day: 'Thu', outreach_pct: '88%', engage_pct: '88%', action: 'Monitor' },
+      { program: 'TOC-IP', eligible: 1410, engaged: 1284, last_outreach: '03/26/2026', pref_mode: 'Phone', language: 'English', pref_day: 'Mon', outreach_pct: '94%', engage_pct: '91%', action: 'Monitor' },
+      { program: 'TOC-ED', eligible: 2100, engaged: 1842, last_outreach: '03/25/2026', pref_mode: 'SMS', language: 'Multi', pref_day: 'Fri', outreach_pct: '82%', engage_pct: '88%', action: 'Expand' },
+    ],
+  },
+
   // Population
   actionable_member_lists: {
     columns: ['Cohort', 'Members', 'Avg TCOC', 'Avg RAF', 'Top Conditions'],
@@ -643,6 +753,21 @@ export const FALLBACK_PROGRESS_BARS = {
     { label: 'Colorectal Cancer Screening', value: '58%', pct: 58, color: 'red', sub: 'Weight: 15% \u00b7 Target: 70%' },
     { label: 'Depression Screening (PHQ-9)', value: '83%', pct: 83, color: 'green', sub: 'Weight: 15% \u00b7 Target: 85%' },
     { label: 'Medication Adherence', value: '77%', pct: 77, color: 'amber', sub: 'Weight: 10% \u00b7 Target: 80%' },
+  ],
+
+  sdoh_screening: [
+    { label: 'Food Insecurity Screening', value: '72%', pct: 72, color: 'amber', sub: 'Target: 85% \u2014 13pp gap' },
+    { label: 'Housing Instability', value: '68%', pct: 68, color: 'amber', sub: 'Target: 80% \u2014 12pp gap' },
+    { label: 'Transportation Barriers', value: '45%', pct: 45, color: 'red', sub: 'Target: 70% \u2014 25pp gap' },
+    { label: 'Social Isolation', value: '38%', pct: 38, color: 'red', sub: 'Target: 60% \u2014 22pp gap' },
+  ],
+
+  hcc_recapture_categories: [
+    { label: 'Diabetes / Endocrine', value: '78%', pct: 78, color: 'green', sub: '218 of 279 suspects closed' },
+    { label: 'Cardiovascular', value: '65%', pct: 65, color: 'amber', sub: '186 of 286 suspects closed' },
+    { label: 'Renal', value: '58%', pct: 58, color: 'amber', sub: '124 of 214 suspects closed' },
+    { label: 'Pulmonary', value: '72%', pct: 72, color: 'green', sub: '148 of 206 suspects closed' },
+    { label: 'Neurological', value: '45%', pct: 45, color: 'red', sub: '86 of 191 suspects closed' },
   ],
 
   care_quality_metrics: [

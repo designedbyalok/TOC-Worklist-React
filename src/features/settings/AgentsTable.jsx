@@ -6,6 +6,11 @@ import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
 import { Pagination } from '../../components/Pagination/Pagination';
 import { ConfirmDialog } from '../../components/Modal/ConfirmDialog';
 import { supabase } from '../../lib/supabase';
+import { PracticeConfigPanel } from './panels/PracticeConfigPanel';
+import { FeatureTogglesPanel } from './panels/FeatureTogglesPanel';
+import { EscalationPolicyPanel } from './panels/EscalationPolicyPanel';
+import { KnowledgeBasePanel } from './panels/KnowledgeBasePanel';
+import { GoalsPanel } from './panels/GoalsPanel';
 import styles from './AgentsTable.module.css';
 
 const TABS = ['Agents', 'Goals', 'Knowledge Base', 'Tools', 'Compliance Policies', 'Test Cases', 'Analytics'];
@@ -179,11 +184,16 @@ export function AgentsTable() {
   const settingsTab = useAppStore(s => s.settingsTab);
   const setSettingsTab = useAppStore(s => s.setSettingsTab);
   const setShowCreateAgent = useAppStore(s => s.setShowCreateAgent);
+  const setGoalWizard = useAppStore(s => s.setGoalWizard);
+  const fetchGoals = useAppStore(s => s.fetchGoals);
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchVal, setSearchVal] = useState('');
+  const [goalsFilter, setGoalsFilter] = useState('all');
+  const [goalsViewMode, setGoalsViewMode] = useState('grid');
 
   useEffect(() => { fetchAgents(); }, [fetchAgents]);
+  useEffect(() => { if (settingsTab === 'goals') fetchGoals(); }, [settingsTab, fetchGoals]);
 
   const currentPage = useAppStore(s => s.currentPage);
   const perPage = useAppStore(s => s.perPage);
@@ -220,7 +230,7 @@ export function AgentsTable() {
             {searchOpen ? (
               <div className={styles.searchInput}>
                 <Icon name="solar:magnifer-linear" size={15} color="#6F7A90" />
-                <input autoFocus type="text" placeholder="Search agents…" value={searchVal} onChange={e => setSearchVal(e.target.value)} />
+                <input autoFocus type="text" placeholder={settingsTab === 'goals' ? 'Search goals…' : 'Search agents…'} value={searchVal} onChange={e => setSearchVal(e.target.value)} />
                 <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchVal(''); }}>✕</button>
               </div>
             ) : (
@@ -230,48 +240,119 @@ export function AgentsTable() {
             )}
           </div>
           <span className={styles.tabDivider} />
-          <button className={styles.createBtn} onClick={() => setShowCreateAgent(true)}>
+          <button className={styles.createBtn} onClick={() => {
+            if (settingsTab === 'goals') {
+              setGoalWizard(true, null);
+            } else {
+              setShowCreateAgent(true);
+            }
+          }}>
             <Icon name="solar:add-circle-linear" size={16} />
-            Create New
+            {settingsTab === 'goals' ? 'New Goal' : 'Create New'}
           </button>
         </div>
       </div>
 
-      <div className={styles.tableWrap}>
-        {agentsLoading ? (
-          <TableSkeleton rows={8} />
-        ) : (
-          <>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Agent Name</th><th>Use Case</th><th>Version</th><th>Voice</th>
-                  <th>Last Updated</th><th>Last Updated By</th><th>Status</th><th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedAgents.map(agent => (
-                  <AgentRow key={agent.id} agent={agent} />
-                ))}
-              </tbody>
-            </table>
-            {filteredAgents.length === 0 && searchVal.trim() && (
-              <div className={styles.emptySearch}>
-                <Icon name="solar:magnifer-linear" size={40} color="#D0D6E1" />
-                <p className={styles.emptyTitle}>No results found</p>
-                <p className={styles.emptyDesc}>No agents match "<strong>{searchVal.trim()}</strong>". Try a different name or clear the search.</p>
-              </div>
+      {/* Goals filter bar (between tabs and content, like worklist FilterBar) */}
+      {settingsTab === 'goals' && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderBottom: '0.5px solid var(--neutral-150)', flexShrink: 0 }}>
+          {['all', 'active', 'draft', 'TCM', 'Outreach'].map(f => (
+            <button
+              key={f}
+              onClick={() => setGoalsFilter(f)}
+              style={{
+                padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500,
+                cursor: 'pointer', border: '0.5px solid', fontFamily: "'Inter', sans-serif",
+                transition: 'all .15s', userSelect: 'none',
+                borderColor: goalsFilter === f ? 'var(--primary-200)' : 'var(--neutral-150)',
+                background: goalsFilter === f ? 'var(--primary-50)' : '#fff',
+                color: goalsFilter === f ? 'var(--primary-300)' : 'var(--neutral-300)',
+              }}
+            >
+              {f === 'all' ? 'All' : f}
+            </button>
+          ))}
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 2, background: 'var(--neutral-50)', border: '0.5px solid var(--neutral-150)', borderRadius: 6, padding: 2 }}>
+            <button
+              onClick={() => setGoalsViewMode('grid')}
+              title="Grid view"
+              style={{
+                width: 28, height: 26, borderRadius: 4, border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: goalsViewMode === 'grid' ? '#fff' : 'transparent',
+                boxShadow: goalsViewMode === 'grid' ? '0 1px 2px rgba(0,0,0,.06)' : 'none',
+                color: goalsViewMode === 'grid' ? 'var(--neutral-400)' : 'var(--neutral-200)',
+              }}
+            >
+              <Icon name="solar:widget-linear" size={14} />
+            </button>
+            <button
+              onClick={() => setGoalsViewMode('table')}
+              title="Table view"
+              style={{
+                width: 28, height: 26, borderRadius: 4, border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: goalsViewMode === 'table' ? '#fff' : 'transparent',
+                boxShadow: goalsViewMode === 'table' ? '0 1px 2px rgba(0,0,0,.06)' : 'none',
+                color: goalsViewMode === 'table' ? 'var(--neutral-400)' : 'var(--neutral-200)',
+              }}
+            >
+              <Icon name="solar:list-linear" size={14} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Tab-specific content */}
+      {settingsTab === 'goals' ? (
+        <div className={styles.tableWrap}><GoalsPanel searchQuery={searchVal} filter={goalsFilter} viewMode={goalsViewMode} /></div>
+      ) : settingsTab === 'knowledge base' ? (
+        <div className={styles.tableWrap}><KnowledgeBasePanel /></div>
+      ) : settingsTab === 'tools' ? (
+        <div className={styles.tableWrap}><PracticeConfigPanel /></div>
+      ) : settingsTab === 'compliance policies' ? (
+        <div className={styles.tableWrap}><EscalationPolicyPanel /></div>
+      ) : settingsTab === 'test cases' ? (
+        <div className={styles.tableWrap}><FeatureTogglesPanel /></div>
+      ) : (
+        <>
+          <div className={styles.tableWrap}>
+            {agentsLoading ? (
+              <TableSkeleton rows={8} />
+            ) : (
+              <>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Agent Name</th><th>Use Case</th><th>Version</th><th>Voice</th>
+                      <th>Last Updated</th><th>Last Updated By</th><th>Status</th><th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedAgents.map(agent => (
+                      <AgentRow key={agent.id} agent={agent} />
+                    ))}
+                  </tbody>
+                </table>
+                {filteredAgents.length === 0 && searchVal.trim() && (
+                  <div className={styles.emptySearch}>
+                    <Icon name="solar:magnifer-linear" size={40} color="#D0D6E1" />
+                    <p className={styles.emptyTitle}>No results found</p>
+                    <p className={styles.emptyDesc}>No agents match "<strong>{searchVal.trim()}</strong>". Try a different name or clear the search.</p>
+                  </div>
+                )}
+                {filteredAgents.length === 0 && !searchVal.trim() && (
+                  <div className={styles.emptySearch}>
+                    <Icon name="solar:ghost-smile-linear" size={40} color="#D0D6E1" />
+                    <p className={styles.emptyTitle}>No agents configured yet</p>
+                  </div>
+                )}
+              </>
             )}
-            {filteredAgents.length === 0 && !searchVal.trim() && (
-              <div className={styles.emptySearch}>
-                <Icon name="solar:ghost-smile-linear" size={40} color="#D0D6E1" />
-                <p className={styles.emptyTitle}>No agents configured yet</p>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-      <Pagination totalItems={filteredAgents.length} />
+          </div>
+          <Pagination totalItems={filteredAgents.length} />
+        </>
+      )}
     </div>
   );
 }

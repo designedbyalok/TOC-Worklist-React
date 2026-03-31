@@ -51,20 +51,28 @@ export function SdohView({ showToast }) {
         <div className={s.tblWrap}>
           <table className={s.tbl}>
             <thead>
-              <tr><th>Measure</th><th className={s.r}>White</th><th className={s.r}>Black</th><th className={s.r}>Hispanic</th><th className={s.r}>Asian</th><th className={s.r}>Other</th><th className={s.r}>Disparity Gap</th></tr>
+              <tr><th>Measure</th><th className={s.r}>Overall Rate</th><th className={s.r}>White</th><th className={s.r}>Black</th><th className={s.r}>Hispanic</th><th className={s.r}>Asian</th><th className={s.r}>Disparity Gap</th><th>Status</th></tr>
             </thead>
             <tbody>
-              {equityRows.map((row, i) => (
-                <tr key={i}>
-                  <td className={s.fw600}>{row.measure}</td>
-                  <td className={`${s.r} ${s.mono}`}>{row.white}</td>
-                  <td className={`${s.r} ${s.mono}`}>{row.black}</td>
-                  <td className={`${s.r} ${s.mono}`}>{row.hispanic}</td>
-                  <td className={`${s.r} ${s.mono}`}>{row.asian}</td>
-                  <td className={`${s.r} ${s.mono}`}>{row.other}</td>
-                  <td className={`${s.r} ${s.valR}`}>{row.gap}</td>
-                </tr>
-              ))}
+              {equityRows.map((row, i) => {
+                const gapNum = parseInt((row.gap || '').replace('pp', ''));
+                const st = gapNum >= 16 ? 'red' : gapNum >= 12 ? 'amber' : 'green';
+                // Calculate overall rate as avg of all groups
+                const nums = [row.white, row.black, row.hispanic, row.asian, row.other].map(v => parseInt((v || '0').replace('%', '')));
+                const overall = Math.round(nums.reduce((a, b) => a + b, 0) / nums.filter(n => !isNaN(n)).length);
+                return (
+                  <tr key={i}>
+                    <td className={s.fw600}>{row.measure}</td>
+                    <td className={`${s.r} ${s.mono}`}>{overall}%</td>
+                    <td className={`${s.r} ${s.mono}`}>{row.white}</td>
+                    <td className={`${s.r} ${s.mono}`}>{row.black}</td>
+                    <td className={`${s.r} ${s.mono}`}>{row.hispanic}</td>
+                    <td className={`${s.r} ${s.mono}`}>{row.asian}</td>
+                    <td className={`${s.r} ${s.valR}`}>{row.gap}</td>
+                    <td><StatusPill label={st === 'red' ? 'Action Needed' : st === 'amber' ? 'Monitor' : 'On Track'} variant={st} /></td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

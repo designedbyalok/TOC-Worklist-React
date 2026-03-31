@@ -14,7 +14,8 @@ export function QueueTable() {
 
   // Filter to only agent-assigned patients, then apply search + filters
   const filteredQueue = useMemo(() => {
-    let result = patients.filter(p => p.agentAssigned);
+    let result = patients.filter(p => p.agentAssigned)
+      .sort((a, b) => (a.priority || 99) - (b.priority || 99)); // sort by priority
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
@@ -27,7 +28,7 @@ export function QueueTable() {
 
     for (const [key, value] of Object.entries(activeFilters)) {
       if (value) {
-        result = result.filter(p => p[key] === value);
+        result = result.filter(p => String(p[key]) === String(value));
       }
     }
 
@@ -77,6 +78,8 @@ export function QueueTable() {
               <Checkbox />
             </th>
             <th style={{ ...thBase, padding: '8px 12px', position: 'sticky', left: 36, zIndex: 4, borderRight: '1px solid var(--neutral-150)' }}>Members</th>
+            <th style={thBase}>Priority</th>
+            <th style={thBase}>Outreach Type</th>
             <th style={thBase}>LACE Acuity</th>
             <th style={thBase}>Outreach Window</th>
             <th style={{ ...agentTh, borderLeft: '2px solid var(--primary-200)' }}>

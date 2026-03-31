@@ -13,6 +13,7 @@ export function ExecutiveView({ showToast }) {
   const fetchProgressBars = useAppStore(st => st.fetchProgressBars);
   const fetchConfig = useAppStore(st => st.fetchConfig);
   const period = useAppStore(st => st.analyticsPeriod);
+  const periodMode = useAppStore(st => st.analyticsPeriodMode);
 
   const fb = FALLBACK_KPIS.executive || { kpis: [], insight: null };
   const [kpiData, setKpiData] = useState(fb);
@@ -33,7 +34,7 @@ export function ExecutiveView({ showToast }) {
     fetchConfig('exec_cost_by_setting_inline').then(d => d && setCostInlineData(d));
     fetchConfig('exec_savings_trajectory').then(d => d && setSavingsData(d));
     fetchConfig('exec_care_programs').then(d => d && setCareProgramData(d));
-  }, [period]);
+  }, [period, periodMode]);
 
   const kpis = kpiData?.kpis || fb.kpis || [];
   const insight = kpiData?.insight || fb.insight;
@@ -52,13 +53,16 @@ export function ExecutiveView({ showToast }) {
   // Cost by setting inline data (from DB or fallback)
   const costBySettingInline = costInlineData?.items || FALLBACK_CONFIGS.exec_cost_by_setting_inline?.items || [];
 
-  // Shared savings trajectory data (from DB or fallback)
-  const savingsTrajectory = savingsData?.data_points || FALLBACK_CONFIGS.exec_savings_trajectory?.data_points || [];
+  // Shared savings trajectory data — period mode adjusts values
+  const rawSavings = savingsData?.data_points || FALLBACK_CONFIGS.exec_savings_trajectory?.data_points || [];
+  const savingsTrajectory = periodMode === 'r12'
+    ? rawSavings.map(v => v != null ? +(v * 1.15).toFixed(2) : null)
+    : rawSavings;
 
   // Care program data (from DB or fallback)
   const carePrograms = careProgramData?.rows || FALLBACK_CONFIGS.exec_care_programs?.rows || [];
 
-  const periodLabel = period === 'ytd' ? 'YTD' : 'Rolling 12M';
+  const periodLabel = periodMode === 'ytd' ? 'YTD 2025' : 'Rolling 12M';
 
   return (
     <>
@@ -124,7 +128,7 @@ export function ExecutiveView({ showToast }) {
         {/* Cost by setting inline grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--neutral-100)' }}>
           {costBySettingInline.map(c => (
-            <div key={c.label} style={{ textAlign: 'center', padding: '10px 6px', background: 'var(--neutral-25)', borderRadius: 6, border: '1px solid var(--neutral-100)' }}>
+            <div key={c.label} style={{ textAlign: 'center', padding: '10px 6px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 6 }}>
               <div style={{ fontSize: 12, color: 'var(--neutral-200)', marginBottom: 4 }}>{c.label}</div>
               <div style={{ fontSize: 18, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: c.color, lineHeight: 1.2 }}>{c.value}</div>
               <div style={{ fontSize: 12, color: 'var(--neutral-300)', marginTop: 3 }}>{c.note}</div>
@@ -141,7 +145,12 @@ export function ExecutiveView({ showToast }) {
           ))}
         </Card>
 
-        <Card title="Care Program Command Center" sub="8 programs \u00B7 $7.3M saved \u00B7 3.7x blended ROI" flush>
+        <Card
+          title="Care Program Command Center"
+          sub={`8 programs \u00B7 $7.3M saved \u00B7 3.7\u00D7 blended ROI`}
+          actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Opening Care Management view')}>Full Program View &rarr;</button>}
+          flush
+        >
           <div className={s.tblWrap}>
             <table className={s.tbl}>
               <thead>
@@ -155,7 +164,7 @@ export function ExecutiveView({ showToast }) {
               </thead>
               <tbody>
                 {carePrograms.map((p, i) => (
-                  <tr key={i}>
+                  <tr key={i} style={{ cursor: 'pointer' }} onClick={() => showToast?.(`Navigating to Care Management → Programs → ${p.abbr}`)}>
                     <td className={s.fw600}>{p.abbr}<div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{p.members} mbrs</div></td>
                     <td className={s.r}>
                       <span className={`${s.stPill} ${p.status === 'green' ? s.stGreen : p.status === 'amber' ? s.stAmber : s.stRed}`}>
@@ -173,15 +182,19 @@ export function ExecutiveView({ showToast }) {
         </Card>
       </div>
 
-      {/* Shared Savings Trajectory (always show, context note if not VBC) */}
-      <Card title="Shared Savings Trajectory" sub={periodLabel}>
+      {/* Shared Savings Trajectory */}
+      <Card
+        title="Shared Savings Trajectory"
+        sub={periodLabel}
+        actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Opening Shared Savings view')}>Full View &rarr;</button>}
+      >
         <div style={{ display: 'flex', gap: 20, marginBottom: 12, flexWrap: 'wrap', alignItems: 'baseline' }}>
           <div>
-            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--status-success)', fontFamily: "'Inter', sans-serif" }}>$1.2M</div>
-            <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)', fontFamily: "'Inter', sans-serif" }}>Savings YTD</div>
+            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--status-success)', fontFamily: "'Inter', sans-serif" }}>{periodMode === 'r12' ? '$1.8M' : '$1.2M'}</div>
+            <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)', fontFamily: "'Inter', sans-serif" }}>Savings {periodMode === 'r12' ? 'Rolling 12M' : 'YTD'}</div>
           </div>
           <div style={{ borderLeft: '1px solid var(--neutral-100)', paddingLeft: 16 }}>
-            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--status-warning)', fontFamily: "'Inter', sans-serif" }}>78%</div>
+            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--status-warning)', fontFamily: "'Inter', sans-serif" }}>{periodMode === 'r12' ? '82%' : '78%'}</div>
             <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)', fontFamily: "'Inter', sans-serif" }}>Prob. of hitting MSR</div>
           </div>
           <div style={{ borderLeft: '1px solid var(--neutral-100)', paddingLeft: 16 }}>
@@ -189,11 +202,14 @@ export function ExecutiveView({ showToast }) {
             <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)', fontFamily: "'Inter', sans-serif" }}>Quality Composite</div>
           </div>
           <div style={{ borderLeft: '1px solid var(--neutral-100)', paddingLeft: 16 }}>
-            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-500)', fontFamily: "'Inter', sans-serif" }}>$3.2M</div>
+            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-500)', fontFamily: "'Inter', sans-serif" }}>{periodMode === 'r12' ? '$3.8M' : '$3.2M'}</div>
             <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)', fontFamily: "'Inter', sans-serif" }}>Full-year projection</div>
           </div>
         </div>
         <SavingsAreaChart data={savingsTrajectory} targetLabel="MSR $2.8M" targetValue={2.8} />
+        <div style={{ fontSize: 12, color: 'var(--neutral-200)', padding: '8px 14px 4px', borderTop: '1px solid var(--neutral-100)', marginTop: 8 }}>
+          MSSP Track 1B &middot; Performance Year 2025 &middot; Quality composite secures maximum sharing rate
+        </div>
       </Card>
 
       {/* Cost by Setting Benchmark Table */}

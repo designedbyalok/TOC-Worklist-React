@@ -141,22 +141,22 @@ export function RoiView({ showToast }) {
       {/* Projected Full-Year Shared Savings */}
       <Card title="Projected Full-Year Shared Savings" sub="Based on current lever settings">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 12 }}>
-          <div style={{ padding: '12px 14px', background: 'var(--neutral-25)', borderRadius: 6, border: '1px solid var(--neutral-100)' }}>
+          <div style={{ padding: '12px 14px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 6 }}>
             <div style={{ fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.4px', color: 'var(--neutral-200)', marginBottom: 4 }}>Projected Savings</div>
             <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--status-success)' }}>{fmt(totalSavings)}</div>
             <div style={{ fontSize: 12, color: 'var(--neutral-300)', marginTop: 2 }}>Full-year annualized</div>
           </div>
-          <div style={{ padding: '12px 14px', background: 'var(--neutral-25)', borderRadius: 6, border: '1px solid var(--neutral-100)' }}>
+          <div style={{ padding: '12px 14px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 6 }}>
             <div style={{ fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.4px', color: 'var(--neutral-200)', marginBottom: 4 }}>Prob. Exceeding MSR</div>
             <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--status-warning)' }}>{totalSavings > 2800000 ? '92' : totalSavings > 2000000 ? '78' : totalSavings > 1000000 ? '54' : '28'}%</div>
             <div style={{ fontSize: 12, color: 'var(--neutral-300)', marginTop: 2 }}>Monte Carlo simulation</div>
           </div>
-          <div style={{ padding: '12px 14px', background: 'var(--neutral-25)', borderRadius: 6, border: '1px solid var(--neutral-100)' }}>
+          <div style={{ padding: '12px 14px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 6 }}>
             <div style={{ fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.4px', color: 'var(--neutral-200)', marginBottom: 4 }}>Quality Composite</div>
             <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-500)' }}>{((baselines.qualityScore || 0) + (quality * (baselines.qualityGainPerPct || 0.009))).toFixed(1)}/5</div>
             <div style={{ fontSize: 12, color: 'var(--neutral-300)', marginTop: 2 }}>Secures max sharing rate</div>
           </div>
-          <div style={{ padding: '12px 14px', background: 'var(--neutral-25)', borderRadius: 6, border: '1px solid var(--neutral-100)' }}>
+          <div style={{ padding: '12px 14px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 6 }}>
             <div style={{ fontSize: 10, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.4px', color: 'var(--neutral-200)', marginBottom: 4 }}>Net Revenue Impact</div>
             <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-500)' }}>{fmt(Math.round(totalSavings * (baselines.netRevenueMultiplier || 0.65)))}</div>
             <div style={{ fontSize: 12, color: 'var(--neutral-300)', marginTop: 2 }}>After withhold &amp; reconciliation</div>

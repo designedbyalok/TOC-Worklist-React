@@ -1,4 +1,90 @@
-export const callDetails = [
+/* ── Compliance & quality enrichment for call records ── */
+const COMPLIANCE_DATA = {
+  // completed calls get full compliance
+  completed: {
+    aiDisclosed: true,
+    recordingConsent: 'obtained',
+    identityVerified: true,
+    emergencyDetected: false,
+    tcpaCompliant: 'pass',
+  },
+  // ongoing calls — consent obtained, identity in-progress
+  ongoing: {
+    aiDisclosed: true,
+    recordingConsent: 'obtained',
+    identityVerified: false,
+    emergencyDetected: false,
+    tcpaCompliant: 'pass',
+  },
+  // voicemail — minimal compliance (no patient interaction)
+  voicemail: {
+    aiDisclosed: false,
+    recordingConsent: 'na',
+    identityVerified: false,
+    emergencyDetected: false,
+    tcpaCompliant: 'pass',
+  },
+};
+
+// Per-patient overrides for compliance variety in the prototype
+const PATIENT_COMPLIANCE_OVERRIDES = {
+  p4: { tcpaCompliant: 'warn', recordingConsent: 'na' }, // Glenn — failed calls
+  p10: { identityVerified: false }, // Sandra — interpreter needed
+  p14: { emergencyDetected: true }, // Override for demo
+};
+
+// Quality & sentiment data for completed calls
+const QUALITY_DATA = {
+  cd2:  { qualityScore: { overall: 92, intentAccuracy: 95, outcomeAppropriateness: 90, escalationTimeliness: 88, complianceDisclosure: 96 }, sentimentScore: { overall: 78, label: 'positive' } },
+  cd4:  { qualityScore: { overall: 74, intentAccuracy: 80, outcomeAppropriateness: 68, escalationTimeliness: 72, complianceDisclosure: 76 }, sentimentScore: { overall: 55, label: 'neutral' } },
+  cd6:  { qualityScore: { overall: 85, intentAccuracy: 88, outcomeAppropriateness: 82, escalationTimeliness: 84, complianceDisclosure: 86 }, sentimentScore: { overall: 72, label: 'positive' } },
+  cd12: { qualityScore: { overall: 70, intentAccuracy: 75, outcomeAppropriateness: 64, escalationTimeliness: 70, complianceDisclosure: 72 }, sentimentScore: { overall: 42, label: 'negative' } },
+  cd16: { qualityScore: { overall: 78, intentAccuracy: 82, outcomeAppropriateness: 76, escalationTimeliness: 74, complianceDisclosure: 80 }, sentimentScore: { overall: 60, label: 'neutral' } },
+  cd18: { qualityScore: { overall: 82, intentAccuracy: 85, outcomeAppropriateness: 80, escalationTimeliness: 78, complianceDisclosure: 84 }, sentimentScore: { overall: 65, label: 'positive' } },
+  cd21: { qualityScore: { overall: 96, intentAccuracy: 98, outcomeAppropriateness: 95, escalationTimeliness: 92, complianceDisclosure: 98 }, sentimentScore: { overall: 88, label: 'positive' } },
+};
+
+// Escalation data for select calls
+const ESCALATION_DATA = {
+  cd7:  { trigger: 'max-turns', detail: 'Patient unreachable after 3 attempts', confidence: null, sentiment: null },
+  cd12: { trigger: 'sentiment', detail: 'Patient expressed frustration about inhaler refill', confidence: 62, sentiment: -0.35 },
+};
+
+// Security metadata
+const SECURITY_DATA = {
+  completed: { piiScrubbed: true, stateCompliance: 'TX', dataRetentionDays: 90, promptInjectionDetected: false },
+  ongoing: { piiScrubbed: false, stateCompliance: 'TX', dataRetentionDays: 90, promptInjectionDetected: false },
+  voicemail: { piiScrubbed: true, stateCompliance: 'TX', dataRetentionDays: 90, promptInjectionDetected: false },
+};
+
+// Sub-agents and intents for select calls
+const SUBAGENT_DATA = {
+  cd2:  { subAgentsInvoked: ['Identity Verifier', 'Med Reconciler', 'Appointment Scheduler'], detectedIntents: ['confirm-identity', 'review-medications', 'schedule-followup'] },
+  cd21: { subAgentsInvoked: ['Identity Verifier', 'Med Reconciler', 'Appointment Scheduler', 'Cardiac Rehab Referrer'], detectedIntents: ['confirm-identity', 'medication-adherence', 'schedule-followup', 'rehab-referral'] },
+  cd4:  { subAgentsInvoked: ['Identity Verifier', 'Language Detector'], detectedIntents: ['confirm-identity', 'language-preference', 'medication-question'] },
+};
+
+export function enrichCallRecord(record) {
+  const base = COMPLIANCE_DATA[record.callType] || COMPLIANCE_DATA.ongoing;
+  const patientOverride = PATIENT_COMPLIANCE_OVERRIDES[record.patientId] || {};
+  const quality = QUALITY_DATA[record.id] || null;
+  const escalation = ESCALATION_DATA[record.id] || null;
+  const security = SECURITY_DATA[record.callType] || SECURITY_DATA.ongoing;
+  const subagent = SUBAGENT_DATA[record.id] || null;
+
+  return {
+    ...record,
+    compliance: { ...base, ...patientOverride },
+    qualityScore: quality?.qualityScore || null,
+    sentimentScore: quality?.sentimentScore || null,
+    escalation,
+    security,
+    subAgentsInvoked: subagent?.subAgentsInvoked || null,
+    detectedIntents: subagent?.detectedIntents || null,
+  };
+}
+
+const _rawCallDetails = [
   // ===== p1 – Ralph Halvorson (completed) =====
   // Ongoing record (call in progress before completion)
   {
@@ -1427,3 +1513,5 @@ export const callDetails = [
     createdAt: '11/17/2025'
   }
 ];
+
+export const callDetails = _rawCallDetails.map(enrichCallRecord);

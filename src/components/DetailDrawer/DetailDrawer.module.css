@@ -88,6 +88,126 @@
 }
 .callCardBtn:hover { background: #f0f2f5; color: #8c5ae2; }
 
+/* ── Quality Score Card ── */
+.qualityCard {
+  border: 0.5px solid #d0d6e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+.qualityHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.qualityLabel { font-size: 13px; font-weight: 500; color: #3a485f; flex: 1; }
+.qualityOverall { font-size: 14px; font-weight: 600; }
+.qualityGood { color: #009B53; }
+.qualityFair { color: #D9A50B; }
+.qualityPoor { color: #D72825; }
+.qualityBars { display: flex; flex-direction: column; gap: 6px; }
+.qualityBarRow { display: flex; align-items: center; gap: 8px; }
+.qualityBarLabel { font-size: 11px; color: #6f7a90; width: 80px; flex-shrink: 0; }
+.qualityBarTrack { flex: 1; height: 6px; background: #e9ecf1; border-radius: 3px; overflow: hidden; }
+.qualityBarFill { height: 100%; border-radius: 3px; transition: width .3s; }
+.qualityBarVal { font-size: 11px; font-weight: 500; color: #3a485f; width: 32px; text-align: right; }
+
+/* ── Sentiment Row ── */
+.sentimentRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 0.5px solid #d0d6e1;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+.sentimentLabel { font-size: 13px; color: #6f7a90; flex: 1; }
+.sentimentValue { font-size: 13px; font-weight: 500; }
+.sentiment_positive { color: #009B53; }
+.sentiment_neutral { color: #D9A50B; }
+.sentiment_negative { color: #D72825; }
+
+/* ── Escalation Card ── */
+.escalationCard {
+  border: 0.5px solid rgba(215,40,37,0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: #FFF5F5;
+}
+.escalationHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #D72825;
+  margin-bottom: 6px;
+}
+.escalationDetail { display: flex; flex-direction: column; gap: 4px; }
+.escalationTrigger { font-size: 12px; font-weight: 500; color: #D72825; }
+.escalationDesc { font-size: 12px; color: #6f7a90; }
+.escalationMeta { font-size: 11px; color: #8a94a8; }
+
+/* ── Sub-Agents & Intents ── */
+.subAgentsRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.subAgentsLabel { font-size: 12px; font-weight: 500; color: #6f7a90; }
+.subAgentTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: #ede5fb;
+  color: #8c5ae2;
+  border: 0.5px solid rgba(140,90,226,0.2);
+}
+.intentTag {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: #F4F8FE;
+  color: #145ECC;
+  border: 0.5px solid rgba(20,94,204,0.2);
+}
+
+/* ── Security Row ── */
+.securityRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.secBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  background: #f5f6f8;
+  color: #6f7a90;
+  border: 0.5px solid rgba(111,122,144,0.15);
+}
+.secPass { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
+.secFail { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+.secAlert { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.25); font-weight: 600; }
+
 /* ── Section Headers ── */
 .sectionHeader {
   display: flex;

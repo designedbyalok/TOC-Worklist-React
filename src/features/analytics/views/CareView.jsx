@@ -18,6 +18,7 @@ export function CareView({ showToast }) {
   const [prodByCm, setProdByCm] = useState(FALLBACK_TABLES.productivity_by_cm);
   const [prodStrip, setProdStrip] = useState(FALLBACK_CONFIGS.care_productivity_strip);
   const [careQuality, setCareQuality] = useState(FALLBACK_PROGRESS_BARS.care_quality_metrics);
+  const [programsDetail, setProgramsDetail] = useState(FALLBACK_TABLES.programs_detail);
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export function CareView({ showToast }) {
     fetchViewTable('care', 'productivity_by_cm').then(d => d && setProdByCm(d));
     fetchConfig('care_productivity_strip').then(d => d && setProdStrip(d));
     fetchProgressBars('care', 'care_quality_metrics').then(d => d && setCareQuality(d));
+    fetchViewTable('care', 'programs_detail').then(d => d && setProgramsDetail(d));
   }, [period]);
 
   const kpis = kpiData?.kpis || fb.kpis || [];
@@ -85,7 +87,7 @@ export function CareView({ showToast }) {
       {tab === 1 && <BottlenecksTab showToast={showToast} />}
       {tab === 2 && <TeamTab showToast={showToast} />}
       {tab === 3 && <QualityTab bars={careQuality} showToast={showToast} />}
-      {tab === 4 && <ProgramsTab showToast={showToast} />}
+      {tab === 4 && <ProgramsTab showToast={showToast} programsDetail={programsDetail} />}
     </>
   );
 }
@@ -126,7 +128,7 @@ function ProductivityTab({ stripMetrics, cmRows, showToast }) {
       {/* Cases strip */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
         {cases.map((c, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: 'var(--neutral-25)', borderRadius: 8, flex: '1 1 200px', cursor: 'pointer' }}
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 8, flex: '1 1 200px', cursor: 'pointer' }}
             onClick={() => c.label === 'Overdue Cases' ? showToast?.('Viewing 127 overdue cases') : showToast?.('Loading case list...')}
           >
             <div>
@@ -210,7 +212,7 @@ function BottlenecksTab({ showToast }) {
           {leakagePoints.map((lp, i) => {
             const rc = lp.cls === 'r' ? 'var(--status-error)' : 'var(--status-warning)';
             return (
-              <div key={i} style={{ padding: '10px 12px', background: 'var(--neutral-25)', borderRadius: 8, marginBottom: 8 }}>
+              <div key={i} style={{ padding: '10px 12px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 8, marginBottom: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
                     <div style={{ fontWeight: 500, fontSize: 14 }}>{lp.step}</div>
@@ -231,7 +233,7 @@ function BottlenecksTab({ showToast }) {
       {/* Alert strip */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 4 }}>
         {alerts.map((a, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', background: 'var(--neutral-25)', borderRadius: 8, cursor: 'pointer' }}
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 8, cursor: 'pointer' }}
             onClick={() => showToast?.(`Viewing ${a.n} ${a.label.toLowerCase()}`)}
           >
             <div>
@@ -377,7 +379,7 @@ function QualityTab({ bars, showToast }) {
           {pathways.map((p, i) => {
             const vc = p.rate >= p.target ? 'var(--status-success)' : p.rate >= p.target - 5 ? 'var(--status-warning)' : 'var(--status-error)';
             return (
-              <div key={i} style={{ background: 'var(--neutral-25)', borderRadius: 8, padding: 14, textAlign: 'center' }}>
+              <div key={i} style={{ background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 8, padding: 14, textAlign: 'center' }}>
                 <div style={{ fontSize: 24, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: vc }}>{p.rate}%</div>
                 <div style={{ fontSize: 12, fontWeight: 500, marginTop: 4 }}>{p.name}</div>
                 <div style={{ fontSize: 12, color: 'var(--neutral-200)', marginTop: 2 }}>Target: {p.target}%</div>
@@ -405,7 +407,8 @@ function QualityTab({ bars, showToast }) {
   );
 }
 
-function ProgramsTab({ showToast }) {
+function ProgramsTab({ showToast, programsDetail }) {
+  const pdRows = safeTableRows(programsDetail, (FALLBACK_TABLES.programs_detail || {}).rows);
   const programs = [
     { name: 'Chronic Care Management', abbr: 'CCM', color: 'var(--status-info)', members: 4823, eligible: 6100, enrolled: 79, saved: '$1,620K', spent: '$450K', roi: '3.6x',
       kpis: [['Monthly Minutes Avg','38 min','\u226520 min','g'],['Monthly Review Plan %','71%','85%','a'],['1st Month Contact Rate','84%','80%','g'],['Care Plan Update Rate','58%','75%','r']],
@@ -436,7 +439,37 @@ function ProgramsTab({ showToast }) {
   // Summary bar
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12, padding: '12px 16px', background: 'var(--neutral-25)', borderRadius: 8 }}>
+      {/* Programs Detail Table */}
+      <Card title="Programs Detail" flush actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Exporting programs detail...')}>Export</button>}>
+        <div className={s.tblWrap}>
+          <table className={s.tbl}>
+            <thead>
+              <tr><th>Program</th><th className={s.r}>Eligible</th><th className={s.r}>Engaged</th><th>Last Outreach</th><th>Pref Mode</th><th>Language</th><th>Pref Day</th><th className={s.r}>Outreach%</th><th className={s.r}>Engage%</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              {pdRows.map((row, i) => {
+                const engColor = parseInt(row.engage_pct) >= 85 ? 'green' : parseInt(row.engage_pct) >= 70 ? 'amber' : 'red';
+                return (
+                  <tr key={i}>
+                    <td className={s.fw600}>{row.program}</td>
+                    <td className={`${s.r} ${s.mono}`}>{typeof row.eligible === 'number' ? row.eligible.toLocaleString() : row.eligible}</td>
+                    <td className={`${s.r} ${s.mono}`}>{typeof row.engaged === 'number' ? row.engaged.toLocaleString() : row.engaged}</td>
+                    <td className={s.mono}>{row.last_outreach}</td>
+                    <td>{row.pref_mode}</td>
+                    <td>{row.language}</td>
+                    <td>{row.pref_day}</td>
+                    <td className={`${s.r} ${s.mono}`}>{row.outreach_pct}</td>
+                    <td className={`${s.r}`}><span className={`${s.stPill} ${engColor === 'green' ? s.stGreen : engColor === 'amber' ? s.stAmber : s.stRed}`}>{row.engage_pct}</span></td>
+                    <td><button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.(`${row.action} ${row.program}`)}>{row.action}</button></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12, padding: '12px 16px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 8 }}>
         {[['Total in Programs', '11,062', 'var(--status-info)'], ['Total Savings', '$7.3M', 'var(--status-success)'], ['Total Spend', '$1.95M', 'var(--status-warning)'], ['Blended ROI', '3.7x', 'var(--status-success)']].map(([label, val, c], i) => (
           <div key={i} style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 20, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: c }}>{val}</div>

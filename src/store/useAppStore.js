@@ -3,7 +3,9 @@ import { supabase } from '../lib/supabase';
 import { dbToJs, updatesToDb } from '../lib/patientMapper';
 import { callDetailDbToJs, callDetailJsToDb } from '../lib/callDetailsMapper';
 import { patients as fallbackPatients } from '../data/patients';
-import { callDetails as fallbackCallDetails } from '../data/callDetails';
+import { callDetails as fallbackCallDetails, enrichCallRecord } from '../data/callDetails';
+import { goals as fallbackGoalsData } from '../data/goals';
+import { chatGroups as fallbackChatGroups } from '../data/chatGroups';
 import { generateFlowFromPrompt } from '../lib/flowGenerator';
 import { kpiRowToJs, tsRowToJs, tableRowToJs, barRowToJs, configRowToJs, groupTimeSeries } from '../lib/analyticsMapper';
 import { FALLBACK_KPIS, FALLBACK_TIME_SERIES, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS, FALLBACK_CONFIGS } from '../data/analyticsFallbacks';
@@ -51,6 +53,26 @@ export const useAppStore = create((set, get) => ({
 
   // Call Details
   callDetails: [],
+
+  // System Health (Phase 3)
+  systemHealth: { ehr: 'ok', retell: 'ok', redis: 'ok', supabase: 'ok' },
+
+  // Goals Directory
+  goalsData: null, // null = not yet loaded, array = loaded from DB/fallback
+  goalsLoading: true,
+  goalDetailId: null,
+  goalWizardOpen: false,
+  goalWizardEditId: null,
+
+  // Settings navigation (left subnav)
+  settingsNavItem: sessionStorage.getItem('settingsNavItem') || 'agents',
+
+  // Chat Groups (Messages > Chat Settings)
+  chatGroupsData: null,
+  chatGroupsLoading: true,
+  chatGroupDetailId: null,
+  agentRulesGroupId: null,
+  businessHoursOpen: false,
 
   // Agents (settings)
   agents: [],
@@ -145,7 +167,7 @@ export const useAppStore = create((set, get) => ({
       console.warn('call_details fetch failed, using fallback:', error.message);
       set({ callDetails: fallbackCallDetails.map(c => ({ ...c })) });
     } else {
-      set({ callDetails: data.map(callDetailDbToJs) });
+      set({ callDetails: data.map(c => enrichCallRecord(callDetailDbToJs(c))) });
     }
   },
 
@@ -161,7 +183,7 @@ export const useAppStore = create((set, get) => ({
 
   // Create a new call record (on agent invoke)
   createCallRecord: (record) => {
-    set(s => ({ callDetails: [record, ...s.callDetails] }));
+    set(s => ({ callDetails: [enrichCallRecord(record), ...s.callDetails] }));
     // Persist to Supabase in background
     supabase.from('call_details').insert(callDetailJsToDb(record)).then(({ error }) => {
       if (error) console.warn('Failed to persist call record:', error.message);
@@ -193,6 +215,129 @@ export const useAppStore = create((set, get) => ({
   setActiveTab: (tab) => { sessionStorage.setItem('activeTab', tab); set({ activeTab: tab }); },
   setSettingsTab: (tab) => { sessionStorage.setItem('settingsTab', tab); set({ settingsTab: tab }); },
   setShowCreateAgent: (v) => set({ showCreateAgent: v }),
+
+  // Settings nav
+  setSettingsNavItem: (item) => { sessionStorage.setItem('settingsNavItem', item); set({ settingsNavItem: item }); },
+
+  // Chat Groups actions
+  setChatGroupDetailId: (id) => set({ chatGroupDetailId: id }),
+  setAgentRulesGroupId: (id) => set({ agentRulesGroupId: id }),
+  setBusinessHoursOpen: (open) => set({ businessHoursOpen: open }),
+
+  fetchChatGroups: async () => {
+    set({ chatGroupsLoading: true });
+    const { data, error } = await supabase
+      .from('chat_groups')
+      .select('*')
+      .order('updated_at', { ascending: false });
+
+    if (error) {
+      console.warn('chat_groups fetch failed, using fallback:', error.message);
+      set({ chatGroupsData: fallbackChatGroups.map(g => ({ ...g })), chatGroupsLoading: false });
+    } else {
+      const mapped = data.map(row => ({
+        id: row.id,
+        name: row.name,
+        users: row.users || [],
+        roles: row.roles || [],
+        location: row.location || 'Global Template',
+        updated: row.updated_at ? new Date(row.updated_at).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
+        updatedBy: row.updated_by || '',
+        activeChats: row.active_chats || 0,
+        hasAgent: row.has_agent || false,
+        agentName: row.agent_name || '',
+      }));
+      set({ chatGroupsData: mapped, chatGroupsLoading: false });
+    }
+  },
+
+  // Goals actions
+  setGoalDetailId: (id) => set({ goalDetailId: id }),
+  setGoalWizard: (open, editId) => set({ goalWizardOpen: open, goalWizardEditId: editId || null }),
+
+  fetchGoals: async () => {
+    set({ goalsLoading: true });
+    const { data, error } = await supabase
+      .from('goals')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('goals fetch failed, using fallback:', error.message);
+      set({ goalsData: fallbackGoalsData.map(g => ({ ...g })), goalsLoading: false });
+    } else {
+      // Map DB snake_case → JS camelCase
+      const mapped = data.map(row => ({
+        id: row.id,
+        name: row.name,
+        program: row.program,
+        programColor: row.program_color || (row.program === 'TCM' ? 'purple' : row.program === 'Outreach' ? 'blue' : 'amber'),
+        description: row.description || '',
+        status: row.status || 'draft',
+        weightedScoring: row.weighted_scoring || false,
+        passingScore: row.passing_score || 100,
+        mode: row.mode || 'all-mandatory',
+        steps: row.steps || [],
+        successMetrics: row.success_metrics || [],
+        agents: row.agents || [],
+        completionRate: row.completion_rate || 0,
+        totalRuns: row.total_runs || 0,
+        created: row.created_at ? row.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10),
+      }));
+      set({ goalsData: mapped, goalsLoading: false });
+    }
+  },
+
+  addGoal: async (goal) => {
+    // Optimistic update
+    set(s => {
+      const current = s.goalsData || [...fallbackGoalsData];
+      return { goalsData: [goal, ...current] };
+    });
+    // Persist to Supabase
+    const row = {
+      id: goal.id,
+      name: goal.name,
+      program: goal.program,
+      program_color: goal.programColor,
+      description: goal.description,
+      status: goal.status,
+      weighted_scoring: goal.weightedScoring,
+      passing_score: goal.passingScore,
+      mode: goal.mode,
+      steps: goal.steps,
+      success_metrics: goal.successMetrics,
+      agents: goal.agents,
+      completion_rate: goal.completionRate,
+      total_runs: goal.totalRuns,
+    };
+    const { error } = await supabase.from('goals').insert(row);
+    if (error) console.warn('Failed to persist goal:', error.message);
+  },
+
+  updateGoal: async (goal) => {
+    // Optimistic update
+    set(s => {
+      const current = s.goalsData || [...fallbackGoalsData];
+      return { goalsData: current.map(g => g.id === goal.id ? goal : g) };
+    });
+    // Persist to Supabase
+    const row = {
+      name: goal.name,
+      program: goal.program,
+      program_color: goal.programColor,
+      description: goal.description,
+      status: goal.status,
+      weighted_scoring: goal.weightedScoring,
+      passing_score: goal.passingScore,
+      mode: goal.mode,
+      steps: goal.steps,
+      success_metrics: goal.successMetrics,
+      agents: goal.agents,
+    };
+    const { error } = await supabase.from('goals').update(row).eq('id', goal.id);
+    if (error) console.warn('Failed to update goal:', error.message);
+  },
   toggleSubnav: () => set(s => ({ subnavCollapsed: !s.subnavCollapsed })),
   setViewBy: (v) => set({ viewBy: v, currentPage: 1 }),
   setActiveFilters: (filters) => set({ activeFilters: filters, currentPage: 1 }),
@@ -642,13 +787,19 @@ export const useAppStore = create((set, get) => ({
   analyticsError: {},
   analyticsPeriod: '2026-03',
   analyticsTenant: 'default',
-  analyticsPersona: 'all',
+  analyticsPersona: 'exec',
   analyticsPractice: 'all',
+  analyticsOrg: 'aco',
+  analyticsPeriodMode: 'ytd',
+  analyticsQuarter: 'Q4-2025',
 
   setAnalyticsPeriod: (p) => { set({ analyticsPeriod: p, analyticsCache: {} }); },
   setAnalyticsTenant: (t) => { set({ analyticsTenant: t, analyticsCache: {} }); },
   setAnalyticsPersona: (p) => { set({ analyticsPersona: p, analyticsCache: {} }); },
   setAnalyticsPractice: (p) => { set({ analyticsPractice: p, analyticsCache: {} }); },
+  setAnalyticsOrg: (o) => { set({ analyticsOrg: o, analyticsCache: {} }); },
+  setAnalyticsPeriodMode: (m) => { set({ analyticsPeriodMode: m, analyticsCache: {} }); },
+  setAnalyticsQuarter: (q) => { set({ analyticsQuarter: q, analyticsCache: {} }); },
   invalidateAnalyticsCache: () => set({ analyticsCache: {} }),
 
   fetchAnalytics: async (cacheKey, queryFn) => {

@@ -46,6 +46,48 @@ export const VIEW_TITLES = {
   actionrules:  { title: 'Action Rules', sub: 'Automated rules engine & agent workflows' },
 };
 
+export const PERSONA_ACCESS = {
+  exec: null, // all access
+  manager_risk: ['population','financial','risk','network','sdoh','platformops'],
+  manager_quality: ['population','quality','care','sdoh'],
+  manager_care: ['population','care','quality','sdoh','actionrules'],
+  manager_utilization: ['population','financial','utilization','care','network','platformops'],
+  analyst: null, // all access (SQL overlay)
+};
+
+export const PERSONA_LABELS = {
+  exec: 'Executive',
+  manager_risk: 'Risk Manager',
+  manager_quality: 'Quality Manager',
+  manager_care: 'Care Manager',
+  manager_utilization: 'Utilization Manager',
+  analyst: 'Analyst',
+};
+
+export const ORGANIZATIONS = [
+  { value: 'aco', label: 'Northside ACO Network (MSSP)' },
+  { value: 'payer', label: 'BlueCross VBC Plan (MA)' },
+  { value: 'provider', label: 'Meridian Health System (FFS)' },
+  { value: 'fqhc', label: 'Eastside FQHC (FFS/UDS)' },
+  { value: 'mso', label: 'Summit MSO (MSSP+REACH)' },
+];
+
+export const QUARTERS = [
+  { value: 'Q4-2025', label: 'Q4 2025 (Oct\u2013Dec)' },
+  { value: 'Q3-2025', label: 'Q3 2025' },
+  { value: 'YTD-2025', label: 'YTD 2025' },
+  { value: 'FY-2024', label: 'FY 2024' },
+];
+
+export const PERSONA_DETAILS = {
+  exec: { name: 'Dr. Ramesh', role: 'Executive \u00B7 Head of Pop Health', dot: '#0284C7' },
+  manager_risk: { name: 'Sarah Patel', role: 'Risk Manager', dot: '#DC2626' },
+  manager_quality: { name: 'Maria Chen', role: 'Quality Manager', dot: '#059669' },
+  manager_care: { name: 'John Torres', role: 'Care Manager', dot: '#D97706' },
+  manager_utilization: { name: 'Linda Kim', role: 'Utilization Manager', dot: '#7C3AED' },
+  analyst: { name: 'Alex Wong', role: 'Data Analyst', dot: '#6F7A90' },
+};
+
 export const QUALITY_MEASURES = [
   { name: 'Annual Wellness Visit (AWV)', rate: 61, target: 80, tag: 'Stars', trend: 'up' },
   { name: 'Diabetes HbA1c Control (<8%)', rate: 72, target: 80, tag: 'HEDIS', trend: 'flat' },

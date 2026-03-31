@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Icon } from '../../components/Icon/Icon';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/select';
 import { useAppStore } from '../../store/useAppStore';
-import { PAGES, VIEW_TITLES } from './analyticsData';
+import { PAGES, VIEW_TITLES, PERSONA_ACCESS, PERSONA_LABELS, PERSONA_DETAILS, ORGANIZATIONS, QUARTERS } from './analyticsData';
 import { ExecutiveView } from './views/ExecutiveView';
 import { PopulationView } from './views/PopulationView';
 import { FinancialView } from './views/FinancialView';
@@ -68,96 +68,186 @@ export function AnalyticsLayout() {
 
   const analyticsPeriod = useAppStore(st => st.analyticsPeriod);
   const analyticsPractice = useAppStore(st => st.analyticsPractice);
+  const analyticsPersona = useAppStore(st => st.analyticsPersona);
+  const analyticsOrg = useAppStore(st => st.analyticsOrg);
+  const analyticsPeriodMode = useAppStore(st => st.analyticsPeriodMode);
+  const analyticsQuarter = useAppStore(st => st.analyticsQuarter);
   const setAnalyticsPeriod = useAppStore(st => st.setAnalyticsPeriod);
   const setAnalyticsPractice = useAppStore(st => st.setAnalyticsPractice);
+  const setAnalyticsPersona = useAppStore(st => st.setAnalyticsPersona);
+  const setAnalyticsOrg = useAppStore(st => st.setAnalyticsOrg);
+  const setAnalyticsPeriodMode = useAppStore(st => st.setAnalyticsPeriodMode);
+  const setAnalyticsQuarter = useAppStore(st => st.setAnalyticsQuarter);
+  const [nlqValue, setNlqValue] = useState('');
+
+  // Derive which views are accessible based on persona
+  const allowedViews = PERSONA_ACCESS[analyticsPersona];
+  const isViewLocked = (viewId) => allowedViews !== null && !allowedViews.includes(viewId);
 
   const switchView = useCallback((id) => {
     setView(id);
     canvasRef.current?.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
+  const personaDetail = PERSONA_DETAILS[analyticsPersona] || PERSONA_DETAILS.exec;
+
+  const cyclePersona = useCallback(() => {
+    const keys = Object.keys(PERSONA_LABELS);
+    const idx = keys.indexOf(analyticsPersona);
+    setAnalyticsPersona(keys[(idx + 1) % keys.length]);
+  }, [analyticsPersona, setAnalyticsPersona]);
+
   return (
     <div className={s.wrap}>
-      {/* ── Page Navigator ── */}
-      <aside className={s.pageNav}>
-        <div className={s.pnHeader}>Report Pages</div>
-        <div className={s.pnScroll}>
-          {PAGES.map(sec => (
-            <div key={sec.section}>
-              <div className={s.pnSection}>{sec.section}</div>
-              {sec.items.map(p => (
-                <button
-                  key={p.id}
-                  className={`${s.pnItem} ${view === p.id ? s.active : ''}`}
-                  onClick={() => switchView(p.id)}
-                >
-                  <Icon name={p.icon} size={16} color={view === p.id ? 'var(--primary-300)' : 'var(--grey-300)'} />
-                  {p.label}
-                </button>
+      {/* ── Slicer Bar (always visible at top) ── */}
+      <div className={s.slicerBar}>
+        <div className={s.slicerGroup}>
+          <span className={s.slicerLabel}>Organization</span>
+          <Select value={analyticsOrg} onValueChange={setAnalyticsOrg}>
+            <SelectTrigger className={s.filterSelect}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ORGANIZATIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className={s.slicerGroup}>
+          <span className={s.slicerLabel}>Period</span>
+          <div className={s.slicerToggle}>
+            <button className={`${s.slicerToggleBtn} ${analyticsPeriodMode === 'ytd' ? s.on : ''}`} onClick={() => setAnalyticsPeriodMode('ytd')}>YTD</button>
+            <button className={`${s.slicerToggleBtn} ${analyticsPeriodMode === 'r12' ? s.on : ''}`} onClick={() => setAnalyticsPeriodMode('r12')}>Rolling 12M</button>
+          </div>
+        </div>
+
+        <div className={s.slicerGroup}>
+          <span className={s.slicerLabel}>Quarter</span>
+          <Select value={analyticsQuarter} onValueChange={setAnalyticsQuarter}>
+            <SelectTrigger className={s.filterSelect}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {QUARTERS.map(q => <SelectItem key={q.value} value={q.value}>{q.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className={s.slicerDivider} />
+
+        <div className={s.slicerGroup}>
+          <span className={s.slicerLabel}>Persona</span>
+          <Select value={analyticsPersona} onValueChange={setAnalyticsPersona}>
+            <SelectTrigger className={s.filterSelect}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Object.entries(PERSONA_DETAILS).map(([k, d]) => (
+                <SelectItem key={k} value={k}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: d.dot, flexShrink: 0, display: 'inline-block' }} />
+                    {d.name} — {d.role}
+                  </span>
+                </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className={s.slicerDivider} />
+
+        <div className={s.askFoldSlicer} onClick={e => e.currentTarget.querySelector('input')?.focus()}>
+          <Icon name="solar:magic-stick-3-linear" size={14} color="var(--primary-300)" />
+          <input
+            className={s.askFoldInput}
+            type="text"
+            placeholder="Ask Fold anything..."
+            value={nlqValue}
+            onChange={e => setNlqValue(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && nlqValue.trim()) { showToast(`NLQ: "${nlqValue}"`); setNlqValue(''); } }}
+          />
+        </div>
+      </div>
+
+      {/* ── Body (nav + canvas) ── */}
+      <div className={s.body}>
+        {/* ── Page Navigator ── */}
+        <aside className={s.pageNav}>
+          <div className={s.pnHeader}>Report Pages</div>
+          <div className={s.pnScroll}>
+            {PAGES.map(sec => (
+              <div key={sec.section}>
+                <div className={s.pnSection}>{sec.section}</div>
+                {sec.items.map(p => {
+                  const locked = isViewLocked(p.id);
+                  return (
+                    <button
+                      key={p.id}
+                      className={`${s.pnItem} ${view === p.id ? s.active : ''}`}
+                      onClick={() => locked ? showToast(`${p.label} is restricted for ${PERSONA_LABELS[analyticsPersona] || analyticsPersona} persona`) : switchView(p.id)}
+                      style={locked ? { opacity: 0.45 } : undefined}
+                    >
+                      <Icon name={locked ? 'solar:lock-linear' : p.icon} size={16} color={locked ? 'var(--neutral-200)' : view === p.id ? 'var(--primary-300)' : 'var(--grey-300)'} />
+                      {p.label}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </aside>
+
+        {/* ── Canvas ── */}
+        <div className={s.canvas} ref={canvasRef}>
+          {/* Recency bar */}
+          <div className={s.recency}>
+            <span className={`${s.recDot} ${s.ok}`} />
+            <span className={s.recLabel}>Claims</span>
+            <span>2h ago</span>
+            <span className={s.recSep} />
+            <span className={`${s.recDot} ${s.ok}`} />
+            <span className={s.recLabel}>EHR</span>
+            <span>45m ago</span>
+            <span className={s.recSep} />
+            <span className={`${s.recDot} ${s.warn}`} />
+            <span className={s.recLabel}>ADT</span>
+            <span style={{ color: 'var(--status-warning)' }}>18h ago</span>
+            <span className={s.recSep} />
+            <span className={`${s.recDot} ${s.ok}`} />
+            <span className={s.recLabel}>Labs</span>
+            <span>3h ago</span>
+            <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--neutral-200)' }}>
+              Last full refresh: Today 6:00 AM
+            </span>
+          </div>
+
+          {/* View header + practice filter + export */}
+          <div className={s.viewHeader}>
+            <div style={{ flex: 1 }}>
+              <div className={s.viewTitle}>{meta.title}</div>
+              <div className={s.viewSub}>{meta.sub}</div>
             </div>
-          ))}
-        </div>
-      </aside>
-
-      {/* ── Canvas ── */}
-      <div className={s.canvas} ref={canvasRef}>
-        {/* Recency bar */}
-        <div className={s.recency}>
-          <span className={`${s.recDot} ${s.ok}`} />
-          <span className={s.recLabel}>Claims</span>
-          <span>2h ago</span>
-          <span className={s.recSep} />
-          <span className={`${s.recDot} ${s.ok}`} />
-          <span className={s.recLabel}>EHR</span>
-          <span>45m ago</span>
-          <span className={s.recSep} />
-          <span className={`${s.recDot} ${s.warn}`} />
-          <span className={s.recLabel}>ADT</span>
-          <span style={{ color: 'var(--status-warning)' }}>18h ago</span>
-          <span className={s.recSep} />
-          <span className={`${s.recDot} ${s.ok}`} />
-          <span className={s.recLabel}>Labs</span>
-          <span>3h ago</span>
-          <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--neutral-200)' }}>
-            Last full refresh: Today 6:00 AM
-          </span>
-        </div>
-
-        {/* View header + global filters */}
-        <div className={s.viewHeader}>
-          <div style={{ flex: 1 }}>
-            <div className={s.viewTitle}>{meta.title}</div>
-            <div className={s.viewSub}>{meta.sub}</div>
+            <div className={s.filterBar}>
+              <Select value={analyticsPractice} onValueChange={setAnalyticsPractice}>
+                <SelectTrigger className={s.filterSelect}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRACTICES.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <button className={s.filterBtn} onClick={() => showToast('Exporting report...')}>
+                <Icon name="solar:download-minimalistic-linear" size={14} />
+                Export
+              </button>
+            </div>
           </div>
-          <div className={s.filterBar}>
-            <Select value={analyticsPeriod} onValueChange={setAnalyticsPeriod}>
-              <SelectTrigger className={s.filterSelect}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PERIODS.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <Select value={analyticsPractice} onValueChange={setAnalyticsPractice}>
-              <SelectTrigger className={s.filterSelect}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {PRACTICES.map(p => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <button className={s.filterBtn} onClick={() => showToast('Exporting report...')}>
-              <Icon name="solar:download-minimalistic-linear" size={14} />
-              Export
-            </button>
-          </div>
-        </div>
 
-        {/* Active view */}
-        <ViewErrorBoundary key={view}>
-          <ViewComponent showToast={showToast} />
-        </ViewErrorBoundary>
+          {/* Active view */}
+          <ViewErrorBoundary key={view}>
+            <ViewComponent showToast={showToast} />
+          </ViewErrorBoundary>
+        </div>
       </div>
     </div>
   );

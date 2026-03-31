@@ -1,0 +1,78 @@
+/* ── ComplianceBadges ── */
+.container {
+  border: 0.5px solid #d0d6e1;
+  border-radius: 8px;
+  background: #fafbff;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.compact {
+  border: none;
+  background: none;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6f7a90;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 0.5px solid transparent;
+}
+
+.pass { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
+.fail { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
+.warn { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,0.2); }
+.na { background: #f5f6f8; color: #8a94a8; border-color: rgba(111,122,144,0.15); }
+.emergency {
+  background: #FFF5F5;
+  color: #D72825;
+  border-color: rgba(215,40,37,0.25);
+  font-weight: 600;
+  animation: emergencyPulse 2s infinite;
+}
+
+@keyframes emergencyPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .7; }
+}
+
+/* ── TCPA Indicator ── */
+.tcpaIndicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6f7a90;
+}
+
+.tcpaText {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tcpaSep {
+  color: #d0d6e1;
+}

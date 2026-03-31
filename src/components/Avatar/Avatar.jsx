@@ -3,7 +3,12 @@ import styles from './Avatar.module.css';
 export function Avatar({ variant = 'patient', initials, agentName, size, className }) {
   const agentKey = agentName ? agentName.toLowerCase() : '';
   if (variant === 'agent') {
-    return <div className={[styles.agent, styles[agentKey], className || ''].filter(Boolean).join(' ')} />;
+    const hasGradient = ['erica', 'ricardo', 'maria', 'jia', 'dubois'].includes(agentKey);
+    return (
+      <div className={[styles.agent, styles[agentKey], className || ''].filter(Boolean).join(' ')}>
+        {!hasGradient && initials}
+      </div>
+    );
   }
   if (variant === 'invokeAgent') {
     return <div className={[styles.invokeAgent, styles[agentKey], className || ''].filter(Boolean).join(' ')} />;

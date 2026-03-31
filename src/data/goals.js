@@ -1,0 +1,115 @@
+export const goals = [
+  {
+    id: 1, name: 'TCM Full Program Completion', program: 'TCM', programColor: 'purple',
+    description: 'Complete Transitional Care Management program ensuring successful patient outreach, medication reconciliation, symptom monitoring, and billing — in sequential order.',
+    status: 'active', weightedScoring: true, passingScore: 80, mode: 'sequential',
+    steps: [
+      { id: 's1', name: 'Successful Patient Outreach', type: 'mandatory', score: 25, desc: 'Establish first contact with patient within 2 business days of discharge. Confirm identity and willingness to participate.', condition: null },
+      { id: 's2', name: 'Medication Reconciliation', type: 'mandatory', score: 30, desc: 'Review all current medications, identify discrepancies vs. discharge summary, flag concerns for clinical review.', condition: 'Requires: Successful Patient Outreach' },
+      { id: 's3', name: 'Symptom Monitoring', type: 'mandatory', score: 30, desc: 'Complete structured symptom check-in using validated questionnaire. Escalate red-flag responses to care team.', condition: 'Requires: Medication Reconciliation' },
+      { id: 's4', name: 'Billing & CPT Coding', type: 'conditional', score: 15, desc: 'Submit TCM billing (CPT 99495/99496) only after all clinical steps are confirmed complete.', condition: 'Requires: All 3 prior steps complete' },
+    ],
+    successMetrics: ['All mandatory steps completed', 'No escalated safety events', 'Billing submitted within 30 days'],
+    agents: ['Anna', 'Erica'], completionRate: 84, totalRuns: 1247, created: '2024-11-12',
+  },
+  {
+    id: 2, name: 'Annual Wellness Outreach', program: 'Outreach', programColor: 'blue',
+    description: 'Proactive outreach to patients overdue for annual wellness visits. Identify care gaps and convert to scheduled appointments.',
+    status: 'active', weightedScoring: false, passingScore: 100, mode: 'all-mandatory',
+    steps: [
+      { id: 's1', name: 'Patient Identification & Consent', type: 'mandatory', score: 25, desc: 'Verify patient identity via DOB + last-4 SSN. Confirm outreach consent and preferred channel.', condition: null },
+      { id: 's2', name: 'Care Gap Communication', type: 'mandatory', score: 25, desc: 'Inform patient of specific overdue services based on their care gap data.', condition: 'Requires: Identity Verified' },
+      { id: 's3', name: 'Appointment Scheduling', type: 'mandatory', score: 40, desc: 'Book appointment in real-time via FHIR scheduling API. Confirm provider, location, and time.', condition: 'Requires: Patient acknowledged care gap' },
+      { id: 's4', name: 'Appointment Confirmation SMS', type: 'conditional', score: 10, desc: 'Send confirmation SMS with appointment details and preparation instructions.', condition: 'Requires: Appointment booked' },
+    ],
+    successMetrics: ['Appointment successfully booked', 'Patient confirmed receipt', 'No opt-out triggered'],
+    agents: ['Anna'], completionRate: 71, totalRuns: 892, created: '2024-10-05',
+  },
+  {
+    id: 3, name: 'Mobile App Onboarding', program: 'Onboarding', programColor: 'amber',
+    description: 'Guide patients through downloading and registering on the mobile app. Educate on key features and ensure first meaningful action.',
+    status: 'active', weightedScoring: false, passingScore: 100, mode: 'all-mandatory',
+    steps: [
+      { id: 's1', name: 'App Download Invitation', type: 'mandatory', score: 20, desc: 'Send personalized app download link via preferred channel.', condition: null },
+      { id: 's2', name: 'Registration Confirmation', type: 'mandatory', score: 50, desc: 'Confirm patient completed registration by checking account creation event.', condition: 'Requires: Link sent' },
+      { id: 's3', name: 'Feature Walkthrough', type: 'conditional', score: 15, desc: 'If patient requests help, conduct guided walkthrough.', condition: 'Triggered if patient requests help' },
+      { id: 's4', name: 'First Action Completion', type: 'conditional', score: 15, desc: 'Verify patient completed at least one meaningful action.', condition: 'Requires: Registration confirmed' },
+    ],
+    successMetrics: ['Registration completed', 'At least one app action taken within 7 days'],
+    agents: ['Jia'], completionRate: 63, totalRuns: 2341, created: '2024-09-18',
+  },
+  {
+    id: 4, name: 'Post-Discharge Follow-Up', program: 'TCM', programColor: 'purple',
+    description: '24-72 hour post-discharge patient check-in to assess recovery, medication adherence, and early warning symptom detection.',
+    status: 'active', weightedScoring: true, passingScore: 70, mode: 'sequential',
+    steps: [
+      { id: 's1', name: 'Contact & Identity Verification', type: 'mandatory', score: 20, desc: 'Reach patient within 72 hours of discharge. Verify identity.', condition: null },
+      { id: 's2', name: 'Medication Adherence Check', type: 'mandatory', score: 25, desc: 'Confirm patient received prescribed medications and understands dosing.', condition: 'Requires: Contact established' },
+      { id: 's3', name: 'Symptom Assessment', type: 'mandatory', score: 35, desc: 'Use structured 5-question symptom screen. Score >= 3 triggers escalation.', condition: 'Requires: Medication check complete' },
+      { id: 's4', name: 'Follow-up Appointment Booking', type: 'conditional', score: 10, desc: 'Schedule follow-up visit if symptom score is 1-2.', condition: 'Triggered by symptom score 1-2' },
+      { id: 's5', name: 'Emergency Escalation', type: 'conditional', score: 10, desc: 'Page care team if symptom score >= 3 or patient expresses distress.', condition: 'Triggered if symptom score >= 3' },
+    ],
+    successMetrics: ['Patient contacted within 72hrs', 'Symptom assessment complete', 'Appropriate escalation if needed'],
+    agents: ['Anna', 'Erica'], completionRate: 91, totalRuns: 634, created: '2024-10-22',
+  },
+  {
+    id: 5, name: 'Chronic Disease Monitoring', program: 'Outreach', programColor: 'blue',
+    description: 'Monthly check-in for patients with diabetes, hypertension, or CHF. Track vitals adherence and flag deterioration.',
+    status: 'draft', weightedScoring: false, passingScore: 100, mode: 'all-mandatory',
+    steps: [
+      { id: 's1', name: 'Patient Engagement', type: 'mandatory', score: 20, desc: 'Initiate contact and confirm patient available for check-in.', condition: null },
+      { id: 's2', name: 'Vitals Self-Report Collection', type: 'mandatory', score: 35, desc: 'Collect blood pressure, blood glucose, or weight readings.', condition: 'Requires: Engagement confirmed' },
+      { id: 's3', name: 'Medication Compliance Review', type: 'mandatory', score: 30, desc: 'Confirm medications taken as prescribed. Log missed doses.', condition: 'Requires: Vitals collected' },
+      { id: 's4', name: 'Clinical Alert (if needed)', type: 'conditional', score: 15, desc: 'If vitals outside range, alert care team with structured data.', condition: 'Triggered by out-of-range vitals' },
+    ],
+    successMetrics: ['All vitals collected', 'Medication compliance confirmed', 'Alerts sent if indicated'],
+    agents: [], completionRate: 0, totalRuns: 0, created: '2024-12-01',
+  },
+];
+
+export const GOAL_TEMPLATES = {
+  tcm: {
+    name: 'TCM Program Completion', program: 'TCM', mode: 'sequential',
+    desc: 'Complete TCM program with patient outreach, medication reconciliation, symptom monitoring, and billing.',
+    steps: [
+      { id: 't1', name: 'Successful Patient Outreach', type: 'mandatory', score: 25, desc: 'Establish first contact with patient. Confirm identity.', condition: null },
+      { id: 't2', name: 'Medication Reconciliation', type: 'mandatory', score: 30, desc: 'Review medications against discharge summary.', condition: 'Requires: Patient Outreach' },
+      { id: 't3', name: 'Symptom Monitoring', type: 'mandatory', score: 30, desc: 'Complete structured symptom assessment.', condition: 'Requires: Medication Reconciliation' },
+      { id: 't4', name: 'Billing Submission', type: 'conditional', score: 15, desc: 'Submit CPT 99495/99496 after clinical steps.', condition: 'Requires: All prior steps' },
+    ],
+    metrics: ['All mandatory steps completed in sequence', 'No safety escalations', 'Billing within 30 days'],
+  },
+  outreach: {
+    name: 'Patient Outreach Campaign', program: 'Outreach', mode: 'all-mandatory',
+    desc: 'Proactive outreach to identify care gaps and schedule appointments.',
+    steps: [
+      { id: 't1', name: 'Patient ID & Consent', type: 'mandatory', score: 25, desc: 'Verify identity and confirm outreach consent.', condition: null },
+      { id: 't2', name: 'Care Gap Communication', type: 'mandatory', score: 25, desc: 'Inform patient of overdue services.', condition: 'Requires: Identity Verified' },
+      { id: 't3', name: 'Appointment Scheduling', type: 'mandatory', score: 40, desc: 'Book appointment via scheduling API.', condition: 'Requires: Care gap acknowledged' },
+      { id: 't4', name: 'Confirmation Message', type: 'conditional', score: 10, desc: 'Send confirmation via preferred channel.', condition: 'Requires: Appointment booked' },
+    ],
+    metrics: ['Appointment booked', 'Patient confirmation received'],
+  },
+  onboarding: {
+    name: 'App Onboarding Flow', program: 'Onboarding', mode: 'all-mandatory',
+    desc: 'Guide patients through app download, registration, and first meaningful action.',
+    steps: [
+      { id: 't1', name: 'Download Invitation', type: 'mandatory', score: 20, desc: 'Send personalized app download link.', condition: null },
+      { id: 't2', name: 'Registration Confirmation', type: 'mandatory', score: 50, desc: 'Verify account creation event.', condition: 'Requires: Link sent' },
+      { id: 't3', name: 'Feature Walkthrough', type: 'conditional', score: 15, desc: 'Guided tour if patient requests help.', condition: 'If help requested' },
+      { id: 't4', name: 'First Action', type: 'conditional', score: 15, desc: 'Verify meaningful first action taken.', condition: 'Requires: Registration' },
+    ],
+    metrics: ['Registration completed', 'First action within 7 days'],
+  },
+  monitoring: {
+    name: 'Chronic Disease Check-in', program: 'Outreach', mode: 'sequential',
+    desc: 'Monthly check-in for chronic disease patients to track vitals and medication adherence.',
+    steps: [
+      { id: 't1', name: 'Patient Engagement', type: 'mandatory', score: 20, desc: 'Initiate contact and confirm availability.', condition: null },
+      { id: 't2', name: 'Vitals Collection', type: 'mandatory', score: 35, desc: 'Collect BP, glucose, or weight readings.', condition: 'Requires: Engagement' },
+      { id: 't3', name: 'Medication Review', type: 'mandatory', score: 30, desc: 'Review adherence and log missed doses.', condition: 'Requires: Vitals collected' },
+      { id: 't4', name: 'Clinical Alert', type: 'conditional', score: 15, desc: 'Alert care team for out-of-range vitals.', condition: 'Triggered by abnormal vitals' },
+    ],
+    metrics: ['All vitals collected', 'Alerts sent if indicated'],
+  },
+};

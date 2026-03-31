@@ -8,7 +8,7 @@ import { OutreachPopover } from '../../components/OutreachPopover/OutreachPopove
 import { useAppStore } from '../../store/useAppStore';
 import styles from './WorklistRow.module.css';
 
-const LANG_MAP = { en: 'English', es: 'Spanish', zh: 'Chinese', yue: 'Cantonese' };
+const LANG_MAP = { en: 'English', es: 'Spanish', zh: 'Chinese', yue: 'Cantonese', ko: 'Korean', vi: 'Vietnamese', hi: 'Hindi', pa: 'Punjabi' };
 
 function TocStatusBadge({ status }) {
   const MAP = {

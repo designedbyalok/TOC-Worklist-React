@@ -15,11 +15,15 @@ export function RiskView({ showToast }) {
   const [kpiData, setKpiData] = useState(fb);
   const [rafByPractice, setRafByPractice] = useState(FALLBACK_TABLES.raf_by_practice);
   const [hccRecapture, setHccRecapture] = useState(FALLBACK_PROGRESS_BARS.hcc_recapture);
+  const [hccRecaptureCategories, setHccRecaptureCategories] = useState(FALLBACK_PROGRESS_BARS.hcc_recapture_categories);
+  const [openHccSuspects, setOpenHccSuspects] = useState(FALLBACK_TABLES.open_hcc_suspects);
 
   useEffect(() => {
     fetchViewKpis('risk').then(d => d && setKpiData(d));
     fetchViewTable('risk', 'raf_by_practice').then(d => d && setRafByPractice(d));
     fetchProgressBars('risk', 'hcc_recapture').then(d => d && setHccRecapture(d));
+    fetchProgressBars('risk', 'hcc_recapture_categories').then(d => d && setHccRecaptureCategories(d));
+    fetchViewTable('risk', 'open_hcc_suspects').then(d => d && setOpenHccSuspects(d));
   }, [period]);
 
   const kpis = kpiData?.kpis || fb.kpis || [];
@@ -60,7 +64,7 @@ export function RiskView({ showToast }) {
       )}
 
       {/* RAF methodology note */}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '10px 14px', background: 'var(--neutral-25)', borderRadius: 8, fontSize: 14, color: 'var(--neutral-400)', lineHeight: 1.6, marginBottom: 4 }}>
+      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '10px 14px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 8, fontSize: 14, color: 'var(--neutral-400)', lineHeight: 1.6, marginBottom: 4 }}>
         <span style={{ fontSize: 14, marginTop: 1 }}>{'\u2139\uFE0F'}</span>
         <span>
           <strong>CMS HCC Model V28</strong> &mdash; RAF displayed to 3 decimal places. Potential RAF is derived from all open HCC suspects in the suspect worklist below.
@@ -150,6 +154,36 @@ export function RiskView({ showToast }) {
           ))}
         </Card>
       )}
+
+      {/* HCC Recapture by Category */}
+      <Card title="HCC Recapture by Category">
+        {safeBarItems(hccRecaptureCategories).map(b => (
+          <ProgressBar key={b.label} label={b.label} value={b.value} pct={b.pct} color={b.color} sub={b.sub} />
+        ))}
+      </Card>
+
+      {/* Top Open HCC Suspects */}
+      <Card title="Top Open HCC Suspects" flush actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Opening full HCC suspect worklist')}>View All &rarr;</button>}>
+        <div className={s.tblWrap}>
+          <table className={s.tbl}>
+            <thead>
+              <tr><th>Member ID</th><th>HCC Category</th><th>Description</th><th className={s.r}>Est. Revenue Impact</th><th>Last Coded Date</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+              {safeTableRows(openHccSuspects, (FALLBACK_TABLES.open_hcc_suspects || {}).rows).map((row, i) => (
+                <tr key={i}>
+                  <td className={s.fw600}>{row.member_id}</td>
+                  <td><span className={`${s.stPill} ${s.stNeutral}`}>{row.hcc_category}</span></td>
+                  <td>{row.description}</td>
+                  <td className={`${s.r} ${s.valR}`} style={{ fontWeight: 500 }}>{row.revenue_impact}</td>
+                  <td className={s.mono}>{row.last_coded}</td>
+                  <td><button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.(`${row.action} for ${row.member_id}`)}>{row.action}</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
     </>
   );
 }

@@ -124,7 +124,7 @@ export function AiAnalyticsView({ showToast }) {
               </tbody>
             </table>
           </div>
-          <div style={{ marginTop: 12, fontSize: 12, color: 'var(--neutral-200)' }}>
+          <div style={{ marginTop: 12, padding: '0 14px 4px', fontSize: 12, color: 'var(--neutral-200)' }}>
             Models retrained bi-weekly on rolling 24-month data. Drift monitoring active. Alert threshold: AUC drop &gt; 0.03.
           </div>
         </Card>

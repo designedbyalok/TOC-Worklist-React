@@ -154,7 +154,7 @@ export function RafTrendLineChart({ data, potential }) {
 
   return (
     <div style={{ padding: '8px 14px 4px' }}>
-      <ResponsiveContainer width="100%" height={180}>
+      <ResponsiveContainer width="100%" height={240}>
         <LineChart data={chartData} margin={{ top: 8, right: 12, bottom: 4, left: 8 }}>
           <CartesianGrid {...GRID_STYLE} vertical={false} />
           <XAxis dataKey="month" tick={AXIS_TICK} axisLine={{ stroke: COLORS.neutral150 }} tickLine={false} />
@@ -184,7 +184,7 @@ export function ReadmitTrendLineChart({ data, threshold }) {
 
   return (
     <div style={{ padding: '8px 14px 4px' }}>
-      <ResponsiveContainer width="100%" height={180}>
+      <ResponsiveContainer width="100%" height={240}>
         <AreaChart data={chartData} margin={{ top: 8, right: 12, bottom: 4, left: 8 }}>
           <defs>
             <linearGradient id="readmitGrad" x1="0" y1="0" x2="0" y2="1">

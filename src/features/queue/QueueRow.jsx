@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '../../components/Icon/Icon';
 import { Avatar } from '../../components/Avatar/Avatar';
 import { Badge } from '../../components/Badge/Badge';
@@ -7,7 +8,7 @@ import { useAppStore } from '../../store/useAppStore';
 import rowStyles from '../worklist/WorklistRow.module.css';
 import styles from './QueueRow.module.css';
 
-const LANG_MAP = { en: 'English', es: 'Spanish', zh: 'Chinese', yue: 'Cantonese' };
+const LANG_MAP = { en: 'English', es: 'Spanish', zh: 'Chinese', yue: 'Cantonese', ko: 'Korean', vi: 'Vietnamese', hi: 'Hindi', pa: 'Punjabi' };
 
 const AI_VARIANT_MAP = {
   'ai-tag-risk': 'ai-risk',
@@ -29,8 +30,33 @@ function TocStatusBadge({ status }) {
   return <Badge variant={cfg.variant} label={cfg.label} icon={cfg.icon} />;
 }
 
-function StatusCell({ patient: p, voicemailCalls }) {
-  const { status, goals, goalsDetail, scheduledTime, callDuration } = p;
+function GoalsTooltipPortal({ goalsDetail, pillRef, visible }) {
+  if (!visible || !goalsDetail || !pillRef.current) return null;
+  const rect = pillRef.current.getBoundingClientRect();
+  const tooltipW = 320;
+  let left = rect.left;
+  if (left + tooltipW > window.innerWidth - 16) left = window.innerWidth - tooltipW - 16;
+  if (left < 16) left = 16;
+  return createPortal(
+    <div className={styles.goalsTooltipFixed} style={{ top: rect.bottom + 6, left }}>
+      <div className={styles.goalsTooltipHeader}>Goals Tracking</div>
+      {goalsDetail.map((g, i) => (
+        <div key={i} className={styles.goalRow}>
+          <Icon name={g.pass ? "solar:check-circle-bold" : "solar:close-circle-bold"} size={14} color={g.pass ? "#059669" : "#DC2626"} />
+          <span className={styles.goalRowLabel}>{g.name}</span>
+          <span className={`${styles.goalBadge} ${g.pass ? styles.goalPass : styles.goalFail}`}>{g.pass ? 'Pass' : 'Fail'}</span>
+        </div>
+      ))}
+    </div>,
+    document.body
+  );
+}
+
+function StatusCell({ patient: p, voicemailCalls, completedCall }) {
+  const { status, goals, scheduledTime, callDuration } = p;
+  const goalsDetail = p.goalsDetail || completedCall?.goalsDetail || [];
+  const [goalsHover, setGoalsHover] = useState(false);
+  const goalsPillRef = useRef(null);
   // Use voicemail call records for attempt history, fallback to patient.attempts
   const attempts = voicemailCalls?.length > 0
     ? voicemailCalls.map((c, i) => ({ time: c.startedAt, outcome: c.outcome }))
@@ -41,23 +67,17 @@ function StatusCell({ patient: p, voicemailCalls }) {
       <div className={styles.statusCompact}>
         <Badge variant="status-completed" label="Completed" icon="solar:check-circle-bold" />
         {goals && (
-          <div className={styles.goalsPill}>
+          <div
+            className={styles.goalsPill}
+            ref={goalsPillRef}
+            onMouseEnter={() => setGoalsHover(true)}
+            onMouseLeave={() => setGoalsHover(false)}
+          >
             <div className={styles.goalsFill}>
               <div className={styles.goalsFillInner} style={{ width: `${pct}%` }} />
             </div>
             <span className={styles.goalsText}>{goals.met}/{goals.total}</span>
-            {p.goalsDetail && (
-              <div className={styles.goalsTooltip}>
-                <div className={styles.goalsTooltipHeader}>Goals Tracking</div>
-                {p.goalsDetail.map((g, i) => (
-                  <div key={i} className={styles.goalRow}>
-                    <Icon name={g.pass ? "solar:check-circle-bold" : "solar:close-circle-bold"} size={14} color={g.pass ? "#059669" : "#DC2626"} />
-                    <span className={styles.goalRowLabel}>{g.name}</span>
-                    <span className={`${styles.goalBadge} ${g.pass ? styles.goalPass : styles.goalFail}`}>{g.pass ? 'Pass' : 'Fail'}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+            <GoalsTooltipPortal goalsDetail={goalsDetail} pillRef={goalsPillRef} visible={goalsHover} />
           </div>
         )}
       </div>
@@ -175,6 +195,7 @@ export function QueueRow({ patient }) {
 
   const p = patient;
   const voicemailCalls = callDetails.filter(c => c.patientId === p.id && c.callType === 'voicemail');
+  const completedCall = callDetails.find(c => c.patientId === p.id && c.callType === 'completed');
   const outreachBadgeVariant = p.outreachType === '48h' ? 'outreach-48h' : 'outreach-7d';
 
   const openDetail = useAppStore(s => s.openDetail);
@@ -232,6 +253,19 @@ export function QueueRow({ patient }) {
           </div>
         </div>
       </td>
+      <td style={tdBase}>
+        <Badge
+          variant={`priority-${p.priority <= 1 ? 'critical' : p.priority <= 2 ? 'high' : p.priority <= 3 ? 'medium' : 'low'}`}
+          label={p.priority <= 1 ? 'Critical' : p.priority <= 2 ? 'High' : p.priority <= 3 ? 'Medium' : 'Low'}
+          icon={p.priority <= 1 ? 'solar:danger-triangle-bold' : p.priority <= 2 ? 'solar:arrow-up-bold' : p.priority <= 3 ? 'solar:minus-circle-bold' : 'solar:arrow-down-bold'}
+        />
+      </td>
+      <td style={tdBase}>
+        <Badge
+          variant={`outreach-${p.outreachCategory || 'post-visit'}`}
+          label={(p.outreachCategory || 'post-visit').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+        />
+      </td>
       <td style={tdBase}><Badge variant={`lace-${p.lace.toLowerCase()}`} label={p.lace} /></td>
       <td style={tdBase}>
         <div className={rowStyles.outreachCell}>
@@ -251,7 +285,7 @@ export function QueueRow({ patient }) {
       </td>
       {/* Agent columns */}
       <td className={styles.agentColTd} style={{ background: 'var(--agent-col-bg)', borderLeft: '2px solid var(--primary-200)' }}>
-        <StatusCell patient={p} voicemailCalls={voicemailCalls} />
+        <StatusCell patient={p} voicemailCalls={voicemailCalls} completedCall={completedCall} />
       </td>
       <td className={styles.agentColTd} style={{ background: 'var(--agent-col-bg)' }}>
         <NextActionCell patient={p} />

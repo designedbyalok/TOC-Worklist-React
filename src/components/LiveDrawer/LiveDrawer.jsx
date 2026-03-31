@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Icon } from '../Icon/Icon';
 import { Drawer } from '../Drawer/Drawer';
+import { ComplianceBadges } from '../ComplianceBadges/ComplianceBadges';
+import { DepartmentSelector, TransferringState, TransferFailure, NoHumanAvailable, CallbackOffer, PostTransferFeedback } from '../TransferFlow/TransferFlow';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './LiveDrawer.module.css';
 
@@ -13,6 +15,9 @@ export function LiveDrawer() {
   const [listenActive, setListenActive] = useState(false);
   const [muteActive, setMuteActive] = useState(false);
   const [openSections, setOpenSections] = useState({ goals: true, transcript: true });
+  // Transfer flow state: null | 'select-dept' | 'transferring' | 'failure' | 'no-human' | 'callback' | 'feedback'
+  const [transferState, setTransferState] = useState(null);
+  const [transferDept, setTransferDept] = useState(null);
 
   const p = patients.find(x => x.id === liveDrawerPatient);
   if (!p) return null;
@@ -57,6 +62,9 @@ export function LiveDrawer() {
         </div>
       </div>
 
+      {/* Compliance Strip */}
+      <ComplianceBadges compliance={ongoingCall?.compliance} compact />
+
       {/* Action buttons */}
       <div className={styles.actions}>
         <button
@@ -71,6 +79,13 @@ export function LiveDrawer() {
           Take Over Call
         </button>
         <button
+          className={`${styles.actionBtn} ${transferState ? styles.active : ''}`}
+          onClick={() => setTransferState(transferState ? null : 'select-dept')}
+        >
+          <Icon name="solar:call-medicine-bold" size={16} />
+          Transfer
+        </button>
+        <button
           className={`${styles.actionBtn} ${muteActive ? styles.active : ''}`}
           onClick={() => setMuteActive(v => !v)}
         >
@@ -78,6 +93,56 @@ export function LiveDrawer() {
           Mute
         </button>
       </div>
+
+      {/* Transfer Flow States */}
+      {transferState === 'select-dept' && (
+        <DepartmentSelector
+          onSelect={(dept) => { setTransferDept(dept); setTransferState('transferring'); }}
+          onCancel={() => setTransferState(null)}
+        />
+      )}
+      {transferState === 'transferring' && (
+        <TransferringState department={transferDept} onCancel={() => setTransferState('failure')} />
+      )}
+      {transferState === 'failure' && (
+        <TransferFailure
+          reason="The line is busy. Please try again or offer a callback."
+          onRetry={() => setTransferState('transferring')}
+          onCallback={() => setTransferState('callback')}
+        />
+      )}
+      {transferState === 'no-human' && (
+        <NoHumanAvailable
+          onCallback={() => setTransferState('callback')}
+          onMessage={() => { showToast('Message sent to care team'); setTransferState('feedback'); }}
+        />
+      )}
+      {transferState === 'callback' && (
+        <CallbackOffer
+          patientName={p.name}
+          onSchedule={(mins) => { showToast(`Callback scheduled in ${mins} minutes`); setTransferState('feedback'); }}
+          onDismiss={() => setTransferState(null)}
+        />
+      )}
+      {transferState === 'feedback' && (
+        <PostTransferFeedback onSubmit={({ outcome }) => { showToast(`Feedback recorded: ${outcome}`); setTransferState(null); }} />
+      )}
+
+      {/* Transfer Context Card (shown when taking over) */}
+      {ongoingCall?.compliance && (
+        <div style={{
+          border: '0.5px solid #d0d6e1', borderRadius: 8, padding: 10, marginBottom: 12, background: '#fafbff',
+          display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 12, color: '#6f7a90',
+        }}>
+          <span><strong>Verified:</strong> {ongoingCall.compliance.identityVerified ? 'Yes' : 'No'}</span>
+          <span>•</span>
+          <span><strong>Reason:</strong> {p.admitReason || 'TOC Follow-up'}</span>
+          <span>•</span>
+          <span><strong>LACE:</strong> {p.lace}</span>
+          <span>•</span>
+          <span><strong>Facility:</strong> {p.facility || 'N/A'}</span>
+        </div>
+      )}
 
       {/* Goals Section — collapsible */}
       <div className={styles.sectionHeader} onClick={() => toggleSection('goals')}>

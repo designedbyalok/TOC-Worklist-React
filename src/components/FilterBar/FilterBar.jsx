@@ -53,6 +53,20 @@ const FILTER_DEFS = [
     { value: 'pending', label: 'Pending' },
     { value: 'none', label: 'No Care Plan' },
   ]},
+  { key: 'priority', label: 'Priority', options: [
+    { value: '1', label: 'Critical' },
+    { value: '2', label: 'High' },
+    { value: '3', label: 'Medium' },
+    { value: '4', label: 'Low' },
+  ]},
+  { key: 'outreachCategory', label: 'Outreach Category', options: [
+    { value: 'post-visit', label: 'Post-Visit' },
+    { value: 'appointment', label: 'Appointment' },
+    { value: 'refill', label: 'Refill' },
+    { value: 'care-gap', label: 'Care Gap' },
+    { value: 'waitlist', label: 'Waitlist' },
+  ]},
+  { key: 'agentAssigned', label: 'Agent', optionsFromData: true },
 ];
 
 function FilterChip({ filterDef, value, onSet, onClear, patients }) {
@@ -69,11 +83,11 @@ function FilterChip({ filterDef, value, onSet, onClear, patients }) {
   }, [open]);
 
   const options = useMemo(() => {
-    if (filterDef.optionsFromData && filterDef.key === 'assignee') {
-      const unique = [...new Set(patients.map(p => p.assignee).filter(Boolean))];
+    if (filterDef.optionsFromData) {
+      const unique = [...new Set(patients.map(p => p[filterDef.key]).filter(Boolean))];
       return unique.sort().map(a => ({ value: a, label: a }));
     }
-    return filterDef.options;
+    return filterDef.options || [];
   }, [filterDef, patients]);
 
   const selectedLabel = value ? options.find(o => o.value === value)?.label || value : null;

@@ -93,7 +93,7 @@ export function ActionRulesView({ showToast }) {
         title="Rules Builder"
         actions={<button className={`${s.btn} ${s.btnPrimary}`} onClick={() => showToast?.('Opening no-code rules builder')}>+ New Rule</button>}
       >
-        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '10px 14px', background: 'var(--neutral-25)', borderRadius: 8, fontSize: 14, color: 'var(--neutral-300)', lineHeight: 1.6 }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '10px 14px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 8, fontSize: 14, color: 'var(--neutral-300)', lineHeight: 1.6 }}>
           <span style={{ fontSize: 14, marginTop: 1 }}>{'\u2139\uFE0F'}</span>
           <span>Rules are configurable by Clinical Ops Managers and Population Health Leaders through a no-code builder. Each rule has an owner, approval chain, and audit log. Rules can be paused, modified, or retired without engineering involvement.</span>
         </div>
