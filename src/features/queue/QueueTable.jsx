@@ -4,9 +4,11 @@ import { Icon } from '../../components/Icon/Icon';
 import { Checkbox } from '../../components/ui/checkbox';
 import { QueueRow } from './QueueRow';
 import { QueueEmptyState } from './QueueEmptyState';
+import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
 
 export function QueueTable() {
   const patients = useAppStore(s => s.patients);
+  const patientsLoading = useAppStore(s => s.patientsLoading);
   const searchQuery = useAppStore(s => s.searchQuery);
   const activeFilters = useAppStore(s => s.activeFilters);
   const currentPage = useAppStore(s => s.currentPage);
@@ -34,6 +36,8 @@ export function QueueTable() {
 
     return result;
   }, [patients, searchQuery, activeFilters]);
+
+  if (patientsLoading) return <TableSkeleton rows={6} />;
 
   if (!filteredQueue.length) {
     // Check if there are any invoked patients at all (before filters)

@@ -3,7 +3,7 @@ import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Avatar } from '../../../components/Avatar/Avatar';
 import { useAppStore } from '../../../store/useAppStore';
-// No local fallback — data loaded from DB via store
+import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 
 const thStyle = {
   textAlign: 'left', padding: '8px 16px', color: '#6F7A90', fontWeight: 500,
@@ -16,6 +16,7 @@ export function ChatSettingsPanel({ searchQuery = '' }) {
   const showToast = useAppStore(s => s.showToast);
   const setChatGroupDetailId = useAppStore(s => s.setChatGroupDetailId);
   const chatGroupsData = useAppStore(s => s.chatGroupsData) || [];
+  const chatGroupsLoading = useAppStore(s => s.chatGroupsLoading);
 
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return chatGroupsData;
@@ -26,6 +27,10 @@ export function ChatSettingsPanel({ searchQuery = '' }) {
       (g.agentName || '').toLowerCase().includes(q)
     );
   }, [chatGroupsData, searchQuery]);
+
+  if (chatGroupsLoading) {
+    return <SimpleTableSkeleton rows={6} cols={6} />;
+  }
 
   return (
     <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>

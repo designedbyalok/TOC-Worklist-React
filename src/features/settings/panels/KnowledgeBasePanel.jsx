@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { useAppStore } from '../../../store/useAppStore';
+import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 
 const FALLBACK_FAQS = [
   { id: 1, question: 'What is Transitional Care Management (TCM)?', answer: 'TCM is a Medicare program that covers services for patients transitioning from hospital to home or other setting.', category: 'General', updatedAt: '2026-03-15' },
@@ -30,6 +31,11 @@ export function KnowledgeBasePanel() {
   const showToast = useAppStore(s => s.showToast);
   useEffect(() => { fetchFaqs(); }, [fetchFaqs]);
   const faqs = faqsData || [];
+  const isLoading = !faqsData;
+
+  if (isLoading) {
+    return <SimpleTableSkeleton rows={5} cols={4} />;
+  }
 
   return (
     <div>
@@ -54,6 +60,13 @@ export function KnowledgeBasePanel() {
           </tr>
         </thead>
         <tbody>
+          {faqs.length === 0 && (
+            <tr><td colSpan={4} style={{ textAlign: 'center', padding: 40, color: '#8a94a8' }}>
+              <Icon name="solar:book-linear" size={32} color="#d0d6e1" />
+              <div style={{ fontSize: 14, fontWeight: 500, color: '#6f7a90', marginTop: 8 }}>No FAQ articles yet</div>
+              <div style={{ fontSize: 13, marginTop: 4 }}>Add your first FAQ to help patients and agents.</div>
+            </td></tr>
+          )}
           {faqs.map(faq => (
             <tr key={faq.id}>
               <td style={s.td}>

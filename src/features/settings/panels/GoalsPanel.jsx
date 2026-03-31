@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { useAppStore } from '../../../store/useAppStore';
-// No local fallback — data loaded from DB via store
+import { CardSkeleton, SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 import s from './GoalsPanel.module.css';
 
 const PROGRAM_VARIANT = { purple: 'ai-care', blue: 'outreach-appointment', amber: 'outreach-care-gap' };
@@ -134,13 +134,13 @@ function GoalsTable({ goals, onOpen, onEdit }) {
 }
 
 export function GoalsPanel({ searchQuery = '', filter = 'all', viewMode = 'grid' }) {
-  const goalsData = useAppStore(st => st.goalsData) || [];
+  const goalsData = useAppStore(st => st.goalsData);
   const goalsLoading = useAppStore(st => st.goalsLoading);
   const setGoalDetailId = useAppStore(st => st.setGoalDetailId);
   const setGoalWizard = useAppStore(st => st.setGoalWizard);
 
   const filtered = useMemo(() => {
-    let result = goalsData;
+    let result = goalsData || [];
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(g => g.name.toLowerCase().includes(q) || g.program.toLowerCase().includes(q) || g.description.toLowerCase().includes(q));
@@ -150,6 +150,10 @@ export function GoalsPanel({ searchQuery = '', filter = 'all', viewMode = 'grid'
     }
     return result;
   }, [goalsData, searchQuery, filter]);
+
+  if (goalsLoading) {
+    return viewMode === 'table' ? <SimpleTableSkeleton rows={5} cols={7} /> : <CardSkeleton count={4} />;
+  }
 
   if (filtered.length === 0) {
     return (
