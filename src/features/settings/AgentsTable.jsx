@@ -191,6 +191,7 @@ export function AgentsTable() {
   const [searchVal, setSearchVal] = useState('');
   const [goalsFilter, setGoalsFilter] = useState('all');
   const [goalsViewMode, setGoalsViewMode] = useState('grid');
+  const [goalsFilterOpen, setGoalsFilterOpen] = useState(false);
 
   useEffect(() => { fetchAgents(); }, [fetchAgents]);
   useEffect(() => { if (settingsTab === 'goals') fetchGoals(); }, [settingsTab, fetchGoals]);
@@ -239,6 +240,12 @@ export function AgentsTable() {
               </button>
             )}
           </div>
+          {settingsTab === 'goals' && (
+            <button className={styles.searchBtn} title="Filter" onClick={() => setGoalsFilterOpen(v => !v)}
+              style={goalsFilterOpen ? { background: 'var(--primary-50)', color: 'var(--primary-300)' } : {}}>
+              <Icon name="solar:filter-linear" size={18} />
+            </button>
+          )}
           <span className={styles.tabDivider} />
           <button className={styles.createBtn} onClick={() => {
             if (settingsTab === 'goals') {
@@ -253,8 +260,8 @@ export function AgentsTable() {
         </div>
       </div>
 
-      {/* Goals filter bar (between tabs and content, like worklist FilterBar) */}
-      {settingsTab === 'goals' && (
+      {/* Goals filter bar (toggled by filter button, like worklist FilterBar) */}
+      {settingsTab === 'goals' && goalsFilterOpen && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderBottom: '0.5px solid var(--neutral-150)', flexShrink: 0 }}>
           {['all', 'active', 'draft', 'TCM', 'Outreach'].map(f => (
             <button

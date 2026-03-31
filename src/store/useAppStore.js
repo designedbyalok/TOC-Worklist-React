@@ -9,6 +9,7 @@ import { chatGroups as fallbackChatGroups } from '../data/chatGroups';
 import { generateFlowFromPrompt } from '../lib/flowGenerator';
 import { kpiRowToJs, tsRowToJs, tableRowToJs, barRowToJs, configRowToJs, groupTimeSeries } from '../lib/analyticsMapper';
 import { FALLBACK_KPIS, FALLBACK_TIME_SERIES, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS, FALLBACK_CONFIGS } from '../data/analyticsFallbacks';
+import { updateHash } from '../lib/router';
 
 function parseDuration(str) {
   const parts = (str || '00:00').split(':').map(Number);
@@ -66,6 +67,9 @@ export const useAppStore = create((set, get) => ({
 
   // Settings navigation (left subnav)
   settingsNavItem: sessionStorage.getItem('settingsNavItem') || 'agents',
+
+  // Messages section
+  messageTab: 'chat-settings',
 
   // Chat Groups (Messages > Chat Settings)
   chatGroupsData: null,
@@ -211,18 +215,19 @@ export const useAppStore = create((set, get) => ({
   },
 
   // Actions
-  setActivePage: (page) => { sessionStorage.setItem('activePage', page); set({ activePage: page }); },
-  setActiveTab: (tab) => { sessionStorage.setItem('activeTab', tab); set({ activeTab: tab }); },
-  setSettingsTab: (tab) => { sessionStorage.setItem('settingsTab', tab); set({ settingsTab: tab }); },
+  setActivePage: (page) => { sessionStorage.setItem('activePage', page); set({ activePage: page }); updateHash(get); },
+  setActiveTab: (tab) => { sessionStorage.setItem('activeTab', tab); set({ activeTab: tab }); updateHash(get); },
+  setSettingsTab: (tab) => { sessionStorage.setItem('settingsTab', tab); set({ settingsTab: tab }); updateHash(get); },
   setShowCreateAgent: (v) => set({ showCreateAgent: v }),
 
   // Settings nav
-  setSettingsNavItem: (item) => { sessionStorage.setItem('settingsNavItem', item); set({ settingsNavItem: item }); },
+  setSettingsNavItem: (item) => { sessionStorage.setItem('settingsNavItem', item); set({ settingsNavItem: item }); updateHash(get); },
 
   // Chat Groups actions
-  setChatGroupDetailId: (id) => set({ chatGroupDetailId: id }),
-  setAgentRulesGroupId: (id) => set({ agentRulesGroupId: id }),
-  setBusinessHoursOpen: (open) => set({ businessHoursOpen: open }),
+  setMessageTab: (tab) => { set({ messageTab: tab }); updateHash(get); },
+  setChatGroupDetailId: (id) => { set({ chatGroupDetailId: id }); updateHash(get); },
+  setAgentRulesGroupId: (id) => { set({ agentRulesGroupId: id }); updateHash(get); },
+  setBusinessHoursOpen: (open) => { set({ businessHoursOpen: open }); updateHash(get); },
 
   fetchChatGroups: async () => {
     set({ chatGroupsLoading: true });
@@ -252,8 +257,8 @@ export const useAppStore = create((set, get) => ({
   },
 
   // Goals actions
-  setGoalDetailId: (id) => set({ goalDetailId: id }),
-  setGoalWizard: (open, editId) => set({ goalWizardOpen: open, goalWizardEditId: editId || null }),
+  setGoalDetailId: (id) => { set({ goalDetailId: id }); updateHash(get); },
+  setGoalWizard: (open, editId) => { set({ goalWizardOpen: open, goalWizardEditId: editId || null }); updateHash(get); },
 
   fetchGoals: async () => {
     set({ goalsLoading: true });

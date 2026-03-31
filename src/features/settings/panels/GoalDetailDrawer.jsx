@@ -45,7 +45,7 @@ export function GoalDetailDrawer() {
       <button className={`${s.footerBtn} ${s.footerBtnGhost}`} onClick={handleDuplicate}>
         <Icon name="solar:copy-linear" size={14} /> Duplicate
       </button>
-      <button className={`${s.footerBtn} ${s.footerBtnSecondary}`} onClick={handleEdit}>
+      <button className={`${s.footerBtn} ${s.footerBtnGhost}`} onClick={handleEdit}>
         <Icon name="solar:pen-linear" size={14} /> Edit
       </button>
     </div>

@@ -4,30 +4,39 @@ import { ChatSettingsPanel } from './panels/ChatSettingsPanel';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './AgentsTable.module.css';
 
-const TABS = ['Inboxes', 'Template Responses', 'Chat Settings', 'eFax'];
+const TAB_MAP = {
+  'inboxes': 'Inboxes',
+  'template-responses': 'Template Responses',
+  'chat-settings': 'Chat Settings',
+  'efax': 'eFax',
+};
+const TAB_KEYS = Object.keys(TAB_MAP);
 
 export function MessagesSettings() {
-  const [activeTab, setActiveTab] = useState('Chat Settings');
-  const [searchOpen, setSearchOpen] = useState(false);
+  const messageTab = useAppStore(s => s.messageTab) || 'chat-settings';
+  const setMessageTab = useAppStore(s => s.setMessageTab);
   const setChatGroupDetailId = useAppStore(s => s.setChatGroupDetailId);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [searchVal, setSearchVal] = useState('');
+
+  const activeTabLabel = TAB_MAP[messageTab] || 'Chat Settings';
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.tabBar}>
         <div className={styles.tabs}>
-          {TABS.map(tab => (
+          {TAB_KEYS.map(key => (
             <div
-              key={tab}
-              className={[styles.tab, activeTab === tab ? styles.tabActive : ''].filter(Boolean).join(' ')}
-              onClick={() => setActiveTab(tab)}
+              key={key}
+              className={[styles.tab, messageTab === key ? styles.tabActive : ''].filter(Boolean).join(' ')}
+              onClick={() => setMessageTab(key)}
             >
-              {tab}
+              {TAB_MAP[key]}
             </div>
           ))}
         </div>
         <div className={styles.tabActions}>
-          {activeTab === 'Chat Settings' && (
+          {messageTab === 'chat-settings' && (
             <>
               <div className={styles.searchWrap}>
                 {searchOpen ? (
@@ -53,13 +62,13 @@ export function MessagesSettings() {
       </div>
 
       <div className={styles.tableWrap}>
-        {activeTab === 'Chat Settings' ? (
+        {messageTab === 'chat-settings' ? (
           <ChatSettingsPanel searchQuery={searchVal} />
         ) : (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
             <div style={{ textAlign: 'center' }}>
               <Icon name="solar:inbox-linear" size={40} color="var(--neutral-200)" />
-              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-300)', marginTop: 8 }}>{activeTab}</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-300)', marginTop: 8 }}>{activeTabLabel}</div>
               <div style={{ fontSize: 13, color: 'var(--neutral-200)', marginTop: 4 }}>Coming soon</div>
             </div>
           </div>
