@@ -122,16 +122,9 @@ export const useAppStore = create((set, get) => ({
       .order('id', { ascending: true });
 
     if (error) {
-      console.warn('Supabase fetch failed, using fallback data:', error.message);
+      console.warn('Supabase patients fetch failed:', error.message);
       set({
-        patients: fallbackPatients.map(p => ({
-          ...p,
-          agentAssigned: p.status === 'completed' ? (p.agentAssigned || '') : '',
-          agentRole: p.status === 'completed' ? (p.agentRole || '') : '',
-          onCall: false,
-          status: (p.status === 'oncall' || p.status === 'queued') ? 'scheduled' : p.status,
-          callDuration: (p.status === 'oncall') ? null : p.callDuration,
-        })),
+        patients: [],
         patientsLoading: false,
         patientsError: error.message,
       });
@@ -169,7 +162,8 @@ export const useAppStore = create((set, get) => ({
 
     if (error) {
       console.warn('call_details fetch failed, using fallback:', error.message);
-      set({ callDetails: fallbackCallDetails.map(c => ({ ...c })) });
+      console.warn('Supabase call_details fetch failed:', error.message);
+      set({ callDetails: [] });
     } else {
       set({ callDetails: data.map(c => enrichCallRecord(callDetailDbToJs(c))) });
     }
@@ -238,7 +232,8 @@ export const useAppStore = create((set, get) => ({
 
     if (error) {
       console.warn('chat_groups fetch failed, using fallback:', error.message);
-      set({ chatGroupsData: fallbackChatGroups.map(g => ({ ...g })), chatGroupsLoading: false });
+      console.warn('Supabase chat_groups fetch failed:', error.message);
+      set({ chatGroupsData: [], chatGroupsLoading: false });
     } else {
       const mapped = data.map(row => ({
         id: row.id,
@@ -358,7 +353,8 @@ export const useAppStore = create((set, get) => ({
 
     if (error) {
       console.warn('goals fetch failed, using fallback:', error.message);
-      set({ goalsData: fallbackGoalsData.map(g => ({ ...g })), goalsLoading: false });
+      console.warn('Supabase goals fetch failed:', error.message);
+      set({ goalsData: [], goalsLoading: false });
     } else {
       // Map DB snake_case → JS camelCase
       const mapped = data.map(row => ({
@@ -385,7 +381,7 @@ export const useAppStore = create((set, get) => ({
   addGoal: async (goal) => {
     // Optimistic update
     set(s => {
-      const current = s.goalsData || [...fallbackGoalsData];
+      const current = s.goalsData || [];
       return { goalsData: [goal, ...current] };
     });
     // Persist to Supabase
@@ -412,7 +408,7 @@ export const useAppStore = create((set, get) => ({
   updateGoal: async (goal) => {
     // Optimistic update
     set(s => {
-      const current = s.goalsData || [...fallbackGoalsData];
+      const current = s.goalsData || [];
       return { goalsData: current.map(g => g.id === goal.id ? goal : g) };
     });
     // Persist to Supabase

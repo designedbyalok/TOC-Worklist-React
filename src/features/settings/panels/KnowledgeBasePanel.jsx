@@ -29,7 +29,7 @@ export function KnowledgeBasePanel() {
   const deleteFaq = useAppStore(s => s.deleteFaq);
   const showToast = useAppStore(s => s.showToast);
   useEffect(() => { fetchFaqs(); }, [fetchFaqs]);
-  const faqs = faqsData || FALLBACK_FAQS;
+  const faqs = faqsData || [];
 
   return (
     <div>

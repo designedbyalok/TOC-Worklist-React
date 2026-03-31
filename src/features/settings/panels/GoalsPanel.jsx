@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { useAppStore } from '../../../store/useAppStore';
-import { goals as fallbackGoals } from '../../../data/goals';
+// No local fallback — data loaded from DB via store
 import s from './GoalsPanel.module.css';
 
 const PROGRAM_VARIANT = { purple: 'ai-care', blue: 'outreach-appointment', amber: 'outreach-care-gap' };
@@ -134,7 +134,7 @@ function GoalsTable({ goals, onOpen, onEdit }) {
 }
 
 export function GoalsPanel({ searchQuery = '', filter = 'all', viewMode = 'grid' }) {
-  const goalsData = useAppStore(st => st.goalsData) || fallbackGoals;
+  const goalsData = useAppStore(st => st.goalsData) || [];
   const goalsLoading = useAppStore(st => st.goalsLoading);
   const setGoalDetailId = useAppStore(st => st.setGoalDetailId);
   const setGoalWizard = useAppStore(st => st.setGoalWizard);

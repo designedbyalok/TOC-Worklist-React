@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from '../../../components/ui/radio-group';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../../../components/ui/tooltip';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../../components/ui/select';
 import { useAppStore } from '../../../store/useAppStore';
-import { chatGroups as fallbackGroups, availableUsers, availableRoles } from '../../../data/chatGroups';
+import { availableUsers, availableRoles } from '../../../data/chatGroups'; // Participant lists — TODO: move to store
 
 const labelStyle = { fontSize: 14, color: 'var(--neutral-300)', fontWeight: 400, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 4 };
 const reqDot = <span style={{ color: '#D72825', fontSize: 14, lineHeight: 1 }}>*</span>;
@@ -39,7 +39,7 @@ export function GroupDetailDrawer() {
   const setAgentRulesGroupId = useAppStore(s => s.setAgentRulesGroupId);
   const setBusinessHoursOpen = useAppStore(s => s.setBusinessHoursOpen);
   const showToast = useAppStore(s => s.showToast);
-  const chatGroupsData = useAppStore(s => s.chatGroupsData) || fallbackGroups;
+  const chatGroupsData = useAppStore(s => s.chatGroupsData) || [];
 
   const group = chatGroupsData.find(g => g.id === chatGroupDetailId);
   const isNew = chatGroupDetailId === 'new';

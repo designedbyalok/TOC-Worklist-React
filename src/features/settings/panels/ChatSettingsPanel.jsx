@@ -3,7 +3,7 @@ import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Avatar } from '../../../components/Avatar/Avatar';
 import { useAppStore } from '../../../store/useAppStore';
-import { chatGroups as fallbackGroups } from '../../../data/chatGroups';
+// No local fallback — data loaded from DB via store
 
 const thStyle = {
   textAlign: 'left', padding: '8px 16px', color: '#6F7A90', fontWeight: 500,
@@ -15,7 +15,7 @@ const tdStyle = { padding: '10px 16px', fontSize: 13, color: 'var(--neutral-400)
 export function ChatSettingsPanel({ searchQuery = '' }) {
   const showToast = useAppStore(s => s.showToast);
   const setChatGroupDetailId = useAppStore(s => s.setChatGroupDetailId);
-  const chatGroupsData = useAppStore(s => s.chatGroupsData) || fallbackGroups;
+  const chatGroupsData = useAppStore(s => s.chatGroupsData) || [];
 
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return chatGroupsData;

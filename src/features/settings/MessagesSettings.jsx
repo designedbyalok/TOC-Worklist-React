@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from '../../components/Icon/Icon';
 import { ChatSettingsPanel } from './panels/ChatSettingsPanel';
 import { useAppStore } from '../../store/useAppStore';
@@ -16,8 +16,11 @@ export function MessagesSettings() {
   const messageTab = useAppStore(s => s.messageTab) || 'chat-settings';
   const setMessageTab = useAppStore(s => s.setMessageTab);
   const setChatGroupDetailId = useAppStore(s => s.setChatGroupDetailId);
+  const fetchChatGroups = useAppStore(s => s.fetchChatGroups);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchVal, setSearchVal] = useState('');
+
+  useEffect(() => { fetchChatGroups(); }, [fetchChatGroups]);
 
   const activeTabLabel = TAB_MAP[messageTab] || 'Chat Settings';
 

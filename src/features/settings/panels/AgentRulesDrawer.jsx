@@ -4,7 +4,7 @@ import { Badge } from '../../../components/Badge/Badge';
 import { Avatar } from '../../../components/Avatar/Avatar';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
-import { chatGroups as fallbackGroups, defaultRules, customRules, groupSettings } from '../../../data/chatGroups';
+import { defaultRules, customRules, groupSettings } from '../../../data/chatGroups'; // Rules defaults — TODO: move to store
 
 const RULE_BADGE_VARIANT = { safety: 'status-failed', system: 'ai-care', custom: 'status-completed' };
 const RULE_TYPE_LABEL = { safety: 'Safety', system: 'System', custom: 'Custom' };
@@ -13,7 +13,7 @@ export function AgentRulesDrawer() {
   const agentRulesGroupId = useAppStore(s => s.agentRulesGroupId);
   const setAgentRulesGroupId = useAppStore(s => s.setAgentRulesGroupId);
   const showToast = useAppStore(s => s.showToast);
-  const chatGroupsData = useAppStore(s => s.chatGroupsData) || fallbackGroups;
+  const chatGroupsData = useAppStore(s => s.chatGroupsData) || [];
 
   const group = chatGroupsData.find(g => g.id === agentRulesGroupId);
   const [agentEnabled, setAgentEnabled] = useState(true);

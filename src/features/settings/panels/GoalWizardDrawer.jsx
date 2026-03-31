@@ -3,7 +3,7 @@ import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
-import { goals as fallbackGoals, GOAL_TEMPLATES } from '../../../data/goals';
+import { GOAL_TEMPLATES } from '../../../data/goals'; // Templates are config, not DB data
 import s from './GoalsPanel.module.css';
 
 const WIZARD_LABELS = ['Describe', 'Configure', 'Steps', 'Review'];
@@ -21,7 +21,7 @@ export function GoalWizardDrawer() {
   const addGoal = useAppStore(st => st.addGoal);
   const updateGoal = useAppStore(st => st.updateGoal);
   const showToast = useAppStore(st => st.showToast);
-  const goalsData = useAppStore(st => st.goalsData) || fallbackGoals;
+  const goalsData = useAppStore(st => st.goalsData) || [];
 
   const editGoal = goalWizardEditId ? goalsData.find(g => g.id === goalWizardEditId) : null;
 

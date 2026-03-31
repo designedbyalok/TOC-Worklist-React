@@ -2,7 +2,7 @@ import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
-import { goals as fallbackGoals } from '../../../data/goals';
+// No local fallback — data loaded from DB via store
 import s from './GoalsPanel.module.css';
 
 export function GoalDetailDrawer() {
@@ -10,7 +10,7 @@ export function GoalDetailDrawer() {
   const setGoalDetailId = useAppStore(st => st.setGoalDetailId);
   const setGoalWizard = useAppStore(st => st.setGoalWizard);
   const showToast = useAppStore(st => st.showToast);
-  const goalsData = useAppStore(st => st.goalsData) || fallbackGoals;
+  const goalsData = useAppStore(st => st.goalsData) || [];
   const addGoal = useAppStore(st => st.addGoal);
 
   const goal = goalsData.find(g => g.id === goalDetailId);
