@@ -262,8 +262,13 @@ export const useAppStore = create((set, get) => ({
       has_agent: group.hasAgent || false,
       agent_name: group.agentName || null,
     };
-    const { data, error } = await supabase.from('chat_groups').insert(row).select();
-    if (error) { console.warn('Failed to create chat group:', error.message); return; }
+    let { data, error } = await supabase.from('chat_groups').insert(row).select();
+    if (error) {
+      console.warn('Failed to create chat group:', error.message);
+      // Show user feedback
+      get().showToast?.('Failed to save group. Please try again.');
+      return;
+    }
     if (data?.[0]) {
       const newGroup = {
         id: data[0].id, name: data[0].name, users: data[0].users || [], roles: data[0].roles || [],
