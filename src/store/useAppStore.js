@@ -256,6 +256,95 @@ export const useAppStore = create((set, get) => ({
     }
   },
 
+  // FAQs
+  faqsData: null,
+  fetchFaqs: async () => {
+    const { data, error } = await supabase.from('faqs').select('*').order('id');
+    if (error) { console.warn('[store] faqs fetch failed:', error.message); return; }
+    set({ faqsData: data.map(r => ({ id: r.id, question: r.question, answer: r.answer, category: r.category, updatedAt: r.updated_at || r.created_at })) });
+  },
+  addFaq: async (faq) => {
+    const row = { question: faq.question, answer: faq.answer, category: faq.category };
+    const { data, error } = await supabase.from('faqs').insert(row).select();
+    if (!error && data) set(s => ({ faqsData: [...(s.faqsData || []), { ...data[0], updatedAt: data[0].updated_at }] }));
+  },
+  updateFaq: async (id, updates) => {
+    await supabase.from('faqs').update(updates).eq('id', id);
+    set(s => ({ faqsData: (s.faqsData || []).map(f => f.id === id ? { ...f, ...updates } : f) }));
+  },
+  deleteFaq: async (id) => {
+    await supabase.from('faqs').delete().eq('id', id);
+    set(s => ({ faqsData: (s.faqsData || []).filter(f => f.id !== id) }));
+  },
+
+  // Agent Rules
+  agentRulesData: null,
+  fetchAgentRules: async () => {
+    const { data, error } = await supabase.from('agent_rules').select('*').order('sort_order');
+    if (error) { console.warn('[store] agent_rules fetch failed:', error.message); return; }
+    set({ agentRulesData: data.map(r => ({ id: r.id, name: r.name, type: r.type, locked: r.locked, enabled: r.enabled, condition: r.condition_text, action: r.action_text, priority: r.priority_label, sortOrder: r.sort_order })) });
+  },
+  addAgentRule: async (rule) => {
+    const row = { name: rule.name, type: 'custom', locked: false, enabled: true, condition_text: rule.condition, action_text: rule.action, sort_order: rule.sortOrder || 99 };
+    const { data, error } = await supabase.from('agent_rules').insert(row).select();
+    if (!error && data) {
+      const mapped = { id: data[0].id, name: data[0].name, type: 'custom', locked: false, enabled: true, condition: data[0].condition_text, action: data[0].action_text, sortOrder: data[0].sort_order };
+      set(s => ({ agentRulesData: [...(s.agentRulesData || []), mapped] }));
+    }
+  },
+  updateAgentRule: async (id, updates) => {
+    const dbUpdates = {};
+    if (updates.name !== undefined) dbUpdates.name = updates.name;
+    if (updates.enabled !== undefined) dbUpdates.enabled = updates.enabled;
+    if (updates.condition !== undefined) dbUpdates.condition_text = updates.condition;
+    if (updates.action !== undefined) dbUpdates.action_text = updates.action;
+    await supabase.from('agent_rules').update(dbUpdates).eq('id', id);
+    set(s => ({ agentRulesData: (s.agentRulesData || []).map(r => r.id === id ? { ...r, ...updates } : r) }));
+  },
+  deleteAgentRule: async (id) => {
+    await supabase.from('agent_rules').delete().eq('id', id);
+    set(s => ({ agentRulesData: (s.agentRulesData || []).filter(r => r.id !== id) }));
+  },
+
+  // Chat Participants
+  participantsData: null,
+  fetchParticipants: async () => {
+    const { data, error } = await supabase.from('chat_participants').select('*').order('id');
+    if (error) { console.warn('[store] chat_participants fetch failed:', error.message); return; }
+    set({ participantsData: data.map(r => ({ id: r.id, name: r.name, role: r.role, type: r.type, isAgent: r.is_agent })) });
+  },
+
+  // Business Hours
+  businessHoursData: null,
+  fetchBusinessHoursData: async () => {
+    const { data, error } = await supabase.from('business_hours').select('*').order('id');
+    if (error) { console.warn('[store] business_hours fetch failed:', error.message); return; }
+    set({ businessHoursData: data.map(r => ({ id: r.id, day: r.day_of_week, available: r.available, slots: r.slots })) });
+  },
+  updateBusinessHoursDay: async (id, updates) => {
+    const dbUpdates = {};
+    if (updates.available !== undefined) dbUpdates.available = updates.available;
+    if (updates.slots !== undefined) dbUpdates.slots = updates.slots;
+    await supabase.from('business_hours').update(dbUpdates).eq('id', id);
+    set(s => ({ businessHoursData: (s.businessHoursData || []).map(d => d.id === id ? { ...d, ...updates } : d) }));
+  },
+
+  // Holidays
+  holidaysData: null,
+  fetchHolidays: async () => {
+    const { data, error } = await supabase.from('holidays').select('*').order('date');
+    if (error) { console.warn('[store] holidays fetch failed:', error.message); return; }
+    set({ holidaysData: data.map(r => ({ id: r.id, date: r.date, name: r.name })) });
+  },
+  addHoliday: async (holiday) => {
+    const { data, error } = await supabase.from('holidays').insert({ date: holiday.date, name: holiday.name }).select();
+    if (!error && data) set(s => ({ holidaysData: [...(s.holidaysData || []), { id: data[0].id, date: data[0].date, name: data[0].name }] }));
+  },
+  deleteHoliday: async (id) => {
+    await supabase.from('holidays').delete().eq('id', id);
+    set(s => ({ holidaysData: (s.holidaysData || []).filter(h => h.id !== id) }));
+  },
+
   // Goals actions
   setGoalDetailId: (id) => { set({ goalDetailId: id }); updateHash(get); },
   setGoalWizard: (open, editId) => { set({ goalWizardOpen: open, goalWizardEditId: editId || null }); updateHash(get); },

@@ -4,6 +4,7 @@ import { SpeedInsights } from '@vercel/speed-insights/react';
 import { AppLayout } from './layouts/AppLayout';
 import { useAppStore } from './store/useAppStore';
 import { initRouter } from './lib/router';
+import { seedDatabaseIfEmpty } from './lib/seedDatabase';
 
 function App() {
   const fetchPatients = useAppStore(s => s.fetchPatients);
@@ -11,8 +12,11 @@ function App() {
   const routerInit = useRef(false);
 
   useEffect(() => {
-    fetchPatients();
-    fetchCallDetails();
+    // Auto-seed empty tables, then fetch data
+    seedDatabaseIfEmpty().then(() => {
+      fetchPatients();
+      fetchCallDetails();
+    });
   }, [fetchPatients, fetchCallDetails]);
 
   // Initialize hash router (once)

@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
+import { useAppStore } from '../../../store/useAppStore';
 
-const MOCK_FAQS = [
+const FALLBACK_FAQS = [
   { id: 1, question: 'What is Transitional Care Management (TCM)?', answer: 'TCM is a Medicare program that covers services for patients transitioning from hospital to home or other setting.', category: 'General', updatedAt: '2026-03-15' },
   { id: 2, question: 'How do I schedule a follow-up appointment?', answer: 'Our AI agent can help schedule your follow-up during the call, or you can call our scheduling line at (555) 123-4567.', category: 'Appointments', updatedAt: '2026-03-10' },
   { id: 3, question: 'What should I do if I run out of medication?', answer: 'Contact your pharmacy directly for refills. If it\'s urgent, call your care team or visit the ER.', category: 'Medications', updatedAt: '2026-03-08' },
@@ -23,7 +24,12 @@ const s = {
 };
 
 export function KnowledgeBasePanel() {
-  const [faqs] = useState(MOCK_FAQS);
+  const faqsData = useAppStore(s => s.faqsData);
+  const fetchFaqs = useAppStore(s => s.fetchFaqs);
+  const deleteFaq = useAppStore(s => s.deleteFaq);
+  const showToast = useAppStore(s => s.showToast);
+  useEffect(() => { fetchFaqs(); }, [fetchFaqs]);
+  const faqs = faqsData || FALLBACK_FAQS;
 
   return (
     <div>
