@@ -38,6 +38,8 @@ export function GroupDetailDrawer() {
   const setChatGroupDetailId = useAppStore(s => s.setChatGroupDetailId);
   const setAgentRulesGroupId = useAppStore(s => s.setAgentRulesGroupId);
   const setBusinessHoursOpen = useAppStore(s => s.setBusinessHoursOpen);
+  const addChatGroup = useAppStore(s => s.addChatGroup);
+  const updateChatGroup = useAppStore(s => s.updateChatGroup);
   const showToast = useAppStore(s => s.showToast);
   const chatGroupsData = useAppStore(s => s.chatGroupsData) || [];
 
@@ -121,7 +123,26 @@ export function GroupDetailDrawer() {
     <button style={{
       padding: '6px 16px', borderRadius: 6, background: 'var(--primary-300)', color: '#fff',
       border: 'none', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-    }} onClick={() => { showToast(isNew ? 'Group created' : 'Group updated'); setChatGroupDetailId(null); }}>
+    }} onClick={async () => {
+      if (!groupName.trim()) { showToast('Group name is required'); return; }
+      const groupData = {
+        name: groupName.trim(),
+        users: selectedUsers.filter(u => !u.isAgent).map(u => u.name),
+        roles: selectedRoles.map(r => r.name),
+        location: scope === 'location' ? (location || 'Global Template') : 'Global Template',
+        hasAgent: selectedUsers.some(u => u.isAgent),
+        agentName: selectedUsers.find(u => u.isAgent)?.name || null,
+        updatedBy: 'Current User',
+      };
+      if (isNew) {
+        await addChatGroup(groupData);
+        showToast('Group created');
+      } else {
+        await updateChatGroup(group.id, groupData);
+        showToast('Group updated');
+      }
+      setChatGroupDetailId(null);
+    }}>
       {ctaLabel}
     </button>
   );

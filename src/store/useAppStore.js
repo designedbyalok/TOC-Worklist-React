@@ -251,6 +251,48 @@ export const useAppStore = create((set, get) => ({
     }
   },
 
+  addChatGroup: async (group) => {
+    const row = {
+      name: group.name,
+      users: group.users || [],
+      roles: group.roles || [],
+      location: group.location || 'Global Template',
+      updated_by: group.updatedBy || '',
+      active_chats: 0,
+      has_agent: group.hasAgent || false,
+      agent_name: group.agentName || null,
+    };
+    const { data, error } = await supabase.from('chat_groups').insert(row).select();
+    if (error) { console.warn('Failed to create chat group:', error.message); return; }
+    if (data?.[0]) {
+      const newGroup = {
+        id: data[0].id, name: data[0].name, users: data[0].users || [], roles: data[0].roles || [],
+        location: data[0].location, updated: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
+        updatedBy: data[0].updated_by || '', activeChats: 0, hasAgent: data[0].has_agent, agentName: data[0].agent_name || '',
+      };
+      set(s => ({ chatGroupsData: [newGroup, ...(s.chatGroupsData || [])] }));
+    }
+  },
+
+  updateChatGroup: async (id, updates) => {
+    const dbUpdates = {};
+    if (updates.name !== undefined) dbUpdates.name = updates.name;
+    if (updates.users !== undefined) dbUpdates.users = updates.users;
+    if (updates.roles !== undefined) dbUpdates.roles = updates.roles;
+    if (updates.location !== undefined) dbUpdates.location = updates.location;
+    if (updates.hasAgent !== undefined) dbUpdates.has_agent = updates.hasAgent;
+    if (updates.agentName !== undefined) dbUpdates.agent_name = updates.agentName;
+    dbUpdates.updated_at = new Date().toISOString();
+    const { error } = await supabase.from('chat_groups').update(dbUpdates).eq('id', id);
+    if (error) { console.warn('Failed to update chat group:', error.message); return; }
+    set(s => ({
+      chatGroupsData: (s.chatGroupsData || []).map(g => g.id === id ? {
+        ...g, ...updates,
+        updated: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
+      } : g),
+    }));
+  },
+
   // FAQs
   faqsData: null,
   fetchFaqs: async () => {
