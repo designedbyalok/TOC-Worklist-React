@@ -29,7 +29,10 @@ export function stateToHash(state) {
     chatGroupDetailId, agentRulesGroupId, businessHoursOpen } = state;
 
   if (activePage === 'builder') return buildHash('builder');
-  if (activePage === 'analytics') return buildHash('analytics');
+  if (activePage === 'analytics') {
+    const view = state.analyticsView || 'executive';
+    return view === 'executive' ? buildHash('analytics') : buildHash('analytics', view);
+  }
 
   if (activePage === 'settings') {
     if (settingsNavItem === 'messages') {
@@ -57,7 +60,11 @@ export function hashToState(route) {
   };
 
   if (route.page === 'builder') { updates.activePage = 'builder'; return updates; }
-  if (route.page === 'analytics') { updates.activePage = 'analytics'; return updates; }
+  if (route.page === 'analytics') {
+    updates.activePage = 'analytics';
+    updates.analyticsView = route.section || 'executive';
+    return updates;
+  }
 
   if (route.page === 'settings') {
     updates.activePage = 'settings';

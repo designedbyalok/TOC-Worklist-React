@@ -797,7 +797,9 @@ export const useAppStore = create((set, get) => ({
   analyticsOrg: 'aco',
   analyticsPeriodMode: 'ytd',
   analyticsQuarter: 'Q4-2025',
+  analyticsView: 'executive',
 
+  setAnalyticsView: (v) => { set({ analyticsView: v }); updateHash(get); },
   setAnalyticsPeriod: (p) => { set({ analyticsPeriod: p, analyticsCache: {} }); },
   setAnalyticsTenant: (t) => { set({ analyticsTenant: t, analyticsCache: {} }); },
   setAnalyticsPersona: (p) => { set({ analyticsPersona: p, analyticsCache: {} }); },

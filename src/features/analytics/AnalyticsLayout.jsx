@@ -60,7 +60,8 @@ const PRACTICES = [
 ];
 
 export function AnalyticsLayout() {
-  const [view, setView] = useState('executive');
+  const view = useAppStore(st => st.analyticsView) || 'executive';
+  const setAnalyticsView = useAppStore(st => st.setAnalyticsView);
   const showToast = useAppStore(st => st.showToast);
   const canvasRef = useRef(null);
   const ViewComponent = VIEW_MAP[view] || ExecutiveView;
@@ -85,9 +86,9 @@ export function AnalyticsLayout() {
   const isViewLocked = (viewId) => allowedViews !== null && !allowedViews.includes(viewId);
 
   const switchView = useCallback((id) => {
-    setView(id);
+    setAnalyticsView(id);
     canvasRef.current?.scrollTo({ top: 0, behavior: 'instant' });
-  }, []);
+  }, [setAnalyticsView]);
 
   const personaDetail = PERSONA_DETAILS[analyticsPersona] || PERSONA_DETAILS.exec;
 
