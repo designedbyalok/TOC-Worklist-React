@@ -475,6 +475,13 @@ export const useAppStore = create((set, get) => ({
     const { error } = await supabase.from('goals').update(row).eq('id', goal.id);
     if (error) console.warn('Failed to update goal:', error.message);
   },
+
+  deleteGoal: async (id) => {
+    set(s => ({ goalsData: (s.goalsData || []).filter(g => g.id !== id) }));
+    const { error } = await supabase.from('goals').delete().eq('id', id);
+    if (error) console.warn('Failed to delete goal:', error.message);
+  },
+
   toggleSubnav: () => set(s => ({ subnavCollapsed: !s.subnavCollapsed })),
   setViewBy: (v) => set({ viewBy: v, currentPage: 1 }),
   setActiveFilters: (filters) => set({ activeFilters: filters, currentPage: 1 }),

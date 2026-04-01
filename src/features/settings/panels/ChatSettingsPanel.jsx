@@ -68,15 +68,9 @@ export function ChatSettingsPanel({ searchQuery = '' }) {
             </td>
             <td style={tdStyle}>
               <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                {g.users.slice(0, 1).map((u, i) => {
-                  const initials = u.split(' ').map(n => n[0]).join('').slice(0, 2);
-                  return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Avatar variant="assignee" initials={initials} />
-                      <span style={{ fontSize: 13, color: 'var(--neutral-400)' }}>{u}</span>
-                    </div>
-                  );
-                })}
+                {g.users.slice(0, 1).map((u, i) => (
+                  <span key={i} style={{ fontSize: 13, color: 'var(--neutral-400)' }}>{u}</span>
+                ))}
                 {(g.users.length + g.roles.length) > 1 && (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', gap: 3,

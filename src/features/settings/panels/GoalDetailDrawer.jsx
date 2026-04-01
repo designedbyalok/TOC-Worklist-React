@@ -12,6 +12,7 @@ export function GoalDetailDrawer() {
   const showToast = useAppStore(st => st.showToast);
   const goalsData = useAppStore(st => st.goalsData) || [];
   const addGoal = useAppStore(st => st.addGoal);
+  const deleteGoal = useAppStore(st => st.deleteGoal);
 
   const goal = goalsData.find(g => g.id === goalDetailId);
   if (!goal) return null;
@@ -40,8 +41,18 @@ export function GoalDetailDrawer() {
     showToast('Goal duplicated as draft');
   };
 
+  const handleDelete = async () => {
+    await deleteGoal(goal.id);
+    setGoalDetailId(null);
+    showToast('Goal deleted');
+  };
+
   const headerRight = (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <button className={`${s.footerBtn} ${s.footerBtnGhost}`} onClick={handleDelete}
+        style={{ color: '#D72825' }}>
+        <Icon name="solar:trash-bin-minimalistic-linear" size={14} color="#D72825" /> Delete
+      </button>
       <button className={`${s.footerBtn} ${s.footerBtnGhost}`} onClick={handleDuplicate}>
         <Icon name="solar:copy-linear" size={14} /> Duplicate
       </button>

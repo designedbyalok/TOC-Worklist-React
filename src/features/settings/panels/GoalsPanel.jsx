@@ -63,7 +63,7 @@ function GoalCard({ goal, onOpen, onEdit }) {
   );
 }
 
-function GoalsTable({ goals, onOpen, onEdit }) {
+function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
   const thStyle = {
     padding: '8px 16px', fontSize: 12, fontWeight: 500, color: '#6F7A90',
     textAlign: 'left', whiteSpace: 'nowrap', borderBottom: '1px solid #D0D6E1',
@@ -123,7 +123,16 @@ function GoalsTable({ goals, onOpen, onEdit }) {
                 {g.totalRuns > 0 ? g.totalRuns.toLocaleString() : '—'}
               </td>
               <td style={tdStyle} onClick={e => e.stopPropagation()}>
-                <button className={s.cardEditBtn} onClick={() => onEdit(g.id)}>Edit</button>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
+                    onClick={() => onEdit(g.id)} title="Edit goal">
+                    <Icon name="solar:pen-linear" size={16} color="var(--neutral-200)" />
+                  </button>
+                  <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
+                    onClick={() => onDelete(g.id)} title="Delete goal">
+                    <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="var(--neutral-200)" />
+                  </button>
+                </div>
               </td>
             </tr>
           );
@@ -138,6 +147,13 @@ export function GoalsPanel({ searchQuery = '', filter = 'all', viewMode = 'grid'
   const goalsLoading = useAppStore(st => st.goalsLoading);
   const setGoalDetailId = useAppStore(st => st.setGoalDetailId);
   const setGoalWizard = useAppStore(st => st.setGoalWizard);
+  const deleteGoal = useAppStore(st => st.deleteGoal);
+  const showToast = useAppStore(st => st.showToast);
+
+  const handleDelete = async (id) => {
+    await deleteGoal(id);
+    showToast('Goal deleted');
+  };
 
   const filtered = useMemo(() => {
     let result = goalsData || [];
@@ -166,7 +182,7 @@ export function GoalsPanel({ searchQuery = '', filter = 'all', viewMode = 'grid'
   }
 
   if (viewMode === 'table') {
-    return <GoalsTable goals={filtered} onOpen={setGoalDetailId} onEdit={(id) => setGoalWizard(true, id)} />;
+    return <GoalsTable goals={filtered} onOpen={setGoalDetailId} onEdit={(id) => setGoalWizard(true, id)} onDelete={handleDelete} />;
   }
 
   return (

@@ -190,7 +190,7 @@ export function AgentsTable() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchVal, setSearchVal] = useState('');
   const [goalsFilter, setGoalsFilter] = useState('all');
-  const [goalsViewMode, setGoalsViewMode] = useState('grid');
+  const [goalsViewMode, setGoalsViewMode] = useState('table');
   const [goalsFilterOpen, setGoalsFilterOpen] = useState(false);
 
   useEffect(() => { fetchAgents(); }, [fetchAgents]);
