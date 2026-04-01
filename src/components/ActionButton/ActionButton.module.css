@@ -1,0 +1,153 @@
+/* ── Fold Health ActionButton ──
+ * Figma: Fold-Pixel-1.0, node 25:25238
+ *
+ * Square icon-only toolbar/action button with optional badges.
+ *
+ * Sizes:
+ *   S:  icon 16px, padding 4px, radius 4px
+ *   L:  icon 20px, padding 4px, radius 4px
+ *   XL: icon 32px, padding 8px, radius 8px (mobile)
+ *
+ * States: Active, Disable, Error
+ * Hover bg: rgba(22,24,29,0.05)
+ */
+
+/* ── Base ── */
+.root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.root:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary-100);
+}
+
+/* ── Sizes ── */
+.sizeS {
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.sizeL {
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.sizeXL {
+  padding: 8px;
+  border-radius: 8px;
+}
+
+/* ── State: Active ── */
+.active:hover {
+  background: rgba(22, 24, 29, 0.05);
+}
+
+/* ── State: Disabled ── */
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ── State: Error ── */
+.error:hover {
+  background: #FFF5F5;
+}
+
+/* ── Notification badge (orange dot / count) ── */
+.badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  line-height: 1.2;
+  pointer-events: none;
+}
+
+.badgeNotification {
+  background: #F47A3E;
+  color: #fff;
+}
+
+.badgeCount {
+  background: var(--neutral-50);
+  border: 0.5px solid var(--neutral-100);
+  color: var(--neutral-300);
+}
+
+/* Badge sizing per button size */
+.sizeS .badge {
+  top: -7px;
+  right: -6px;
+  height: 12px;
+  padding: 2px 3px;
+  font-size: 8px;
+}
+
+.sizeL .badge {
+  top: -9px;
+  right: -6px;
+  width: 14px;
+  height: 14px;
+  padding: 2px 4px;
+  font-size: 10px;
+}
+
+.sizeXL .badge {
+  top: -8px;
+  right: -8px;
+  width: 17px;
+  height: 17px;
+  padding: 2px 4px;
+  font-size: 14px;
+}
+
+/* ── Status dot (red/green indicator) ── */
+.dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--status-error);
+  pointer-events: none;
+}
+
+.sizeS .dot {
+  top: -1px;
+  right: -1px;
+}
+
+.sizeL .dot {
+  top: -2px;
+  right: -2px;
+}
+
+.sizeXL .dot {
+  top: -3px;
+  right: -3px;
+}
+
+/* ── Chevron ── */
+.chevron {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}

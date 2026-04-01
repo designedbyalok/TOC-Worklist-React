@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Icon } from '../Icon/Icon';
 import { Button } from '../Button/Button';
+import { ActionButton } from '../ActionButton/ActionButton';
 import { SearchIconButton } from '../SearchIconButton/SearchIconButton';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './TabBar.module.css';
@@ -154,19 +155,17 @@ export function TabBar() {
             )}
           </div>
           <span className={styles.iconDivider} />
-          <Button
-            variant="ghost"
-            size="S"
-            leadingIcon="solar:filter-linear"
-            iconOnly
-            title="Filter"
+          <ActionButton
+            icon="solar:filter-linear"
+            size="L"
+            tooltip="Filter"
             className={showFilterBar ? styles.active : ''}
             onClick={() => setShowFilterBar(!showFilterBar)}
           />
           <span className={styles.iconDivider} />
-          <Button variant="ghost" size="S" leadingIcon="solar:history-linear" iconOnly title="History" onClick={() => showToast('History – coming soon')} />
+          <ActionButton icon="solar:history-linear" size="L" tooltip="History" onClick={() => showToast('History – coming soon')} />
           <span className={styles.iconDivider} />
-          <Button variant="ghost" size="S" leadingIcon="solar:upload-minimalistic-linear" iconOnly title="Export" onClick={() => showToast('Export – coming soon')} />
+          <ActionButton icon="solar:upload-minimalistic-linear" size="L" tooltip="Export" onClick={() => showToast('Export – coming soon')} />
         </div>
       </div>
 

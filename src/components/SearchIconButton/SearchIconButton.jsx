@@ -1,15 +1,16 @@
-import { Icon } from '../Icon/Icon';
-import styles from './SearchIconButton.module.css';
+import { ActionButton } from '../ActionButton/ActionButton';
 
 /**
- * Reusable search trigger button matching Figma icon action button.
+ * Reusable search trigger button — wraps ActionButton at size L.
  */
-export function SearchIconButton({ className, ...props }) {
-  const cls = [styles.root, className || ''].filter(Boolean).join(' ');
-
+export function SearchIconButton({ className, title = 'Search', ...props }) {
   return (
-    <button type="button" className={cls} {...props}>
-      <Icon name="solar:magnifer-linear" size={16} color="currentColor" />
-    </button>
+    <ActionButton
+      icon="solar:magnifer-linear"
+      size="L"
+      tooltip={title}
+      className={className}
+      {...props}
+    />
   );
 }

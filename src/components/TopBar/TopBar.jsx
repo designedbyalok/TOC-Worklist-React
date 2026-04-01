@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Icon } from '../Icon/Icon';
+import { ActionButton } from '../ActionButton/ActionButton';
 import { Avatar } from '../Avatar/Avatar';
 import { CreateNewPopover } from '../CreateNewPopover/CreateNewPopover';
 import { useAppStore } from '../../store/useAppStore';
@@ -20,16 +21,12 @@ export function TopBar() {
     <header className={styles.topbar}>
       <div className={styles.left}>
         {!isSettings && !isAnalytics && (
-          <button
-            className={styles.iconBtn}
-            title="Toggle panel"
+          <ActionButton
+            icon={subnavCollapsed ? 'solar:alt-arrow-right-linear' : 'solar:sidebar-minimalistic-linear'}
+            size="L"
+            tooltip="Toggle panel"
             onClick={toggleSubnav}
-          >
-            <Icon
-              name={subnavCollapsed ? 'solar:alt-arrow-right-linear' : 'solar:sidebar-minimalistic-linear'}
-              size={20}
-            />
-          </button>
+          />
         )}
         <nav className={styles.breadcrumb}>
           {isAnalytics ? (
@@ -68,10 +65,12 @@ export function TopBar() {
       </div>
 
       <div className={styles.right}>
-        <button className={styles.iconBtn} title="Notifications">
-          <span className={styles.notifDot} />
-          <Icon name="solar:bell-outline" size={20} />
-        </button>
+        <ActionButton
+          icon="solar:bell-outline"
+          size="L"
+          tooltip="Notifications"
+          notification
+        />
         <div className={styles.createNewWrap}>
           <button
             ref={btnRef}

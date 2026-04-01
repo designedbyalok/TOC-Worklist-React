@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Icon } from '../Icon/Icon';
 import { Button } from '../Button/Button';
+import { ActionButton } from '../ActionButton/ActionButton';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './BulkBar.module.css';
 
@@ -54,12 +55,10 @@ export function BulkBar() {
         Run Automation
       </Button>
       <div className={styles.moreWrap} ref={moreRef}>
-        <Button
-          variant="ghost"
-          size="S"
-          leadingIcon="solar:menu-dots-linear"
-          iconOnly
-          title="More actions"
+        <ActionButton
+          icon="solar:menu-dots-linear"
+          size="L"
+          tooltip="More actions"
           onClick={(e) => { e.stopPropagation(); setShowMore(v => !v); }}
         />
         {showMore && (

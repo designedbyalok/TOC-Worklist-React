@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useAppStore } from '../../store/useAppStore';
 import { Icon } from '../../components/Icon/Icon';
 import { Button } from '../../components/Button/Button';
+import { ActionButton } from '../../components/ActionButton/ActionButton';
 import { SearchIconButton } from '../../components/SearchIconButton/SearchIconButton';
 import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
 import { Pagination } from '../../components/Pagination/Pagination';
@@ -128,9 +129,11 @@ function AgentRow({ agent }) {
       </td>
       <td>
         <div className={styles.actions}>
-          <Button variant="ghost" size="S" leadingIcon="solar:pen-new-square-linear" iconOnly title="Edit" onClick={() => openBuilder({ id: agent.id, name: agent.name })} />
-          <Button variant="ghost" size="S" leadingIcon="solar:chart-2-linear" iconOnly title="Analytics" />
-          <Button variant="ghost" size="S" leadingIcon="solar:menu-dots-bold" iconOnly title="More" ref={moreBtnRef} onClick={handleMoreClick} />
+          <ActionButton icon="solar:pen-new-square-linear" size="L" tooltip="Edit" onClick={() => openBuilder({ id: agent.id, name: agent.name })} />
+          <span className={styles.actionDivider} />
+          <ActionButton icon="solar:chart-2-linear" size="L" tooltip="Analytics" />
+          <span className={styles.actionDivider} />
+          <ActionButton icon="solar:menu-dots-bold" size="L" tooltip="More" ref={moreBtnRef} onClick={handleMoreClick} />
         </div>
         {showMenu && createPortal(
           <div style={{ position: 'fixed', top: menuPos.top, right: menuPos.right, zIndex: 9999 }}>
@@ -230,8 +233,8 @@ export function AgentsTable() {
             )}
           </div>
           {settingsTab === 'goals' && (
-            <Button variant="ghost" size="S" leadingIcon="solar:filter-linear" iconOnly title="Filter" onClick={() => setGoalsFilterOpen(v => !v)}
-              style={goalsFilterOpen ? { background: 'var(--primary-50)', color: 'var(--primary-300)' } : {}} />
+            <ActionButton icon="solar:filter-linear" size="L" tooltip="Filter" onClick={() => setGoalsFilterOpen(v => !v)}
+              style={goalsFilterOpen ? { background: 'var(--primary-50)' } : {}} />
           )}
           <span className={styles.tabDivider} />
           <Button variant="primary" size="L" leadingIcon="solar:add-circle-linear" onClick={() => {

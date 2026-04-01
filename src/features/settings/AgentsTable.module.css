@@ -221,7 +221,15 @@
 /* Actions */
 .actions {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 8px;
+}
+
+.actionDivider {
+  width: 1px;
+  height: 16px;
+  background: var(--neutral-150);
+  flex-shrink: 0;
 }
 
 .actionBtn {

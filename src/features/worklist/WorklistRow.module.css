@@ -140,7 +140,14 @@
 .dateText { font-size: 14px; color: var(--neutral-400); white-space: nowrap; }
 .dateDash { font-size: 14px; color: var(--neutral-200); }
 
-.actionsCell { display: flex; align-items: center; gap: 6px; }
+.actionsCell { display: flex; align-items: center; gap: 8px; }
+
+.actionDivider {
+  width: 1px;
+  height: 16px;
+  background: var(--neutral-150);
+  flex-shrink: 0;
+}
 
 .actionBtn {
   width: 28px;

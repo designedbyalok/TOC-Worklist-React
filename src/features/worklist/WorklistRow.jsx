@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../../components/Icon/Icon';
+import { ActionButton } from '../../components/ActionButton/ActionButton';
 import { Avatar } from '../../components/Avatar/Avatar';
 import { Badge } from '../../components/Badge/Badge';
 import { Checkbox } from '../../components/ui/checkbox';
@@ -280,30 +281,37 @@ export function WorklistRow({ patient, isSelected, onSelect }) {
         </td>
         <td className={`${styles.td} ${styles.stickyRight}`} onClick={e => e.stopPropagation()}>
           <div className={styles.actionsCell}>
-            <button className={styles.actionBtn} title="View details" onClick={() => {
-              if (p.status === 'oncall') openLiveDrawer(p.id);
-              else openDetail(p.id);
-            }}>
-              <Icon name="solar:document-text-linear" size={18} />
-            </button>
-            <button
-              ref={callBtnRef}
-              className={[styles.actionBtn, p.status === 'oncall' ? styles.oncall : p.status === 'queued' ? styles.queuedCall : ''].filter(Boolean).join(' ')}
-              title={p.status === 'oncall' ? 'View live call' : 'Call patient'}
-              onClick={handleCallClick}
-            >
-              <Icon name="solar:phone-outline" size={18} />
+            <ActionButton
+              icon="solar:document-text-linear"
+              size="L"
+              tooltip="View details"
+              onClick={() => {
+                if (p.status === 'oncall') openLiveDrawer(p.id);
+                else openDetail(p.id);
+              }}
+            />
+            <span className={styles.actionDivider} />
+            <span style={{ position: 'relative' }}>
+              <ActionButton
+                ref={callBtnRef}
+                icon="solar:phone-outline"
+                size="L"
+                tooltip={p.status === 'oncall' ? 'View live call' : 'Call patient'}
+                iconColor={p.status === 'oncall' ? '#059669' : undefined}
+                className={p.status === 'oncall' ? styles.oncall : p.status === 'queued' ? styles.queuedCall : ''}
+                onClick={handleCallClick}
+              />
               {p.status === 'oncall' && <span className={styles.callLiveDot} />}
-            </button>
+            </span>
+            <span className={styles.actionDivider} />
             <div style={{ position: 'relative' }}>
-              <button
+              <ActionButton
                 ref={dropBtnRef}
-                className={styles.actionBtn}
-                title="More options"
+                icon="solar:menu-dots-linear"
+                size="L"
+                tooltip="More options"
                 onClick={handleDropdownToggle}
-              >
-                <Icon name="solar:menu-dots-linear" size={18} />
-              </button>
+              />
               {showDropdown && createPortal(
                 <div style={{ position: 'fixed', top: dropdownPos.top, right: dropdownPos.right, zIndex: 9999 }}>
                   <DropdownMenu patientId={p.id} onClose={() => setShowDropdown(false)} />

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../../components/Icon/Icon';
+import { ActionButton } from '../../components/ActionButton/ActionButton';
 import { Avatar } from '../../components/Avatar/Avatar';
 import { Badge } from '../../components/Badge/Badge';
 import { Checkbox } from '../../components/ui/checkbox';
@@ -322,21 +323,32 @@ export function QueueRow({ patient }) {
       <td style={{ ...tdBase, position: 'sticky', right: 0, background: 'var(--neutral-0)', borderLeft: '1px solid var(--neutral-150)', boxShadow: '-4px 0 8px rgba(0,0,0,.04)' }}
         onClick={e => e.stopPropagation()}>
         <div className={rowStyles.actionsCell}>
-          <button className={rowStyles.actionBtn} title="View details" onClick={() => openWorkflow(p.id)}>
-            <Icon name="solar:document-text-linear" size={18} />
-          </button>
-          <button
-            ref={callBtnRef}
-            className={[rowStyles.actionBtn, p.status === 'oncall' ? rowStyles.oncall : p.status === 'queued' ? rowStyles.queuedCall : ''].filter(Boolean).join(' ')}
-            title="Call patient"
-            onClick={handleCallClick}
-          >
-            <Icon name="solar:phone-outline" size={18} />
+          <ActionButton
+            icon="solar:document-text-linear"
+            size="L"
+            tooltip="View details"
+            onClick={() => openWorkflow(p.id)}
+          />
+          <span className={rowStyles.actionDivider} />
+          <span style={{ position: 'relative' }}>
+            <ActionButton
+              ref={callBtnRef}
+              icon="solar:phone-outline"
+              size="L"
+              tooltip={p.status === 'oncall' ? 'View live call' : 'Call patient'}
+              iconColor={p.status === 'oncall' ? '#059669' : undefined}
+              className={p.status === 'oncall' ? rowStyles.oncall : p.status === 'queued' ? rowStyles.queuedCall : ''}
+              onClick={handleCallClick}
+            />
             {p.status === 'oncall' && <span className={rowStyles.callLiveDot} />}
-          </button>
-          <button className={rowStyles.actionBtn} title="More options" onClick={e => { e.stopPropagation(); showToast('More options – coming soon'); }}>
-            <Icon name="solar:menu-dots-linear" size={18} />
-          </button>
+          </span>
+          <span className={rowStyles.actionDivider} />
+          <ActionButton
+            icon="solar:menu-dots-linear"
+            size="L"
+            tooltip="More options"
+            onClick={e => { e.stopPropagation(); showToast('More options – coming soon'); }}
+          />
         </div>
       </td>
     </tr>

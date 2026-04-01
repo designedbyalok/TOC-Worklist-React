@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Icon } from '../Icon/Icon';
 import { Button } from '../Button/Button';
+import { ActionButton } from '../ActionButton/ActionButton';
 import { Drawer } from '../Drawer/Drawer';
 import { ComplianceBadges } from '../ComplianceBadges/ComplianceBadges';
 import { useAppStore } from '../../store/useAppStore';
@@ -104,9 +105,10 @@ export function DetailDrawer() {
             )}
           </div>
         </div>
-        <div className={styles.callCardActions}>
-          <Button variant="ghost" size="S" leadingIcon="solar:phone-linear" iconOnly className={styles.callCardBtn} />
-          <Button variant="ghost" size="S" leadingIcon="solar:menu-dots-linear" iconOnly className={styles.callCardBtn} />
+        <div className={styles.callCardActions} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ActionButton icon="solar:phone-linear" size="L" tooltip="Call" className={styles.callCardBtn} />
+          <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+          <ActionButton icon="solar:menu-dots-linear" size="L" tooltip="More options" className={styles.callCardBtn} />
         </div>
       </div>
 
@@ -294,9 +296,10 @@ export function DetailDrawer() {
             </ol>
             <div className={styles.summaryFooter}>
               <span className={styles.generatedText}>Generated on: 03/24/26, 07:23 pm</span>
-              <div className={styles.summaryActions}>
-                <Button variant="ghost" size="S" leadingIcon="solar:refresh-linear" iconOnly className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Refreshing summary...'); }} title="Refresh" />
-                <Button variant="ghost" size="S" leadingIcon="solar:copy-linear" iconOnly className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Copied to clipboard'); }} title="Copy" />
+              <div className={styles.summaryActions} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <ActionButton icon="solar:refresh-linear" size="L" tooltip="Refresh" className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Refreshing summary...'); }} />
+                <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                <ActionButton icon="solar:copy-linear" size="L" tooltip="Copy" className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Copied to clipboard'); }} />
               </div>
             </div>
           </div>

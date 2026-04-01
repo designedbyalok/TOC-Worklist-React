@@ -3,6 +3,7 @@ import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { Button } from '../../../components/Button/Button';
+import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { useAppStore } from '../../../store/useAppStore';
 import { Switch } from '../../../components/Switch/Switch';
 import { GOAL_TEMPLATES } from '../../../data/goals'; // Templates are config, not DB data
@@ -339,11 +340,12 @@ export function GoalWizardDrawer() {
                 </div>
               )}
             </div>
-            <div className={s.stepControls}>
-              <Button variant="ghost" size="S" leadingIcon="solar:pen-linear" iconOnly
-                onClick={() => setEditingStepIdx(i)} title="Edit step" />
-              <Button variant="ghost" size="S" leadingIcon="solar:trash-bin-minimalistic-linear" iconOnly
-                onClick={() => removeStep(i)} title="Delete step" />
+            <div className={s.stepControls} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit step"
+                onClick={() => setEditingStepIdx(i)} />
+              <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+              <ActionButton icon="solar:trash-bin-minimalistic-linear" size="L" tooltip="Delete step"
+                onClick={() => removeStep(i)} />
             </div>
           </div>
         )

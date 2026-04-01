@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Avatar } from '../../../components/Avatar/Avatar';
 import { Button } from '../../../components/Button/Button';
+import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { Badge } from '../../../components/Badge/Badge';
 import { RadioGroup, RadioGroupItem } from '../../../components/ui/radio-group';
@@ -335,7 +336,7 @@ export function GroupDetailDrawer() {
                         ) : (
                           <>
                             <Switch checked={chatEnabled[p.id] || false} onChange={(val) => toggleChatForUser(p.id, val)} />
-                            <Button variant="ghost" size="S" leadingIcon="solar:close-circle-linear" iconOnly onClick={() => removeUser(p.id)} />
+                            <ActionButton icon="solar:close-circle-linear" size="L" tooltip="Remove user" onClick={() => removeUser(p.id)} />
                           </>
                         )}
                       </div>
@@ -356,7 +357,7 @@ export function GroupDetailDrawer() {
                       <span style={{ fontSize: 14, color: 'var(--neutral-500)' }}>{r.name}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <Switch checked={chatEnabled[r.id] || false} onChange={(val) => setChatEnabled(prev => ({ ...prev, [r.id]: val }))} />
-                        <Button variant="ghost" size="S" leadingIcon="solar:close-circle-linear" iconOnly onClick={() => removeRole(r.id)} />
+                        <ActionButton icon="solar:close-circle-linear" size="L" tooltip="Remove role" onClick={() => removeRole(r.id)} />
                       </div>
                     </div>
                   ))}

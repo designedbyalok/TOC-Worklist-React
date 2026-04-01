@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Button } from '../../../components/Button/Button';
+import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { useAppStore } from '../../../store/useAppStore';
 import { CardSkeleton, SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
@@ -137,11 +138,12 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
                   {g.totalRuns > 0 ? g.totalRuns.toLocaleString() : '—'}
                 </td>
                 <td style={tdStyle} onClick={e => e.stopPropagation()}>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <Button variant="ghost" size="S" leadingIcon="solar:pen-linear" iconOnly
-                      onClick={() => onEdit(g.id)} title="Edit goal" />
-                    <Button variant="ghost" size="S" leadingIcon="solar:trash-bin-minimalistic-linear" iconOnly
-                      onClick={() => setDeleteTarget(g)} title="Delete goal" />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit goal"
+                      onClick={() => onEdit(g.id)} />
+                    <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                    <ActionButton icon="solar:trash-bin-minimalistic-linear" size="L" tooltip="Delete goal"
+                      onClick={() => setDeleteTarget(g)} />
                   </div>
                 </td>
               </tr>

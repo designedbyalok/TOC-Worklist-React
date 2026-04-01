@@ -3,6 +3,7 @@ import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Avatar } from '../../../components/Avatar/Avatar';
 import { Button } from '../../../components/Button/Button';
+import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
 import { Switch } from '../../../components/Switch/Switch';
@@ -238,9 +239,10 @@ export function AgentRulesDrawer() {
               <Switch checked={r.enabled} onChange={() => toggleRule(r.id)} disabled={r.locked} />
               {!r.locked && (
                 <>
-                  <Button variant="ghost" size="S" leadingIcon="solar:pen-linear" iconOnly
+                  <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit rule"
                     onClick={() => setEditingRuleId(editingRuleId === r.id ? null : r.id)} />
-                  <Button variant="ghost" size="S" leadingIcon="solar:trash-bin-minimalistic-linear" iconOnly
+                  <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                  <ActionButton icon="solar:trash-bin-minimalistic-linear" size="L" tooltip="Delete rule"
                     onClick={() => { setRules(prev => prev.filter(rule => rule.id !== r.id)); showToast('Rule deleted'); }} />
                 </>
               )}

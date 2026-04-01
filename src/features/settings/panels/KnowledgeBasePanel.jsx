@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Button } from '../../../components/Button/Button';
+import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
 import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
@@ -244,11 +245,12 @@ export function KnowledgeBasePanel({ searchQuery = '' }) {
               </td>
               <td style={{ ...tdStyle, fontSize: 12, color: 'var(--neutral-200)', whiteSpace: 'nowrap' }}>{faq.updatedAt}</td>
               <td style={tdStyle} onClick={e => e.stopPropagation()}>
-                <div style={{ display: 'flex', gap: 4 }}>
-                  <Button variant="ghost" size="S" iconOnly leadingIcon="solar:pen-linear"
-                    onClick={() => handleOpenEdit(faq)} title="Edit FAQ" />
-                  <Button variant="ghost" size="S" iconOnly leadingIcon="solar:trash-bin-minimalistic-linear"
-                    onClick={() => setDeleteTarget(faq)} title="Delete FAQ" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit FAQ"
+                    onClick={() => handleOpenEdit(faq)} />
+                  <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                  <ActionButton icon="solar:trash-bin-minimalistic-linear" size="L" tooltip="Delete FAQ"
+                    onClick={() => setDeleteTarget(faq)} />
                 </div>
               </td>
             </tr>

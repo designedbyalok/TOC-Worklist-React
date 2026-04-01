@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { Button } from '../../../components/Button/Button';
+import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { useAppStore } from '../../../store/useAppStore';
 import { Switch } from '../../../components/Switch/Switch';
 
@@ -131,7 +132,7 @@ export function BusinessHoursDrawer() {
                     </div>
                   </div>
                   {daySlots.length > 1 && (
-                    <Button variant="ghost" size="S" leadingIcon="solar:close-circle-linear" iconOnly
+                    <ActionButton icon="solar:close-circle-linear" size="L" tooltip="Remove slot"
                       onClick={() => removeSlot(day, idx)} style={{ marginTop: 18 }} />
                   )}
                 </div>
