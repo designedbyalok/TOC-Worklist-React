@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Icon } from '../Icon/Icon';
 import { Button } from '../Button/Button';
+import { SearchIconButton } from '../SearchIconButton/SearchIconButton';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './TabBar.module.css';
 
@@ -149,7 +150,7 @@ export function TabBar() {
                 <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>✕</button>
               </div>
             ) : (
-              <Button variant="ghost" size="S" leadingIcon="solar:magnifer-linear" iconOnly title="Search" onClick={() => setSearchOpen(true)} />
+              <SearchIconButton title="Search" onClick={() => setSearchOpen(true)} />
             )}
           </div>
           <span className={styles.iconDivider} />

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Icon } from '../../components/Icon/Icon';
+import { SearchIconButton } from '../../components/SearchIconButton/SearchIconButton';
 import { ChatSettingsPanel } from './panels/ChatSettingsPanel';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './AgentsTable.module.css';
@@ -49,9 +50,7 @@ export function MessagesSettings() {
                     <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchVal(''); }}>✕</button>
                   </div>
                 ) : (
-                  <button className={styles.searchBtn} title="Search" onClick={() => setSearchOpen(true)}>
-                    <Icon name="solar:magnifer-linear" size={18} />
-                  </button>
+                  <SearchIconButton title="Search" onClick={() => setSearchOpen(true)} />
                 )}
               </div>
               <span className={styles.tabDivider} />

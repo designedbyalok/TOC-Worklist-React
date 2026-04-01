@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useAppStore } from '../../store/useAppStore';
 import { Icon } from '../../components/Icon/Icon';
 import { Button } from '../../components/Button/Button';
+import { SearchIconButton } from '../../components/SearchIconButton/SearchIconButton';
 import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
 import { Pagination } from '../../components/Pagination/Pagination';
 import { ConfirmDialog } from '../../components/Modal/ConfirmDialog';
@@ -225,7 +226,7 @@ export function AgentsTable() {
                 <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchVal(''); }}>✕</button>
               </div>
             ) : (
-              <Button variant="ghost" size="S" leadingIcon="solar:magnifer-linear" iconOnly title="Search" onClick={() => setSearchOpen(true)} />
+              <SearchIconButton title="Search" onClick={() => setSearchOpen(true)} />
             )}
           </div>
           {settingsTab === 'goals' && (

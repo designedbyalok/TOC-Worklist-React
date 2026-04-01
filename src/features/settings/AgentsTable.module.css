@@ -51,21 +51,6 @@
   align-items: center;
 }
 
-.searchBtn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  color: #6F7A90;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.searchBtn:hover { background: var(--neutral-50); color: #3D4A5C; }
-
 .searchInput {
   display: flex;
   align-items: center;

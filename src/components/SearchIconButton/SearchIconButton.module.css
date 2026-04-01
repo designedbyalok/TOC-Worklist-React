@@ -1,0 +1,27 @@
+.root {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--neutral-300);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.root:hover:not(:disabled) {
+  background: rgba(22, 24, 29, 0.05);
+}
+
+.root:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary-100);
+}
+
+.root:disabled {
+  color: var(--neutral-150);
+  cursor: not-allowed;
+}
