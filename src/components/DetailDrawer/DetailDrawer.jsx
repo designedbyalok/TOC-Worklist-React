@@ -96,7 +96,7 @@ export function DetailDrawer() {
               <span className={styles.callLine1Detail}>{callDurationFull || '05:20'}s</span>
             </div>
             <div className={styles.callLine2}>
-              Via: <Icon name="solar:bot-bold" size={13} color="#8c5ae2" /> {agentName} (581) 824-1591 → To: {p.name} (581) 824-1591
+              Via: <Icon name="solar:bot-bold" size={13} color="var(--primary-300)" /> {agentName} (581) 824-1591 → To: {p.name} (581) 824-1591
             </div>
             {p.facility && (
               <div className={styles.callLine2}>{p.facility} • {p.admitReason}</div>
@@ -116,7 +116,7 @@ export function DetailDrawer() {
       {callRecord.qualityScore && (
         <div className={styles.qualityCard}>
           <div className={styles.qualityHeader}>
-            <Icon name="solar:star-bold" size={14} color="#D9A50B" />
+            <Icon name="solar:star-bold" size={14} color="var(--status-warning)" />
             <span className={styles.qualityLabel}>Quality Score</span>
             <span className={`${styles.qualityOverall} ${
               callRecord.qualityScore.overall >= 85 ? styles.qualityGood :
@@ -135,7 +135,7 @@ export function DetailDrawer() {
               <div key={b.label} className={styles.qualityBarRow}>
                 <span className={styles.qualityBarLabel}>{b.label}</span>
                 <div className={styles.qualityBarTrack}>
-                  <div className={styles.qualityBarFill} style={{ width: `${b.val}%`, background: b.val >= 85 ? '#009B53' : b.val >= 70 ? '#D9A50B' : '#D72825' }} />
+                  <div className={styles.qualityBarFill} style={{ width: `${b.val}%`, background: b.val >= 85 ? 'var(--status-success)' : b.val >= 70 ? 'var(--status-warning)' : 'var(--status-error)' }} />
                 </div>
                 <span className={styles.qualityBarVal}>{b.val}%</span>
               </div>
@@ -152,8 +152,8 @@ export function DetailDrawer() {
             callRecord.sentimentScore.label === 'negative' ? 'solar:emoji-sad-circle-bold' :
             'solar:emoji-funny-square-bold'
           } size={16} color={
-            callRecord.sentimentScore.label === 'positive' ? '#009B53' :
-            callRecord.sentimentScore.label === 'negative' ? '#D72825' : '#D9A50B'
+            callRecord.sentimentScore.label === 'positive' ? 'var(--status-success)' :
+            callRecord.sentimentScore.label === 'negative' ? 'var(--status-error)' : 'var(--status-warning)'
           } />
           <span className={styles.sentimentLabel}>Sentiment</span>
           <span className={`${styles.sentimentValue} ${styles[`sentiment_${callRecord.sentimentScore.label}`]}`}>
@@ -166,7 +166,7 @@ export function DetailDrawer() {
       {callRecord.escalation && (
         <div className={styles.escalationCard}>
           <div className={styles.escalationHeader}>
-            <Icon name="solar:danger-triangle-bold" size={14} color="#D72825" />
+            <Icon name="solar:danger-triangle-bold" size={14} color="var(--status-error)" />
             <span>Escalation Triggered</span>
           </div>
           <div className={styles.escalationDetail}>
@@ -247,7 +247,7 @@ export function DetailDrawer() {
             <div key={i} className={styles.goalRow}>
               <span className={styles.goalIcon}>
                 <Icon name={g.pass ? "solar:check-circle-bold" : "solar:close-circle-bold"}
-                  size={18} color={g.pass ? "#009b53" : "#d72825"} />
+                  size={18} color={g.pass ? "var(--status-success)" : "var(--status-error)"} />
               </span>
               <div className={styles.goalInfo}>
                 <div className={styles.goalName}>{g.name}</div>
@@ -268,7 +268,7 @@ export function DetailDrawer() {
       {/* ── Unity-Generated Call Summary ── */}
       <div className={styles.sectionHeader} onClick={() => toggleSection('summary')}>
         <span className={`${styles.sectionTitle} ${styles.purple}`}>
-          <Icon name="solar:magic-stick-3-bold" size={14} color="#8c5ae2" />
+          <Icon name="solar:magic-stick-3-bold" size={14} color="var(--primary-300)" />
           Unity-Generated Call Summary
         </span>
         <span className={`${styles.chevron} ${openSections.summary ? styles.chevronOpen : ''}`}>
@@ -369,7 +369,7 @@ export function DetailDrawer() {
           <div className={styles.transcriptSubHeader} onClick={() => setShowTranscript(v => !v)}>
             <span className={styles.transcriptSubTitle}>Call Transcript</span>
             <span className={`${styles.chevron} ${showTranscript ? styles.chevronOpen : ''}`}>
-              <Icon name="solar:alt-arrow-right-linear" size={14} color="#8a94a8" />
+              <Icon name="solar:alt-arrow-right-linear" size={14} color="var(--neutral-200)" />
             </span>
           </div>
 
@@ -384,7 +384,7 @@ export function DetailDrawer() {
                 <div key={i} className={`${styles.message} ${styles[msg.sender]}`}>
                   {msg.sender === 'agent' && (
                     <div className={styles.msgAvatar}>
-                      <Icon name="solar:bot-bold" size={12} color="#8c5ae2" />
+                      <Icon name="solar:bot-bold" size={12} color="var(--primary-300)" />
                     </div>
                   )}
                   <div className={styles.msgContent}>

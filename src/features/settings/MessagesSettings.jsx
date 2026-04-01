@@ -44,7 +44,7 @@ export function MessagesSettings() {
               <div className={styles.searchWrap}>
                 {searchOpen ? (
                   <div className={styles.searchInput}>
-                    <Icon name="solar:magnifer-linear" size={15} color="#6F7A90" />
+                    <Icon name="solar:magnifer-linear" size={15} color="var(--neutral-300)" />
                     <input autoFocus type="text" placeholder="Search groups..." value={searchVal} onChange={e => setSearchVal(e.target.value)} />
                     <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchVal(''); }}>✕</button>
                   </div>

@@ -14,7 +14,7 @@ const cardStyle = {
   gap: 4,
 };
 const labelStyle = { fontSize: 11, fontWeight: 500, color: 'var(--neutral-300)', textTransform: 'uppercase', letterSpacing: '0.04em' };
-const valueStyle = { fontSize: 20, fontWeight: 600, color: 'var(--neutral-500)', lineHeight: 1.2 };
+const valueStyle = { fontSize: 20, fontWeight: 500, color: 'var(--neutral-500)', lineHeight: 1.2 };
 
 function StatCard({ icon, iconColor, label, value, sub, subColor }) {
   return (
@@ -67,24 +67,24 @@ export function QueueSummaryBar() {
         sub={`${stats.queued} in queue`}
       />
       <StatCard
-        icon="solar:check-circle-bold" iconColor="#009B53"
+        icon="solar:check-circle-bold" iconColor="var(--status-success)"
         label="Resolution Rate" value={`${stats.resolutionRate}%`}
         sub={`${stats.completed} of ${stats.completed + (stats.total - stats.completed)} resolved`}
-        subColor="#009B53"
+        subColor="var(--status-success)"
       />
       <StatCard
-        icon="solar:clock-circle-bold" iconColor="#145ECC"
+        icon="solar:clock-circle-bold" iconColor="var(--status-info)"
         label="Avg Handle Time" value={stats.avgHandleTime}
         sub="per call"
       />
       <StatCard
-        icon="solar:danger-triangle-bold" iconColor="#D72825"
+        icon="solar:danger-triangle-bold" iconColor="var(--status-error)"
         label="Escalation Rate" value={`${stats.escalationRate}%`}
         sub={stats.escalationRate > 15 ? 'Above threshold' : 'Within normal'}
-        subColor={stats.escalationRate > 15 ? '#D72825' : '#009B53'}
+        subColor={stats.escalationRate > 15 ? 'var(--status-error)' : 'var(--status-success)'}
       />
       <StatCard
-        icon="solar:users-group-rounded-bold" iconColor="#8c5ae2"
+        icon="solar:users-group-rounded-bold" iconColor="var(--primary-300)"
         label="Queue Depth" value={stats.total}
         sub={`${stats.activeCalls} active · ${stats.queued} queued`}
       />

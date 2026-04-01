@@ -3,15 +3,15 @@ import { Icon } from '../../../components/Icon/Icon';
 
 const s = {
   section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 14, fontWeight: 600, color: '#3a485f', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 },
-  card: { background: '#fff', border: '0.5px solid #d0d6e1', borderRadius: 8, padding: 16, marginBottom: 12 },
-  row: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid #e9ecf1', fontSize: 14, color: '#3a485f' },
-  input: { padding: '4px 8px', border: '0.5px solid #d0d6e1', borderRadius: 4, fontSize: 13, color: '#3a485f', width: 80, textAlign: 'center' },
+  sectionTitle: { fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 },
+  card: { background: '#fff', border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 16, marginBottom: 12 },
+  row: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--neutral-100)', fontSize: 14, color: 'var(--neutral-400)' },
+  input: { padding: '4px 8px', border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, color: 'var(--neutral-400)', width: 80, textAlign: 'center' },
   label: { flex: 1 },
-  desc: { fontSize: 12, color: '#6f7a90', marginTop: 2 },
+  desc: { fontSize: 12, color: 'var(--neutral-300)', marginTop: 2 },
   keywordsList: { display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 },
-  keyword: { padding: '3px 10px', borderRadius: 4, fontSize: 12, fontWeight: 500, background: '#FFF5F5', color: '#D72825', border: '0.5px solid rgba(215,40,37,0.2)', display: 'flex', alignItems: 'center', gap: 4 },
-  select: { padding: '6px 10px', border: '0.5px solid #d0d6e1', borderRadius: 4, fontSize: 13, color: '#3a485f', background: '#fff' },
+  keyword: { padding: '3px 10px', borderRadius: 4, fontSize: 12, fontWeight: 500, background: 'var(--status-error-light)', color: 'var(--status-error)', border: '0.5px solid rgba(215,40,37,0.2)', display: 'flex', alignItems: 'center', gap: 4 },
+  select: { padding: '6px 10px', border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, color: 'var(--neutral-400)', background: '#fff' },
 };
 
 const EMERGENCY_KEYWORDS = ['suicide', 'kill', 'hurt myself', 'emergency', '911', 'chest pain', 'can\'t breathe', 'overdose', 'bleeding', 'unconscious'];
@@ -34,7 +34,7 @@ export function EscalationPolicyPanel() {
       {/* Confidence & Sentiment Thresholds */}
       <div style={s.section}>
         <div style={s.sectionTitle}>
-          <Icon name="solar:tuning-square-2-bold" size={16} color="#8c5ae2" />
+          <Icon name="solar:tuning-square-2-bold" size={16} color="var(--primary-300)" />
           Escalation Triggers
         </div>
         <div style={s.card}>
@@ -45,7 +45,7 @@ export function EscalationPolicyPanel() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <input style={s.input} type="number" min={0} max={100} value={config.confidenceThreshold} onChange={e => update('confidenceThreshold', +e.target.value)} />
-              <span style={{ fontSize: 12, color: '#6f7a90' }}>%</span>
+              <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>%</span>
             </div>
           </div>
           <div style={s.row}>
@@ -55,7 +55,7 @@ export function EscalationPolicyPanel() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <input style={s.input} type="number" min={0} max={100} value={config.sentimentThreshold} onChange={e => update('sentimentThreshold', +e.target.value)} />
-              <span style={{ fontSize: 12, color: '#6f7a90' }}>%</span>
+              <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>%</span>
             </div>
           </div>
           <div style={s.row}>
@@ -100,7 +100,7 @@ export function EscalationPolicyPanel() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <input style={s.input} type="number" min={5} max={120} value={config.callbackSlaMinutes} onChange={e => update('callbackSlaMinutes', +e.target.value)} />
-              <span style={{ fontSize: 12, color: '#6f7a90' }}>min</span>
+              <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>min</span>
             </div>
           </div>
         </div>
@@ -109,22 +109,22 @@ export function EscalationPolicyPanel() {
       {/* Emergency Keywords */}
       <div style={s.section}>
         <div style={s.sectionTitle}>
-          <Icon name="solar:danger-triangle-bold" size={16} color="#D72825" />
+          <Icon name="solar:danger-triangle-bold" size={16} color="var(--status-error)" />
           Emergency Keywords
         </div>
         <div style={s.card}>
-          <div style={{ fontSize: 13, color: '#6f7a90', marginBottom: 8 }}>
+          <div style={{ fontSize: 13, color: 'var(--neutral-300)', marginBottom: 8 }}>
             Calls containing these keywords will trigger immediate escalation to a human agent.
           </div>
           <div style={s.keywordsList}>
             {EMERGENCY_KEYWORDS.map(kw => (
               <span key={kw} style={s.keyword}>
                 {kw}
-                <Icon name="solar:close-circle-bold" size={12} color="#D72825" style={{ cursor: 'pointer' }} />
+                <Icon name="solar:close-circle-bold" size={12} color="var(--status-error)" style={{ cursor: 'pointer' }} />
               </span>
             ))}
           </div>
-          <button style={{ marginTop: 10, padding: '6px 12px', border: '0.5px solid #d0d6e1', borderRadius: 6, background: '#fff', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: '#8c5ae2' }}>
+          <button style={{ marginTop: 10, padding: '6px 12px', border: '0.5px solid var(--neutral-150)', borderRadius: 6, background: '#fff', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: 'var(--primary-300)' }}>
             <Icon name="solar:add-circle-linear" size={14} /> Add Keyword
           </button>
         </div>

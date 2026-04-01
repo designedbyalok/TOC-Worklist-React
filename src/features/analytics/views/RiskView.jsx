@@ -83,7 +83,7 @@ export function RiskView({ showToast }) {
           <RafTrendLineChart data={rafTrend} potential={1.120} />
           <div style={{ display: 'flex', gap: 12, fontSize: 12, color: 'var(--neutral-200)', marginTop: 6 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 12, height: 2, background: 'var(--status-warning)', display: 'inline-block', borderRadius: 2 }} />Actual RAF</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 14, height: 0, borderTop: '2px dashed var(--grey-150)', display: 'inline-block' }} />Potential 1.120</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 14, height: 0, borderTop: '2px dashed var(--neutral-150)', display: 'inline-block' }} />Potential 1.120</span>
           </div>
         </Card>
 

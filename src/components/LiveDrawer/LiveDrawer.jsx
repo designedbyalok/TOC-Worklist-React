@@ -53,7 +53,7 @@ export function LiveDrawer() {
               <span className={styles.callTimer}>{p.callDuration || '00:00'}</span>
             </div>
             <div className={styles.callLine2}>
-              Via: <Icon name="solar:bot-bold" size={13} color="#8c5ae2" /> {p.agentAssigned || 'Anna'} → To: {p.name}
+              Via: <Icon name="solar:bot-bold" size={13} color="var(--primary-300)" /> {p.agentAssigned || 'Anna'} → To: {p.name}
             </div>
             {p.facility && (
               <div className={styles.callLine2}>{p.facility} • {p.admitReason}</div>
@@ -131,8 +131,8 @@ export function LiveDrawer() {
       {/* Transfer Context Card (shown when taking over) */}
       {ongoingCall?.compliance && (
         <div style={{
-          border: '0.5px solid #d0d6e1', borderRadius: 8, padding: 10, marginBottom: 12, background: '#fafbff',
-          display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 12, color: '#6f7a90',
+          border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 10, marginBottom: 12, background: '#fafbff',
+          display: 'flex', flexWrap: 'wrap', gap: 8, fontSize: 12, color: 'var(--neutral-300)',
         }}>
           <span><strong>Verified:</strong> {ongoingCall.compliance.identityVerified ? 'Yes' : 'No'}</span>
           <span>•</span>
@@ -147,7 +147,7 @@ export function LiveDrawer() {
       {/* Goals Section — collapsible */}
       <div className={styles.sectionHeader} onClick={() => toggleSection('goals')}>
         <span className={styles.sectionTitle}>
-          <Icon name="solar:target-bold" size={15} color="#8c5ae2" />
+          <Icon name="solar:target-bold" size={15} color="var(--primary-300)" />
           Goals Tracking
         </span>
         <span className={`${styles.chevron} ${openSections.goals ? styles.chevronOpen : ''}`}>
@@ -161,12 +161,12 @@ export function LiveDrawer() {
               <Icon
                 name={g.done ? "solar:check-circle-bold" : "solar:clock-circle-linear"}
                 size={16}
-                color={g.done ? "#009b53" : "#8a94a8"}
+                color={g.done ? "var(--status-success)" : "var(--neutral-200)"}
               />
               <span className={styles.goalLabel}>{g.name}</span>
               {g.done && g.time && (
                 <span className={styles.goalTime}>
-                  <Icon name="solar:check-circle-bold" size={12} color="#009b53" /> {g.time}
+                  <Icon name="solar:check-circle-bold" size={12} color="var(--status-success)" /> {g.time}
                 </span>
               )}
             </div>
@@ -181,7 +181,7 @@ export function LiveDrawer() {
       {/* Transcript — collapsible */}
       <div className={styles.sectionHeader} onClick={() => toggleSection('transcript')}>
         <span className={styles.sectionTitle}>
-          <Icon name="solar:chat-round-dots-bold" size={15} color="#8c5ae2" />
+          <Icon name="solar:chat-round-dots-bold" size={15} color="var(--primary-300)" />
           Live Transcript
         </span>
         <span className={`${styles.chevron} ${openSections.transcript ? styles.chevronOpen : ''}`}>
@@ -194,7 +194,7 @@ export function LiveDrawer() {
             <div key={i} className={`${styles.message} ${styles[msg.sender]}`}>
               {msg.sender === 'agent' && (
                 <div className={styles.msgAvatar}>
-                  <Icon name="solar:bot-bold" size={12} color="#8c5ae2" />
+                  <Icon name="solar:bot-bold" size={12} color="var(--primary-300)" />
                 </div>
               )}
               <div className={styles.msgContent}>
@@ -206,7 +206,7 @@ export function LiveDrawer() {
           ))}
           {/* Typing indicator */}
           <div className={styles.typing}>
-            <Icon name="solar:bot-bold" size={14} color="#8c5ae2" />
+            <Icon name="solar:bot-bold" size={14} color="var(--primary-300)" />
             <span>{p.agentAssigned || 'Anna'} is speaking</span>
             <span className={styles.typingDots}>
               <span>.</span><span>.</span><span>.</span>

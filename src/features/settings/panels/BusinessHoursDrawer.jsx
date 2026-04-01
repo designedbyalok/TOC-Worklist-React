@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
+import { Switch } from '../../../components/Switch/Switch';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -101,16 +102,7 @@ export function BusinessHoursDrawer() {
                   + Add New Time
                 </button>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <div onClick={() => toggleDay(day)} style={{
-                    width: 34, height: 18, borderRadius: 10,
-                    background: isAvailable ? 'var(--primary-300)' : 'var(--neutral-150)',
-                    position: 'relative', cursor: 'pointer', transition: 'background .2s', flexShrink: 0,
-                  }}>
-                    <div style={{
-                      width: 14, height: 14, borderRadius: '50%', background: '#fff',
-                      position: 'absolute', top: 2, left: isAvailable ? 18 : 2, transition: 'left .2s',
-                    }} />
-                  </div>
+                  <Switch checked={isAvailable} onChange={() => toggleDay(day)} />
                   <span style={{ fontSize: 12, color: isAvailable ? 'var(--neutral-400)' : 'var(--neutral-200)' }}>Available</span>
                 </div>
               </div>

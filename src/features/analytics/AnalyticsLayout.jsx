@@ -188,7 +188,7 @@ export function AnalyticsLayout() {
                       onClick={() => locked ? showToast(`${p.label} is restricted for ${PERSONA_LABELS[analyticsPersona] || analyticsPersona} persona`) : switchView(p.id)}
                       style={locked ? { opacity: 0.45 } : undefined}
                     >
-                      <Icon name={locked ? 'solar:lock-linear' : p.icon} size={16} color={locked ? 'var(--neutral-200)' : view === p.id ? 'var(--primary-300)' : 'var(--grey-300)'} />
+                      <Icon name={locked ? 'solar:lock-linear' : p.icon} size={16} color={locked ? 'var(--neutral-200)' : view === p.id ? 'var(--primary-300)' : 'var(--neutral-300)'} />
                       {p.label}
                     </button>
                   );

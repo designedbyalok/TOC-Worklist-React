@@ -20,10 +20,10 @@ export function DegradedBanner() {
       alignItems: 'center',
       gap: 8,
       padding: '8px 16px',
-      background: hasDown ? '#FFF5F5' : '#FFFCF5',
+      background: hasDown ? 'var(--status-error-light)' : 'var(--status-warning-light)',
       borderBottom: `1px solid ${hasDown ? 'rgba(215,40,37,0.2)' : 'rgba(217,165,11,0.2)'}`,
       fontSize: 13,
-      color: hasDown ? '#D72825' : '#D9A50B',
+      color: hasDown ? 'var(--status-error)' : 'var(--status-warning)',
       fontWeight: 500,
     }}>
       <Icon name="solar:danger-triangle-bold" size={16} />

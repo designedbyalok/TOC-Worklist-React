@@ -9,16 +9,16 @@ const SYSTEMS = [
 ];
 
 const STATUS_COLORS = {
-  ok: '#009B53',
-  degraded: '#D9A50B',
-  down: '#D72825',
+  ok: 'var(--status-success)',
+  degraded: 'var(--status-warning)',
+  down: 'var(--status-error)',
 };
 
 const dotStyle = (status) => ({
   width: 8,
   height: 8,
   borderRadius: '50%',
-  background: STATUS_COLORS[status] || '#8a94a8',
+  background: STATUS_COLORS[status] || 'var(--neutral-200)',
   flexShrink: 0,
 });
 

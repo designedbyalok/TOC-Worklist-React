@@ -4,13 +4,13 @@ import { useAppStore } from '../../store/useAppStore';
 import styles from './NodeSettings.module.css';
 
 const TYPE_CONFIG = {
-  conversation: { icon: 'solar:chat-round-dots-linear', color: '#009B53' },
-  appointment: { icon: 'solar:calendar-linear', color: '#145ECC' },
-  guardrails: { icon: 'solar:shield-check-linear', color: '#D9A50B' },
-  callTransfer: { icon: 'solar:phone-calling-linear', color: '#8C5AE2' },
-  escalation: { icon: 'solar:danger-triangle-linear', color: '#D72825' },
-  agents: { icon: 'solar:ghost-smile-linear', color: '#5020A0' },
-  end: { icon: 'solar:stop-bold', color: '#D72825' },
+  conversation: { icon: 'solar:chat-round-dots-linear', color: 'var(--status-success)' },
+  appointment: { icon: 'solar:calendar-linear', color: 'var(--status-info)' },
+  guardrails: { icon: 'solar:shield-check-linear', color: 'var(--status-warning)' },
+  callTransfer: { icon: 'solar:phone-calling-linear', color: 'var(--primary-300)' },
+  escalation: { icon: 'solar:danger-triangle-linear', color: 'var(--status-error)' },
+  agents: { icon: 'solar:ghost-smile-linear', color: 'var(--primary-400)' },
+  end: { icon: 'solar:stop-bold', color: 'var(--status-error)' },
 };
 
 /* ── Custom select dropdown ── */
@@ -33,7 +33,7 @@ function CustomSelect({ value, options, placeholder, onChange }) {
         <span className={value ? styles.customSelectValue : styles.customSelectPlaceholder}>
           {selected?.label || placeholder || 'Select...'}
         </span>
-        <Icon name="solar:alt-arrow-down-linear" size={12} color="#6F7A90" />
+        <Icon name="solar:alt-arrow-down-linear" size={12} color="var(--neutral-300)" />
       </button>
       {open && (
         <div className={styles.customSelectDropdown}>
@@ -126,7 +126,7 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
           <span className={styles.nodeNameDisplay}>{label}</span>
         )}
         <button className={styles.editBtn} onClick={() => setIsEditing(!isEditing)} title={isEditing ? 'Done editing' : 'Rename node'}>
-          <Icon name={isEditing ? 'solar:check-read-linear' : 'solar:pen-new-square-linear'} size={14} color="#8C5AE2" />
+          <Icon name={isEditing ? 'solar:check-read-linear' : 'solar:pen-new-square-linear'} size={14} color="var(--primary-300)" />
         </button>
       </div>
 
@@ -136,7 +136,7 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
         /* End node: simplified view — no transitions, just a description */
         <div className={styles.section}>
           <div className={styles.endNodeInfo}>
-            <Icon name="solar:info-circle-linear" size={16} color="#6F7A90" />
+            <Icon name="solar:info-circle-linear" size={16} color="var(--neutral-300)" />
             <span>This is the terminal node of the conversation flow. All paths should eventually lead here.</span>
           </div>
         </div>
@@ -158,7 +158,7 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
             {transitions.map((t, i) => (
               <div key={i} className={styles.transitionBlock}>
                 <button className={styles.removeTransitionBtn} onClick={() => removeTransition(i)} title="Remove transition">
-                  <Icon name="solar:trash-bin-minimalistic-linear" size={13} color="#D72825" />
+                  <Icon name="solar:trash-bin-minimalistic-linear" size={13} color="var(--status-error)" />
                 </button>
                 <div className={styles.transitionField}>
                   <label className={styles.fieldLabel}>Condition</label>
@@ -178,7 +178,7 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
 
             {transitions.length === 0 && (
               <div className={styles.emptyTransitions}>
-                <Icon name="solar:transfer-horizontal-linear" size={20} color="#D0D6E1" />
+                <Icon name="solar:transfer-horizontal-linear" size={20} color="var(--neutral-150)" />
                 <span>No transitions configured</span>
               </div>
             )}

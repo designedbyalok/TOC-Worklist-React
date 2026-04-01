@@ -1,0 +1,79 @@
+/* ── Fold Health Switch ──
+ * Figma: Fold-Pixel-1.0, node 1518:142478
+ *
+ * Size S (Web):  Track 32×19, Knob 16×16
+ *
+ * All sizes: border-radius track 4px, knob 3px
+ * Colors:
+ *   OFF default:  var(--neutral-100) #E9ECF1
+ *   OFF disabled: var(--neutral-50)  #F6F7F8
+ *   ON default:   var(--primary-300) #8C5AE2
+ *   ON disabled:  var(--primary-100) #F5F0FF
+ *   Knob:         #FFFFFF always
+ */
+
+/* ── Track ── */
+.track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 32px;
+  height: 19px;
+  border-radius: 4px;
+  background: var(--neutral-100);
+  border: none;
+  cursor: pointer;
+  padding: 1.5px;
+  flex-shrink: 0;
+  transition: background .2s;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.track:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary-100);
+}
+
+/* ── ON state ── */
+.trackOn {
+  background: var(--primary-300);
+}
+
+/* ── Disabled states ── */
+.track:disabled,
+.trackDisabled {
+  cursor: not-allowed;
+  background: var(--neutral-50);
+}
+
+.trackOn:disabled,
+.trackOn.trackDisabled {
+  background: var(--primary-100);
+}
+
+/* ── Knob ── */
+.knob {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: #fff;
+  transition: transform .2s;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.trackOn .knob {
+  transform: translateX(13px);
+}
+
+/* ── Label text ── */
+.label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--neutral-300);
+  white-space: nowrap;
+  user-select: none;
+}

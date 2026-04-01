@@ -14,7 +14,7 @@ function EmptySearch() {
       padding: '64px 24px', gap: 12, color: 'var(--neutral-300)',
     }}>
       <Icon name="solar:magnifer-linear" size={40} color="var(--neutral-200)" />
-      <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--neutral-400)', margin: 0 }}>
+      <p style={{ fontSize: 16, fontWeight: 500, color: 'var(--neutral-400)', margin: 0 }}>
         No results found
       </p>
       <p style={{ fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 320 }}>
@@ -68,7 +68,7 @@ function SectionHeader({ section, count, colSpan, isExpanded, onToggle, hasMore 
       }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
-          fontSize: 13, fontWeight: 600, color: section.color,
+          fontSize: 13, fontWeight: 500, color: section.color,
           fontFamily: "'Inter', sans-serif",
         }}>
           {section.dot ? (

@@ -298,6 +298,16 @@ export const useAppStore = create((set, get) => ({
     }));
   },
 
+  deleteChatGroup: async (id) => {
+    set(s => ({ chatGroupsData: (s.chatGroupsData || []).filter(g => g.id !== id) }));
+    const { error } = await supabase.from('chat_groups').delete().eq('id', id);
+    if (error) console.warn('Failed to delete chat group:', error.message);
+  },
+
+  // Knowledge Base add trigger (used by AgentsTable to tell KnowledgeBasePanel to open add form)
+  kbAddTrigger: false,
+  setKbAddTrigger: (v) => set({ kbAddTrigger: v }),
+
   // FAQs
   faqsData: null,
   fetchFaqs: async () => {
@@ -308,11 +318,15 @@ export const useAppStore = create((set, get) => ({
   addFaq: async (faq) => {
     const row = { question: faq.question, answer: faq.answer, category: faq.category };
     const { data, error } = await supabase.from('faqs').insert(row).select();
-    if (!error && data) set(s => ({ faqsData: [...(s.faqsData || []), { ...data[0], updatedAt: data[0].updated_at }] }));
+    if (!error && data && data[0]) {
+      const r = data[0];
+      set(s => ({ faqsData: [...(s.faqsData || []), { id: r.id, question: r.question, answer: r.answer, category: r.category, updatedAt: (r.updated_at || r.created_at || '').slice(0, 10) }] }));
+    }
   },
   updateFaq: async (id, updates) => {
-    await supabase.from('faqs').update(updates).eq('id', id);
-    set(s => ({ faqsData: (s.faqsData || []).map(f => f.id === id ? { ...f, ...updates } : f) }));
+    const now = new Date().toISOString();
+    await supabase.from('faqs').update({ ...updates, updated_at: now }).eq('id', id);
+    set(s => ({ faqsData: (s.faqsData || []).map(f => f.id === id ? { ...f, ...updates, updatedAt: now.slice(0, 10) } : f) }));
   },
   deleteFaq: async (id) => {
     await supabase.from('faqs').delete().eq('id', id);

@@ -28,7 +28,7 @@ import { Icon } from '../Icon/Icon';
  */
 export function ConfirmDialog({
   icon = 'solar:danger-triangle-linear',
-  iconColor = '#D72825',
+  iconColor = 'var(--status-error)',
   title = 'Are you sure?',
   description = '',
   confirmLabel = 'Delete',
@@ -48,11 +48,11 @@ export function ConfirmDialog({
 
         {/* Text */}
         <AlertDialogHeader className="items-center text-center gap-1">
-          <AlertDialogTitle className="text-base font-medium text-[#3A485F] leading-tight">
+          <AlertDialogTitle className="text-base font-medium text-[var(--neutral-400)] leading-tight">
             {title}
           </AlertDialogTitle>
           {description && (
-            <AlertDialogDescription className="text-sm font-normal text-[#8A94A8] leading-snug">
+            <AlertDialogDescription className="text-sm font-normal text-[var(--neutral-200)] leading-snug">
               {description}
             </AlertDialogDescription>
           )}
@@ -63,7 +63,7 @@ export function ConfirmDialog({
           <AlertDialogCancel
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium font-['Inter'] bg-white border border-[#E9ECF1] text-[#3A485F] hover:bg-[#F6F7F8] hover:border-[#D0D6E1] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium font-['Inter'] bg-white border border-[var(--neutral-100)] text-[var(--neutral-400)] hover:bg-[var(--neutral-50)] hover:border-[var(--neutral-150)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {cancelLabel}
           </AlertDialogCancel>
@@ -72,8 +72,8 @@ export function ConfirmDialog({
             disabled={loading}
             className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium font-['Inter'] disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
               variant === 'error'
-                ? 'bg-[#FFF5F5] border border-[#E9ECF1] text-[#D72825] hover:bg-[#FFEDED] hover:border-[#D72825]'
-                : 'bg-[#8C5AE2] border border-[#8C5AE2] text-white hover:bg-[#7B4BD4]'
+                ? 'bg-[var(--status-error-light)] border border-[var(--neutral-100)] text-[var(--status-error)] hover:bg-[#FFEDED] hover:border-[var(--status-error)]'
+                : 'bg-[var(--primary-300)] border border-[var(--primary-300)] text-white hover:bg-[#7B4BD4]'
             }`}
           >
             {loading ? 'Deleting\u2026' : confirmLabel}

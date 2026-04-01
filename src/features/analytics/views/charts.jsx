@@ -14,18 +14,18 @@ import {
 
 // ─── Design Tokens ───
 const COLORS = {
-  primary: '#8C5AE2',      // --primary-300
-  primaryLight: '#D7C0FF',  // --primary-200
-  green: '#009B53',         // --status-success
-  greenLight: '#F5FFFA',    // --status-success-light
-  red: '#D72825',           // --status-error
-  amber: '#D9A50B',         // --status-warning
-  secondary: '#F47A3E',     // --secondary-300
-  neutral300: '#6F7A90',    // --grey-300
-  neutral200: '#8A94A8',    // --grey-200
-  neutral150: '#D0D6E1',    // --grey-150
-  neutral100: '#E9ECF1',    // --grey-100
-  neutral50: '#F6F7F8',     // --grey-50
+  primary: 'var(--primary-300)',      // --primary-300
+  primaryLight: 'var(--primary-200)',  // --primary-200
+  green: 'var(--status-success)',         // --status-success
+  greenLight: 'var(--status-success-light)',    // --status-success-light
+  red: 'var(--status-error)',           // --status-error
+  amber: 'var(--status-warning)',         // --status-warning
+  secondary: 'var(--secondary-300)',     // --secondary-300
+  neutral300: 'var(--neutral-300)',    // --grey-300
+  neutral200: 'var(--neutral-200)',    // --grey-200
+  neutral150: 'var(--neutral-150)',    // --grey-150
+  neutral100: 'var(--neutral-100)',    // --grey-100
+  neutral50: 'var(--neutral-50)',     // --grey-50
   white: '#FFFFFF',         // --monochrome-white
 };
 

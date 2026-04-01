@@ -4,6 +4,7 @@ import { Badge } from '../../../components/Badge/Badge';
 import { Avatar } from '../../../components/Avatar/Avatar';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
+import { Switch } from '../../../components/Switch/Switch';
 import { defaultRules, customRules, groupSettings } from '../../../data/chatGroups'; // Rules defaults — TODO: move to store
 
 const RULE_BADGE_VARIANT = { safety: 'status-failed', system: 'ai-care', custom: 'status-completed' };
@@ -67,7 +68,7 @@ export function AgentRulesDrawer() {
         <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
           <Avatar variant="agent" initials="CA" />
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--neutral-500)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--neutral-500)', display: 'flex', alignItems: 'center', gap: 6 }}>
               Care Assistant
               <Badge variant="ai-care" label="AI Agent" />
               <Badge variant="compliance-na" label="FAQ Responder" />
@@ -90,7 +91,7 @@ export function AgentRulesDrawer() {
       {/* Group Settings */}
       <div style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--neutral-500)' }}>Group Settings</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-500)' }}>Group Settings</span>
           <span style={{ fontSize: 11, color: 'var(--neutral-200)', background: 'var(--neutral-50)', padding: '2px 8px', borderRadius: 4 }}>
             Overrides global defaults for this group
           </span>
@@ -106,7 +107,7 @@ export function AgentRulesDrawer() {
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--neutral-500)', marginTop: 4 }}>{s.value}</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-500)', marginTop: 4 }}>{s.value}</div>
               <div style={{ fontSize: 11, color: 'var(--neutral-200)', marginTop: 2 }}>{s.hint}</div>
             </div>
           ))}
@@ -117,7 +118,7 @@ export function AgentRulesDrawer() {
       <div style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 8, overflow: 'hidden', marginBottom: 16 }}>
         <div style={{ padding: '12px 16px', borderBottom: '0.5px solid var(--neutral-150)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--neutral-500)' }}>IF / Then Rules</div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-500)' }}>IF / Then Rules</div>
             <span style={{ fontSize: 12, color: 'var(--neutral-200)' }}>
               {rules.filter(r => r.type !== 'custom').length} default · {rules.filter(r => r.type === 'custom').length} custom · Evaluated top to bottom
             </span>
@@ -218,7 +219,7 @@ export function AgentRulesDrawer() {
               gap: 2, borderRight: '0.5px solid var(--neutral-150)', flexShrink: 0,
             }}>
               {!r.locked && <Icon name="solar:sort-vertical-linear" size={12} color="var(--neutral-200)" />}
-              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--neutral-300)', fontVariantNumeric: 'tabular-nums' }}>{i + 1}</span>
+              <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--neutral-300)', fontVariantNumeric: 'tabular-nums' }}>{i + 1}</span>
             </div>
 
             {/* Content */}
@@ -228,35 +229,22 @@ export function AgentRulesDrawer() {
                 <span style={{ fontWeight: 500, fontSize: 13, color: 'var(--neutral-500)' }}>{r.name}</span>
                 {r.locked && <Icon name="solar:shield-check-linear" size={12} color="var(--neutral-200)" />}
                 {r.priority && (
-                  <span style={{ fontSize: 10, fontWeight: 600, color: '#D72825', background: '#FFEBE6', padding: '1px 6px', borderRadius: 3 }}>{r.priority}</span>
+                  <span style={{ fontSize: 10, fontWeight: 500, color: 'var(--status-error)', background: '#FFEBE6', padding: '1px 6px', borderRadius: 3 }}>{r.priority}</span>
                 )}
               </div>
               <div style={{ fontSize: 12, color: 'var(--neutral-300)', lineHeight: 1.5 }}>
-                <span style={{ fontWeight: 600, color: 'var(--primary-300)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.04em' }}>If</span>{' '}
+                <span style={{ fontWeight: 500, color: 'var(--primary-300)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.04em' }}>If</span>{' '}
                 <span style={{ color: 'var(--neutral-400)' }}>{r.condition}</span>
               </div>
               <div style={{ fontSize: 12, color: 'var(--neutral-300)', lineHeight: 1.5, marginTop: 2 }}>
-                <span style={{ fontWeight: 600, color: '#16A34A', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.04em' }}>Then</span>{' '}
+                <span style={{ fontWeight: 500, color: '#16A34A', fontSize: 11, textTransform: 'uppercase', letterSpacing: '.04em' }}>Then</span>{' '}
                 <span style={{ color: 'var(--neutral-400)' }}>{r.action}</span>
               </div>
             </div>
 
             {/* Actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '0 14px', flexShrink: 0 }}>
-              <div
-                onClick={() => toggleRule(r.id)}
-                style={{
-                  width: 34, height: 18, borderRadius: 10,
-                  background: r.enabled ? 'var(--primary-300)' : 'var(--neutral-150)',
-                  position: 'relative', cursor: r.locked ? 'not-allowed' : 'pointer',
-                  transition: 'background .2s', opacity: r.locked ? 0.5 : 1, flexShrink: 0,
-                }}
-              >
-                <div style={{
-                  width: 14, height: 14, borderRadius: '50%', background: '#fff',
-                  position: 'absolute', top: 2, left: r.enabled ? 18 : 2, transition: 'left .2s',
-                }} />
-              </div>
+              <Switch checked={r.enabled} onChange={() => toggleRule(r.id)} disabled={r.locked} />
               {!r.locked && (
                 <>
                   <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}

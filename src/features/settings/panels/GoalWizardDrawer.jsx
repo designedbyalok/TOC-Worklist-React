@@ -3,6 +3,7 @@ import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
+import { Switch } from '../../../components/Switch/Switch';
 import { GOAL_TEMPLATES } from '../../../data/goals'; // Templates are config, not DB data
 import s from './GoalsPanel.module.css';
 
@@ -263,7 +264,7 @@ export function GoalWizardDrawer() {
             <div className={s.scoringSub}>Assign point values to steps and set a pass threshold</div>
           </div>
         </div>
-        <div className={`${s.toggle} ${weighted ? s.toggleOn : ''}`} />
+        <Switch checked={weighted} onChange={() => setWeighted(!weighted)} />
       </div>
       {weighted && (
         <div className={s.thresholdRow}>
@@ -271,7 +272,7 @@ export function GoalWizardDrawer() {
           <input className={s.thresholdInput} type="number" min={1} max={1000} value={passingScore}
             onChange={e => setPassingScore(parseInt(e.target.value) || 0)} />
           <span style={{ fontSize: 11, color: 'var(--neutral-300)' }}>pts</span>
-          <span style={{ marginLeft: 'auto', fontSize: 11, color: totalScore > 0 ? 'var(--primary-300)' : 'var(--neutral-200)', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ marginLeft: 'auto', fontSize: 11, color: totalScore > 0 ? 'var(--primary-300)' : 'var(--neutral-200)', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
             Total: {totalScore}pt
           </span>
         </div>
@@ -285,7 +286,7 @@ export function GoalWizardDrawer() {
             Goal Steps
           </div>
           <div style={{ fontSize: 11, color: 'var(--neutral-200)' }}>
-            <span style={{ color: '#009B53' }}>●</span> Mandatory <span style={{ color: '#D9A50B' }}>●</span> Conditional
+            <span style={{ color: 'var(--status-success)' }}>●</span> Mandatory <span style={{ color: 'var(--status-warning)' }}>●</span> Conditional
           </div>
         </div>
         <button className={`${s.footerBtn} ${s.footerBtnSecondary}`} style={{ padding: '5px 10px', fontSize: 12 }}
@@ -391,7 +392,7 @@ export function GoalWizardDrawer() {
   const renderReview = () => (
     <div className={step === 3 ? s.wizPageActive : s.wizPage}>
       <div className={s.sectionTitle}>
-        <Icon name="solar:check-circle-linear" size={14} color="#009B53" />
+        <Icon name="solar:check-circle-linear" size={14} color="var(--status-success)" />
         Success Criteria
       </div>
       <div style={{ fontSize: 12, color: 'var(--neutral-300)', marginBottom: 10, lineHeight: 1.5 }}>
@@ -399,7 +400,7 @@ export function GoalWizardDrawer() {
       </div>
       {metrics.map((m, i) => (
         <div key={i} className={s.metricItem}>
-          <Icon name="solar:check-circle-linear" size={13} color="#009B53" />
+          <Icon name="solar:check-circle-linear" size={13} color="var(--status-success)" />
           <span style={{ flex: 1 }}>{m}</span>
           <button className={s.metricRemove} onClick={() => removeMetric(i)}>✕</button>
         </div>

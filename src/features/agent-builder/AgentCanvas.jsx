@@ -81,7 +81,7 @@ export function AgentCanvas() {
       ...params,
       type: 'smoothstep',
       animated: false,
-      style: { stroke: '#D0D6E1', strokeWidth: 1.5 },
+      style: { stroke: 'var(--neutral-150)', strokeWidth: 1.5 },
     }, eds));
   }, [setEdges]);
 
@@ -237,7 +237,7 @@ export function AgentCanvas() {
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft}>
           <button className={styles.backBtn} onClick={closeBuilder} title="Back to Agents">
-            <Icon name="solar:arrow-left-linear" size={16} color="#3A485F" />
+            <Icon name="solar:arrow-left-linear" size={16} color="var(--neutral-400)" />
           </button>
           <span className={styles.agentName}>{builderAgent.name}</span>
         </div>
@@ -269,7 +269,7 @@ export function AgentCanvas() {
             Deploy Agent Now
           </button>
           <button className={styles.toolbarCloseBtn} onClick={closeBuilder} title="Close">
-            <Icon name="solar:close-cross-linear" size={18} color="#6F7A90" />
+            <Icon name="solar:close-cross-linear" size={18} color="var(--neutral-300)" />
           </button>
         </div>
       </div>
@@ -301,7 +301,7 @@ export function AgentCanvas() {
               deleteKeyCode={null}
               defaultEdgeOptions={{
                 type: 'smoothstep',
-                style: { stroke: '#D0D6E1', strokeWidth: 1.5 },
+                style: { stroke: 'var(--neutral-150)', strokeWidth: 1.5 },
               }}
               fitView
               fitViewOptions={{ padding: 0.3 }}
@@ -309,14 +309,14 @@ export function AgentCanvas() {
               maxZoom={2}
               proOptions={{ hideAttribution: true }}
             >
-              <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#E9ECF1" />
+              <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="var(--neutral-100)" />
               <MiniMap
                 className={styles.minimap}
                 maskColor="rgba(26,6,71,.08)"
                 nodeColor={(n) => {
-                  if (n.type === 'startNode') return '#009B53';
-                  if (n.type === 'endNode') return '#D72825';
-                  return '#8C5AE2';
+                  if (n.type === 'startNode') return 'var(--status-success)';
+                  if (n.type === 'endNode') return 'var(--status-error)';
+                  return 'var(--primary-300)';
                 }}
                 nodeStrokeWidth={3}
                 pannable

@@ -4,12 +4,12 @@ import { Icon } from '../../../components/Icon/Icon';
 import styles from './ConversationNode.module.css';
 
 const TYPE_CONFIG = {
-  conversation: { icon: 'solar:chat-round-dots-linear', color: '#009B53', label: 'Conversation' },
-  appointment: { icon: 'solar:calendar-linear', color: '#145ECC', label: 'Appointment' },
-  guardrails: { icon: 'solar:shield-check-linear', color: '#D9A50B', label: 'Guardrails' },
-  callTransfer: { icon: 'solar:phone-calling-linear', color: '#8C5AE2', label: 'Call Transfer' },
-  escalation: { icon: 'solar:danger-triangle-linear', color: '#D72825', label: 'Escalation' },
-  agents: { icon: 'solar:ghost-smile-linear', color: '#5020A0', label: 'Agents' },
+  conversation: { icon: 'solar:chat-round-dots-linear', color: 'var(--status-success)', label: 'Conversation' },
+  appointment: { icon: 'solar:calendar-linear', color: 'var(--status-info)', label: 'Appointment' },
+  guardrails: { icon: 'solar:shield-check-linear', color: 'var(--status-warning)', label: 'Guardrails' },
+  callTransfer: { icon: 'solar:phone-calling-linear', color: 'var(--primary-300)', label: 'Call Transfer' },
+  escalation: { icon: 'solar:danger-triangle-linear', color: 'var(--status-error)', label: 'Escalation' },
+  agents: { icon: 'solar:ghost-smile-linear', color: 'var(--primary-400)', label: 'Agents' },
 };
 
 export const ConversationNode = memo(function ConversationNode({ data, selected }) {
@@ -28,7 +28,7 @@ export const ConversationNode = memo(function ConversationNode({ data, selected 
         <span className={styles.headerLabel}>{data.label}</span>
         {data.verified && (
           <span className={styles.verifiedBadge}>
-            <Icon name="solar:verified-check-bold" size={10} color="#009B53" />
+            <Icon name="solar:verified-check-bold" size={10} color="var(--status-success)" />
             Verified Node
           </span>
         )}
@@ -45,16 +45,16 @@ export const ConversationNode = memo(function ConversationNode({ data, selected 
       {transitions.length > 0 && (
         <div className={styles.transitions}>
           <div className={styles.transitionHeader}>
-            <Icon name="solar:transfer-horizontal-linear" size={14} color="#6F7A90" />
+            <Icon name="solar:transfer-horizontal-linear" size={14} color="var(--neutral-300)" />
             <span>Transition</span>
             <button className={styles.addTransitionBtn}>
-              <Icon name="solar:add-circle-linear" size={14} color="#8C5AE2" />
+              <Icon name="solar:add-circle-linear" size={14} color="var(--primary-300)" />
             </button>
           </div>
           <div className={styles.transitionDivider} />
           {transitions.map((t, i) => (
             <div key={i} className={styles.transitionRow}>
-              <Icon name="solar:tuning-2-linear" size={12} color="#6F7A90" />
+              <Icon name="solar:tuning-2-linear" size={12} color="var(--neutral-300)" />
               <span>{t.condition} &rarr; {t.target}</span>
               <Handle
                 type="source"

@@ -28,10 +28,10 @@
 }
 
 .fieldInput {
-  height: 40px;
+  height: 32px;
   border: 0.5px solid #D0D6E1;
   border-radius: 6px;
-  padding: 0 12px;
+  padding: 0 8px;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 400;

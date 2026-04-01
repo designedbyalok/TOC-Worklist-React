@@ -7,31 +7,16 @@ import { RadioGroup, RadioGroupItem } from '../../../components/ui/radio-group';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../../../components/ui/tooltip';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../../components/ui/select';
 import { useAppStore } from '../../../store/useAppStore';
+import { Switch } from '../../../components/Switch/Switch';
 import { availableUsers, availableRoles } from '../../../data/chatGroups'; // Participant lists — TODO: move to store
 
 const labelStyle = { fontSize: 14, color: 'var(--neutral-300)', fontWeight: 400, marginBottom: 6, display: 'flex', alignItems: 'center', gap: 4 };
-const reqDot = <span style={{ color: '#D72825', fontSize: 14, lineHeight: 1 }}>*</span>;
+const reqDot = <span style={{ color: 'var(--status-error)', fontSize: 14, lineHeight: 1 }}>*</span>;
 const inputStyle = {
   width: '100%', padding: '8px 12px', borderRadius: 4, border: '0.5px solid var(--neutral-150)',
   fontSize: 14, fontFamily: "'Inter', sans-serif", outline: 'none', boxSizing: 'border-box',
   color: 'var(--neutral-400)',
 };
-
-function Toggle({ on, onChange, disabled }) {
-  return (
-    <div onClick={() => !disabled && onChange?.(!on)} style={{
-      width: 34, height: 18, borderRadius: 10, background: on ? 'var(--primary-300)' : 'var(--neutral-150)',
-      position: 'relative', cursor: disabled ? 'not-allowed' : 'pointer', transition: 'background .2s',
-      opacity: disabled ? 0.5 : 1, flexShrink: 0,
-    }}>
-      <div style={{
-        width: 14, height: 14, borderRadius: '50%', background: '#fff',
-        position: 'absolute', top: 2, left: on ? 18 : 2, transition: 'left .2s',
-        boxShadow: '0 1px 2px rgba(0,0,0,.1)',
-      }} />
-    </div>
-  );
-}
 
 export function GroupDetailDrawer() {
   const chatGroupDetailId = useAppStore(s => s.chatGroupDetailId);
@@ -306,8 +291,8 @@ export function GroupDetailDrawer() {
                       style={{ accentColor: 'var(--primary-300)' }} />
                     Enable all 1:1 Chat
                   </label>
-                  <button onClick={clearAll} style={{ background: 'none', border: 'none', fontSize: 12, color: '#D72825', cursor: 'pointer', fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Icon name="solar:close-circle-linear" size={12} color="#D72825" /> Clear All Selection
+                  <button onClick={clearAll} style={{ background: 'none', border: 'none', fontSize: 12, color: 'var(--status-error)', cursor: 'pointer', fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Icon name="solar:close-circle-linear" size={12} color="var(--status-error)" /> Clear All Selection
                   </button>
                 </div>
               </div>
@@ -360,7 +345,7 @@ export function GroupDetailDrawer() {
                           </button>
                         ) : (
                           <>
-                            <Toggle on={chatEnabled[p.id] || false} onChange={(val) => toggleChatForUser(p.id, val)} />
+                            <Switch checked={chatEnabled[p.id] || false} onChange={(val) => toggleChatForUser(p.id, val)} />
                             <button onClick={() => removeUser(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                               <Icon name="solar:close-circle-linear" size={16} color="var(--neutral-200)" />
                             </button>
@@ -383,7 +368,7 @@ export function GroupDetailDrawer() {
                     }}>
                       <span style={{ fontSize: 14, color: 'var(--neutral-500)' }}>{r.name}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <Toggle on={chatEnabled[r.id] || false} onChange={(val) => setChatEnabled(prev => ({ ...prev, [r.id]: val }))} />
+                        <Switch checked={chatEnabled[r.id] || false} onChange={(val) => setChatEnabled(prev => ({ ...prev, [r.id]: val }))} />
                         <button onClick={() => removeRole(r.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                           <Icon name="solar:close-circle-linear" size={16} color="var(--neutral-200)" />
                         </button>

@@ -106,7 +106,7 @@
 /* ── Recency Bar ── */
 .recency {
   display: flex; align-items: center; gap: 10px; padding: 7px 14px;
-  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 6px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 6px;
   font-size: 12px; font-weight: 400; color: var(--neutral-300); margin-bottom: 16px;
 }
 .recDot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
@@ -126,14 +126,14 @@
   display: flex; align-items: center; gap: 8px; flex-shrink: 0;
 }
 .filterSelect {
-  background: var(--neutral-0); border: 1px solid var(--neutral-150);
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   border-radius: 6px; padding: 6px 10px; font-family: 'Inter', sans-serif;
   font-size: 14px; font-weight: 400; color: var(--neutral-400); cursor: pointer; outline: none;
 }
 .filterSelect:focus { border-color: var(--primary-300); box-shadow: 0 0 0 2px rgba(140,90,226,.12); }
 .filterBtn {
   display: inline-flex; align-items: center; gap: 5px;
-  background: var(--neutral-0); border: 1px solid var(--neutral-150);
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   border-radius: 6px; padding: 6px 12px; font-family: 'Inter', sans-serif;
   font-size: 14px; font-weight: 500; color: var(--neutral-400); cursor: pointer;
   transition: all .12s;
@@ -147,7 +147,7 @@
 .kpiGrid.cols4 { grid-template-columns: repeat(4, 1fr); }
 .kpiGrid.cols5 { grid-template-columns: repeat(5, 1fr); }
 .kpiCard {
-  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 8px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 8px;
   padding: 14px; position: relative; overflow: hidden; transition: border-color .15s;
 }
 .kpiCard:hover { border-color: var(--primary-200); }
@@ -175,12 +175,12 @@
    Cards
    ────────────────────────────────────────────── */
 .card {
-  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 8px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 8px;
   overflow: hidden; margin-bottom: 14px;
 }
 .cardHeader {
   padding: 12px 14px; display: flex; align-items: center; gap: 10px;
-  border-bottom: 1px solid var(--neutral-150); flex-wrap: wrap;
+  border-bottom: 0.5px solid var(--neutral-150); flex-wrap: wrap;
 }
 .cardTitle { font-size: 14px; font-weight: 500; color: var(--neutral-400); }
 .cardSub { font-size: 12px; font-weight: 400; color: var(--neutral-200); }
@@ -213,7 +213,7 @@
 .tbl th.r { text-align: right; }
 .tbl td {
   padding: 8px 14px; font-size: 14px; font-weight: 400; color: var(--neutral-400);
-  border-bottom: 1px solid var(--neutral-100);
+  border-bottom: 0.5px solid var(--neutral-100);
   font-family: 'Inter', sans-serif;
 }
 .tbl td.r { text-align: right; }
@@ -232,7 +232,7 @@
    Insight Banner
    ────────────────────────────────────────────── */
 .insight {
-  background: var(--neutral-0); border: 1px solid var(--neutral-150);
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   border-left: 3px solid var(--primary-300); border-radius: 8px;
   padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px;
   margin-bottom: 14px;
@@ -266,11 +266,11 @@
 }
 .btnPrimary { background: var(--primary-300); color: #fff; }
 .btnPrimary:hover { background: var(--primary-400); }
-.btnGhost { background: transparent; color: var(--primary-300); border: 1px solid var(--primary-200); }
+.btnGhost { background: transparent; color: var(--primary-300); border: 0.5px solid var(--primary-200); }
 .btnGhost:hover { background: var(--primary-100); }
-.btnNeutral { background: var(--neutral-0); color: var(--neutral-400); border: 1px solid var(--neutral-150); }
+.btnNeutral { background: var(--neutral-0); color: var(--neutral-400); border: 0.5px solid var(--neutral-150); }
 .btnNeutral:hover { border-color: var(--neutral-200); }
-.btnDanger { background: var(--status-error-light); color: var(--status-error); border: 1px solid var(--status-error-light); }
+.btnDanger { background: var(--status-error-light); color: var(--status-error); border: 0.5px solid var(--status-error-light); }
 
 /* ── Progress Bar ── */
 .prRow { margin-bottom: 14px; }
@@ -301,7 +301,7 @@
 .funnel { display: flex; gap: 0; margin: 8px 0; overflow: hidden; border-radius: 6px; }
 .funnelStep {
   flex: 1; text-align: center; padding: 12px 8px;
-  background: var(--neutral-75); border-right: 1px solid var(--neutral-150);
+  background: var(--neutral-75); border-right: 0.5px solid var(--neutral-150);
   position: relative;
 }
 .funnelStep:last-child { border-right: none; }
@@ -310,7 +310,7 @@
 .funnelPct { font-size: 12px; font-weight: 400; color: var(--neutral-200); margin-top: 1px; }
 
 /* ── Tabs (underline style) ── */
-.tabRow { display: flex; border-bottom: 1px solid var(--neutral-150); margin-bottom: 14px; }
+.tabRow { display: flex; border-bottom: 0.5px solid var(--neutral-150); margin-bottom: 14px; }
 .tab {
   font-size: 14px; font-weight: 500; color: var(--neutral-300); padding: 8px 14px;
   cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
@@ -341,7 +341,7 @@
 
 /* ── Rule Card ── */
 .ruleCard {
-  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 6px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 6px;
   padding: 10px 14px; margin-bottom: 8px;
 }
 .ruleTrigger {
@@ -353,7 +353,7 @@
 /* ── Pipeline Row ── */
 .pipelineRow {
   display: flex; align-items: center; gap: 10px; padding: 8px 0;
-  border-bottom: 1px solid var(--neutral-100); font-size: 14px; font-weight: 400;
+  border-bottom: 0.5px solid var(--neutral-100); font-size: 14px; font-weight: 400;
 }
 .pipelineRow:last-child { border-bottom: none; }
 .pipelineDot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -364,7 +364,7 @@
 
 /* ── Context Note ── */
 .ctx {
-  background: var(--neutral-50); border: 1px solid var(--neutral-100); border-radius: 6px;
+  background: var(--neutral-50); border: 0.5px solid var(--neutral-100); border-radius: 6px;
   padding: 8px 14px; font-size: 14px; font-weight: 400; color: var(--neutral-400);
   display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; margin-bottom: 10px;
 }
@@ -372,7 +372,7 @@
 /* ── Prod metrics ── */
 .prodStrip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 14px; }
 .prodCard {
-  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 8px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 8px;
   padding: 12px 14px;
 }
 .prodLabel {
@@ -385,14 +385,14 @@
 /* ── ROI Strip ── */
 .roiStrip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
 .roiCard {
-  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 8px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 8px;
   padding: 12px 14px; cursor: pointer; transition: border-color .15s;
 }
 .roiCard:hover { border-color: var(--primary-200); }
 
 /* ── Sim levers ── */
 .simWrap { display: grid; grid-template-columns: 360px 1fr; gap: 14px; align-items: start; }
-.levGroup { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--neutral-150); }
+.levGroup { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 0.5px solid var(--neutral-150); }
 .levGroup:last-of-type { border-bottom: none; margin-bottom: 0; }
 .levLabel { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
 .levName { font-size: 14px; font-weight: 500; color: var(--neutral-500); }
@@ -401,7 +401,7 @@
 .simRange { width: 100%; accent-color: var(--primary-300); cursor: pointer; height: 4px; }
 .simKpiRow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
 .simKpiCard {
-  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 8px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 8px;
   padding: 12px; text-align: center;
 }
 .simKpiLabel {
@@ -413,7 +413,7 @@
 
 /* ── NLQ card ── */
 .nlqCard {
-  background: var(--neutral-0); border: 1px solid var(--neutral-150); border-radius: 6px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 6px;
   padding: 10px 14px; cursor: pointer; transition: all .15s;
 }
 .nlqCard:hover { border-color: var(--primary-200); background: var(--primary-100); }

@@ -16,7 +16,7 @@ import styles from './AgentsTable.module.css';
 const TABS = ['Agents', 'Goals', 'Knowledge Base', 'Tools', 'Compliance Policies', 'Test Cases', 'Analytics'];
 
 function VoiceBadge({ voice }) {
-  if (!voice) return <span style={{ color: '#6F7A90' }}>—</span>;
+  if (!voice) return <span style={{ color: 'var(--neutral-300)' }}>—</span>;
   const colors = { Erica: '#E74C8B', Ricardo: '#7C5CFC', Jia: '#F59E0B' };
   const name = voice.name || 'Erica';
   const color = colors[name] || '#7C5CFC';
@@ -32,13 +32,8 @@ function VoiceBadge({ voice }) {
   );
 }
 
-function StatusToggle({ enabled, onToggle }) {
-  return (
-    <button className={[styles.toggle, enabled ? styles.toggleOn : ''].filter(Boolean).join(' ')} onClick={onToggle}>
-      <span className={styles.toggleThumb} />
-    </button>
-  );
-}
+// StatusToggle now uses the shared Switch component
+import { Switch } from '../../components/Switch/Switch';
 
 /* ── 3-dot action dropdown ── */
 function AgentActionMenu({ agent, onClose, onRequestDelete }) {
@@ -66,16 +61,16 @@ function AgentActionMenu({ agent, onClose, onRequestDelete }) {
   return (
     <div className={styles.dropdown} onClick={e => e.stopPropagation()}>
       <button className={styles.dropdownItem} onClick={() => { openBuilder({ id: agent.id, name: agent.name }); onClose(); }}>
-        <Icon name="solar:pen-new-square-linear" size={16} color="#6F7A90" />
+        <Icon name="solar:pen-new-square-linear" size={16} color="var(--neutral-300)" />
         Edit Agent
       </button>
       <button className={styles.dropdownItem} onClick={handleDuplicate}>
-        <Icon name="solar:copy-linear" size={16} color="#6F7A90" />
+        <Icon name="solar:copy-linear" size={16} color="var(--neutral-300)" />
         Duplicate
       </button>
       <div className={styles.dropdownDivider} />
       <button className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`} onClick={() => { onClose(); onRequestDelete(); }}>
-        <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="#D72825" />
+        <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="var(--status-error)" />
         Delete Agent
       </button>
     </div>
@@ -108,14 +103,14 @@ function AgentRow({ agent }) {
     setShowMenu(v => !v);
   };
 
-  // Close on outside click
+  // Close on outside click (use click instead of mousedown so menu button handlers fire first)
   useEffect(() => {
     if (!showMenu) return;
     const close = (e) => {
       if (moreBtnRef.current && !moreBtnRef.current.contains(e.target)) setShowMenu(false);
     };
-    document.addEventListener('mousedown', close);
-    return () => document.removeEventListener('mousedown', close);
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
   }, [showMenu]);
 
   return (
@@ -127,7 +122,7 @@ function AgentRow({ agent }) {
       <td className={styles.dateCell}>{agent.last_updated}</td>
       <td>{agent.last_updated_by}</td>
       <td>
-        <StatusToggle enabled={agent.enabled} onToggle={() => updateAgent(agent.id, { enabled: !agent.enabled })} />
+        <Switch checked={agent.enabled} onChange={() => updateAgent(agent.id, { enabled: !agent.enabled })} />
       </td>
       <td>
         <div className={styles.actions}>
@@ -154,7 +149,7 @@ function AgentRow({ agent }) {
         {showDeleteConfirm && (
           <ConfirmDialog
             icon="solar:danger-triangle-linear"
-            iconColor="#D72825"
+            iconColor="var(--status-error)"
             title={`Delete ${agent.name}`}
             description={`Are you sure you want to delete this agent? All associated workflows, conversation flows, and analytics data will be permanently removed. This action cannot be undone.`}
             confirmLabel="Delete Agent"
@@ -230,8 +225,8 @@ export function AgentsTable() {
           <div className={styles.searchWrap}>
             {searchOpen ? (
               <div className={styles.searchInput}>
-                <Icon name="solar:magnifer-linear" size={15} color="#6F7A90" />
-                <input autoFocus type="text" placeholder={settingsTab === 'goals' ? 'Search goals…' : 'Search agents…'} value={searchVal} onChange={e => setSearchVal(e.target.value)} />
+                <Icon name="solar:magnifer-linear" size={15} color="var(--neutral-300)" />
+                <input autoFocus type="text" placeholder={settingsTab === 'goals' ? 'Search goals…' : settingsTab === 'knowledge base' ? 'Search FAQs…' : 'Search agents…'} value={searchVal} onChange={e => setSearchVal(e.target.value)} />
                 <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchVal(''); }}>✕</button>
               </div>
             ) : (
@@ -250,12 +245,14 @@ export function AgentsTable() {
           <button className={styles.createBtn} onClick={() => {
             if (settingsTab === 'goals') {
               setGoalWizard(true, null);
+            } else if (settingsTab === 'knowledge base') {
+              useAppStore.getState().setKbAddTrigger(true);
             } else {
               setShowCreateAgent(true);
             }
           }}>
             <Icon name="solar:add-circle-linear" size={16} />
-            {settingsTab === 'goals' ? 'New Goal' : 'Create New'}
+            {settingsTab === 'goals' ? 'New Goal' : settingsTab === 'knowledge base' ? 'Add FAQ' : 'Create New'}
           </button>
         </div>
       </div>
@@ -314,7 +311,7 @@ export function AgentsTable() {
       {settingsTab === 'goals' ? (
         <div className={styles.tableWrap}><GoalsPanel searchQuery={searchVal} filter={goalsFilter} viewMode={goalsViewMode} /></div>
       ) : settingsTab === 'knowledge base' ? (
-        <div className={styles.tableWrap}><KnowledgeBasePanel /></div>
+        <div className={styles.tableWrap}><KnowledgeBasePanel searchQuery={searchVal} /></div>
       ) : settingsTab === 'tools' ? (
         <div className={styles.tableWrap}><PracticeConfigPanel /></div>
       ) : settingsTab === 'compliance policies' ? (
@@ -343,14 +340,14 @@ export function AgentsTable() {
                 </table>
                 {filteredAgents.length === 0 && searchVal.trim() && (
                   <div className={styles.emptySearch}>
-                    <Icon name="solar:magnifer-linear" size={40} color="#D0D6E1" />
+                    <Icon name="solar:magnifer-linear" size={40} color="var(--neutral-150)" />
                     <p className={styles.emptyTitle}>No results found</p>
                     <p className={styles.emptyDesc}>No agents match "<strong>{searchVal.trim()}</strong>". Try a different name or clear the search.</p>
                   </div>
                 )}
                 {filteredAgents.length === 0 && !searchVal.trim() && (
                   <div className={styles.emptySearch}>
-                    <Icon name="solar:ghost-smile-linear" size={40} color="#D0D6E1" />
+                    <Icon name="solar:ghost-smile-linear" size={40} color="var(--neutral-150)" />
                     <p className={styles.emptyTitle}>No agents configured yet</p>
                   </div>
                 )}

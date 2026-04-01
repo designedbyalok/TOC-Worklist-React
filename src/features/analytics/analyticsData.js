@@ -85,7 +85,7 @@ export const PERSONA_DETAILS = {
   manager_quality: { name: 'Maria Chen', role: 'Quality Manager', dot: '#059669' },
   manager_care: { name: 'John Torres', role: 'Care Manager', dot: '#D97706' },
   manager_utilization: { name: 'Linda Kim', role: 'Utilization Manager', dot: '#7C3AED' },
-  analyst: { name: 'Alex Wong', role: 'Data Analyst', dot: '#6F7A90' },
+  analyst: { name: 'Alex Wong', role: 'Data Analyst', dot: 'var(--neutral-300)' },
 };
 
 export const QUALITY_MEASURES = [

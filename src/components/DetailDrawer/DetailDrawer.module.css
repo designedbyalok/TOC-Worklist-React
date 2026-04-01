@@ -103,7 +103,7 @@
   margin-bottom: 10px;
 }
 .qualityLabel { font-size: 13px; font-weight: 500; color: #3a485f; flex: 1; }
-.qualityOverall { font-size: 14px; font-weight: 600; }
+.qualityOverall { font-size: 14px; font-weight: 500; }
 .qualityGood { color: #009B53; }
 .qualityFair { color: #D9A50B; }
 .qualityPoor { color: #D72825; }
@@ -144,7 +144,7 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: #D72825;
   margin-bottom: 6px;
 }
@@ -206,7 +206,7 @@
 }
 .secPass { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
 .secFail { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
-.secAlert { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.25); font-weight: 600; }
+.secAlert { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.25); font-weight: 500; }
 
 /* ── Section Headers ── */
 .sectionHeader {
@@ -273,7 +273,7 @@
 
 .goalBadge {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   padding: 2px 10px;
   border-radius: 4px;
   flex-shrink: 0;

@@ -1,6 +1,6 @@
 .filterBar {
   background: var(--neutral-0);
-  border-bottom: 1px solid var(--neutral-150);
+  border-bottom: 0.5px solid var(--neutral-150);
   padding: 10px 24px;
   display: flex;
   flex-direction: column;
@@ -26,7 +26,7 @@
   align-items: center;
   gap: 5px;
   padding: 6px 12px;
-  border: 1px solid var(--neutral-150);
+  border: 0.5px solid var(--neutral-150);
   border-radius: 6px;
   background: var(--neutral-0);
   font-family: 'Inter', sans-serif;
@@ -42,7 +42,7 @@
 .chip.active { border-color: var(--primary-300); background: var(--primary-100); color: var(--primary-300); }
 
 .chipValue {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--primary-300);
   max-width: 80px;
   overflow: hidden;
@@ -78,7 +78,7 @@
   max-height: 240px;
   overflow-y: auto;
   background: var(--neutral-0);
-  border: 1px solid var(--neutral-150);
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,.12);
   z-index: 100;
@@ -116,7 +116,7 @@
 .dropdownItem.selected {
   background: var(--primary-100);
   color: var(--primary-300);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .dropdownCheck {
@@ -150,13 +150,13 @@
   background: var(--primary-100);
   color: var(--primary-300);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   font-family: 'Inter', sans-serif;
 }
 
 .viewByToggle {
   display: inline-flex;
-  border: 1px solid var(--neutral-150);
+  border: 0.5px solid var(--neutral-150);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -168,7 +168,7 @@
   padding: 6px 12px;
   background: var(--neutral-0);
   border: none;
-  border-right: 1px solid var(--neutral-150);
+  border-right: 0.5px solid var(--neutral-150);
   font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 500;

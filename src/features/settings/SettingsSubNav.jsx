@@ -30,7 +30,7 @@ export function SettingsSubNav({ activeItem = 'agents', onItemClick }) {
             className={[styles.item, isActive ? styles.active : ''].filter(Boolean).join(' ')}
             onClick={() => onItemClick?.(key)}
           >
-            <Icon name={item.icon} size={16} color={isActive ? '#8C5AE2' : '#6F7A90'} />
+            <Icon name={item.icon} size={16} color={isActive ? 'var(--primary-300)' : 'var(--neutral-300)'} />
             <span>{item.label}</span>
           </div>
         );

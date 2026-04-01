@@ -1,19 +1,171 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
-import { Avatar } from '../../../components/Avatar/Avatar';
 import { useAppStore } from '../../../store/useAppStore';
 import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
+import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
 
 const thStyle = {
-  textAlign: 'left', padding: '8px 16px', color: '#6F7A90', fontWeight: 500,
-  fontSize: 12, whiteSpace: 'nowrap', borderBottom: '1px solid #D0D6E1',
+  textAlign: 'left', padding: '8px 16px', color: 'var(--neutral-300)', fontWeight: 500,
+  fontSize: 12, whiteSpace: 'nowrap', borderBottom: '1px solid var(--neutral-150)',
   background: 'var(--neutral-0)', position: 'sticky', top: 0,
 };
 const tdStyle = { padding: '10px 16px', fontSize: 13, color: 'var(--neutral-400)', verticalAlign: 'middle' };
 
-export function ChatSettingsPanel({ searchQuery = '' }) {
+function RowActionMenu({ group, onClose, onEdit, onRequestDelete }) {
+  return (
+    <div style={{
+      background: '#fff', borderRadius: 8, border: '0.5px solid var(--neutral-150)',
+      boxShadow: '0 4px 16px rgba(0,0,0,.10)', minWidth: 160, padding: '4px 0',
+      fontFamily: "'Inter', sans-serif",
+    }} onClick={e => e.stopPropagation()}>
+      <button style={{
+        width: '100%', padding: '8px 14px', border: 'none', background: 'none',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+        fontSize: 13, color: 'var(--neutral-400)', textAlign: 'left',
+      }} onMouseOver={e => e.currentTarget.style.background = 'var(--neutral-50)'}
+        onMouseOut={e => e.currentTarget.style.background = 'none'}
+        onClick={() => { onEdit(); onClose(); }}>
+        <Icon name="solar:pen-linear" size={16} color="var(--neutral-300)" />
+        Edit Group
+      </button>
+      <div style={{ height: 1, background: '#EAECF0', margin: '4px 0' }} />
+      <button style={{
+        width: '100%', padding: '8px 14px', border: 'none', background: 'none',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
+        fontSize: 13, color: 'var(--status-error)', textAlign: 'left',
+      }} onMouseOver={e => e.currentTarget.style.background = 'var(--status-error-light)'}
+        onMouseOut={e => e.currentTarget.style.background = 'none'}
+        onClick={() => { onClose(); onRequestDelete(); }}>
+        <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="var(--status-error)" />
+        Delete Group
+      </button>
+    </div>
+  );
+}
+
+function ChatGroupRow({ g, onOpen }) {
   const showToast = useAppStore(s => s.showToast);
+  const deleteChatGroup = useAppStore(s => s.deleteChatGroup);
+  const setChatGroupDetailId = useAppStore(s => s.setChatGroupDetailId);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const moreBtnRef = useRef(null);
+
+  const handleMoreClick = (e) => {
+    e.stopPropagation();
+    const btn = moreBtnRef.current;
+    if (btn) {
+      const rect = btn.getBoundingClientRect();
+      const menuH = 100;
+      const spaceBelow = window.innerHeight - rect.bottom - 8;
+      setMenuPos({
+        top: spaceBelow < menuH ? Math.max(8, rect.top - menuH) : rect.bottom + 4,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    setMenuOpen(v => !v);
+  };
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (e) => {
+      if (moreBtnRef.current && !moreBtnRef.current.contains(e.target)) setMenuOpen(false);
+    };
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [menuOpen]);
+
+  return (
+    <tr
+      style={{ borderBottom: '1px solid #EAECF0', cursor: 'pointer', transition: 'background .1s' }}
+      onClick={() => onOpen(g.id)}
+      onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25, #faf8ff)'}
+      onMouseOut={e => e.currentTarget.style.background = ''}
+    >
+      <td style={{ ...tdStyle, fontWeight: 500, color: 'var(--neutral-500)' }}>
+        {g.name}
+      </td>
+      <td style={tdStyle}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--neutral-400)' }}>
+          <Icon name="solar:users-group-rounded-linear" size={14} color="var(--neutral-300)" />
+          {g.activeChats}
+        </span>
+      </td>
+      <td style={tdStyle}>
+        <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+          {g.users.slice(0, 1).map((u, i) => (
+            <span key={i} style={{ fontSize: 13, color: 'var(--neutral-400)' }}>{u}</span>
+          ))}
+          {(g.users.length + g.roles.length) > 1 && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 3,
+              padding: '1px 6px', borderRadius: 4, fontSize: 11, fontWeight: 500,
+              color: 'var(--primary-300)', background: 'var(--primary-50, #F5F0FF)',
+              border: '0.5px solid var(--primary-200)',
+            }}>
+              <Icon name="solar:users-group-rounded-linear" size={10} color="var(--primary-300)" />
+              +{g.users.length + g.roles.length - 1}
+            </span>
+          )}
+        </div>
+      </td>
+      <td style={{ ...tdStyle, fontSize: 13, color: 'var(--neutral-300)' }}>{g.location}</td>
+      <td style={{ ...tdStyle, fontSize: 12, color: 'var(--neutral-200)' }}>
+        {g.updated} by {g.updatedBy}
+      </td>
+      <td style={tdStyle} onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
+            onClick={() => setChatGroupDetailId(g.id)}>
+            <Icon name="solar:pen-linear" size={16} color="var(--neutral-200)" />
+          </button>
+          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
+            ref={moreBtnRef} onClick={handleMoreClick}>
+            <Icon name="solar:menu-dots-linear" size={16} color="var(--neutral-200)" />
+          </button>
+        </div>
+        {menuOpen && createPortal(
+          <div style={{ position: 'fixed', top: menuPos.top, right: menuPos.right, zIndex: 9999 }}>
+            <RowActionMenu
+              group={g}
+              onClose={() => setMenuOpen(false)}
+              onEdit={() => setChatGroupDetailId(g.id)}
+              onRequestDelete={() => setShowDeleteConfirm(true)}
+            />
+          </div>,
+          document.body
+        )}
+        {showDeleteConfirm && (
+          <ConfirmDialog
+            icon="solar:danger-triangle-linear"
+            iconColor="var(--status-error)"
+            title={`Delete "${g.name}"`}
+            description="Are you sure you want to delete this chat group? All messages, participants, and agent rules will be permanently removed. This action cannot be undone."
+            confirmLabel="Delete Group"
+            cancelLabel="Cancel"
+            variant="error"
+            loading={deleting}
+            onCancel={() => setShowDeleteConfirm(false)}
+            onConfirm={async () => {
+              setDeleting(true);
+              await deleteChatGroup(g.id);
+              showToast(`"${g.name}" deleted`);
+              setDeleting(false);
+              setShowDeleteConfirm(false);
+            }}
+          />
+        )}
+      </td>
+    </tr>
+  );
+}
+
+export function ChatSettingsPanel({ searchQuery = '' }) {
   const setChatGroupDetailId = useAppStore(s => s.setChatGroupDetailId);
   const chatGroupsData = useAppStore(s => s.chatGroupsData) || [];
   const chatGroupsLoading = useAppStore(s => s.chatGroupsLoading);
@@ -41,7 +193,7 @@ export function ChatSettingsPanel({ searchQuery = '' }) {
           <th style={thStyle}>Group Users</th>
           <th style={{ ...thStyle, cursor: 'pointer' }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              Location <Icon name="solar:sort-vertical-linear" size={12} color="#8A94A8" />
+              Location <Icon name="solar:sort-vertical-linear" size={12} color="var(--neutral-200)" />
             </span>
           </th>
           <th style={thStyle}>Last Updated</th>
@@ -50,57 +202,7 @@ export function ChatSettingsPanel({ searchQuery = '' }) {
       </thead>
       <tbody>
         {filtered.map(g => (
-          <tr
-            key={g.id}
-            style={{ borderBottom: '1px solid #EAECF0', cursor: 'pointer', transition: 'background .1s' }}
-            onClick={() => setChatGroupDetailId(g.id)}
-            onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25, #faf8ff)'}
-            onMouseOut={e => e.currentTarget.style.background = ''}
-          >
-            <td style={{ ...tdStyle, fontWeight: 500, color: 'var(--neutral-500)' }}>
-              {g.name}
-            </td>
-            <td style={tdStyle}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--neutral-400)' }}>
-                <Icon name="solar:users-group-rounded-linear" size={14} color="var(--neutral-300)" />
-                {g.activeChats}
-              </span>
-            </td>
-            <td style={tdStyle}>
-              <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                {g.users.slice(0, 1).map((u, i) => (
-                  <span key={i} style={{ fontSize: 13, color: 'var(--neutral-400)' }}>{u}</span>
-                ))}
-                {(g.users.length + g.roles.length) > 1 && (
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 3,
-                    padding: '1px 6px', borderRadius: 4, fontSize: 11, fontWeight: 500,
-                    color: 'var(--primary-300)', background: 'var(--primary-50, #F5F0FF)',
-                    border: '0.5px solid var(--primary-200)',
-                  }}>
-                    <Icon name="solar:users-group-rounded-linear" size={10} color="var(--primary-300)" />
-                    +{g.users.length + g.roles.length - 1}
-                  </span>
-                )}
-              </div>
-            </td>
-            <td style={{ ...tdStyle, fontSize: 13, color: 'var(--neutral-300)' }}>{g.location}</td>
-            <td style={{ ...tdStyle, fontSize: 12, color: 'var(--neutral-200)' }}>
-              {g.updated} by {g.updatedBy}
-            </td>
-            <td style={tdStyle} onClick={e => e.stopPropagation()}>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
-                  onClick={() => setChatGroupDetailId(g.id)}>
-                  <Icon name="solar:pen-linear" size={16} color="var(--neutral-200)" />
-                </button>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
-                  onClick={() => showToast('More options')}>
-                  <Icon name="solar:menu-dots-linear" size={16} color="var(--neutral-200)" />
-                </button>
-              </div>
-            </td>
-          </tr>
+          <ChatGroupRow key={g.id} g={g} onOpen={setChatGroupDetailId} />
         ))}
         {filtered.length === 0 && (
           <tr>

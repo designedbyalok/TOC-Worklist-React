@@ -3,13 +3,13 @@ import { Icon } from '../../components/Icon/Icon';
 import styles from './NodePanel.module.css';
 
 const NODE_TYPES = [
-  { type: 'conversation', icon: 'solar:chat-round-dots-linear', label: 'Conversation', color: '#009B53', bg: '#ECFDF5' },
-  { type: 'appointment', icon: 'solar:calendar-linear', label: 'Appointment', color: '#145ECC', bg: '#EFF6FF' },
-  { type: 'guardrails', icon: 'solar:shield-check-linear', label: 'Guardrails', color: '#D9A50B', bg: '#FFFBEB' },
-  { type: 'callTransfer', icon: 'solar:phone-calling-linear', label: 'Call Transfer', color: '#8C5AE2', bg: '#F5F0FF' },
-  { type: 'escalation', icon: 'solar:danger-triangle-linear', label: 'Escalations', color: '#D72825', bg: '#FEF2F2' },
-  { type: 'agents', icon: 'solar:ghost-smile-linear', label: 'Agents', color: '#5020A0', bg: '#F5F0FF' },
-  { type: 'end', icon: 'solar:stop-bold', label: 'End', color: '#D72825', bg: '#FEF2F2' },
+  { type: 'conversation', icon: 'solar:chat-round-dots-linear', label: 'Conversation', color: 'var(--status-success)', bg: '#ECFDF5' },
+  { type: 'appointment', icon: 'solar:calendar-linear', label: 'Appointment', color: 'var(--status-info)', bg: '#EFF6FF' },
+  { type: 'guardrails', icon: 'solar:shield-check-linear', label: 'Guardrails', color: 'var(--status-warning)', bg: '#FFFBEB' },
+  { type: 'callTransfer', icon: 'solar:phone-calling-linear', label: 'Call Transfer', color: 'var(--primary-300)', bg: 'var(--primary-100)' },
+  { type: 'escalation', icon: 'solar:danger-triangle-linear', label: 'Escalations', color: 'var(--status-error)', bg: '#FEF2F2' },
+  { type: 'agents', icon: 'solar:ghost-smile-linear', label: 'Agents', color: 'var(--primary-400)', bg: 'var(--primary-100)' },
+  { type: 'end', icon: 'solar:stop-bold', label: 'End', color: 'var(--status-error)', bg: '#FEF2F2' },
 ];
 
 const COMPONENTS = [
@@ -69,7 +69,7 @@ export function NodePanel({ onDragStart }) {
               onDragStart={e => handleDragStart(e, c.type, c.label)}
             >
               <div className={styles.componentIcon}>
-                <Icon name={c.icon} size={16} color="#8C5AE2" />
+                <Icon name={c.icon} size={16} color="var(--primary-300)" />
               </div>
               <div className={styles.componentText}>
                 <span className={styles.componentLabel}>{c.label}</span>

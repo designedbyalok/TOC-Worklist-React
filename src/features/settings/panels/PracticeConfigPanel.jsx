@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
+import { Switch } from '../../../components/Switch/Switch';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const DEFAULT_HOURS = { start: '8:00 AM', end: '9:00 PM' };
@@ -15,16 +16,14 @@ const VM_OPTIONS = ['Leave voicemail', 'Hang up silently', 'Leave callback numbe
 
 const s = {
   section: { marginBottom: 24 },
-  sectionTitle: { fontSize: 14, fontWeight: 600, color: '#3a485f', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 },
-  card: { background: '#fff', border: '0.5px solid #d0d6e1', borderRadius: 8, padding: 16, marginBottom: 12 },
-  row: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid #e9ecf1', fontSize: 14 },
-  dayLabel: { width: 40, fontWeight: 500, color: '#3a485f' },
-  timeInput: { padding: '4px 8px', border: '0.5px solid #d0d6e1', borderRadius: 4, fontSize: 13, color: '#3a485f', width: 100 },
-  toggle: (on) => ({ width: 36, height: 20, borderRadius: 10, background: on ? '#009B53' : '#d0d6e1', position: 'relative', cursor: 'pointer', border: 'none', transition: 'background .15s' }),
-  toggleThumb: (on) => ({ position: 'absolute', top: 2, left: on ? 18 : 2, width: 16, height: 16, borderRadius: '50%', background: '#fff', transition: 'left .15s' }),
-  select: { padding: '6px 10px', border: '0.5px solid #d0d6e1', borderRadius: 4, fontSize: 13, color: '#3a485f', background: '#fff' },
-  holidayRow: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '0.5px solid #e9ecf1', fontSize: 13, color: '#3a485f' },
-  holidayDate: { color: '#6f7a90', width: 100 },
+  sectionTitle: { fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 },
+  card: { background: '#fff', border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 16, marginBottom: 12 },
+  row: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--neutral-100)', fontSize: 14 },
+  dayLabel: { width: 40, fontWeight: 500, color: 'var(--neutral-400)' },
+  timeInput: { padding: '4px 8px', border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, color: 'var(--neutral-400)', width: 100 },
+  select: { padding: '6px 10px', border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, color: 'var(--neutral-400)', background: '#fff' },
+  holidayRow: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '0.5px solid var(--neutral-100)', fontSize: 13, color: 'var(--neutral-400)' },
+  holidayDate: { color: 'var(--neutral-300)', width: 100 },
 };
 
 export function PracticeConfigPanel() {
@@ -37,20 +36,18 @@ export function PracticeConfigPanel() {
       {/* Practice Hours */}
       <div style={s.section}>
         <div style={s.sectionTitle}>
-          <Icon name="solar:clock-circle-bold" size={16} color="#145ECC" />
+          <Icon name="solar:clock-circle-bold" size={16} color="var(--status-info)" />
           Practice Hours
         </div>
         <div style={s.card}>
           {DAYS.map((day, i) => (
             <div key={day} style={s.row}>
               <span style={s.dayLabel}>{day}</span>
-              <button style={s.toggle(hours[i].enabled)} onClick={() => {
+              <Switch checked={hours[i].enabled} onChange={() => {
                 const next = [...hours]; next[i] = { ...next[i], enabled: !next[i].enabled }; setHours(next);
-              }}>
-                <span style={s.toggleThumb(hours[i].enabled)} />
-              </button>
+              }} />
               <input style={s.timeInput} value={hours[i].start} readOnly disabled={!hours[i].enabled} />
-              <span style={{ color: '#8a94a8' }}>to</span>
+              <span style={{ color: 'var(--neutral-200)' }}>to</span>
               <input style={s.timeInput} value={hours[i].end} readOnly disabled={!hours[i].enabled} />
             </div>
           ))}
@@ -60,7 +57,7 @@ export function PracticeConfigPanel() {
       {/* Holidays */}
       <div style={s.section}>
         <div style={s.sectionTitle}>
-          <Icon name="solar:calendar-bold" size={16} color="#D9A50B" />
+          <Icon name="solar:calendar-bold" size={16} color="var(--status-warning)" />
           Holiday Schedule
         </div>
         <div style={s.card}>
@@ -68,10 +65,10 @@ export function PracticeConfigPanel() {
             <div key={h.date} style={s.holidayRow}>
               <span style={s.holidayDate}>{h.date}</span>
               <span style={{ flex: 1 }}>{h.name}</span>
-              <Icon name="solar:close-circle-bold" size={16} color="#8a94a8" style={{ cursor: 'pointer' }} />
+              <Icon name="solar:close-circle-bold" size={16} color="var(--neutral-200)" style={{ cursor: 'pointer' }} />
             </div>
           ))}
-          <button style={{ marginTop: 8, padding: '6px 12px', border: '0.5px solid #d0d6e1', borderRadius: 6, background: '#fff', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: '#8c5ae2' }}>
+          <button style={{ marginTop: 8, padding: '6px 12px', border: '0.5px solid var(--neutral-150)', borderRadius: 6, background: '#fff', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: 'var(--primary-300)' }}>
             <Icon name="solar:add-circle-linear" size={14} /> Add Holiday
           </button>
         </div>
@@ -86,9 +83,7 @@ export function PracticeConfigPanel() {
         <div style={s.card}>
           <div style={s.row}>
             <span>Answering Machine Detection (AMD)</span>
-            <button style={s.toggle(amdEnabled)} onClick={() => setAmdEnabled(!amdEnabled)}>
-              <span style={s.toggleThumb(amdEnabled)} />
-            </button>
+            <Switch checked={amdEnabled} onChange={setAmdEnabled} />
           </div>
           <div style={{ ...s.row, borderBottom: 'none' }}>
             <span>When voicemail detected</span>

@@ -16,7 +16,7 @@
   padding: 0 16px;
   height: 48px;
   background: #fff;
-  border-bottom: 1px solid #E9ECF1;
+  border-bottom: 0.5px solid #E9ECF1;
   flex-shrink: 0;
 }
 .toolbarLeft {
@@ -32,7 +32,7 @@
   width: 30px;
   height: 30px;
   border-radius: 6px;
-  border: 1px solid #E9ECF1;
+  border: 0.5px solid #E9ECF1;
   background: #fff;
   cursor: pointer;
   transition: background .12s, border-color .12s;
@@ -44,7 +44,7 @@
 }
 .agentName {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   color: #16181D;
   white-space: nowrap;
   overflow: hidden;
@@ -93,7 +93,7 @@
   font-weight: 500;
   color: #8C5AE2;
   background: #fff;
-  border: 1px solid #8C5AE2;
+  border: 0.5px solid #8C5AE2;
   border-radius: 8px;
   cursor: pointer;
   transition: all .15s;
@@ -117,7 +117,7 @@
   font-weight: 500;
   color: #6F7A90;
   background: #fff;
-  border: 1px solid #D0D6E1;
+  border: 0.5px solid #D0D6E1;
   border-radius: 8px;
   cursor: pointer;
   transition: all .15s;
@@ -183,7 +183,7 @@
 /* ── Right Panel Wrapper (resizable) ── */
 .rightPanelWrap {
   position: relative;
-  border-left: 1px solid #E9ECF1;
+  border-left: 0.5px solid #E9ECF1;
   display: flex;
   flex-shrink: 0;
   overflow: hidden;
@@ -209,7 +209,7 @@
 /* ── React Flow overrides ── */
 .minimap {
   border-radius: 8px !important;
-  border: 1px solid #E9ECF1 !important;
+  border: 0.5px solid #E9ECF1 !important;
   box-shadow: 0 2px 8px rgba(0,0,0,.06) !important;
   overflow: hidden !important;
   background: #fff !important;
@@ -221,7 +221,7 @@
   align-items: center;
   gap: 0;
   background: #fff;
-  border: 1px solid #E9ECF1;
+  border: 0.5px solid #E9ECF1;
   border-radius: 8px;
   padding: 3px 6px;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
@@ -273,7 +273,7 @@
   font-weight: 500;
   color: #6F7A90;
   background: #fff;
-  border: 1px solid #E9ECF1;
+  border: 0.5px solid #E9ECF1;
   border-radius: 8px;
   padding: 6px 12px;
   cursor: pointer;
@@ -288,7 +288,7 @@
   right: 0;
   width: 220px;
   background: #fff;
-  border: 1px solid #E9ECF1;
+  border: 0.5px solid #E9ECF1;
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0,0,0,.12);
   margin-bottom: 6px;
@@ -300,9 +300,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  border-bottom: 1px solid #E9ECF1;
+  border-bottom: 0.5px solid #E9ECF1;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
   color: #16181D;
 }
 .newVersionBtn {
@@ -340,7 +340,7 @@
 }
 .currentBadge {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   color: #009B53;
   background: #F5FFFA;
   padding: 1px 6px;

@@ -56,7 +56,7 @@ function StepMethodSelect({ agentName, setAgentName, onSelect }) {
       <div className={styles.methodGrid}>
         {METHOD_OPTIONS.map(m => (
           <button key={m.id} className={styles.methodCard} onClick={() => onSelect(m.id)}>
-            <div className={styles.methodIcon}><Icon name={m.icon} size={24} color="#8C5AE2" /></div>
+            <div className={styles.methodIcon}><Icon name={m.icon} size={24} color="var(--primary-300)" /></div>
             <div className={styles.methodCardTitle}>{m.title}</div>
             <div className={styles.methodCardDesc}>{m.desc}</div>
           </button>
@@ -86,12 +86,12 @@ function StepTemplateSelect({ agentName, setAgentName, selectedTemplate, setSele
         <div className={styles.sectionDesc}>Select how you want to create the agent based on your ease</div>
       </div>
       <div className={styles.selectedBanner}>
-        <div className={styles.bannerIcon}><Icon name="solar:document-add-linear" size={20} color="#8C5AE2" /></div>
+        <div className={styles.bannerIcon}><Icon name="solar:document-add-linear" size={20} color="var(--primary-300)" /></div>
         <div className={styles.bannerText}>
           <div className={styles.bannerTitle}>Create From Templates</div>
           <div className={styles.bannerDesc}>Start from a pre-built agent for your care use case</div>
         </div>
-        <button className={styles.bannerClose} onClick={onBack}><Icon name="solar:close-circle-linear" size={18} color="#6F7A90" /></button>
+        <button className={styles.bannerClose} onClick={onBack}><Icon name="solar:close-circle-linear" size={18} color="var(--neutral-300)" /></button>
       </div>
       <div className={styles.templateSection}>
         <div className={styles.sectionTitle}>Select from Agent Templates</div>
@@ -106,8 +106,8 @@ function StepTemplateSelect({ agentName, setAgentName, selectedTemplate, setSele
           ))}
           {filtered.length === 0 && (
             <div className={styles.emptyState}>
-              <Icon name="solar:magnifer-linear" size={32} color="#D0D6E1" />
-              <p style={{ color: '#6F7A90', fontSize: 14 }}>No templates match your search</p>
+              <Icon name="solar:magnifer-linear" size={32} color="var(--neutral-150)" />
+              <p style={{ color: 'var(--neutral-300)', fontSize: 14 }}>No templates match your search</p>
             </div>
           )}
         </div>
@@ -292,12 +292,12 @@ function StepPrompt({ agentName, setAgentName, onBack, prompt, setPrompt }) {
       </div>
 
       <div className={styles.selectedBanner}>
-        <div className={styles.bannerIcon}><Icon name="solar:text-selection-linear" size={20} color="#8C5AE2" /></div>
+        <div className={styles.bannerIcon}><Icon name="solar:text-selection-linear" size={20} color="var(--primary-300)" /></div>
         <div className={styles.bannerText}>
           <div className={styles.bannerTitle}>Create From Prompt</div>
           <div className={styles.bannerDesc}>Describe your agent in plain language and AI builds the workflow</div>
         </div>
-        <button className={styles.bannerClose} onClick={onBack}><Icon name="solar:close-circle-linear" size={18} color="#6F7A90" /></button>
+        <button className={styles.bannerClose} onClick={onBack}><Icon name="solar:close-circle-linear" size={18} color="var(--neutral-300)" /></button>
       </div>
 
       {/* Utility Configuration */}
@@ -321,7 +321,7 @@ function StepPrompt({ agentName, setAgentName, onBack, prompt, setPrompt }) {
             <input className={styles.utilityInput} placeholder="Enter Key" value={row.key} onChange={e => updateRow(i, 'key', e.target.value)} />
             <input className={styles.utilityDefaultInput} placeholder="Select Default" value={row.defaultVal} onChange={e => updateRow(i, 'defaultVal', e.target.value)} />
             <button className={styles.utilityDeleteBtn} onClick={() => removeRow(i)}>
-              <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="#6F7A90" />
+              <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="var(--neutral-300)" />
             </button>
           </div>
         ))}
@@ -349,7 +349,7 @@ function StepPrompt({ agentName, setAgentName, onBack, prompt, setPrompt }) {
               <div className={styles.varDropdownLabel}>Insert Variable</div>
               {utilityKeys.map(k => (
                 <div key={k} className={styles.varDropdownItem} onMouseDown={(e) => { e.preventDefault(); insertVariable(k); }}>
-                  <Icon name="solar:code-linear" size={14} color="#8C5AE2" />
+                  <Icon name="solar:code-linear" size={14} color="var(--primary-300)" />
                   {k}
                 </div>
               ))}
@@ -362,10 +362,10 @@ function StepPrompt({ agentName, setAgentName, onBack, prompt, setPrompt }) {
           <div className={styles.attachedFiles}>
             {attachedFiles.map((f, i) => (
               <div key={i} className={styles.attachedFile}>
-                <Icon name="solar:document-text-linear" size={14} color="#8C5AE2" />
+                <Icon name="solar:document-text-linear" size={14} color="var(--primary-300)" />
                 <span>{f}</span>
                 <button className={styles.removeFileBtn} onClick={() => removeFile(i)}>
-                  <Icon name="solar:close-circle-linear" size={14} color="#6F7A90" />
+                  <Icon name="solar:close-circle-linear" size={14} color="var(--neutral-300)" />
                 </button>
               </div>
             ))}
@@ -376,7 +376,7 @@ function StepPrompt({ agentName, setAgentName, onBack, prompt, setPrompt }) {
           <div className={styles.promptFooterLeft}>
             <input ref={fileInputRef} type="file" accept={ACCEPTED_FILES} multiple onChange={handleFileSelect} style={{ display: 'none' }} />
             <button className={styles.footerIconBtn} onClick={() => fileInputRef.current?.click()} title="Attach file">
-              <Icon name="solar:paperclip-linear" size={16} color="#6F7A90" />
+              <Icon name="solar:paperclip-linear" size={16} color="var(--neutral-300)" />
             </button>
             <span className={styles.footerDivider} />
             <span className={styles.promptHint}>{'Type {{ to add variables'}</span>
@@ -384,9 +384,9 @@ function StepPrompt({ agentName, setAgentName, onBack, prompt, setPrompt }) {
           <div className={styles.promptFooterRight}>
             <div className={styles.tzWrap} ref={tzRef}>
               <button className={styles.timezoneChip} onClick={() => setShowTzDropdown(!showTzDropdown)}>
-                <Icon name="solar:global-linear" size={14} color="#6F7A90" />
+                <Icon name="solar:global-linear" size={14} color="var(--neutral-300)" />
                 {timezone}
-                <Icon name="solar:alt-arrow-down-linear" size={12} color="#6F7A90" />
+                <Icon name="solar:alt-arrow-down-linear" size={12} color="var(--neutral-300)" />
               </button>
               {showTzDropdown && (
                 <div className={styles.tzDropdown}>
@@ -403,7 +403,7 @@ function StepPrompt({ agentName, setAgentName, onBack, prompt, setPrompt }) {
               onClick={toggleRecording}
               title={isRecording ? 'Stop recording' : 'Start voice input'}
             >
-              <Icon name="solar:microphone-3-linear" size={16} color={isRecording ? '#fff' : '#8C5AE2'} />
+              <Icon name="solar:microphone-3-linear" size={16} color={isRecording ? '#fff' : 'var(--primary-300)'} />
             </button>
           </div>
         </div>

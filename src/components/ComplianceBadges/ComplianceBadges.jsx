@@ -90,7 +90,7 @@ export function TcpaIndicator({ patient }) {
 
   return (
     <div className={styles.tcpaIndicator}>
-      <Icon name="solar:shield-check-bold" size={13} color={optIn ? '#009B53' : '#D72825'} />
+      <Icon name="solar:shield-check-bold" size={13} color={optIn ? 'var(--status-success)' : 'var(--status-error)'} />
       <span className={styles.tcpaText}>
         {optIn ? 'Opted In' : 'Opted Out'}
         <span className={styles.tcpaSep}>•</span>
