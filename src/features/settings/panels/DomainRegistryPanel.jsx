@@ -3,6 +3,7 @@ import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Button } from '../../../components/Button/Button';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
+import { Switch } from '../../../components/Switch/Switch';
 import { useAppStore } from '../../../store/useAppStore';
 import { DOMAINS, DOMAIN_CATEGORIES, HIPAA_OPTIONS, COMPONENTS } from '../../../data/embeddedComponents';
 
@@ -293,7 +294,9 @@ function DeleteDomainModal({ domain, onClose, onConfirm, deleting }) {
 export function DomainRegistryPanel({ searchQuery = '' }) {
   const showToast = useAppStore(s => s.showToast);
 
-  const [domains, setDomains] = useState(DOMAINS);
+  const [domains, setDomains] = useState(() =>
+    DOMAINS.map(d => ({ ...d, enabled: d.status !== 'removed' }))
+  );
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingDomain, setEditingDomain] = useState(null);
@@ -320,8 +323,8 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
     );
   }, [domains, searchQuery]);
 
-  const activeDomains = domains.filter(d => d.status !== 'removed');
-  const removedDomains = domains.filter(d => d.status === 'removed');
+  const enabledDomains = domains.filter(d => d.enabled !== false);
+  const disabledDomains = domains.filter(d => d.enabled === false);
 
   const handleAdd = (form) => {
     const newDomain = {
@@ -333,6 +336,7 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
       activeComponents: 0,
       addedDate: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
       status: 'active',
+      enabled: true,
     };
     setDomains(prev => [...prev, newDomain]);
     setShowAddModal(false);
@@ -359,6 +363,15 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
     }, 400);
   };
 
+  const handleToggleDomain = (id) => {
+    setDomains(prev => prev.map(d => {
+      if (d.id !== id) return d;
+      const newEnabled = !d.enabled;
+      showToast(newEnabled ? `Domain "${d.domain}" enabled` : `Domain "${d.domain}" disabled`);
+      return { ...d, enabled: newEnabled, status: newEnabled ? 'active' : 'disabled' };
+    }));
+  };
+
   const openEdit = (domain) => {
     setEditingDomain(domain);
     setShowEditModal(true);
@@ -374,7 +387,7 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
       {/* Blue info banner */}
       <div style={{
         display: 'flex', gap: 8, padding: '10px 14px', borderRadius: 8,
-        background: '#EFF6FF', border: '0.5px solid #BFDBFE', marginBottom: 16,
+        background: '#EFF6FF', border: '0.5px solid #BFDBFE', margin: '16px 16px 16px 16px',
       }}>
         <Icon name="solar:info-circle-linear" size={16} color="#3B82F6" style={{ flexShrink: 0, marginTop: 1 }} />
         <div style={{ fontSize: 12, color: '#1E40AF', lineHeight: 1.5 }}>
@@ -385,7 +398,7 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
       {/* Card wrapping table */}
       <div style={{
         border: '0.5px solid var(--neutral-100)', borderRadius: 10,
-        overflow: 'hidden', background: '#fff',
+        overflow: 'hidden', background: '#fff', margin: '0 16px',
       }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
           <thead>
@@ -395,15 +408,14 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
               <th style={thStyle}>Category</th>
               <th style={thStyle}>HIPAA</th>
               <th style={thStyle}>Components</th>
-              <th style={thStyle}>Added</th>
-              <th style={thStyle}>Status</th>
+              <th style={thStyle}>Enabled</th>
               <th style={thStyle}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={8} style={{ textAlign: 'center', padding: 40, color: 'var(--neutral-200)' }}>
+                <td colSpan={7} style={{ textAlign: 'center', padding: 40, color: 'var(--neutral-200)' }}>
                   <Icon name="solar:global-linear" size={32} color="var(--neutral-150)" />
                   <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-300)', marginTop: 8 }}>No domains found</div>
                   <div style={{ fontSize: 13, marginTop: 4 }}>
@@ -413,9 +425,8 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
               </tr>
             )}
             {filtered.map(d => {
-              const status = getDomainStatus(d);
               const stats = getComponentStats(d.id);
-              const isRemoved = d.status === 'removed';
+              const isDisabled = !d.enabled;
 
               return (
                 <tr
@@ -423,9 +434,9 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
                   style={{
                     borderBottom: '1px solid #EAECF0',
                     transition: 'background .1s',
-                    ...(isRemoved ? { opacity: 0.5 } : {}),
+                    ...(isDisabled ? { opacity: 0.55 } : {}),
                   }}
-                  onMouseOver={e => { if (!isRemoved) e.currentTarget.style.background = 'var(--primary-25, #faf8ff)'; }}
+                  onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25, #faf8ff)'}
                   onMouseOut={e => e.currentTarget.style.background = ''}
                 >
                   {/* Vendor */}
@@ -469,17 +480,12 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
                     )}
                   </td>
 
-                  {/* Added */}
-                  <td style={{ ...tdStyle, fontSize: 12, color: 'var(--neutral-200)' }}>
-                    {d.addedDate}
-                  </td>
-
-                  {/* Status */}
+                  {/* Enabled toggle */}
                   <td style={tdStyle}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', fontSize: 13 }}>
-                      <StatusDot color={status.color} />
-                      <span style={{ color: 'var(--neutral-400)' }}>{status.label}</span>
-                    </span>
+                    <Switch
+                      checked={d.enabled !== false}
+                      onChange={() => handleToggleDomain(d.id)}
+                    />
                   </td>
 
                   {/* Actions */}
@@ -498,10 +504,8 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
       </div>
 
       {/* Footer */}
-      <div style={{
-        fontSize: 12, color: 'var(--neutral-200)', marginTop: 12, padding: '0 4px',
-      }}>
-        {domains.length} domain{domains.length !== 1 ? 's' : ''} &middot; {activeDomains.length} active &middot; {removedDomains.length} removed
+      <div style={{ fontSize: 12, color: 'var(--neutral-200)', padding: '12px 20px 12px' }}>
+        {domains.length} domain{domains.length !== 1 ? 's' : ''} &middot; {enabledDomains.length} enabled &middot; {disabledDomains.length} disabled
       </div>
 
       {/* Modals */}

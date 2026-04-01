@@ -5,6 +5,7 @@ import { Button } from '../../components/Button/Button';
 import { SearchIconButton } from '../../components/SearchIconButton/SearchIconButton';
 import { DomainRegistryPanel } from './panels/DomainRegistryPanel';
 import { ComponentLibraryPanel } from './panels/ComponentLibraryPanel';
+import { AuditLogPanel } from './panels/AuditLogPanel';
 import styles from './EmbeddedComponentsSettings.module.css';
 
 const TAB_MAP = {
@@ -23,8 +24,6 @@ export function EmbeddedComponentsSettings() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchVal, setSearchVal] = useState('');
 
-  const activeTabLabel = TAB_MAP[embeddedComponentsTab] || 'Domain Registry';
-
   return (
     <div className={styles.wrapper}>
       <div className={styles.tabBar}>
@@ -40,27 +39,29 @@ export function EmbeddedComponentsSettings() {
           ))}
         </div>
         <div className={styles.tabActions}>
-          {embeddedComponentsTab !== 'audit-log' && (
-            <div className={styles.searchWrap}>
-              {searchOpen ? (
-                <div className={styles.searchInput}>
-                  <Icon name="solar:magnifer-linear" size={15} color="var(--neutral-300)" />
-                  <input
-                    autoFocus
-                    type="text"
-                    placeholder={embeddedComponentsTab === 'component-library' ? 'Search components...' : 'Search domains...'}
-                    value={searchVal}
-                    onChange={e => setSearchVal(e.target.value)}
-                  />
-                  <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchVal(''); }}>
-                    ✕
-                  </button>
-                </div>
-              ) : (
-                <SearchIconButton title="Search" onClick={() => setSearchOpen(true)} />
-              )}
-            </div>
-          )}
+          <div className={styles.searchWrap}>
+            {searchOpen ? (
+              <div className={styles.searchInput}>
+                <Icon name="solar:magnifer-linear" size={15} color="var(--neutral-300)" />
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder={
+                    embeddedComponentsTab === 'component-library' ? 'Search components...'
+                    : embeddedComponentsTab === 'audit-log' ? 'Search audit log...'
+                    : 'Search domains...'
+                  }
+                  value={searchVal}
+                  onChange={e => setSearchVal(e.target.value)}
+                />
+                <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchVal(''); }}>
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <SearchIconButton title="Search" onClick={() => setSearchOpen(true)} />
+            )}
+          </div>
           {embeddedComponentsTab !== 'audit-log' && (
             <>
               <span className={styles.tabDivider} />
@@ -89,13 +90,7 @@ export function EmbeddedComponentsSettings() {
         ) : embeddedComponentsTab === 'component-library' ? (
           <ComponentLibraryPanel searchQuery={searchVal} />
         ) : (
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 300 }}>
-            <div style={{ textAlign: 'center' }}>
-              <Icon name="solar:document-text-linear" size={40} color="var(--neutral-200)" />
-              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-300)', marginTop: 8 }}>{activeTabLabel}</div>
-              <div style={{ fontSize: 13, color: 'var(--neutral-200)', marginTop: 4 }}>Coming soon</div>
-            </div>
-          </div>
+          <AuditLogPanel searchQuery={searchVal} />
         )}
       </div>
     </div>

@@ -41,6 +41,10 @@ export function stateToHash(state) {
       if (chatGroupDetailId) return buildHash('settings', 'messages', 'chat-settings', chatGroupDetailId);
       return buildHash('settings', 'messages', messageTab || 'chat-settings');
     }
+    if (settingsNavItem === 'embedded-components') {
+      const ecTab = state.embeddedComponentsTab || 'domain-registry';
+      return buildHash('settings', 'embedded-components', ecTab);
+    }
     // Agents section
     if (goalWizardOpen) return buildHash('settings', 'agents', 'goals', goalWizardEditId ? String(goalWizardEditId) : 'new');
     if (goalDetailId) return buildHash('settings', 'agents', 'goals', String(goalDetailId));
@@ -84,6 +88,12 @@ export function hashToState(route) {
         updates.messageTab = route.tab || 'chat-settings';
         updates.chatGroupDetailId = null; updates.agentRulesGroupId = null; updates.businessHoursOpen = false;
       }
+      return updates;
+    }
+    // Embedded Components section
+    if (route.section === 'embedded-components') {
+      updates.settingsNavItem = 'embedded-components';
+      updates.embeddedComponentsTab = route.tab || 'domain-registry';
       return updates;
     }
     // Agents section
