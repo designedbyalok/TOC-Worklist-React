@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
+import { Button } from '../../../components/Button/Button';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
 import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
@@ -61,16 +62,9 @@ export function GoalDetailDrawer() {
 
   const headerRight = (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <button className={`${s.footerBtn} ${s.footerBtnGhost}`} onClick={handleDeleteClick}
-        style={{ color: 'var(--status-error)' }}>
-        <Icon name="solar:trash-bin-minimalistic-linear" size={14} color="var(--status-error)" /> Delete
-      </button>
-      <button className={`${s.footerBtn} ${s.footerBtnGhost}`} onClick={handleDuplicate}>
-        <Icon name="solar:copy-linear" size={14} /> Duplicate
-      </button>
-      <button className={`${s.footerBtn} ${s.footerBtnGhost}`} onClick={handleEdit}>
-        <Icon name="solar:pen-linear" size={14} /> Edit
-      </button>
+      <Button variant="danger" size="S" leadingIcon="solar:trash-bin-minimalistic-linear" onClick={handleDeleteClick}>Delete</Button>
+      <Button variant="ghost" size="S" leadingIcon="solar:copy-linear" onClick={handleDuplicate}>Duplicate</Button>
+      <Button variant="ghost" size="S" leadingIcon="solar:pen-linear" onClick={handleEdit}>Edit</Button>
     </div>
   );
 

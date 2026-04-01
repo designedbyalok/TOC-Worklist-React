@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './TabBar.module.css';
 
@@ -31,20 +32,12 @@ function ConfirmDialog({ message, onConfirm, onCancel }) {
           {message}
         </p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-          <button onClick={onCancel} style={{
-            padding: '8px 16px', borderRadius: 6, border: '1px solid var(--neutral-150)',
-            background: '#fff', fontSize: 13, fontWeight: 500, color: 'var(--neutral-400)',
-            cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-          }}>
+          <Button variant="secondary" size="L" onClick={onCancel}>
             Cancel
-          </button>
-          <button onClick={onConfirm} style={{
-            padding: '8px 16px', borderRadius: 6, border: 'none',
-            background: 'var(--primary-300)', fontSize: 13, fontWeight: 500,
-            color: '#fff', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-          }}>
+          </Button>
+          <Button variant="primary" size="L" onClick={onConfirm}>
             Open Agent Builder
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -127,19 +120,18 @@ export function TabBar() {
         <div className={styles.right}>
           {activeTab === 'queue' && (
             <div className={styles.queueActions}>
-              <button className={styles.btnSecondary} onClick={handleEditConfiguration}>
-                <Icon name="solar:pen-new-square-linear" size={18} />
+              <Button variant="secondary" size="L" leadingIcon="solar:pen-new-square-linear" onClick={handleEditConfiguration}>
                 Edit Configuration
-              </button>
-              <button
-                className={styles.btnDanger}
+              </Button>
+              <Button
+                variant="danger"
+                size="L"
+                leadingIcon="solar:close-circle-bold"
                 onClick={handleAbort}
                 disabled={!hasActiveAgents}
-                style={{ opacity: hasActiveAgents ? 1 : 0.5 }}
               >
-                <Icon name="solar:close-circle-bold" size={18} />
                 {confirmAbort ? 'Click again to confirm' : 'Abort'}
-              </button>
+              </Button>
             </div>
           )}
 
@@ -157,27 +149,23 @@ export function TabBar() {
                 <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchQuery(''); }}>✕</button>
               </div>
             ) : (
-              <button className={styles.iconBtn} title="Search" onClick={() => setSearchOpen(true)}>
-                <Icon name="solar:magnifer-linear" size={18} />
-              </button>
+              <Button variant="ghost" size="S" leadingIcon="solar:magnifer-linear" iconOnly title="Search" onClick={() => setSearchOpen(true)} />
             )}
           </div>
           <span className={styles.iconDivider} />
-          <button
-            className={[styles.iconBtn, showFilterBar ? styles.active : ''].filter(Boolean).join(' ')}
+          <Button
+            variant="ghost"
+            size="S"
+            leadingIcon="solar:filter-linear"
+            iconOnly
             title="Filter"
+            className={showFilterBar ? styles.active : ''}
             onClick={() => setShowFilterBar(!showFilterBar)}
-          >
-            <Icon name="solar:filter-linear" size={18} />
-          </button>
+          />
           <span className={styles.iconDivider} />
-          <button className={styles.iconBtn} title="History" onClick={() => showToast('History – coming soon')}>
-            <Icon name="solar:history-linear" size={18} />
-          </button>
+          <Button variant="ghost" size="S" leadingIcon="solar:history-linear" iconOnly title="History" onClick={() => showToast('History – coming soon')} />
           <span className={styles.iconDivider} />
-          <button className={styles.iconBtn} title="Export" onClick={() => showToast('Export – coming soon')}>
-            <Icon name="solar:upload-minimalistic-linear" size={18} />
-          </button>
+          <Button variant="ghost" size="S" leadingIcon="solar:upload-minimalistic-linear" iconOnly title="Export" onClick={() => showToast('Export – coming soon')} />
         </div>
       </div>
 

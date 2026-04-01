@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Avatar } from '../Avatar/Avatar';
 import { Icon } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 import { useAppStore } from '../../store/useAppStore';
 import {
   Dialog,
@@ -81,19 +82,23 @@ export function InvokeAgentModal() {
         </RadioGroup>
 
         <DialogFooter className="flex-row gap-2.5 mt-0 sm:flex-row">
-          <button
-            className="flex-1 h-8 rounded px-2 text-[13px] font-medium border border-[var(--neutral-150)] bg-[var(--neutral-0)] text-[var(--neutral-400)] hover:bg-[var(--neutral-50)] hover:border-[var(--neutral-200)] transition-all duration-150 cursor-pointer"
+          <Button
+            variant="secondary"
+            size="L"
+            fullWidth
             onClick={() => setShowInvokeModal(false)}
           >
             Cancel
-          </button>
-          <button
-            className="flex-1 h-8 rounded px-2 text-[13px] font-medium border border-[var(--primary-300)] bg-[var(--primary-300)] text-white hover:bg-[var(--primary-400)] hover:border-[var(--primary-400)] transition-all duration-150 cursor-pointer disabled:bg-[var(--neutral-100)] disabled:border-[var(--neutral-100)] disabled:text-[var(--neutral-200)] disabled:cursor-not-allowed"
+          </Button>
+          <Button
+            variant="primary"
+            size="L"
+            fullWidth
             disabled={!selected}
             onClick={handleConfirm}
           >
             Invoke Agent
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

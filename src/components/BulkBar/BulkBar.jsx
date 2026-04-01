@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Icon } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './BulkBar.module.css';
 
@@ -46,22 +47,21 @@ export function BulkBar() {
         <span className={styles.countText}>{selectedIds.length} Selected</span>
       </div>
       <div className={styles.divider} />
-      <button className={styles.btn} onClick={() => showToast('Change Assignee – coming soon')}>
-        <Icon name="solar:user-check-rounded-linear" size={16} />
+      <Button variant="ghost" size="S" leadingIcon="solar:user-check-rounded-linear" onClick={() => showToast('Change Assignee – coming soon')}>
         Change Assignee
-      </button>
-      <button className={styles.btn} onClick={() => showToast('Run Automation – coming soon')}>
-        <Icon name="solar:bolt-bold" size={16} />
+      </Button>
+      <Button variant="ghost" size="S" leadingIcon="solar:bolt-bold" onClick={() => showToast('Run Automation – coming soon')}>
         Run Automation
-      </button>
+      </Button>
       <div className={styles.moreWrap} ref={moreRef}>
-        <button
-          className={styles.actionBtn}
+        <Button
+          variant="ghost"
+          size="S"
+          leadingIcon="solar:menu-dots-linear"
+          iconOnly
           title="More actions"
           onClick={(e) => { e.stopPropagation(); setShowMore(v => !v); }}
-        >
-          <Icon name="solar:menu-dots-linear" size={20} />
-        </button>
+        />
         {showMore && (
           <div className={styles.moreDropdown}>
             <div className={styles.moreTitle}>More Actions</div>

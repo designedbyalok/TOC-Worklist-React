@@ -1,4 +1,5 @@
 import { Icon } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 
 export function ErrorState({ title, message, onRetry, icon }) {
   return (
@@ -20,14 +21,9 @@ export function ErrorState({ title, message, onRetry, icon }) {
           {message || 'An unexpected error occurred. Please try again or contact support if the problem persists.'}
         </div>
         {onRetry && (
-          <button onClick={onRetry} style={{
-            marginTop: 4, padding: '8px 20px', borderRadius: 6, border: '0.5px solid var(--neutral-150)',
-            background: '#fff', fontSize: 14, fontWeight: 500, color: 'var(--primary-300)', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 6,
-          }}>
-            <Icon name="solar:refresh-linear" size={16} />
+          <Button variant="tertiary" size="L" leadingIcon="solar:refresh-linear" onClick={onRetry} style={{ marginTop: 4 }}>
             Try Again
-          </button>
+          </Button>
         )}
       </div>
     </div>

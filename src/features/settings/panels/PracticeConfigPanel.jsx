@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Switch } from '../../../components/Switch/Switch';
+import { Button } from '../../../components/Button/Button';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const DEFAULT_HOURS = { start: '8:00 AM', end: '9:00 PM' };
@@ -68,9 +69,9 @@ export function PracticeConfigPanel() {
               <Icon name="solar:close-circle-bold" size={16} color="var(--neutral-200)" style={{ cursor: 'pointer' }} />
             </div>
           ))}
-          <button style={{ marginTop: 8, padding: '6px 12px', border: '0.5px solid var(--neutral-150)', borderRadius: 6, background: '#fff', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: 'var(--primary-300)' }}>
-            <Icon name="solar:add-circle-linear" size={14} /> Add Holiday
-          </button>
+          <Button variant="secondary" size="S" leadingIcon="solar:add-circle-linear" style={{ marginTop: 8 }}>
+            Add Holiday
+          </Button>
         </div>
       </div>
 

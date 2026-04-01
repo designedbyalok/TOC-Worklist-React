@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Icon } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 import { Drawer } from '../Drawer/Drawer';
 import { ComplianceBadges } from '../ComplianceBadges/ComplianceBadges';
 import { useAppStore } from '../../store/useAppStore';
@@ -104,8 +105,8 @@ export function DetailDrawer() {
           </div>
         </div>
         <div className={styles.callCardActions}>
-          <button className={styles.callCardBtn}><Icon name="solar:phone-linear" size={16} /></button>
-          <button className={styles.callCardBtn}><Icon name="solar:menu-dots-linear" size={16} /></button>
+          <Button variant="ghost" size="S" leadingIcon="solar:phone-linear" iconOnly className={styles.callCardBtn} />
+          <Button variant="ghost" size="S" leadingIcon="solar:menu-dots-linear" iconOnly className={styles.callCardBtn} />
         </div>
       </div>
 
@@ -294,12 +295,8 @@ export function DetailDrawer() {
             <div className={styles.summaryFooter}>
               <span className={styles.generatedText}>Generated on: 03/24/26, 07:23 pm</span>
               <div className={styles.summaryActions}>
-                <button className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Refreshing summary...'); }} title="Refresh">
-                  <Icon name="solar:refresh-linear" size={16} />
-                </button>
-                <button className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Copied to clipboard'); }} title="Copy">
-                  <Icon name="solar:copy-linear" size={16} />
-                </button>
+                <Button variant="ghost" size="S" leadingIcon="solar:refresh-linear" iconOnly className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Refreshing summary...'); }} title="Refresh" />
+                <Button variant="ghost" size="S" leadingIcon="solar:copy-linear" iconOnly className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Copied to clipboard'); }} title="Copy" />
               </div>
             </div>
           </div>
@@ -338,28 +335,28 @@ export function DetailDrawer() {
             </div>
             <div className={styles.audioButtons}>
               {playState === 'idle' && (
-                <button className={styles.playBtn} onClick={startPlayback}>
-                  <Icon name="solar:play-bold" size={16} /> Play Recording
-                </button>
+                <Button variant="primary" size="S" leadingIcon="solar:play-bold" className={styles.playBtn} onClick={startPlayback}>
+                  Play Recording
+                </Button>
               )}
               {playState === 'playing' && (
                 <>
-                  <button className={styles.pauseBtn} onClick={pausePlayback}>
-                    <Icon name="solar:pause-bold" size={16} /> Pause
-                  </button>
-                  <button className={styles.stopBtn} onClick={stopPlayback}>
-                    <Icon name="solar:stop-bold" size={16} /> Stop
-                  </button>
+                  <Button variant="secondary" size="S" leadingIcon="solar:pause-bold" className={styles.pauseBtn} onClick={pausePlayback}>
+                    Pause
+                  </Button>
+                  <Button variant="ghost" size="S" leadingIcon="solar:stop-bold" className={styles.stopBtn} onClick={stopPlayback}>
+                    Stop
+                  </Button>
                 </>
               )}
               {playState === 'paused' && (
                 <>
-                  <button className={styles.playBtn} onClick={startPlayback}>
-                    <Icon name="solar:play-bold" size={16} /> Resume
-                  </button>
-                  <button className={styles.stopBtn} onClick={stopPlayback}>
-                    <Icon name="solar:stop-bold" size={16} /> Stop
-                  </button>
+                  <Button variant="primary" size="S" leadingIcon="solar:play-bold" className={styles.playBtn} onClick={startPlayback}>
+                    Resume
+                  </Button>
+                  <Button variant="ghost" size="S" leadingIcon="solar:stop-bold" className={styles.stopBtn} onClick={stopPlayback}>
+                    Stop
+                  </Button>
                 </>
               )}
             </div>

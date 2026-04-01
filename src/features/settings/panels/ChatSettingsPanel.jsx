@@ -2,6 +2,7 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
@@ -120,14 +121,10 @@ function ChatGroupRow({ g, onOpen }) {
       </td>
       <td style={tdStyle} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
-            onClick={() => setChatGroupDetailId(g.id)}>
-            <Icon name="solar:pen-linear" size={16} color="var(--neutral-200)" />
-          </button>
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
-            ref={moreBtnRef} onClick={handleMoreClick}>
-            <Icon name="solar:menu-dots-linear" size={16} color="var(--neutral-200)" />
-          </button>
+          <Button variant="ghost" size="S" leadingIcon="solar:pen-linear" iconOnly
+            onClick={() => setChatGroupDetailId(g.id)} />
+          <Button variant="ghost" size="S" leadingIcon="solar:menu-dots-linear" iconOnly
+            ref={moreBtnRef} onClick={handleMoreClick} />
         </div>
         {menuOpen && createPortal(
           <div style={{ position: 'fixed', top: menuPos.top, right: menuPos.right, zIndex: 9999 }}>

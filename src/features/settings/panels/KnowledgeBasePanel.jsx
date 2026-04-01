@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
+import { Button } from '../../../components/Button/Button';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
 import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
@@ -52,21 +53,15 @@ function FaqDrawer({ mode, faq, onClose, onSave, saving }) {
 
   const headerRight = (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <button
+      <Button
+        variant="primary"
+        size="S"
         onClick={() => canSave && onSave(form)}
         disabled={!canSave || saving}
-        style={{
-          padding: '6px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500,
-          cursor: canSave && !saving ? 'pointer' : 'not-allowed',
-          border: 'none', fontFamily: "'Inter', sans-serif",
-          background: canSave ? 'var(--primary-300)' : 'var(--neutral-100)',
-          color: canSave ? '#fff' : 'var(--neutral-200)',
-          opacity: saving ? 0.6 : 1,
-          transition: 'all .15s',
-        }}
+        style={{ opacity: saving ? 0.6 : 1 }}
       >
         {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Add FAQ'}
-      </button>
+      </Button>
     </div>
   );
 
@@ -249,15 +244,11 @@ export function KnowledgeBasePanel({ searchQuery = '' }) {
               </td>
               <td style={{ ...tdStyle, fontSize: 12, color: 'var(--neutral-200)', whiteSpace: 'nowrap' }}>{faq.updatedAt}</td>
               <td style={tdStyle} onClick={e => e.stopPropagation()}>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
-                    onClick={() => handleOpenEdit(faq)} title="Edit FAQ">
-                    <Icon name="solar:pen-linear" size={16} color="var(--neutral-200)" />
-                  </button>
-                  <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
-                    onClick={() => setDeleteTarget(faq)} title="Delete FAQ">
-                    <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="var(--neutral-200)" />
-                  </button>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  <Button variant="ghost" size="S" iconOnly leadingIcon="solar:pen-linear"
+                    onClick={() => handleOpenEdit(faq)} title="Edit FAQ" />
+                  <Button variant="ghost" size="S" iconOnly leadingIcon="solar:trash-bin-minimalistic-linear"
+                    onClick={() => setDeleteTarget(faq)} title="Delete FAQ" />
                 </div>
               </td>
             </tr>

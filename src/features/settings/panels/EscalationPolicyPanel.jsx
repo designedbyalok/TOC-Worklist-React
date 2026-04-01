@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
+import { Button } from '../../../components/Button/Button';
 
 const s = {
   section: { marginBottom: 24 },
@@ -124,9 +125,9 @@ export function EscalationPolicyPanel() {
               </span>
             ))}
           </div>
-          <button style={{ marginTop: 10, padding: '6px 12px', border: '0.5px solid var(--neutral-150)', borderRadius: 6, background: '#fff', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, color: 'var(--primary-300)' }}>
-            <Icon name="solar:add-circle-linear" size={14} /> Add Keyword
-          </button>
+          <Button variant="secondary" size="S" leadingIcon="solar:add-circle-linear" style={{ marginTop: 10 }}>
+            Add Keyword
+          </Button>
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { Icon } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 
 export function EmptyState({ icon, title, description, actionLabel, onAction }) {
   return (
@@ -18,14 +19,9 @@ export function EmptyState({ icon, title, description, actionLabel, onAction }) 
         <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--neutral-400)' }}>{title || 'Nothing here yet'}</div>
         <div style={{ fontSize: 14, color: 'var(--neutral-300)', lineHeight: 1.5 }}>{description || 'Items will appear here once available.'}</div>
         {actionLabel && onAction && (
-          <button onClick={onAction} style={{
-            marginTop: 4, padding: '8px 20px', borderRadius: 6, border: 'none',
-            background: 'var(--primary-300)', fontSize: 14, fontWeight: 500, color: '#fff', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 6,
-          }}>
-            <Icon name="solar:add-circle-linear" size={16} />
+          <Button variant="primary" size="L" leadingIcon="solar:add-circle-linear" onClick={onAction} style={{ marginTop: 4 }}>
             {actionLabel}
-          </button>
+          </Button>
         )}
       </div>
     </div>

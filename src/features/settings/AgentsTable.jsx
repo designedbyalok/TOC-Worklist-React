@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useAppStore } from '../../store/useAppStore';
 import { Icon } from '../../components/Icon/Icon';
+import { Button } from '../../components/Button/Button';
 import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
 import { Pagination } from '../../components/Pagination/Pagination';
 import { ConfirmDialog } from '../../components/Modal/ConfirmDialog';
@@ -126,15 +127,9 @@ function AgentRow({ agent }) {
       </td>
       <td>
         <div className={styles.actions}>
-          <button className={styles.actionBtn} title="Edit" onClick={() => openBuilder({ id: agent.id, name: agent.name })}>
-            <Icon name="solar:pen-new-square-linear" size={18} />
-          </button>
-          <button className={styles.actionBtn} title="Analytics">
-            <Icon name="solar:chart-2-linear" size={18} />
-          </button>
-          <button className={styles.actionBtn} title="More" ref={moreBtnRef} onClick={handleMoreClick}>
-            <Icon name="solar:menu-dots-bold" size={18} />
-          </button>
+          <Button variant="ghost" size="S" leadingIcon="solar:pen-new-square-linear" iconOnly title="Edit" onClick={() => openBuilder({ id: agent.id, name: agent.name })} />
+          <Button variant="ghost" size="S" leadingIcon="solar:chart-2-linear" iconOnly title="Analytics" />
+          <Button variant="ghost" size="S" leadingIcon="solar:menu-dots-bold" iconOnly title="More" ref={moreBtnRef} onClick={handleMoreClick} />
         </div>
         {showMenu && createPortal(
           <div style={{ position: 'fixed', top: menuPos.top, right: menuPos.right, zIndex: 9999 }}>
@@ -230,19 +225,15 @@ export function AgentsTable() {
                 <button className={styles.searchClose} onClick={() => { setSearchOpen(false); setSearchVal(''); }}>✕</button>
               </div>
             ) : (
-              <button className={styles.searchBtn} title="Search" onClick={() => setSearchOpen(true)}>
-                <Icon name="solar:magnifer-linear" size={18} />
-              </button>
+              <Button variant="ghost" size="S" leadingIcon="solar:magnifer-linear" iconOnly title="Search" onClick={() => setSearchOpen(true)} />
             )}
           </div>
           {settingsTab === 'goals' && (
-            <button className={styles.searchBtn} title="Filter" onClick={() => setGoalsFilterOpen(v => !v)}
-              style={goalsFilterOpen ? { background: 'var(--primary-50)', color: 'var(--primary-300)' } : {}}>
-              <Icon name="solar:filter-linear" size={18} />
-            </button>
+            <Button variant="ghost" size="S" leadingIcon="solar:filter-linear" iconOnly title="Filter" onClick={() => setGoalsFilterOpen(v => !v)}
+              style={goalsFilterOpen ? { background: 'var(--primary-50)', color: 'var(--primary-300)' } : {}} />
           )}
           <span className={styles.tabDivider} />
-          <button className={styles.createBtn} onClick={() => {
+          <Button variant="primary" size="L" leadingIcon="solar:add-circle-linear" onClick={() => {
             if (settingsTab === 'goals') {
               setGoalWizard(true, null);
             } else if (settingsTab === 'knowledge base') {
@@ -251,9 +242,8 @@ export function AgentsTable() {
               setShowCreateAgent(true);
             }
           }}>
-            <Icon name="solar:add-circle-linear" size={16} />
             {settingsTab === 'goals' ? 'New Goal' : settingsTab === 'knowledge base' ? 'Add FAQ' : 'Create New'}
-          </button>
+          </Button>
         </div>
       </div>
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Drawer } from '../../../components/Drawer/Drawer';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { Switch } from '../../../components/Switch/Switch';
 import { GOAL_TEMPLATES } from '../../../data/goals'; // Templates are config, not DB data
@@ -175,10 +176,10 @@ export function GoalWizardDrawer() {
       <div className={s.nlBox}>
         <div className={s.nlBoxHeader}>
           <span className={s.nlBadge}>AI POWERED</span>
-          <button className={`${s.footerBtn} ${s.footerBtnSecondary}`} style={{ padding: '4px 10px', fontSize: 11 }}
+          <Button variant="secondary" size="S"
             onClick={() => setNlInput('Complete a post-discharge follow-up within 72 hours including identity verification, medication adherence check, symptom assessment, and scheduling based on severity.')}>
             Try Example
-          </button>
+          </Button>
         </div>
         <textarea
           value={nlInput}
@@ -187,11 +188,10 @@ export function GoalWizardDrawer() {
         />
         <div className={s.nlBoxFooter}>
           <span className={s.nlHint}>AI will generate steps, scoring, and success criteria</span>
-          <button className={`${s.footerBtn} ${s.footerBtnPrimary}`} style={{ padding: '5px 12px', fontSize: 12 }}
+          <Button variant="primary" size="S" leadingIcon="solar:magic-stick-3-linear"
             onClick={generateFromNL} disabled={aiGenerating}>
-            <Icon name="solar:magic-stick-3-linear" size={12} />
             {aiGenerating ? 'Generating...' : 'Generate'}
-          </button>
+          </Button>
         </div>
       </div>
       {!isEdit && (
@@ -289,10 +289,9 @@ export function GoalWizardDrawer() {
             <span style={{ color: 'var(--status-success)' }}>●</span> Mandatory <span style={{ color: 'var(--status-warning)' }}>●</span> Conditional
           </div>
         </div>
-        <button className={`${s.footerBtn} ${s.footerBtnSecondary}`} style={{ padding: '5px 10px', fontSize: 12 }}
-          onClick={() => setShowAddStep(true)}>
+        <Button variant="secondary" size="S" onClick={() => setShowAddStep(true)}>
           + Add Step
-        </button>
+        </Button>
       </div>
 
       {/* Steps List */}
@@ -319,10 +318,8 @@ export function GoalWizardDrawer() {
             <input className={s.formInput} style={{ marginBottom: 8 }} value={st.condition || ''}
               onChange={e => updateStep(i, { condition: e.target.value })} placeholder="Dependency condition (optional)" />
             <div style={{ display: 'flex', gap: 6 }}>
-              <button className={`${s.footerBtn} ${s.footerBtnPrimary}`} style={{ padding: '5px 10px', fontSize: 12 }}
-                onClick={() => setEditingStepIdx(null)}>Save</button>
-              <button className={`${s.footerBtn} ${s.footerBtnGhost}`} style={{ padding: '5px 10px', fontSize: 12 }}
-                onClick={() => setEditingStepIdx(null)}>Cancel</button>
+              <Button variant="primary" size="S" onClick={() => setEditingStepIdx(null)}>Save</Button>
+              <Button variant="ghost" size="S" onClick={() => setEditingStepIdx(null)}>Cancel</Button>
             </div>
           </div>
         ) : (
@@ -343,12 +340,10 @@ export function GoalWizardDrawer() {
               )}
             </div>
             <div className={s.stepControls}>
-              <button className={s.iconBtn} onClick={() => setEditingStepIdx(i)} title="Edit step">
-                <Icon name="solar:pen-linear" size={12} />
-              </button>
-              <button className={`${s.iconBtn} ${s.iconBtnDelete}`} onClick={() => removeStep(i)} title="Delete step">
-                <Icon name="solar:trash-bin-minimalistic-linear" size={12} />
-              </button>
+              <Button variant="ghost" size="S" leadingIcon="solar:pen-linear" iconOnly
+                onClick={() => setEditingStepIdx(i)} title="Edit step" />
+              <Button variant="ghost" size="S" leadingIcon="solar:trash-bin-minimalistic-linear" iconOnly
+                onClick={() => removeStep(i)} title="Delete step" />
             </div>
           </div>
         )
@@ -376,10 +371,8 @@ export function GoalWizardDrawer() {
           <input className={s.formInput} style={{ marginBottom: 8 }} placeholder="Dependency condition (optional)"
             value={newStep.condition} onChange={e => setNewStep({ ...newStep, condition: e.target.value })} />
           <div style={{ display: 'flex', gap: 6 }}>
-            <button className={`${s.footerBtn} ${s.footerBtnPrimary}`} style={{ padding: '5px 10px', fontSize: 12 }}
-              onClick={addStepItem}>Add Step</button>
-            <button className={`${s.footerBtn} ${s.footerBtnGhost}`} style={{ padding: '5px 10px', fontSize: 12 }}
-              onClick={() => setShowAddStep(false)}>Cancel</button>
+            <Button variant="primary" size="S" onClick={addStepItem}>Add Step</Button>
+            <Button variant="ghost" size="S" onClick={() => setShowAddStep(false)}>Cancel</Button>
           </div>
         </div>
       )}
@@ -409,8 +402,8 @@ export function GoalWizardDrawer() {
         <input className={s.formInput} placeholder="e.g. No escalated safety events" value={newMetric}
           onChange={e => setNewMetric(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && addMetricItem()} />
-        <button className={`${s.footerBtn} ${s.footerBtnSecondary}`} style={{ padding: '5px 10px', fontSize: 12, flexShrink: 0 }}
-          onClick={addMetricItem}>+ Add</button>
+        <Button variant="secondary" size="S" style={{ flexShrink: 0 }}
+          onClick={addMetricItem}>+ Add</Button>
       </div>
 
       <hr className={s.divider} />
@@ -451,11 +444,11 @@ export function GoalWizardDrawer() {
   const headerRight = (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
       {step >= 2 && !isEdit && (
-        <button className={`${s.footerBtn} ${s.footerBtnGhost}`} onClick={() => saveGoal('draft')}>Save Draft</button>
+        <Button variant="ghost" size="L" onClick={() => saveGoal('draft')}>Save Draft</Button>
       )}
-      <button className={`${s.footerBtn} ${s.footerBtnPrimary}`} onClick={goNext}>
+      <Button variant="primary" size="L" onClick={goNext}>
         {step === 3 ? 'Publish Goal' : 'Next'}
-      </button>
+      </Button>
     </div>
   );
 
@@ -467,12 +460,9 @@ export function GoalWizardDrawer() {
     >
       {/* Back link at top of body when not on first step */}
       {step > 0 && (
-        <button onClick={goBack} style={{
-          background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: 12,
-          display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--primary-300)', fontFamily: "'Inter', sans-serif", fontWeight: 500,
-        }}>
-          <Icon name="solar:alt-arrow-left-linear" size={14} /> Back
-        </button>
+        <Button variant="ghost" size="S" leadingIcon="solar:alt-arrow-left-linear" onClick={goBack} style={{ marginBottom: 12 }}>
+          Back
+        </Button>
       )}
       {renderStepper()}
       {renderDescribe()}

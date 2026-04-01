@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Drawer } from '../../components/Drawer/Drawer';
 import { Icon } from '../../components/Icon/Icon';
+import { Button } from '../../components/Button/Button';
 import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import styles from './CreateAgentDrawer.module.css';
@@ -483,14 +484,15 @@ export function CreateAgentDrawer() {
   };
 
   const headerRight = (
-    <button
-      className={[styles.createAgentBtn, isFormValid ? styles.createAgentBtnPrimary : ''].filter(Boolean).join(' ')}
+    <Button
+      variant={isFormValid ? 'primary' : 'secondary'}
+      size="L"
+      leadingIcon="solar:ghost-smile-linear"
       disabled={!isFormValid || creating}
       onClick={handleCreateAgent}
     >
-      <Icon name="solar:ghost-smile-linear" size={16} />
-      {creating ? 'Creating…' : 'Create Agent'}
-    </button>
+      {creating ? 'Creating...' : 'Create Agent'}
+    </Button>
   );
 
   return (

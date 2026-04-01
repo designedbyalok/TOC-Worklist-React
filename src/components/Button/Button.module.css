@@ -1,0 +1,173 @@
+/* ── Fold Health Button ──
+ * Figma: Fold-Pixel-1.0, node 25:155
+ *
+ * Sizes:
+ *   S:  h 24px, px 8px, py 4px, radius 4px, font 12px, icon 14px
+ *   L:  h 32px, px 8px, py 4px, radius 4px, font 14px, icon 16px
+ *   XL: h 52px, px 12px, py 12px, radius 8px, font 18px, icon 24px (mobile)
+ *
+ * Types: Primary, Secondary, Tertiary, Success, Error, Ghost, Alt, Disable
+ * Font: Inter Medium 500
+ * Borders: 0.5px solid
+ */
+
+/* ── Base ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  line-height: 1;
+}
+
+.btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--primary-100);
+}
+
+/* ── Sizes ── */
+.sizeS {
+  height: 24px;
+  min-width: 24px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.sizeL {
+  height: 32px;
+  min-width: 32px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.sizeXL {
+  height: 52px;
+  min-width: 52px;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 18px;
+}
+
+/* ── Icon sizing per button size ── */
+.sizeS .icon { width: 14px; height: 14px; }
+.sizeL .icon { width: 16px; height: 16px; }
+.sizeXL .icon { width: 24px; height: 24px; }
+
+/* ── Icon-only variant (square) ── */
+.iconOnly { padding: 0; }
+.iconOnly.sizeS { width: 24px; }
+.iconOnly.sizeL { width: 32px; }
+.iconOnly.sizeXL { width: 52px; }
+
+/* ── Type: Primary ── */
+.primary {
+  background: var(--primary-300);
+  color: #fff;
+}
+.primary:hover:not(:disabled) {
+  background: #5020A0;
+}
+
+/* ── Type: Secondary ── */
+.secondary {
+  background: #fff;
+  color: var(--neutral-300);
+  border: 0.5px solid var(--neutral-200);
+}
+.secondary:hover:not(:disabled) {
+  background: var(--neutral-50);
+}
+
+/* ── Type: Tertiary ── */
+.tertiary {
+  background: var(--primary-100);
+  color: var(--primary-300);
+  border: 0.5px solid #D7C0FF;
+}
+.tertiary:hover:not(:disabled) {
+  background: var(--primary-300);
+  color: #fff;
+}
+
+/* ── Type: Ghost ── */
+.ghost {
+  background: transparent;
+  color: var(--neutral-300);
+}
+.ghost:hover:not(:disabled) {
+  background: var(--neutral-50);
+}
+
+/* ── Type: Alt (outlined purple) ── */
+.alt {
+  background: transparent;
+  color: var(--primary-300);
+  border: 0.5px solid var(--primary-300);
+}
+.alt:hover:not(:disabled) {
+  background: var(--primary-100);
+}
+
+/* ── Type: Success ── */
+.success {
+  background: #F5FFFA;
+  color: var(--status-success);
+  border: 0.5px solid rgba(18, 183, 106, 0.5);
+}
+.success:hover:not(:disabled) {
+  background: var(--status-success);
+  color: #fff;
+}
+
+/* ── Type: Error / Danger ── */
+.danger {
+  background: #FFF5F5;
+  color: var(--status-error);
+  border: 0.5px solid rgba(217, 45, 32, 0.5);
+}
+.danger:hover:not(:disabled) {
+  background: var(--status-error);
+  color: #fff;
+}
+
+/* Solid danger variant (for destructive primary actions) */
+.dangerFilled {
+  background: var(--status-error);
+  color: #fff;
+}
+.dangerFilled:hover:not(:disabled) {
+  background: #B91C1C;
+}
+
+/* ── Type: Info ── */
+.info {
+  background: var(--status-info);
+  color: #fff;
+}
+.info:hover:not(:disabled) {
+  background: #0E4BAA;
+}
+
+/* ── Disabled (all types) ── */
+.btn:disabled {
+  background: var(--neutral-50);
+  color: var(--neutral-150);
+  border-color: transparent;
+  cursor: not-allowed;
+}
+
+/* ── Full-width modifier ── */
+.fullWidth {
+  width: 100%;
+}

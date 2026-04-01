@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 import { Drawer } from '../Drawer/Drawer';
 import { ComplianceBadges } from '../ComplianceBadges/ComplianceBadges';
 import { DepartmentSelector, TransferringState, TransferFailure, NoHumanAvailable, CallbackOffer, PostTransferFeedback } from '../TransferFlow/TransferFlow';
@@ -67,31 +68,36 @@ export function LiveDrawer() {
 
       {/* Action buttons */}
       <div className={styles.actions}>
-        <button
-          className={`${styles.actionBtn} ${listenActive ? styles.active : ''}`}
+        <Button
+          variant="secondary"
+          size="L"
+          leadingIcon="solar:headphones-round-sound-bold"
+          className={listenActive ? styles.active : ''}
           onClick={() => setListenActive(v => !v)}
         >
-          <Icon name="solar:headphones-round-sound-bold" size={16} />
           Live Listen
-        </button>
-        <button className={styles.actionBtn} onClick={() => showToast('Take Over Call – coming soon')}>
-          <Icon name="solar:phone-calling-bold" size={16} />
+        </Button>
+        <Button variant="primary" size="L" leadingIcon="solar:phone-calling-bold" onClick={() => showToast('Take Over Call – coming soon')}>
           Take Over Call
-        </button>
-        <button
-          className={`${styles.actionBtn} ${transferState ? styles.active : ''}`}
+        </Button>
+        <Button
+          variant="secondary"
+          size="L"
+          leadingIcon="solar:call-medicine-bold"
+          className={transferState ? styles.active : ''}
           onClick={() => setTransferState(transferState ? null : 'select-dept')}
         >
-          <Icon name="solar:call-medicine-bold" size={16} />
           Transfer
-        </button>
-        <button
-          className={`${styles.actionBtn} ${muteActive ? styles.active : ''}`}
+        </Button>
+        <Button
+          variant="secondary"
+          size="L"
+          leadingIcon="solar:microphone-slash-linear"
+          className={muteActive ? styles.active : ''}
           onClick={() => setMuteActive(v => !v)}
         >
-          <Icon name="solar:microphone-slash-linear" size={16} />
           Mute
-        </button>
+        </Button>
       </div>
 
       {/* Transfer Flow States */}

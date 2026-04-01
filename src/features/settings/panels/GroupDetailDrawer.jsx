@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Avatar } from '../../../components/Avatar/Avatar';
+import { Button } from '../../../components/Button/Button';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { Badge } from '../../../components/Badge/Badge';
 import { RadioGroup, RadioGroupItem } from '../../../components/ui/radio-group';
@@ -105,10 +106,7 @@ export function GroupDetailDrawer() {
   const ctaLabel = isNew ? 'Create' : 'Update';
 
   const headerRight = (
-    <button style={{
-      padding: '6px 16px', borderRadius: 6, background: 'var(--primary-300)', color: '#fff',
-      border: 'none', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-    }} onClick={async () => {
+    <Button variant="primary" size="L" onClick={async () => {
       if (!groupName.trim()) { showToast('Group name is required'); return; }
       const groupData = {
         name: groupName.trim(),
@@ -129,7 +127,7 @@ export function GroupDetailDrawer() {
       setChatGroupDetailId(null);
     }}>
       {ctaLabel}
-    </button>
+    </Button>
   );
 
   return (
@@ -291,9 +289,7 @@ export function GroupDetailDrawer() {
                       style={{ accentColor: 'var(--primary-300)' }} />
                     Enable all 1:1 Chat
                   </label>
-                  <button onClick={clearAll} style={{ background: 'none', border: 'none', fontSize: 12, color: 'var(--status-error)', cursor: 'pointer', fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Icon name="solar:close-circle-linear" size={12} color="var(--status-error)" /> Clear All Selection
-                  </button>
+                  <Button variant="danger" size="S" leadingIcon="solar:close-circle-linear" onClick={clearAll}>Clear All Selection</Button>
                 </div>
               </div>
 
@@ -333,22 +329,13 @@ export function GroupDetailDrawer() {
                           <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{p.role}</div>
                         </div>
                         {p.isAgent ? (
-                          <button onClick={handleConfigureRules} style={{
-                            display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6,
-                            background: 'var(--primary-50, #F5F0FF)', border: '0.5px solid var(--primary-200)',
-                            cursor: 'pointer', fontSize: 11, fontWeight: 500, color: 'var(--primary-300)',
-                            fontFamily: "'Inter', sans-serif",
-                          }}>
-                            <Icon name="solar:settings-linear" size={12} color="var(--primary-300)" />
+                          <Button variant="tertiary" size="S" leadingIcon="solar:settings-linear" trailingIcon="solar:alt-arrow-right-linear" onClick={handleConfigureRules}>
                             Configure Rules
-                            <Icon name="solar:alt-arrow-right-linear" size={12} color="var(--primary-300)" />
-                          </button>
+                          </Button>
                         ) : (
                           <>
                             <Switch checked={chatEnabled[p.id] || false} onChange={(val) => toggleChatForUser(p.id, val)} />
-                            <button onClick={() => removeUser(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                              <Icon name="solar:close-circle-linear" size={16} color="var(--neutral-200)" />
-                            </button>
+                            <Button variant="ghost" size="S" leadingIcon="solar:close-circle-linear" iconOnly onClick={() => removeUser(p.id)} />
                           </>
                         )}
                       </div>
@@ -369,9 +356,7 @@ export function GroupDetailDrawer() {
                       <span style={{ fontSize: 14, color: 'var(--neutral-500)' }}>{r.name}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <Switch checked={chatEnabled[r.id] || false} onChange={(val) => setChatEnabled(prev => ({ ...prev, [r.id]: val }))} />
-                        <button onClick={() => removeRole(r.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                          <Icon name="solar:close-circle-linear" size={16} color="var(--neutral-200)" />
-                        </button>
+                        <Button variant="ghost" size="S" leadingIcon="solar:close-circle-linear" iconOnly onClick={() => removeRole(r.id)} />
                       </div>
                     </div>
                   ))}

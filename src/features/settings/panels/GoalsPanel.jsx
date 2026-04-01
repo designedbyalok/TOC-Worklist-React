@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { CardSkeleton, SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
@@ -58,7 +59,7 @@ function GoalCard({ goal, onOpen, onEdit }) {
             </>
           )}
         </div>
-        <button className={s.cardEditBtn} onClick={(e) => { e.stopPropagation(); onEdit(goal.id); }}>Edit</button>
+        <Button variant="secondary" size="S" onClick={(e) => { e.stopPropagation(); onEdit(goal.id); }}>Edit</Button>
       </div>
     </div>
   );
@@ -137,14 +138,10 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
                 </td>
                 <td style={tdStyle} onClick={e => e.stopPropagation()}>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
-                      onClick={() => onEdit(g.id)} title="Edit goal">
-                      <Icon name="solar:pen-linear" size={16} color="var(--neutral-200)" />
-                    </button>
-                    <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
-                      onClick={() => setDeleteTarget(g)} title="Delete goal">
-                      <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="var(--neutral-200)" />
-                    </button>
+                    <Button variant="ghost" size="S" leadingIcon="solar:pen-linear" iconOnly
+                      onClick={() => onEdit(g.id)} title="Edit goal" />
+                    <Button variant="ghost" size="S" leadingIcon="solar:trash-bin-minimalistic-linear" iconOnly
+                      onClick={() => setDeleteTarget(g)} title="Delete goal" />
                   </div>
                 </td>
               </tr>

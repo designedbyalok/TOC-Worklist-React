@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
 import { Drawer } from '../../../components/Drawer/Drawer';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { Switch } from '../../../components/Switch/Switch';
 
@@ -48,12 +49,9 @@ export function BusinessHoursDrawer() {
   };
 
   const headerRight = (
-    <button style={{
-      padding: '6px 16px', borderRadius: 6, background: 'var(--primary-300)', color: '#fff',
-      border: 'none', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-    }} onClick={() => { showToast('Business hours saved'); setBusinessHoursOpen(false); }}>
+    <Button variant="primary" size="L" onClick={() => { showToast('Business hours saved'); setBusinessHoursOpen(false); }}>
       Save
-    </button>
+    </Button>
   );
 
   return (
@@ -93,14 +91,10 @@ export function BusinessHoursDrawer() {
             }}>
               <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-500)' }}>{day}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <button onClick={() => addSlot(day)} style={{
-                  background: 'none', border: 'none', fontSize: 12, color: 'var(--primary-300)',
-                  cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontWeight: 500,
-                  display: 'flex', alignItems: 'center', gap: 3,
-                  opacity: isAvailable ? 1 : 0.4,
-                }}>
+                <Button variant="ghost" size="S" onClick={() => addSlot(day)}
+                  style={{ opacity: isAvailable ? 1 : 0.4 }}>
                   + Add New Time
-                </button>
+                </Button>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <Switch checked={isAvailable} onChange={() => toggleDay(day)} />
                   <span style={{ fontSize: 12, color: isAvailable ? 'var(--neutral-400)' : 'var(--neutral-200)' }}>Available</span>
@@ -137,11 +131,8 @@ export function BusinessHoursDrawer() {
                     </div>
                   </div>
                   {daySlots.length > 1 && (
-                    <button onClick={() => removeSlot(day, idx)} style={{
-                      background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 18,
-                    }}>
-                      <Icon name="solar:close-circle-linear" size={16} color="var(--neutral-200)" />
-                    </button>
+                    <Button variant="ghost" size="S" leadingIcon="solar:close-circle-linear" iconOnly
+                      onClick={() => removeSlot(day, idx)} style={{ marginTop: 18 }} />
                   )}
                 </div>
               ))}

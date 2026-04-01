@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 import { Avatar } from '../Avatar/Avatar';
 import { Drawer } from '../Drawer/Drawer';
 import { useAppStore } from '../../store/useAppStore';
@@ -94,11 +95,10 @@ export function WorkflowPanel() {
 
   const footerContent = (
     <>
-      <button className={styles.btnSecondary} onClick={closeWorkflow}>Cancel</button>
-      <button className={styles.btnPrimary} onClick={saveWorkflow}>
-        <Icon name="solar:diskette-bold" size={18} />
+      <Button variant="secondary" size="L" onClick={closeWorkflow}>Cancel</Button>
+      <Button variant="primary" size="L" leadingIcon="solar:diskette-bold" onClick={saveWorkflow}>
         Save &amp; Update
-      </button>
+      </Button>
     </>
   );
 
