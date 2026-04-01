@@ -78,6 +78,12 @@ export const useAppStore = create((set, get) => ({
   agentRulesGroupId: null,
   businessHoursOpen: false,
 
+  // Embedded Components
+  embeddedComponentsTab: 'domain-registry',
+  componentWizardOpen: false,
+  componentWizardEditId: null,
+  componentPreviewId: null,
+
   // Agents (settings)
   agents: [],
   agentsLoading: true,
@@ -223,6 +229,10 @@ export const useAppStore = create((set, get) => ({
   setAgentRulesGroupId: (id) => { set({ agentRulesGroupId: id }); updateHash(get); },
   setBusinessHoursOpen: (open) => { set({ businessHoursOpen: open }); updateHash(get); },
 
+  setEmbeddedComponentsTab: (tab) => { set({ embeddedComponentsTab: tab }); },
+  setComponentWizard: (open, editId = null) => { set({ componentWizardOpen: open, componentWizardEditId: editId }); },
+  setComponentPreviewId: (id) => { set({ componentPreviewId: id }); },
+
   fetchChatGroups: async () => {
     set({ chatGroupsLoading: true });
     const { data, error } = await supabase
@@ -307,6 +317,10 @@ export const useAppStore = create((set, get) => ({
   // Knowledge Base add trigger (used by AgentsTable to tell KnowledgeBasePanel to open add form)
   kbAddTrigger: false,
   setKbAddTrigger: (v) => set({ kbAddTrigger: v }),
+
+  // Domain Registry add trigger (used by EmbeddedComponentsSettings to tell DomainRegistryPanel to open add modal)
+  domainAddTrigger: false,
+  setDomainAddTrigger: (v) => set({ domainAddTrigger: v }),
 
   // FAQs
   faqsData: null,

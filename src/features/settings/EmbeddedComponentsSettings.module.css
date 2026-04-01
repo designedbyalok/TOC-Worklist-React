@@ -1,0 +1,129 @@
+.wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--neutral-0);
+}
+
+/* Tab bar */
+.tabBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 0.5px solid var(--neutral-150);
+  flex-shrink: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+}
+
+.tab {
+  padding: 10px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6F7A90;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+  transition: color .12s;
+}
+
+.tab:hover { color: #3D4A5C; }
+
+.tabActive {
+  color: #8C5AE2;
+  border-bottom-color: #8C5AE2;
+}
+
+.tabActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+}
+
+.searchInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0.5px solid var(--primary-300);
+  border-radius: 6px;
+  padding: 0 10px;
+  height: 36px;
+  width: 240px;
+  background: var(--neutral-0);
+}
+
+.searchInput input {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: #3D4A5C;
+  flex: 1;
+  background: transparent;
+}
+
+.searchInput input::placeholder { color: #A0AAB8; }
+
+.searchClose {
+  background: none;
+  border: none;
+  color: #6F7A90;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  line-height: 1;
+}
+
+.searchClose:hover { color: #3D4A5C; }
+
+.tabDivider {
+  width: 0.5px;
+  height: 16px;
+  background: #D0D6E1;
+}
+
+/* Table / content area */
+.tableWrap {
+  flex: 1;
+  overflow: auto;
+}
+
+/* Empty state */
+.emptySearch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  gap: 12px;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #3D4A5C;
+  margin: 0;
+}
+
+.emptyDesc {
+  font-size: 14px;
+  color: #6F7A90;
+  margin: 0;
+  text-align: center;
+  max-width: 320px;
+}
+
+.emptyDesc strong {
+  color: #3D4A5C;
+}

@@ -17,6 +17,7 @@ import { GoalWizardDrawer } from '../features/settings/panels/GoalWizardDrawer';
 import { GroupDetailDrawer } from '../features/settings/panels/GroupDetailDrawer';
 import { AgentRulesDrawer } from '../features/settings/panels/AgentRulesDrawer';
 import { BusinessHoursDrawer } from '../features/settings/panels/BusinessHoursDrawer';
+import { ComponentWizardDrawer } from '../features/settings/panels/ComponentWizardDrawer';
 import { WorklistTable } from '../features/worklist/WorklistTable';
 import { QueueTable } from '../features/queue/QueueTable';
 import { QueueSummaryBar } from '../features/queue/QueueSummaryBar';
@@ -125,6 +126,7 @@ export function AppLayout() {
   const chatGroupDetailId = useAppStore(s => s.chatGroupDetailId);
   const agentRulesGroupId = useAppStore(s => s.agentRulesGroupId);
   const businessHoursOpen = useAppStore(s => s.businessHoursOpen);
+  const componentWizardOpen = useAppStore(s => s.componentWizardOpen);
 
   // Agent Builder is a full-screen takeover
   if (activePage === 'builder') {
@@ -151,6 +153,7 @@ export function AppLayout() {
       {liveDrawerPatient && <LiveDrawer />}
       {goalDetailId && <GoalDetailDrawer />}
       {goalWizardOpen && <GoalWizardDrawer />}
+      {componentWizardOpen && <ComponentWizardDrawer />}
       {chatGroupDetailId && <GroupDetailDrawer />}
       {agentRulesGroupId && <AgentRulesDrawer />}
       {businessHoursOpen && <BusinessHoursDrawer />}
