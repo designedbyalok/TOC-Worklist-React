@@ -16,7 +16,11 @@ const tdStyle = { padding: '10px 16px', fontSize: 13, color: 'var(--neutral-400)
 
 const inputStyle = { padding: '8px 12px', border: '0.5px solid var(--neutral-150)', borderRadius: 8, fontSize: 13, fontFamily: "'Inter', sans-serif", width: '100%', outline: 'none', background: '#fff', color: 'var(--neutral-500)' };
 const labelStyle = { fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)', marginBottom: 4 };
-const selectStyle = { ...inputStyle, appearance: 'auto' };
+const selectStyle = {
+  ...inputStyle, appearance: 'none', cursor: 'pointer', paddingRight: 34,
+  backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238a94a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E\")",
+  backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center',
+};
 
 const CATEGORY_BADGE_MAP = {
   'Internal': 'ai-care',

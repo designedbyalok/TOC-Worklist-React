@@ -72,20 +72,38 @@ const WEB_SVG_MAP = {
   'action-menu': ActionMenuSvg,
 };
 
-/* ── Stepper ── */
+/* ── Stepper (matches Goal Wizard pattern) ── */
 function Stepper({ step }) {
   return (
-    <div className={s.stepper}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 20, padding: '0 4px' }}>
       {STEPS.map((label, i) => {
         const done = i < step;
         const current = i === step;
         return (
           <div key={label} style={{ display: 'contents' }}>
-            <div className={`${s.step} ${done ? s.stepDone : current ? s.stepCurrent : ''}`}>
-              <div className={s.stepCircle}>{done ? '✓' : i + 1}</div>
-              {label}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 6, fontSize: 12,
+              color: current ? 'var(--primary-300)' : done ? 'var(--neutral-400)' : 'var(--neutral-200)',
+              cursor: done ? 'pointer' : 'default', padding: '6px 0', transition: 'all .15s',
+            }}>
+              <div style={{
+                width: 22, height: 22, borderRadius: 6, display: 'flex', alignItems: 'center',
+                justifyContent: 'center', fontSize: 10, fontWeight: 600, flexShrink: 0,
+                border: '1.5px solid',
+                borderColor: current ? 'var(--primary-200)' : done ? 'rgba(140,90,226,.3)' : 'var(--neutral-150)',
+                background: current ? '#fff' : done ? 'var(--primary-50)' : 'transparent',
+                color: current ? 'var(--primary-300)' : done ? 'var(--primary-300)' : 'var(--neutral-200)',
+              }}>
+                {done ? <Icon name="solar:check-read-linear" size={12} /> : i + 1}
+              </div>
+              <span style={{ fontWeight: 500, whiteSpace: 'nowrap' }}>{label}</span>
             </div>
-            {i < STEPS.length - 1 && <div className={`${s.stepLine} ${done ? s.stepLineDone : ''}`} />}
+            {i < STEPS.length - 1 && (
+              <div style={{
+                flex: 1, height: 1, margin: '0 10px', minWidth: 16,
+                background: done ? 'rgba(140,90,226,.3)' : 'var(--neutral-150)',
+              }} />
+            )}
           </div>
         );
       })}
@@ -625,30 +643,28 @@ export function ComponentWizardDrawer() {
 
   const canNext = step === 0 ? data.name.trim().length > 0 : step === 1 ? data.surfaces.length > 0 : true;
 
+  const headerRight = (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <Button variant="primary" size="L" disabled={!canNext} onClick={() => {
+        if (step < STEPS.length - 1) setStep(step + 1);
+        else handleSave();
+      }}>
+        {step === STEPS.length - 1 ? (editId ? 'Save Changes' : 'Save & Enable') : 'Next'}
+      </Button>
+    </div>
+  );
+
   return (
     <Drawer
       title={editId ? `Edit — ${data.name}` : 'New Component'}
       onClose={close}
-      headerRight={<span style={{ fontSize: 12, color: 'var(--neutral-200)' }}>Step {step + 1} of {STEPS.length}</span>}
-      footer={
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-          <span style={{ fontSize: 12, color: 'var(--neutral-200)', alignSelf: 'center' }}>Step {step + 1} of {STEPS.length}</span>
-          <div style={{ display: 'flex', gap: 8 }}>
-            {step > 0 && <Button variant="secondary" size="L" onClick={() => setStep(step - 1)}>Back</Button>}
-            <Button variant="secondary" size="L" onClick={close}>Cancel</Button>
-            {step < STEPS.length - 1 ? (
-              <Button variant="primary" size="L" disabled={!canNext} onClick={() => setStep(step + 1)}>
-                Next: {STEPS[step + 1]}
-              </Button>
-            ) : (
-              <Button variant="primary" size="L" onClick={handleSave}>
-                {editId ? 'Save Changes' : 'Save & Enable'}
-              </Button>
-            )}
-          </div>
-        </div>
-      }
+      headerRight={headerRight}
     >
+      {step > 0 && (
+        <Button variant="ghost" size="S" leadingIcon="solar:alt-arrow-left-linear" onClick={() => setStep(step - 1)} style={{ marginBottom: 12 }}>
+          Back
+        </Button>
+      )}
       <Stepper step={step} />
       <div style={{ padding: '16px 0' }}>
         {step === 0 && <StepIdentity data={data} onChange={update} />}

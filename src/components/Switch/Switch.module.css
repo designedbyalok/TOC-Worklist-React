@@ -44,7 +44,8 @@
 .track:disabled,
 .trackDisabled {
   cursor: not-allowed;
-  background: var(--neutral-50);
+  background: var(--neutral-100);
+  opacity: 0.5;
 }
 
 .trackOn:disabled,
