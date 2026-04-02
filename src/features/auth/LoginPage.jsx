@@ -6,7 +6,7 @@ import { Icon } from '../../components/Icon/Icon';
 import loginHero from '../../assets/login-hero.png';
 import styles from './LoginPage.module.css';
 
-export function LoginPage() {
+export function LoginPage({ onBypass }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +30,7 @@ export function LoginPage() {
     setError('');
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: `${window.location.origin}${window.location.pathname}` },
     });
     if (authError) setError(authError.message);
     setLoading(false);
@@ -135,6 +135,13 @@ export function LoginPage() {
               Microsoft
             </button>
           </div>
+
+          {/* Dev bypass */}
+          {onBypass && (
+            <button className={styles.bypassLink} onClick={onBypass}>
+              Continue without login (dev mode)
+            </button>
+          )}
         </div>
       </div>
     </div>

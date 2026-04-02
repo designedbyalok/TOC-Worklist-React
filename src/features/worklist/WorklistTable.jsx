@@ -124,7 +124,7 @@ export function WorklistTable() {
   const [expandedSections, setExpandedSections] = useState({});
 
   // Fetch patients when component mounts (lazy — only when this page is visible)
-  useEffect(() => { if (!patients.length && !patientsLoading) fetchPatients(); }, []);
+  useEffect(() => { fetchPatients(); }, [fetchPatients]);
 
   const toggleExpand = (key) => setExpandedSections(s => ({ ...s, [key]: !s[key] }));
 

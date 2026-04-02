@@ -261,6 +261,23 @@
   cursor: not-allowed;
 }
 
+/* Dev bypass */
+.bypassLink {
+  background: none;
+  border: none;
+  color: var(--neutral-200, #8A94A8);
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  text-align: center;
+  padding: 8px;
+}
+
+.bypassLink:hover {
+  color: var(--primary-300, #8C5AE2);
+  text-decoration: underline;
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .leftPanel { display: none; }

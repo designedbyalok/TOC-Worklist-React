@@ -14,7 +14,7 @@ export function QueueTable() {
   const searchQuery = useAppStore(s => s.searchQuery);
 
   // Fetch patients + call details when queue mounts (lazy)
-  useEffect(() => { if (!patients.length && !patientsLoading) { fetchPatients(); fetchCallDetails(); } }, []);
+  useEffect(() => { fetchPatients(); fetchCallDetails(); }, [fetchPatients, fetchCallDetails]);
   const activeFilters = useAppStore(s => s.activeFilters);
   const currentPage = useAppStore(s => s.currentPage);
   const perPage = useAppStore(s => s.perPage);
