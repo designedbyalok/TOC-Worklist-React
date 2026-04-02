@@ -261,6 +261,47 @@
   cursor: not-allowed;
 }
 
+/* Success message */
+.success {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--status-success, #009B53);
+  padding: 8px 12px;
+  background: var(--status-success-light, #F0FDF4);
+  border-radius: 6px;
+  border: 0.5px solid rgba(0, 155, 83, 0.15);
+}
+
+/* Toggle login/signup */
+.toggleAuth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.toggleText {
+  font-size: 13px;
+  color: var(--neutral-300, #6F7A90);
+}
+
+.toggleLink {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary-300, #8C5AE2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  padding: 0;
+}
+
+.toggleLink:hover {
+  text-decoration: underline;
+}
+
 /* Dev bypass */
 .bypassLink {
   background: none;

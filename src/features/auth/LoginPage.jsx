@@ -7,11 +7,14 @@ import loginHero from '../../assets/login-hero.png';
 import styles from './LoginPage.module.css';
 
 export function LoginPage({ onBypass }) {
+  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -25,16 +28,43 @@ export function LoginPage({ onBypass }) {
     setLoading(false);
   };
 
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    if (!email.trim() || !password.trim()) { setError('Please enter email and password'); return; }
+    if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
+    if (password !== confirmPassword) { setError('Passwords do not match'); return; }
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    const { error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: window.location.origin },
+    });
+    if (authError) {
+      setError(authError.message);
+    } else {
+      setSuccess('Account created! Check your email to confirm, or sign in directly.');
+      setIsSignUp(false);
+      setConfirmPassword('');
+    }
+    setLoading(false);
+  };
+
   const handleOAuthLogin = async (provider) => {
     setLoading(true);
     setError('');
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}${window.location.pathname}` },
+      options: {
+        redirectTo: window.location.origin,
+      },
     });
     if (authError) setError(authError.message);
     setLoading(false);
   };
+
+  const handleSubmit = isSignUp ? handleSignUp : handleLogin;
 
   return (
     <div className={styles.page}>
@@ -51,7 +81,7 @@ export function LoginPage({ onBypass }) {
         </div>
       </div>
 
-      {/* Right panel — login form */}
+      {/* Right panel — login/signup form */}
       <div className={styles.rightPanel}>
         <div className={styles.formContainer}>
           {/* Logo */}
@@ -65,14 +95,16 @@ export function LoginPage({ onBypass }) {
           {/* Welcome text */}
           <div className={styles.welcome}>
             <h1 className={styles.welcomeTitle}>
-              <span className={styles.welcomePurple}>Welcome </span>
-              <span className={styles.welcomeDark}>Back!</span>
+              <span className={styles.welcomePurple}>{isSignUp ? 'Create ' : 'Welcome '}</span>
+              <span className={styles.welcomeDark}>{isSignUp ? 'Account' : 'Back!'}</span>
             </h1>
-            <p className={styles.welcomeSub}>Sign in to access your Fold Portal</p>
+            <p className={styles.welcomeSub}>
+              {isSignUp ? 'Sign up to get started with Fold Portal' : 'Sign in to access your Fold Portal'}
+            </p>
           </div>
 
-          {/* Login form */}
-          <form className={styles.form} onSubmit={handleLogin}>
+          {/* Login/Signup form */}
+          <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.field}>
               <label className={styles.label}>Email</label>
               <Input
@@ -87,23 +119,38 @@ export function LoginPage({ onBypass }) {
             <div className={styles.field}>
               <div className={styles.labelRow}>
                 <label className={styles.label}>Password</label>
-                <button type="button" className={styles.forgotLink} onClick={() => {}}>
-                  Forgot Password?
-                </button>
+                {!isSignUp && (
+                  <button type="button" className={styles.forgotLink} onClick={() => {}}>
+                    Forgot Password?
+                  </button>
+                )}
               </div>
               <div className={styles.passwordWrap}>
                 <Input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  autoComplete="current-password"
+                  placeholder={isSignUp ? 'Min 6 characters' : 'Enter your password'}
+                  autoComplete={isSignUp ? 'new-password' : 'current-password'}
                 />
                 <button type="button" className={styles.eyeBtn} onClick={() => setShowPassword(v => !v)}>
                   <Icon name={showPassword ? 'solar:eye-linear' : 'solar:eye-closed-linear'} size={16} color="#8A94A8" />
                 </button>
               </div>
             </div>
+
+            {isSignUp && (
+              <div className={styles.field}>
+                <label className={styles.label}>Confirm Password</label>
+                <Input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter your password"
+                  autoComplete="new-password"
+                />
+              </div>
+            )}
 
             {error && (
               <div className={styles.error}>
@@ -112,10 +159,31 @@ export function LoginPage({ onBypass }) {
               </div>
             )}
 
-            <Button variant="primary" size="XL" fullWidth disabled={loading} onClick={handleLogin}>
-              {loading ? 'Signing in...' : 'Login'}
+            {success && (
+              <div className={styles.success}>
+                <Icon name="solar:check-circle-linear" size={14} color="var(--status-success)" />
+                {success}
+              </div>
+            )}
+
+            <Button variant="primary" size="L" fullWidth disabled={loading} onClick={handleSubmit}>
+              {loading ? (isSignUp ? 'Creating account...' : 'Signing in...') : (isSignUp ? 'Create Account' : 'Login')}
             </Button>
           </form>
+
+          {/* Toggle login/signup */}
+          <div className={styles.toggleAuth}>
+            <span className={styles.toggleText}>
+              {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+            </span>
+            <button
+              type="button"
+              className={styles.toggleLink}
+              onClick={() => { setIsSignUp(v => !v); setError(''); setSuccess(''); }}
+            >
+              {isSignUp ? 'Sign in' : 'Sign up'}
+            </button>
+          </div>
 
           {/* Divider */}
           <div className={styles.divider}>
