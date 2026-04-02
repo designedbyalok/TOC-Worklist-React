@@ -375,13 +375,6 @@
   border-color: var(--primary-300);
   background: var(--neutral-0);
 }
-.surfaceCardActive::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--primary-300);
-}
 .surfaceIcon {
   width: 32px;
   height: 32px;
@@ -400,7 +393,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 1.5px solid var(--neutral-150);
+  border: 0.5px solid var(--neutral-150);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -422,7 +415,7 @@
   margin-bottom: 14px;
 }
 .placementCard {
-  border: 1.5px solid var(--neutral-150);
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   padding: 10px 8px;
   cursor: pointer;
@@ -447,7 +440,7 @@
 .configSection {
   background: #fff;
   border: 0.5px solid var(--neutral-150);
-  border-radius: 10px;
+  border-radius: 8px;
   margin-bottom: 12px;
   overflow: hidden;
 }
@@ -579,8 +572,9 @@
 
 /* ── Save Summary ── */
 .summaryCard {
-  background: var(--neutral-50);
-  border-radius: 10px;
+  background: #fff;
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 8px;
   padding: 14px;
   margin-bottom: 14px;
 }

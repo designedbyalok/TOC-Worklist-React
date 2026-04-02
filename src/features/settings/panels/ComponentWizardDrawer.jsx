@@ -243,30 +243,30 @@ function StepSurfaces({ data, onChange }) {
                     {data.drawerWidth > 650 ? 'Warning: will significantly overlap the patient chart' : data.drawerWidth > 500 ? 'Caution: may overlap chart on screens under 1280px' : 'Safe — fits alongside patient chart on 1280px+ screens'}
                   </span>
                 </div>
-                <div className={s.formGroup}>
-                  <label className={s.label}>Opens via</label>
-                  <select className={s.select} value={data.opensVia} onChange={e => onChange({ opensVia: e.target.value })}>
-                    <option>Action menu item only</option>
-                    <option>Nav tab + action menu</option>
-                    <option>Inline button (e.g. in gap list)</option>
-                  </select>
-                </div>
-                <div className={s.formGroup}>
-                  <label className={s.label}>Show in tab context</label>
-                  <select className={s.select} value={data.tabContext} onChange={e => onChange({ tabContext: e.target.value })}>
-                    <option>All patient tabs</option>
-                    <option>Gaps tab only</option>
-                    <option>Orders tab only</option>
-                    <option>Care Programs tab</option>
-                  </select>
-                </div>
-                <div className={s.formGroup}>
-                  <label className={s.label}>Background behavior</label>
-                  <select className={s.select} value={data.background} onChange={e => onChange({ background: e.target.value })}>
-                    <option>Dim patient chart</option>
-                    <option>No dim</option>
-                  </select>
-                </div>
+                <FormField label="Opens via">
+                  <Select value={data.opensVia} onValueChange={v => onChange({ opensVia: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {['Action menu item only', 'Nav tab + action menu', 'Inline button (e.g. in gap list)'].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </FormField>
+                <FormField label="Show in tab context">
+                  <Select value={data.tabContext} onValueChange={v => onChange({ tabContext: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {['All patient tabs', 'Gaps tab only', 'Orders tab only', 'Care Programs tab'].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </FormField>
+                <FormField label="Background behavior">
+                  <Select value={data.background} onValueChange={v => onChange({ background: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {['Dim patient chart', 'No dim'].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </FormField>
               </div>
             )}
             {/* P360 tab config */}
@@ -278,22 +278,23 @@ function StepSurfaces({ data, onChange }) {
             )}
             {/* Widget card config */}
             {data.webPlacement === 'widget-card' && (
-              <div className={s.modalGrid} style={{ gap: 12 }}>
-                <div className={s.formGroup}>
-                  <label className={s.label}>Display in drawer tab</label>
-                  <select className={s.select} value={data.drawerTab} onChange={e => onChange({ drawerTab: e.target.value })}>
-                    {DRAWER_TAB_OPTIONS.map(t => <option key={t}>{t}</option>)}
-                  </select>
-                  <span className={s.hint}>Widget appears as a card within this tab</span>
-                </div>
-                <div className={s.formGroup}>
-                  <label className={s.label}>Widget height</label>
-                  <select className={s.select} value={data.widgetHeight} onChange={e => onChange({ widgetHeight: e.target.value })}>
-                    <option>Auto (up to 280px)</option>
-                    <option>Fixed 200px</option>
-                    <option>Fixed 300px</option>
-                  </select>
-                </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <FormField label="Display in drawer tab" hint="Widget appears as a card within this tab">
+                  <Select value={data.drawerTab} onValueChange={v => onChange({ drawerTab: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {DRAWER_TAB_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </FormField>
+                <FormField label="Widget height">
+                  <Select value={data.widgetHeight} onValueChange={v => onChange({ widgetHeight: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {['Auto (up to 280px)', 'Fixed 200px', 'Fixed 300px'].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </FormField>
               </div>
             )}
             {/* Action menu config */}
@@ -330,13 +331,14 @@ function StepSurfaces({ data, onChange }) {
                     );
                   })}
                 </div>
-                <div className={s.formGroup}>
-                  <label className={s.label}>Action triggers</label>
-                  <select className={s.select} value={data.actionTrigger} onChange={e => onChange({ actionTrigger: e.target.value })}>
-                    <option>Opens a drawer on the right</option>
-                    <option>Opens full-screen view</option>
-                  </select>
-                </div>
+                <FormField label="Action triggers">
+                  <Select value={data.actionTrigger} onValueChange={v => onChange({ actionTrigger: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {['Opens a drawer on the right', 'Opens full-screen view'].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </FormField>
               </div>
             )}
           </div>
@@ -378,24 +380,27 @@ function StepSurfaces({ data, onChange }) {
                   </div>
                 )}
                 {data.sidecarPlacement === 'widget' && (
-                  <div className={s.formGroup}>
-                    <label className={s.label}>Display in existing tab</label>
-                    <select className={s.select} value={data.sidecarWidgetTab} onChange={e => onChange({ sidecarWidgetTab: e.target.value })}>
-                      {DRAWER_TAB_OPTIONS.map(t => <option key={t}>{t}</option>)}
-                    </select>
-                    <span className={s.hint}>Widget appears as a collapsible card within this tab</span>
-                  </div>
+                  <FormField label="Display in existing tab" hint="Widget appears as a collapsible card within this tab">
+                    <Select value={data.sidecarWidgetTab} onValueChange={v => onChange({ sidecarWidgetTab: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {DRAWER_TAB_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </FormField>
                 )}
               </>
             ) : (
               <>
                 <div className={s.infoAmber} style={{ marginBottom: 10 }}>No patient context available. JWT contains only userId and accountId. Suitable for account-level dashboards or task notifications only.</div>
-                <div className={s.formGroup}>
-                  <label className={s.label}>Placement in global view</label>
-                  <select className={s.select} value={data.sidecarGlobalPlacement} onChange={e => onChange({ sidecarGlobalPlacement: e.target.value })}>
-                    {SIDECAR_GLOBAL_PLACEMENTS.map(p => <option key={p}>{p}</option>)}
-                  </select>
-                </div>
+                <FormField label="Placement in global view">
+                  <Select value={data.sidecarGlobalPlacement} onValueChange={v => onChange({ sidecarGlobalPlacement: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {SIDECAR_GLOBAL_PLACEMENTS.map(p => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </FormField>
               </>
             )}
           </div>
@@ -449,30 +454,29 @@ function StepContext({ data, onChange }) {
 
   return (
     <div style={{ maxWidth: '100%' }}>
-      <div className={s.modalGrid} style={{ gap: 14, marginBottom: 16 }}>
-        <div className={s.formGroup}>
-          <label className={s.label}>Domain *</label>
-          <select className={s.select} value={data.domainId} onChange={e => onChange({ domainId: Number(e.target.value) })}>
-            {activeDomains.map(d => <option key={d.id} value={d.id}>{d.domain}</option>)}
-          </select>
-        </div>
-        <div className={s.formGroup}>
-          <label className={s.label}>Path *</label>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 16 }}>
+        <FormField label="Domain *">
+          <Select value={String(data.domainId)} onValueChange={v => onChange({ domainId: Number(v) })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {activeDomains.map(d => <SelectItem key={d.id} value={String(d.id)}>{d.domain}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </FormField>
+        <FormField label="Path *" hint={fullUrl ? `Full URL: ${fullUrl}` : undefined}>
           <Input value={data.url} onChange={e => onChange({ url: e.target.value })} placeholder="/widget/..." />
-          {fullUrl && <span className={s.hint}>Full URL: {fullUrl}</span>}
-        </div>
-        <div className={s.formGroup}>
-          <label className={s.label}>Test / staging URL</label>
+        </FormField>
+        <FormField label="Test / staging URL" hint="Used in preview mode — no real patient data">
           <Input value={data.stagingUrl} onChange={e => onChange({ stagingUrl: e.target.value })} placeholder="/widget/...?env=staging" />
-          <span className={s.hint}>Used in preview mode — no real patient data</span>
-        </div>
-        <div className={s.formGroup}>
-          <label className={s.label}>Token lifetime</label>
-          <select className={s.select} value={data.tokenLifetime} onChange={e => onChange({ tokenLifetime: Number(e.target.value) })}>
-            {TOKEN_LIFETIME_OPTIONS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-          </select>
-          {data.tokenLifetime === 30 && <span className={s.hint}>Use 30 min for complex workflows like prior auth</span>}
-        </div>
+        </FormField>
+        <FormField label="Token lifetime" hint={data.tokenLifetime === 30 ? 'Use 30 min for complex workflows like prior auth' : undefined}>
+          <Select value={String(data.tokenLifetime)} onValueChange={v => onChange({ tokenLifetime: Number(v) })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {TOKEN_LIFETIME_OPTIONS.map(t => <SelectItem key={t.value} value={String(t.value)}>{t.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </FormField>
       </div>
 
       <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)', marginBottom: 8 }}>
