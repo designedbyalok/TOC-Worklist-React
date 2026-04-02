@@ -1,0 +1,268 @@
+/* ── Login Page — Figma: DO Care Programs, node 2245:910663 ── */
+
+.page {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Left Panel (Illustration) ── */
+.leftPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.heroWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.gridBg {
+  position: absolute;
+  inset: -40px;
+  background-image:
+    linear-gradient(rgba(140, 90, 226, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140, 90, 226, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.heroImg {
+  max-width: 80%;
+  max-height: 70vh;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+}
+
+.dots {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+}
+
+.dot {
+  width: 32px;
+  height: 3px;
+  border-radius: 5px;
+  background: #D9D9D9;
+}
+
+.dotActive {
+  composes: dot;
+  background: var(--neutral-50, #F6F7F8);
+}
+
+/* ── Right Panel (Form) ── */
+.rightPanel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.formContainer {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoText {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--neutral-500, #16181D);
+  letter-spacing: -0.3px;
+}
+
+/* Welcome */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.welcomeTitle {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.welcomePurple {
+  color: var(--primary-300, #8C5AE2);
+}
+
+.welcomeDark {
+  color: var(--neutral-400, #3A485F);
+}
+
+.welcomeSub {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-300, #6F7A90);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Form */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-200, #8A94A8);
+  line-height: 1.2;
+}
+
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.forgotLink {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--primary-300, #8C5AE2);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  padding: 0;
+}
+
+.forgotLink:hover {
+  text-decoration: underline;
+}
+
+.passwordWrap {
+  position: relative;
+}
+
+.passwordWrap input {
+  padding-right: 36px;
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.eyeBtn:hover {
+  background: var(--neutral-50, #F6F7F8);
+}
+
+/* Error */
+.error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--status-error, #D72825);
+  padding: 8px 12px;
+  background: var(--status-error-light, #FFF5F5);
+  border-radius: 6px;
+  border: 0.5px solid rgba(215, 40, 37, 0.15);
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 0.5px;
+  background: var(--neutral-150, #D0D6E1);
+}
+
+.dividerText {
+  font-size: 12px;
+  color: var(--neutral-200, #8A94A8);
+  white-space: nowrap;
+}
+
+/* OAuth buttons */
+.oauthRow {
+  display: flex;
+  gap: 12px;
+}
+
+.oauthBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  border: 0.5px solid var(--neutral-150, #D0D6E1);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-400, #3A485F);
+  transition: border-color .15s, background .15s;
+}
+
+.oauthBtn:hover {
+  border-color: var(--primary-200, #D7C0FF);
+  background: var(--neutral-50, #F6F7F8);
+}
+
+.oauthBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .leftPanel { display: none; }
+  .rightPanel { padding: 24px; }
+}

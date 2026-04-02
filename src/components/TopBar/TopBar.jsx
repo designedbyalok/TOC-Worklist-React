@@ -85,7 +85,16 @@ export function TopBar() {
           )}
         </div>
         <button className={styles.btnSecondary}>Schedule</button>
-        <Avatar variant="provider" initials="RF" />
+        <button
+          onClick={async () => {
+            const { supabase } = await import('../../lib/supabase');
+            await supabase.auth.signOut();
+          }}
+          title="Sign out"
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        >
+          <Avatar variant="provider" initials="RF" />
+        </button>
       </div>
     </header>
   );
