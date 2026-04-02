@@ -5,13 +5,11 @@ import { Button } from '../../components/Button/Button';
 import { SearchIconButton } from '../../components/SearchIconButton/SearchIconButton';
 import { DomainRegistryPanel } from './panels/DomainRegistryPanel';
 import { ComponentLibraryPanel } from './panels/ComponentLibraryPanel';
-import { AuditLogPanel } from './panels/AuditLogPanel';
 import styles from './EmbeddedComponentsSettings.module.css';
 
 const TAB_MAP = {
   'domain-registry': 'Domain Registry',
   'component-library': 'Component Library',
-  'audit-log': 'Audit Log',
 };
 const TAB_KEYS = Object.keys(TAB_MAP);
 
@@ -46,11 +44,7 @@ export function EmbeddedComponentsSettings() {
                 <input
                   autoFocus
                   type="text"
-                  placeholder={
-                    embeddedComponentsTab === 'component-library' ? 'Search components...'
-                    : embeddedComponentsTab === 'audit-log' ? 'Search audit log...'
-                    : 'Search domains...'
-                  }
+                  placeholder={embeddedComponentsTab === 'component-library' ? 'Search components...' : 'Search domains...'}
                   value={searchVal}
                   onChange={e => setSearchVal(e.target.value)}
                 />
@@ -62,35 +56,29 @@ export function EmbeddedComponentsSettings() {
               <SearchIconButton title="Search" onClick={() => setSearchOpen(true)} />
             )}
           </div>
-          {embeddedComponentsTab !== 'audit-log' && (
-            <>
-              <span className={styles.tabDivider} />
-              <Button
-                variant="primary"
-                size="L"
-                leadingIcon="solar:add-circle-linear"
-                onClick={() => {
-                  if (embeddedComponentsTab === 'component-library') {
-                    setComponentWizard(true, null);
-                  } else {
-                    setDomainAddTrigger(true);
-                  }
-                }}
-              >
-                {embeddedComponentsTab === 'component-library' ? 'New Component' : 'Register Domain'}
-              </Button>
-            </>
-          )}
+          <span className={styles.tabDivider} />
+          <Button
+            variant="primary"
+            size="L"
+            leadingIcon="solar:add-circle-linear"
+            onClick={() => {
+              if (embeddedComponentsTab === 'component-library') {
+                setComponentWizard(true, null);
+              } else {
+                setDomainAddTrigger(true);
+              }
+            }}
+          >
+            {embeddedComponentsTab === 'component-library' ? 'New Component' : 'Register Domain'}
+          </Button>
         </div>
       </div>
 
       <div className={styles.tableWrap}>
         {embeddedComponentsTab === 'domain-registry' ? (
           <DomainRegistryPanel searchQuery={searchVal} />
-        ) : embeddedComponentsTab === 'component-library' ? (
-          <ComponentLibraryPanel searchQuery={searchVal} />
         ) : (
-          <AuditLogPanel searchQuery={searchVal} />
+          <ComponentLibraryPanel searchQuery={searchVal} />
         )}
       </div>
     </div>

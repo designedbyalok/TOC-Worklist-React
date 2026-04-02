@@ -6,13 +6,14 @@ import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { Switch } from '../../../components/Switch/Switch';
 import { useAppStore } from '../../../store/useAppStore';
 import { DOMAINS, DOMAIN_CATEGORIES, HIPAA_OPTIONS, COMPONENTS } from '../../../data/embeddedComponents';
+import { AuditLogDrawer } from './AuditLogDrawer';
 
 const thStyle = {
-  textAlign: 'left', padding: '8px 16px', color: 'var(--neutral-300)', fontWeight: 500,
-  fontSize: 12, whiteSpace: 'nowrap', borderBottom: '1px solid var(--neutral-150)',
+  textAlign: 'left', padding: '8px 16px', color: '#6F7A90', fontWeight: 500,
+  fontSize: 12, whiteSpace: 'nowrap', borderBottom: '1px solid #D0D6E1',
   background: 'var(--neutral-0)', position: 'sticky', top: 0,
 };
-const tdStyle = { padding: '10px 16px', fontSize: 13, color: 'var(--neutral-400)', verticalAlign: 'middle' };
+const tdStyle = { padding: '12px 16px', fontSize: 14, fontWeight: 400, color: '#3D4A5C', verticalAlign: 'middle' };
 
 const inputStyle = { padding: '8px 12px', border: '0.5px solid var(--neutral-150)', borderRadius: 8, fontSize: 13, fontFamily: "'Inter', sans-serif", width: '100%', outline: 'none', background: '#fff', color: 'var(--neutral-500)' };
 const labelStyle = { fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)', marginBottom: 4 };
@@ -307,6 +308,8 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingDomain, setDeletingDomain] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [infoDismissed, setInfoDismissed] = useState(false);
+  const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
 
   // Listen for "add new" trigger from parent (EmbeddedComponentsSettings)
   const domainAddTrigger = useAppStore(s => s.domainAddTrigger);
@@ -389,21 +392,26 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
   return (
     <>
       {/* Blue info banner */}
-      <div style={{
-        display: 'flex', gap: 8, padding: '10px 14px', borderRadius: 8,
-        background: '#EFF6FF', border: '0.5px solid #BFDBFE', margin: '16px 16px 16px 16px',
-      }}>
-        <Icon name="solar:info-circle-linear" size={16} color="#3B82F6" style={{ flexShrink: 0, marginTop: 1 }} />
-        <div style={{ fontSize: 12, color: '#1E40AF', lineHeight: 1.5 }}>
-          Domains are account-scoped. Only URLs from registered domains can be used when configuring components. Both configuration-time and runtime URL validation are enforced.
+      {!infoDismissed && (
+        <div style={{
+          display: 'flex', gap: 8, padding: '10px 16px', alignItems: 'center',
+          background: '#EFF6FF', borderBottom: '0.5px solid #BFDBFE',
+        }}>
+          <Icon name="solar:info-circle-linear" size={16} color="#3B82F6" style={{ flexShrink: 0 }} />
+          <div style={{ fontSize: 12, color: '#1E40AF', lineHeight: 1.5, flex: 1 }}>
+            Domains are account-scoped. Only URLs from registered domains can be used when configuring components.
+          </div>
+          <button onClick={() => setInfoDismissed(true)} style={{
+            background: 'none', border: 'none', cursor: 'pointer', padding: 4,
+            color: '#93C5FD', flexShrink: 0, lineHeight: 1, fontSize: 14,
+          }}>
+            <Icon name="solar:close-circle-linear" size={16} color="#93C5FD" />
+          </button>
         </div>
-      </div>
+      )}
 
-      {/* Card wrapping table */}
-      <div style={{
-        border: '0.5px solid var(--neutral-100)', borderRadius: 10,
-        overflow: 'hidden', background: '#fff', margin: '0 16px',
-      }}>
+      {/* Table — edge-to-edge, no card wrapper */}
+      <div>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
           <thead>
             <tr>
@@ -436,7 +444,7 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
                 <tr
                   key={d.id}
                   style={{
-                    borderBottom: '1px solid #EAECF0',
+                    borderBottom: '0.5px solid #EAECF0',
                     transition: 'background .1s',
                     ...(isDisabled ? { opacity: 0.55 } : {}),
                   }}
@@ -444,7 +452,7 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
                   onMouseOut={e => e.currentTarget.style.background = ''}
                 >
                   {/* Vendor */}
-                  <td style={{ ...tdStyle, fontWeight: 500, fontSize: 13, color: 'var(--neutral-500)' }}>
+                  <td style={{ ...tdStyle, fontWeight: 500, color: '#1A1F36' }}>
                     {d.vendor}
                   </td>
 
@@ -497,6 +505,8 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit" onClick={() => openEdit(d)} />
                       <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                      <ActionButton icon="solar:history-linear" size="L" tooltip="Audit Log" onClick={() => setAuditDrawerEntity({ type: 'Domain', name: d.vendor, domain: d.domain, id: d.id })} />
+                      <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
                       <ActionButton icon="solar:trash-bin-minimalistic-linear" size="L" tooltip="Delete" onClick={() => openDelete(d)} />
                     </div>
                   </td>
@@ -508,7 +518,7 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
       </div>
 
       {/* Footer */}
-      <div style={{ fontSize: 12, color: 'var(--neutral-200)', padding: '12px 20px 12px' }}>
+      <div style={{ fontSize: 12, color: '#6F7A90', padding: '12px 16px' }}>
         {domains.length} domain{domains.length !== 1 ? 's' : ''} &middot; {enabledDomains.length} enabled &middot; {disabledDomains.length} disabled
       </div>
 
@@ -535,6 +545,10 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
           onConfirm={handleDelete}
           deleting={deleting}
         />
+      )}
+
+      {auditDrawerEntity && (
+        <AuditLogDrawer entity={auditDrawerEntity} onClose={() => setAuditDrawerEntity(null)} />
       )}
     </>
   );
