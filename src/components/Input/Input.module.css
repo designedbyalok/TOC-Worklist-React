@@ -1,0 +1,62 @@
+/* ── Fold Health Input ──
+ * Figma: Fold-Pixel, node 25:21239
+ *
+ * States: Placeholder, Filled, Hover, Focus, Disabled, Error
+ *
+ * Matches the Agent Name input (CreateAgentDrawer) and
+ * the Analytics filter field exactly.
+ */
+
+.input {
+  height: 32px;
+  width: 100%;
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 6px;
+  padding: 0 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-400);
+  background: #fff;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  line-height: 1.2;
+}
+
+.input:hover {
+  border-color: var(--neutral-200);
+}
+
+.input:focus {
+  border-color: var(--primary-300);
+  box-shadow: 0 0 0 2px rgba(140, 90, 226, 0.12);
+}
+
+.input::placeholder {
+  color: var(--neutral-200);
+  font-weight: 400;
+}
+
+.input:disabled {
+  background: var(--neutral-50);
+  color: var(--neutral-300);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.input:read-only {
+  background: var(--neutral-50);
+  color: var(--neutral-300);
+  cursor: default;
+}
+
+/* Error variant */
+.inputError {
+  border-color: var(--status-error);
+  background: var(--status-error-light);
+}
+
+.inputError:focus {
+  border-color: var(--status-error);
+  box-shadow: 0 0 0 2px rgba(215, 40, 37, 0.12);
+}

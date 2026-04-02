@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Drawer } from '../../components/Drawer/Drawer';
 import { Icon } from '../../components/Icon/Icon';
 import { Button } from '../../components/Button/Button';
+import { Input } from '../../components/Input/Input';
 import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import styles from './CreateAgentDrawer.module.css';
@@ -48,7 +49,7 @@ function StepMethodSelect({ agentName, setAgentName, onSelect }) {
     <div className={styles.stepContent}>
       <div className={styles.field}>
         <label className={styles.fieldLabel}>Agent Name <span className={styles.fieldRequired} /></label>
-        <input className={styles.fieldInput} type="text" placeholder="Enter agent name" value={agentName} onChange={e => setAgentName(e.target.value)} />
+        <Input type="text" placeholder="Enter agent name" value={agentName} onChange={e => setAgentName(e.target.value)} />
       </div>
       <div className={styles.sectionHeading}>
         <div className={styles.sectionTitle}>Create Agent Workflow</div>
@@ -80,7 +81,7 @@ function StepTemplateSelect({ agentName, setAgentName, selectedTemplate, setSele
     <div className={styles.stepContent}>
       <div className={styles.field}>
         <label className={styles.fieldLabel}>Agent Name <span className={styles.fieldRequired} /></label>
-        <input className={styles.fieldInput} type="text" placeholder="Enter agent name" value={agentName} onChange={e => setAgentName(e.target.value)} />
+        <Input type="text" placeholder="Enter agent name" value={agentName} onChange={e => setAgentName(e.target.value)} />
       </div>
       <div className={styles.sectionHeading}>
         <div className={styles.sectionTitle}>Create Agent Workflow</div>
@@ -284,7 +285,7 @@ function StepPrompt({ agentName, setAgentName, onBack, prompt, setPrompt }) {
     <div className={styles.stepContent}>
       <div className={styles.field}>
         <label className={styles.fieldLabel}>Agent Name <span className={styles.fieldRequired} /></label>
-        <input className={styles.fieldInput} type="text" placeholder="Enter agent name" value={agentName} onChange={e => setAgentName(e.target.value)} />
+        <Input type="text" placeholder="Enter agent name" value={agentName} onChange={e => setAgentName(e.target.value)} />
       </div>
 
       <div className={styles.sectionHeading}>

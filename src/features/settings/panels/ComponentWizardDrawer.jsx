@@ -4,6 +4,8 @@ import { Badge } from '../../../components/Badge/Badge';
 import { Button } from '../../../components/Button/Button';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { Switch } from '../../../components/Switch/Switch';
+import { Input } from '../../../components/Input/Input';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../../components/ui/select';
 import { useAppStore } from '../../../store/useAppStore';
 import {
   DOMAINS, COMPONENTS, COMPONENT_CATEGORIES, ICON_OPTIONS, VISIBILITY_OPTIONS,
@@ -99,52 +101,68 @@ function Stepper({ step }) {
   );
 }
 
+/* ── Reusable form field wrapper ── */
+function FormField({ label, hint, children, style }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, ...style }}>
+      <label className={s.label}>{label}</label>
+      {children}
+      {hint && <span className={s.hint}>{hint}</span>}
+    </div>
+  );
+}
+
 /* ── Step 1: Identity ── */
 function StepIdentity({ data, onChange }) {
   return (
     <div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div className={s.formGroup} style={{ marginBottom: 0 }}>
-          <label className={s.label}>Component name *</label>
-          <input className={s.input} value={data.name} onChange={e => onChange({ name: e.target.value })} placeholder="e.g. Prior Auth Widget" />
-        </div>
+        <FormField label="Component name *">
+          <Input value={data.name} onChange={e => onChange({ name: e.target.value })} placeholder="e.g. Prior Auth Widget" />
+        </FormField>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <div className={s.formGroup} style={{ marginBottom: 0 }}>
-            <label className={s.label}>Category</label>
-            <select className={s.select} value={data.category} onChange={e => onChange({ category: e.target.value })}>
-              {COMPONENT_CATEGORIES.map(c => <option key={c}>{c}</option>)}
-            </select>
-          </div>
-          <div className={s.formGroup} style={{ marginBottom: 0 }}>
-            <label className={s.label}>Visible to</label>
-            <select className={s.select} value={data.visibleTo} onChange={e => onChange({ visibleTo: e.target.value })}>
-              {VISIBILITY_OPTIONS.map(v => <option key={v}>{v}</option>)}
-            </select>
-          </div>
+          <FormField label="Category">
+            <Select value={data.category} onValueChange={v => onChange({ category: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {COMPONENT_CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </FormField>
+          <FormField label="Visible to">
+            <Select value={data.visibleTo} onValueChange={v => onChange({ visibleTo: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {VISIBILITY_OPTIONS.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </FormField>
         </div>
-        <div className={s.formGroup} style={{ marginBottom: 0 }}>
-          <label className={s.label}>Description <span style={{ fontWeight: 400, color: 'var(--neutral-200)' }}>(shown to providers in About popup)</span></label>
+        <FormField label={<>Description <span style={{ fontWeight: 400, color: 'var(--neutral-200)' }}>(shown to providers in About popup)</span></>} hint={`${data.description.length}/200`}>
           <textarea className={s.textarea} value={data.description} onChange={e => onChange({ description: e.target.value.slice(0, 200) })} maxLength={200} placeholder="What does this component do?" />
-          <span className={s.hint}>{data.description.length}/200</span>
-        </div>
-        <div className={s.formGroup} style={{ marginBottom: 0 }}>
-          <label className={s.label}>Activation</label>
-          <select className={s.select} value={data.activation} onChange={e => onChange({ activation: e.target.value })}>
-            {ACTIVATION_OPTIONS.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
-          </select>
-        </div>
+        </FormField>
+        <FormField label="Activation">
+          <Select value={data.activation} onValueChange={v => onChange({ activation: v })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {ACTIVATION_OPTIONS.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </FormField>
       </div>
       {data.activation === 'conditional' && (
         <div style={{ marginTop: 10 }}>
           <div className={s.infoBox} style={{ background: 'var(--primary-50)', color: 'var(--primary-400)', border: '0.5px solid rgba(140,90,226,.15)' }}>
             Component surfaces only when the selected condition is true — prevents irrelevant components from cluttering the provider view.
           </div>
-          <div className={s.formGroup}>
-            <label className={s.label}>Show when</label>
-            <select className={s.select} value={data.condition} onChange={e => onChange({ condition: e.target.value })}>
-              {CONDITION_OPTIONS.map(c => <option key={c}>{c}</option>)}
-            </select>
-          </div>
+          <FormField label="Show when">
+            <Select value={data.condition} onValueChange={v => onChange({ condition: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {CONDITION_OPTIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </FormField>
         </div>
       )}
     </div>
@@ -255,7 +273,7 @@ function StepSurfaces({ data, onChange }) {
             {data.webPlacement === 'p360-tab' && (
               <div className={s.formGroup}>
                 <label className={s.label}>Tab label</label>
-                <input className={s.input} style={{ maxWidth: 220 }} value={data.webTabLabel} onChange={e => onChange({ webTabLabel: e.target.value })} />
+                <Input style={{ maxWidth: 220 }} value={data.webTabLabel} onChange={e => onChange({ webTabLabel: e.target.value })} />
               </div>
             )}
             {/* Widget card config */}
@@ -356,7 +374,7 @@ function StepSurfaces({ data, onChange }) {
                 {data.sidecarPlacement === 'tab' && (
                   <div className={s.formGroup}>
                     <label className={s.label}>Tab label in Sidecar</label>
-                    <input className={s.input} style={{ maxWidth: 200 }} value={data.sidecarTabLabel} onChange={e => onChange({ sidecarTabLabel: e.target.value })} />
+                    <Input style={{ maxWidth: 200 }} value={data.sidecarTabLabel} onChange={e => onChange({ sidecarTabLabel: e.target.value })} />
                   </div>
                 )}
                 {data.sidecarPlacement === 'widget' && (
@@ -408,7 +426,7 @@ function StepSurfaces({ data, onChange }) {
             {data.mobilePlacement === 'profile-tab' && (
               <div className={s.formGroup}>
                 <label className={s.label}>Tab label on mobile</label>
-                <input className={s.input} style={{ maxWidth: 200 }} value={data.mobileTabLabel} onChange={e => onChange({ mobileTabLabel: e.target.value })} />
+                <Input style={{ maxWidth: 200 }} value={data.mobileTabLabel} onChange={e => onChange({ mobileTabLabel: e.target.value })} />
               </div>
             )}
             {data.mobilePlacement === 'home-card' && (
@@ -440,12 +458,12 @@ function StepContext({ data, onChange }) {
         </div>
         <div className={s.formGroup}>
           <label className={s.label}>Path *</label>
-          <input className={s.input} value={data.url} onChange={e => onChange({ url: e.target.value })} placeholder="/widget/..." />
+          <Input value={data.url} onChange={e => onChange({ url: e.target.value })} placeholder="/widget/..." />
           {fullUrl && <span className={s.hint}>Full URL: {fullUrl}</span>}
         </div>
         <div className={s.formGroup}>
           <label className={s.label}>Test / staging URL</label>
-          <input className={s.input} value={data.stagingUrl} onChange={e => onChange({ stagingUrl: e.target.value })} placeholder="/widget/...?env=staging" />
+          <Input value={data.stagingUrl} onChange={e => onChange({ stagingUrl: e.target.value })} placeholder="/widget/...?env=staging" />
           <span className={s.hint}>Used in preview mode — no real patient data</span>
         </div>
         <div className={s.formGroup}>
