@@ -322,6 +322,125 @@ export const useAppStore = create((set, get) => ({
   domainAddTrigger: false,
   setDomainAddTrigger: (v) => set({ domainAddTrigger: v }),
 
+  // ── Embed Domains (Supabase-backed) ──
+  embedDomains: [],
+  embedDomainsLoading: false,
+  fetchEmbedDomains: async () => {
+    set({ embedDomainsLoading: true });
+    const { data, error } = await supabase.from('embed_domains').select('*').order('id');
+    if (error) { console.warn('[store] embed_domains fetch failed:', error.message); set({ embedDomainsLoading: false }); return; }
+    const { domainDbToJs } = await import('../lib/embedMapper');
+    set({ embedDomains: (data || []).map(domainDbToJs), embedDomainsLoading: false });
+  },
+  addEmbedDomain: async (domain) => {
+    const { domainJsToDb } = await import('../lib/embedMapper');
+    const row = domainJsToDb(domain);
+    const { data, error } = await supabase.from('embed_domains').insert(row).select();
+    if (error) { console.warn('[store] addEmbedDomain failed:', error.message); return null; }
+    const { domainDbToJs } = await import('../lib/embedMapper');
+    const newDomain = domainDbToJs(data[0]);
+    set(s => ({ embedDomains: [...s.embedDomains, newDomain] }));
+    get().logAudit('Domain', newDomain.id, newDomain.domain, 'created', `Registered — category: ${newDomain.category}, HIPAA: ${newDomain.hipaa}`, 'Lifecycle');
+    return newDomain;
+  },
+  updateEmbedDomain: async (id, updates) => {
+    const { domainJsToDb } = await import('../lib/embedMapper');
+    const dbUpdates = domainJsToDb(updates);
+    await supabase.from('embed_domains').update(dbUpdates).eq('id', id);
+    set(s => ({ embedDomains: s.embedDomains.map(d => d.id === id ? { ...d, ...updates } : d) }));
+    const domain = get().embedDomains.find(d => d.id === id);
+    get().logAudit('Domain', id, domain?.domain || '', 'updated', Object.keys(updates).join(', ') + ' changed', 'Configuration');
+  },
+  deleteEmbedDomain: async (id) => {
+    const domain = get().embedDomains.find(d => d.id === id);
+    await supabase.from('embed_domains').delete().eq('id', id);
+    set(s => ({ embedDomains: s.embedDomains.filter(d => d.id !== id) }));
+    if (domain) get().logAudit('Domain', id, domain.domain, 'deleted', `Domain removed`, 'Lifecycle');
+  },
+  toggleEmbedDomain: async (id) => {
+    const domain = get().embedDomains.find(d => d.id === id);
+    if (!domain) return;
+    const newEnabled = !domain.enabled;
+    await supabase.from('embed_domains').update({ enabled: newEnabled }).eq('id', id);
+    set(s => ({ embedDomains: s.embedDomains.map(d => d.id === id ? { ...d, enabled: newEnabled } : d) }));
+    get().logAudit('Domain', id, domain.domain, newEnabled ? 'enabled' : 'disabled', newEnabled ? 'Domain enabled' : 'Domain disabled', 'Status');
+  },
+
+  // ── Embed Components (Supabase-backed) ──
+  embedComponents: [],
+  embedComponentsLoading: false,
+  fetchEmbedComponents: async () => {
+    set({ embedComponentsLoading: true });
+    const { data, error } = await supabase.from('embed_components').select('*').order('id');
+    if (error) { console.warn('[store] embed_components fetch failed:', error.message); set({ embedComponentsLoading: false }); return; }
+    const { componentDbToJs } = await import('../lib/embedMapper');
+    set({ embedComponents: (data || []).map(componentDbToJs), embedComponentsLoading: false });
+  },
+  addEmbedComponent: async (comp) => {
+    const { componentJsToDb } = await import('../lib/embedMapper');
+    const row = componentJsToDb(comp);
+    const { data, error } = await supabase.from('embed_components').insert(row).select();
+    if (error) { console.warn('[store] addEmbedComponent failed:', error.message); return null; }
+    const { componentDbToJs } = await import('../lib/embedMapper');
+    const newComp = componentDbToJs(data[0]);
+    set(s => ({ embedComponents: [...s.embedComponents, newComp] }));
+    get().logAudit('Component', newComp.id, newComp.name, 'created', `Created on domain ${newComp.domain}`, 'Lifecycle');
+    return newComp;
+  },
+  updateEmbedComponent: async (id, updates) => {
+    const { componentJsToDb } = await import('../lib/embedMapper');
+    const dbUpdates = componentJsToDb(updates);
+    await supabase.from('embed_components').update(dbUpdates).eq('id', id);
+    set(s => ({ embedComponents: s.embedComponents.map(c => c.id === id ? { ...c, ...updates } : c) }));
+    const comp = get().embedComponents.find(c => c.id === id);
+    get().logAudit('Component', id, comp?.name || '', 'updated', Object.keys(updates).join(', ') + ' changed', 'Configuration');
+  },
+  deleteEmbedComponent: async (id) => {
+    const comp = get().embedComponents.find(c => c.id === id);
+    await supabase.from('embed_components').delete().eq('id', id);
+    set(s => ({ embedComponents: s.embedComponents.filter(c => c.id !== id) }));
+    if (comp) get().logAudit('Component', id, comp.name, 'deleted', `Component removed`, 'Lifecycle');
+  },
+  toggleEmbedComponent: async (id) => {
+    const comp = get().embedComponents.find(c => c.id === id);
+    if (!comp) return;
+    const newEnabled = !comp.enabled;
+    await supabase.from('embed_components').update({ enabled: newEnabled }).eq('id', id);
+    set(s => ({ embedComponents: s.embedComponents.map(c => c.id === id ? { ...c, enabled: newEnabled } : c) }));
+    get().logAudit('Component', id, comp.name, newEnabled ? 'enabled' : 'disabled', newEnabled ? 'Component enabled' : 'Component disabled', 'Status');
+  },
+  duplicateEmbedComponent: async (id) => {
+    const comp = get().embedComponents.find(c => c.id === id);
+    if (!comp) return null;
+    const { componentJsToDb } = await import('../lib/embedMapper');
+    const dup = { ...comp, name: comp.name + ' (Copy)', enabled: false, id: undefined };
+    const row = componentJsToDb(dup);
+    delete row.id;
+    const { data, error } = await supabase.from('embed_components').insert(row).select();
+    if (error) { console.warn('[store] duplicateEmbedComponent failed:', error.message); return null; }
+    const { componentDbToJs } = await import('../lib/embedMapper');
+    const newComp = componentDbToJs(data[0]);
+    set(s => ({ embedComponents: [...s.embedComponents, newComp] }));
+    get().logAudit('Component', newComp.id, newComp.name, 'created', `Duplicated from "${comp.name}"`, 'Lifecycle');
+    return newComp;
+  },
+
+  // ── Audit Log (Supabase-backed) ──
+  logAudit: async (entityType, entityId, entityName, action, details, category) => {
+    const row = { entity_type: entityType, entity_id: entityId, entity_name: entityName, action, user_name: 'Current User', details: details || null, category: category || null };
+    const { error } = await supabase.from('audit_logs').insert(row);
+    if (error) console.warn('[store] logAudit failed:', error.message);
+  },
+  fetchAuditLogs: async (entityType, entityId) => {
+    let query = supabase.from('audit_logs').select('*').order('created_at', { ascending: false });
+    if (entityType) query = query.eq('entity_type', entityType);
+    if (entityId) query = query.eq('entity_id', entityId);
+    const { data, error } = await query.limit(100);
+    if (error) { console.warn('[store] fetchAuditLogs failed:', error.message); return []; }
+    const { auditLogDbToJs } = await import('../lib/embedMapper');
+    return (data || []).map(auditLogDbToJs);
+  },
+
   // FAQs
   faqsData: null,
   fetchFaqs: async () => {

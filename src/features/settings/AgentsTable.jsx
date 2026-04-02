@@ -237,7 +237,7 @@ export function AgentsTable() {
               style={goalsFilterOpen ? { background: 'var(--primary-50)' } : {}} />
           )}
           <span className={styles.tabDivider} />
-          <Button variant="primary" size="L" leadingIcon="solar:add-circle-linear" onClick={() => {
+          <Button variant="secondary" size="L" leadingIcon="solar:add-circle-linear" onClick={() => {
             if (settingsTab === 'goals') {
               setGoalWizard(true, null);
             } else if (settingsTab === 'knowledge base') {

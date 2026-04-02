@@ -12,6 +12,7 @@ import { chatGroups as fallbackChatGroups, availableUsers, availableRoles, defau
 import { FALLBACK_KPIS, FALLBACK_TIME_SERIES, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS, FALLBACK_CONFIGS } from '../data/analyticsFallbacks';
 import { updatesToDb } from './patientMapper';
 import { callDetailJsToDb } from './callDetailsMapper';
+import { DOMAINS as fallbackDomains, COMPONENTS as fallbackComponents } from '../data/embeddedComponents';
 
 const SEED_FLAG = '__supabase_seeded';
 
@@ -337,6 +338,76 @@ async function seedAnalyticsConfigs() {
 }
 
 // ── Main: Run all seeds ──
+// ── Seed embed domains ──
+async function seedEmbedDomains() {
+  if (!(await isTableEmpty('embed_domains'))) return;
+  console.log('[seed] Seeding embed_domains...');
+  const rows = fallbackDomains.map(d => ({
+    id: d.id,
+    vendor: d.vendor,
+    domain: d.domain,
+    category: d.category,
+    hipaa: d.hipaa,
+    enabled: d.status !== 'removed',
+    added_date: d.addedDate,
+  }));
+  const { error } = await supabase.from('embed_domains').upsert(rows, { onConflict: 'id' });
+  if (error) console.warn('[seed] embed_domains error:', error.message);
+  else console.log(`[seed] Seeded ${rows.length} embed_domains`);
+}
+
+// ── Seed embed components ──
+async function seedEmbedComponents() {
+  if (!(await isTableEmpty('embed_components'))) return;
+  console.log('[seed] Seeding embed_components...');
+  const rows = fallbackComponents.map(c => ({
+    id: c.id,
+    name: c.name,
+    category: c.category,
+    description: c.description || '',
+    domain_id: c.domainId,
+    domain: c.domain,
+    surfaces: c.surfaces || [],
+    placements: c.placements || {},
+    web_config: c.webConfig || {},
+    sidecar_config: c.sidecarConfig || {},
+    mobile_config: c.mobileConfig || {},
+    url: c.url || '',
+    staging_url: c.stagingUrl || '',
+    token_lifetime: c.tokenLifetime || 5,
+    context_fields: c.contextFields || [],
+    visible_to: c.visibleTo || 'All providers',
+    activation: c.activation || 'always',
+    condition: c.condition || null,
+    enabled: c.enabled || false,
+    previewed: c.previewed || false,
+    domain_removed: c.domainRemoved || false,
+    errors_24h: c.errors24h || 0,
+    last_loaded: c.lastLoaded || null,
+  }));
+  const { error } = await supabase.from('embed_components').upsert(rows, { onConflict: 'id' });
+  if (error) console.warn('[seed] embed_components error:', error.message);
+  else console.log(`[seed] Seeded ${rows.length} embed_components`);
+}
+
+// ── Seed initial audit log entries ──
+async function seedAuditLogs() {
+  if (!(await isTableEmpty('audit_logs'))) return;
+  console.log('[seed] Seeding audit_logs...');
+  const rows = [
+    { entity_type: 'Domain', entity_id: 1, entity_name: 'fold.health', action: 'created', user_name: 'Alok Kumar', details: 'Domain registered — category: Internal, HIPAA: Verified', category: 'Lifecycle' },
+    { entity_type: 'Domain', entity_id: 2, entity_name: 'prior-auth.vendor.com', action: 'created', user_name: 'Sarah Chen', details: 'Domain registered — category: Prior authorization, HIPAA: BAA in place', category: 'Lifecycle' },
+    { entity_type: 'Domain', entity_id: 3, entity_name: 'analytics.arcadia.com', action: 'created', user_name: 'Alok Kumar', details: 'Domain registered — category: Analytics, HIPAA: Pending BAA', category: 'Lifecycle' },
+    { entity_type: 'Component', entity_id: 1, entity_name: 'Prior Auth Widget', action: 'created', user_name: 'Alok Kumar', details: 'Created on domain prior-auth.vendor.com', category: 'Lifecycle' },
+    { entity_type: 'Component', entity_id: 1, entity_name: 'Prior Auth Widget', action: 'enabled', user_name: 'Sarah Chen', details: 'Component enabled after preview', category: 'Status' },
+    { entity_type: 'Component', entity_id: 4, entity_name: 'SDOH Screener', action: 'created', user_name: 'Alok Kumar', details: 'Created on domain fold.health', category: 'Lifecycle' },
+    { entity_type: 'Component', entity_id: 4, entity_name: 'SDOH Screener', action: 'enabled', user_name: 'Sarah Chen', details: 'Component enabled after preview', category: 'Status' },
+  ];
+  const { error } = await supabase.from('audit_logs').insert(rows);
+  if (error) console.warn('[seed] audit_logs error:', error.message);
+  else console.log(`[seed] Seeded ${rows.length} audit_logs`);
+}
+
 export async function seedDatabaseIfEmpty() {
   // Only run once per session
   if (sessionStorage.getItem(SEED_FLAG)) return;
@@ -358,6 +429,9 @@ export async function seedDatabaseIfEmpty() {
     seedAnalyticsTables(),
     seedAnalyticsProgressBars(),
     seedAnalyticsConfigs(),
+    seedEmbedDomains(),
+    seedEmbedComponents(),
+    seedAuditLogs(),
   ]);
 
   // Reset sequences so auto-increment works after seeding explicit IDs
@@ -376,6 +450,9 @@ async function resetSequences() {
     { table: 'agent_rules', seq: 'agent_rules_id_seq' },
     { table: 'business_hours', seq: 'business_hours_id_seq' },
     { table: 'holidays', seq: 'holidays_id_seq' },
+    { table: 'embed_domains', seq: 'embed_domains_id_seq' },
+    { table: 'embed_components', seq: 'embed_components_id_seq' },
+    { table: 'audit_logs', seq: 'audit_logs_id_seq' },
   ];
   for (const { table, seq } of sequences) {
     const { error } = await supabase.rpc('setval_max', { seq_name: seq, tbl_name: table });

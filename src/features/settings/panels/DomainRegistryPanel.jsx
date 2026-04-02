@@ -298,10 +298,13 @@ function DeleteDomainModal({ domain, onClose, onConfirm, deleting }) {
 /* ── Main Panel ── */
 export function DomainRegistryPanel({ searchQuery = '' }) {
   const showToast = useAppStore(s => s.showToast);
+  const domains = useAppStore(s => s.embedDomains);
+  const fetchEmbedDomains = useAppStore(s => s.fetchEmbedDomains);
+  const addEmbedDomain = useAppStore(s => s.addEmbedDomain);
+  const updateEmbedDomain = useAppStore(s => s.updateEmbedDomain);
+  const deleteEmbedDomain = useAppStore(s => s.deleteEmbedDomain);
+  const toggleEmbedDomain = useAppStore(s => s.toggleEmbedDomain);
 
-  const [domains, setDomains] = useState(() =>
-    DOMAINS.map(d => ({ ...d, enabled: d.status !== 'removed' }))
-  );
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingDomain, setEditingDomain] = useState(null);
@@ -310,6 +313,9 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
   const [deleting, setDeleting] = useState(false);
   const [infoDismissed, setInfoDismissed] = useState(false);
   const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
+
+  // Fetch on mount
+  useEffect(() => { fetchEmbedDomains(); }, [fetchEmbedDomains]);
 
   // Listen for "add new" trigger from parent (EmbeddedComponentsSettings)
   const domainAddTrigger = useAppStore(s => s.domainAddTrigger);
@@ -325,58 +331,47 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
     if (!searchQuery.trim()) return domains;
     const q = searchQuery.toLowerCase();
     return domains.filter(d =>
-      d.vendor.toLowerCase().includes(q) ||
-      d.domain.toLowerCase().includes(q)
+      d.vendor?.toLowerCase().includes(q) ||
+      d.domain?.toLowerCase().includes(q)
     );
   }, [domains, searchQuery]);
 
   const enabledDomains = domains.filter(d => d.enabled !== false);
   const disabledDomains = domains.filter(d => d.enabled === false);
 
-  const handleAdd = (form) => {
-    const newDomain = {
-      id: Math.max(...domains.map(d => d.id)) + 1,
+  const handleAdd = async (form) => {
+    const newDomain = await addEmbedDomain({
       vendor: form.vendor,
       domain: form.domain,
       category: form.category,
       hipaa: form.hipaa,
-      activeComponents: 0,
-      addedDate: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
-      status: 'active',
       enabled: true,
-    };
-    setDomains(prev => [...prev, newDomain]);
+      addedDate: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
+    });
     setShowAddModal(false);
-    showToast(`Domain "${form.domain}" registered`);
+    if (newDomain) showToast(`Domain "${form.domain}" registered`);
   };
 
-  const handleEdit = (form) => {
-    setDomains(prev => prev.map(d =>
-      d.id === editingDomain.id ? { ...d, vendor: form.vendor, category: form.category, hipaa: form.hipaa } : d
-    ));
+  const handleEdit = async (form) => {
+    await updateEmbedDomain(editingDomain.id, { vendor: form.vendor, category: form.category, hipaa: form.hipaa });
     setShowEditModal(false);
     setEditingDomain(null);
     showToast(`Domain "${editingDomain.domain}" updated`);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setDeleting(true);
-    setTimeout(() => {
-      setDomains(prev => prev.filter(d => d.id !== deletingDomain.id));
-      showToast(`Domain "${deletingDomain.domain}" removed`);
-      setDeleting(false);
-      setShowDeleteModal(false);
-      setDeletingDomain(null);
-    }, 400);
+    await deleteEmbedDomain(deletingDomain.id);
+    showToast(`Domain "${deletingDomain.domain}" removed`);
+    setDeleting(false);
+    setShowDeleteModal(false);
+    setDeletingDomain(null);
   };
 
-  const handleToggleDomain = (id) => {
-    setDomains(prev => prev.map(d => {
-      if (d.id !== id) return d;
-      const newEnabled = !d.enabled;
-      showToast(newEnabled ? `Domain "${d.domain}" enabled` : `Domain "${d.domain}" disabled`);
-      return { ...d, enabled: newEnabled, status: newEnabled ? 'active' : 'disabled' };
-    }));
+  const handleToggleDomain = async (id) => {
+    const domain = domains.find(d => d.id === id);
+    await toggleEmbedDomain(id);
+    if (domain) showToast(domain.enabled ? `Domain "${domain.domain}" disabled` : `Domain "${domain.domain}" enabled`);
   };
 
   const openEdit = (domain) => {

@@ -6,7 +6,7 @@ import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { Switch } from '../../../components/Switch/Switch';
 import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
 import { useAppStore } from '../../../store/useAppStore';
-import { COMPONENTS, DOMAINS } from '../../../data/embeddedComponents';
+import { DOMAINS } from '../../../data/embeddedComponents';
 import { AuditLogDrawer } from './AuditLogDrawer';
 
 const PLACEMENT_LABELS = {
@@ -198,12 +198,19 @@ function ComponentRow({ comp, onToggle, onEdit, onPreview, onAuditLog, onDuplica
 export function ComponentLibraryPanel({ searchQuery = '' }) {
   const showToast = useAppStore(s => s.showToast);
   const setComponentWizard = useAppStore(s => s.setComponentWizard);
+  const components = useAppStore(s => s.embedComponents);
+  const fetchEmbedComponents = useAppStore(s => s.fetchEmbedComponents);
+  const toggleEmbedComponent = useAppStore(s => s.toggleEmbedComponent);
+  const deleteEmbedComponent = useAppStore(s => s.deleteEmbedComponent);
+  const duplicateEmbedComponent = useAppStore(s => s.duplicateEmbedComponent);
 
-  const [components, setComponents] = useState(COMPONENTS);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [warningDismissed, setWarningDismissed] = useState(false);
   const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
+
+  // Fetch on mount
+  useEffect(() => { fetchEmbedComponents(); }, [fetchEmbedComponents]);
 
   const domains = DOMAINS;
   const removedDomains = domains.filter(d => d.status === 'removed');
@@ -219,28 +226,21 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
     );
   }, [components, searchQuery]);
 
-  const handleToggle = (id) => {
-    setComponents(prev => prev.map(c => c.id === id ? { ...c, enabled: !c.enabled } : c));
+  const handleToggle = async (id) => {
     const comp = components.find(c => c.id === id);
-    showToast(comp?.enabled ? `"${comp.name}" disabled` : `"${comp?.name}" enabled`);
+    await toggleEmbedComponent(id);
+    if (comp) showToast(comp.enabled ? `"${comp.name}" disabled` : `"${comp.name}" enabled`);
   };
 
-  const handleDuplicate = (comp) => {
-    const dup = {
-      ...comp,
-      id: Date.now(),
-      name: comp.name + ' (Copy)',
-      enabled: false,
-    };
-    setComponents(prev => [...prev, dup]);
-    showToast(`"${comp.name}" duplicated`);
+  const handleDuplicate = async (comp) => {
+    const newComp = await duplicateEmbedComponent(comp.id);
+    if (newComp) showToast(`"${comp.name}" duplicated`);
   };
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
     setDeleting(true);
-    await new Promise(r => setTimeout(r, 400));
-    setComponents(prev => prev.filter(c => c.id !== deleteTarget.id));
+    await deleteEmbedComponent(deleteTarget.id);
     showToast(`"${deleteTarget.name}" deleted`);
     setDeleting(false);
     setDeleteTarget(null);

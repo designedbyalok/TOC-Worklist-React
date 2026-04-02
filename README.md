@@ -139,6 +139,15 @@ The platform follows the **Fold Health design system** with strict adherence to:
 
 ## Recent Changes
 
+### Supabase Persistence for Embedded Components (April 2026)
+- **New tables**: `embed_domains`, `embed_components`, `audit_logs` with full Supabase CRUD
+- All domain and component operations (create, update, delete, toggle, duplicate) persist to PostgreSQL
+- Every action automatically logged to `audit_logs` table with entity tracking
+- Audit Log Drawer fetches real data from DB with filter support
+- Tab-level action buttons changed from primary to secondary variant (visual hierarchy fix)
+- Data mapper (`embedMapper.js`) for snake_case/camelCase DB↔JS conversion
+- Auto-seeding of embed tables with fallback data on first load
+
 ### Embedded Components Admin (April 2026)
 - Domain Registry with enable/disable switch, audit log, CRUD modals
 - Component Library table with 3-dot more menu (Edit, Audit Log, Duplicate, Delete)

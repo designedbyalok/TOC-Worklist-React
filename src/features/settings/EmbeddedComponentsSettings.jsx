@@ -58,7 +58,7 @@ export function EmbeddedComponentsSettings() {
           </div>
           <span className={styles.tabDivider} />
           <Button
-            variant="primary"
+            variant="secondary"
             size="L"
             leadingIcon="solar:add-circle-linear"
             onClick={() => {
