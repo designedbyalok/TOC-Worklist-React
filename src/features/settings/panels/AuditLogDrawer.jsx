@@ -177,7 +177,7 @@ export function AuditLogDrawer({ entity, onClose }) {
       </div>
 
       {/* Timeline */}
-      <div style={{ background: 'var(--neutral-50)', borderRadius: 10, padding: '12px 12px 4px 12px' }}>
+      <div style={{ padding: '0 0 4px 0' }}>
         {monthGroups.map((group, gi) => {
           let entryIndex = 0;
           return (

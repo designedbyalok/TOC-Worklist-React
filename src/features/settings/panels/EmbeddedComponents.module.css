@@ -357,21 +357,30 @@
   margin-bottom: 18px;
 }
 .surfaceCard {
-  border: 1.5px solid var(--neutral-150);
-  border-radius: 10px;
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 8px;
   padding: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #fff;
-  transition: all .15s;
+  background: var(--neutral-0);
+  transition: border-color .15s;
+  position: relative;
+  overflow: hidden;
 }
 .surfaceCard:hover { border-color: var(--primary-200); }
 .surfaceCardActive {
   composes: surfaceCard;
   border-color: var(--primary-300);
-  background: var(--primary-50);
+  background: var(--neutral-0);
+}
+.surfaceCardActive::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--primary-300);
 }
 .surfaceIcon {
   width: 32px;
@@ -538,34 +547,35 @@
   gap: 10px;
   align-items: center;
 }
+.sliderRange {
+  width: 100%;
+  accent-color: var(--primary-300);
+  cursor: pointer;
+  height: 4px;
+}
 .sliderValue {
   font-size: 13px;
   font-weight: 500;
   min-width: 42px;
   text-align: right;
   font-variant-numeric: tabular-nums;
+  color: var(--neutral-500);
 }
 .sliderBar {
-  height: 10px;
-  background: var(--neutral-50);
+  height: 6px;
+  background: var(--neutral-100);
   border-radius: 4px;
   overflow: hidden;
   margin-top: 4px;
 }
 .sliderFill {
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 6px;
-  font-size: 9px;
-  font-weight: 600;
-  transition: all .2s;
   border-radius: 4px;
+  transition: all .2s;
 }
-.sliderGreen { background: #D1FAE5; color: #065F46; }
-.sliderAmber { background: #FEF9C3; color: #854D0E; }
-.sliderRed { background: #FEE2E2; color: #991B1B; }
+.sliderGreen { background: var(--status-success); }
+.sliderAmber { background: var(--status-warning); }
+.sliderRed { background: var(--status-error); }
 
 /* ── Save Summary ── */
 .summaryCard {

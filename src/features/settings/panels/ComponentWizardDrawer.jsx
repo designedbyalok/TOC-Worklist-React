@@ -12,6 +12,7 @@ import {
   MOBILE_PLACEMENTS, DRAWER_TAB_OPTIONS, ACTION_MENU_LOCATIONS, WORKLIST_OPTIONS,
 } from '../../../data/embeddedComponents';
 import s from './EmbeddedComponents.module.css';
+import g from './GoalsPanel.module.css';
 
 const STEPS = ['Identity', 'Surfaces', 'Context', 'Preview'];
 
@@ -72,37 +73,24 @@ const WEB_SVG_MAP = {
   'action-menu': ActionMenuSvg,
 };
 
-/* ── Stepper (matches Goal Wizard pattern) ── */
+/* ── Stepper (reuses Goal Wizard CSS classes from GoalsPanel.module.css) ── */
 function Stepper({ step }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 20, padding: '0 4px' }}>
+    <div className={g.stepper}>
       {STEPS.map((label, i) => {
         const done = i < step;
         const current = i === step;
         return (
           <div key={label} style={{ display: 'contents' }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 6, fontSize: 12,
-              color: current ? 'var(--primary-300)' : done ? 'var(--neutral-400)' : 'var(--neutral-200)',
-              cursor: done ? 'pointer' : 'default', padding: '6px 0', transition: 'all .15s',
-            }}>
-              <div style={{
-                width: 22, height: 22, borderRadius: 6, display: 'flex', alignItems: 'center',
-                justifyContent: 'center', fontSize: 10, fontWeight: 600, flexShrink: 0,
-                border: '1.5px solid',
-                borderColor: current ? 'var(--primary-200)' : done ? 'rgba(140,90,226,.3)' : 'var(--neutral-150)',
-                background: current ? '#fff' : done ? 'var(--primary-50)' : 'transparent',
-                color: current ? 'var(--primary-300)' : done ? 'var(--primary-300)' : 'var(--neutral-200)',
-              }}>
-                {done ? <Icon name="solar:check-read-linear" size={12} /> : i + 1}
-              </div>
-              <span style={{ fontWeight: 500, whiteSpace: 'nowrap' }}>{label}</span>
+            <div
+              className={`${g.wizStep} ${current ? g.wizStepActive : done ? g.wizStepDone : ''}`}
+              onClick={() => done && step > i}
+            >
+              <div className={g.wizStepNum}>{done ? <Icon name="solar:check-read-linear" size={12} /> : i + 1}</div>
+              <span className={g.wizStepLabel}>{label}</span>
             </div>
             {i < STEPS.length - 1 && (
-              <div style={{
-                flex: 1, height: 1, margin: '0 10px', minWidth: 16,
-                background: done ? 'rgba(140,90,226,.3)' : 'var(--neutral-150)',
-              }} />
+              <div className={`${g.wizConnector} ${done ? g.wizConnectorDone : ''}`} />
             )}
           </div>
         );
@@ -114,41 +102,32 @@ function Stepper({ step }) {
 /* ── Step 1: Identity ── */
 function StepIdentity({ data, onChange }) {
   return (
-    <div style={{ maxWidth: 580 }}>
-      <div className={s.modalGrid} style={{ gap: 14 }}>
-        <div className={s.formGroupFull}>
+    <div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className={s.formGroup} style={{ marginBottom: 0 }}>
           <label className={s.label}>Component name *</label>
           <input className={s.input} value={data.name} onChange={e => onChange({ name: e.target.value })} placeholder="e.g. Prior Auth Widget" />
         </div>
-        <div className={s.formGroup}>
-          <label className={s.label}>Category</label>
-          <select className={s.select} value={data.category} onChange={e => onChange({ category: e.target.value })}>
-            {COMPONENT_CATEGORIES.map(c => <option key={c}>{c}</option>)}
-          </select>
-        </div>
-        <div className={s.formGroup}>
-          <label className={s.label}>Icon</label>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, padding: 6, border: '0.5px solid var(--neutral-150)', borderRadius: 8, background: '#fff' }}>
-            {ICON_OPTIONS.map(opt => (
-              <div key={opt.emoji} onClick={() => onChange({ icon: opt.emoji })} title={opt.label}
-                style={{ cursor: 'pointer', padding: 6, borderRadius: 6, fontSize: 16, background: data.icon === opt.emoji ? 'var(--primary-50)' : 'transparent', border: data.icon === opt.emoji ? '1.5px solid var(--primary-300)' : '1.5px solid transparent' }}>
-                {opt.emoji}
-              </div>
-            ))}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div className={s.formGroup} style={{ marginBottom: 0 }}>
+            <label className={s.label}>Category</label>
+            <select className={s.select} value={data.category} onChange={e => onChange({ category: e.target.value })}>
+              {COMPONENT_CATEGORIES.map(c => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className={s.formGroup} style={{ marginBottom: 0 }}>
+            <label className={s.label}>Visible to</label>
+            <select className={s.select} value={data.visibleTo} onChange={e => onChange({ visibleTo: e.target.value })}>
+              {VISIBILITY_OPTIONS.map(v => <option key={v}>{v}</option>)}
+            </select>
           </div>
         </div>
-        <div className={s.formGroupFull}>
+        <div className={s.formGroup} style={{ marginBottom: 0 }}>
           <label className={s.label}>Description <span style={{ fontWeight: 400, color: 'var(--neutral-200)' }}>(shown to providers in About popup)</span></label>
           <textarea className={s.textarea} value={data.description} onChange={e => onChange({ description: e.target.value.slice(0, 200) })} maxLength={200} placeholder="What does this component do?" />
           <span className={s.hint}>{data.description.length}/200</span>
         </div>
-        <div className={s.formGroup}>
-          <label className={s.label}>Visible to</label>
-          <select className={s.select} value={data.visibleTo} onChange={e => onChange({ visibleTo: e.target.value })}>
-            {VISIBILITY_OPTIONS.map(v => <option key={v}>{v}</option>)}
-          </select>
-        </div>
-        <div className={s.formGroup}>
+        <div className={s.formGroup} style={{ marginBottom: 0 }}>
           <label className={s.label}>Activation</label>
           <select className={s.select} value={data.activation} onChange={e => onChange({ activation: e.target.value })}>
             {ACTIVATION_OPTIONS.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
@@ -234,14 +213,13 @@ function StepSurfaces({ data, onChange }) {
                   <label className={s.label}>Drawer width</label>
                   <div className={s.sliderRow}>
                     <input type="range" min={300} max={800} step={10} value={data.drawerWidth}
-                      onChange={e => onChange({ drawerWidth: Number(e.target.value) })} style={{ flex: 1 }} />
+                      className={s.sliderRange}
+                      onChange={e => onChange({ drawerWidth: Number(e.target.value) })} />
                     <span className={s.sliderValue}>{data.drawerWidth}px</span>
                   </div>
                   <div className={s.sliderBar}>
                     <div className={`${s.sliderFill} ${data.drawerWidth > 650 ? s.sliderRed : data.drawerWidth > 500 ? s.sliderAmber : s.sliderGreen}`}
-                      style={{ width: `${Math.round((data.drawerWidth - 300) / 500 * 72 + 4)}%` }}>
-                      {data.drawerWidth}px
-                    </div>
+                      style={{ width: `${Math.round((data.drawerWidth - 300) / 500 * 100)}%` }} />
                   </div>
                   <span className={s.hint}>
                     {data.drawerWidth > 650 ? 'Warning: will significantly overlap the patient chart' : data.drawerWidth > 500 ? 'Caution: may overlap chart on screens under 1280px' : 'Safe — fits alongside patient chart on 1280px+ screens'}
@@ -452,7 +430,7 @@ function StepContext({ data, onChange }) {
   const totalFieldCount = CONTEXT_FIELDS.length;
 
   return (
-    <div style={{ maxWidth: 580 }}>
+    <div style={{ maxWidth: '100%' }}>
       <div className={s.modalGrid} style={{ gap: 14, marginBottom: 16 }}>
         <div className={s.formGroup}>
           <label className={s.label}>Domain *</label>
