@@ -8,6 +8,7 @@ import { goals as fallbackGoalsData } from '../data/goals';
 import { chatGroups as fallbackChatGroups } from '../data/chatGroups';
 import { generateFlowFromPrompt } from '../lib/flowGenerator';
 import { kpiRowToJs, tsRowToJs, tableRowToJs, barRowToJs, configRowToJs, groupTimeSeries } from '../lib/analyticsMapper';
+import { domainDbToJs, domainJsToDb, componentDbToJs, componentJsToDb, auditLogDbToJs } from '../lib/embedMapper';
 import { FALLBACK_KPIS, FALLBACK_TIME_SERIES, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS, FALLBACK_CONFIGS } from '../data/analyticsFallbacks';
 import { updateHash } from '../lib/router';
 
@@ -329,23 +330,19 @@ export const useAppStore = create((set, get) => ({
     set({ embedDomainsLoading: true });
     const { data, error } = await supabase.from('embed_domains').select('*').order('id');
     if (error) { console.warn('[store] embed_domains fetch failed:', error.message); set({ embedDomainsLoading: false }); return; }
-    const { domainDbToJs } = await import('../lib/embedMapper');
-    set({ embedDomains: (data || []).map(domainDbToJs), embedDomainsLoading: false });
+        set({ embedDomains: (data || []).map(domainDbToJs), embedDomainsLoading: false });
   },
   addEmbedDomain: async (domain) => {
-    const { domainJsToDb } = await import('../lib/embedMapper');
-    const row = domainJsToDb(domain);
+        const row = domainJsToDb(domain);
     const { data, error } = await supabase.from('embed_domains').insert(row).select();
     if (error) { console.warn('[store] addEmbedDomain failed:', error.message); return null; }
-    const { domainDbToJs } = await import('../lib/embedMapper');
-    const newDomain = domainDbToJs(data[0]);
+        const newDomain = domainDbToJs(data[0]);
     set(s => ({ embedDomains: [...s.embedDomains, newDomain] }));
     get().logAudit('Domain', newDomain.id, newDomain.domain, 'created', `Registered — category: ${newDomain.category}, HIPAA: ${newDomain.hipaa}`, 'Lifecycle');
     return newDomain;
   },
   updateEmbedDomain: async (id, updates) => {
-    const { domainJsToDb } = await import('../lib/embedMapper');
-    const dbUpdates = domainJsToDb(updates);
+        const dbUpdates = domainJsToDb(updates);
     await supabase.from('embed_domains').update(dbUpdates).eq('id', id);
     set(s => ({ embedDomains: s.embedDomains.map(d => d.id === id ? { ...d, ...updates } : d) }));
     const domain = get().embedDomains.find(d => d.id === id);
@@ -373,23 +370,19 @@ export const useAppStore = create((set, get) => ({
     set({ embedComponentsLoading: true });
     const { data, error } = await supabase.from('embed_components').select('*').order('id');
     if (error) { console.warn('[store] embed_components fetch failed:', error.message); set({ embedComponentsLoading: false }); return; }
-    const { componentDbToJs } = await import('../lib/embedMapper');
-    set({ embedComponents: (data || []).map(componentDbToJs), embedComponentsLoading: false });
+        set({ embedComponents: (data || []).map(componentDbToJs), embedComponentsLoading: false });
   },
   addEmbedComponent: async (comp) => {
-    const { componentJsToDb } = await import('../lib/embedMapper');
-    const row = componentJsToDb(comp);
+        const row = componentJsToDb(comp);
     const { data, error } = await supabase.from('embed_components').insert(row).select();
     if (error) { console.warn('[store] addEmbedComponent failed:', error.message); return null; }
-    const { componentDbToJs } = await import('../lib/embedMapper');
-    const newComp = componentDbToJs(data[0]);
+        const newComp = componentDbToJs(data[0]);
     set(s => ({ embedComponents: [...s.embedComponents, newComp] }));
     get().logAudit('Component', newComp.id, newComp.name, 'created', `Created on domain ${newComp.domain}`, 'Lifecycle');
     return newComp;
   },
   updateEmbedComponent: async (id, updates) => {
-    const { componentJsToDb } = await import('../lib/embedMapper');
-    const dbUpdates = componentJsToDb(updates);
+        const dbUpdates = componentJsToDb(updates);
     await supabase.from('embed_components').update(dbUpdates).eq('id', id);
     set(s => ({ embedComponents: s.embedComponents.map(c => c.id === id ? { ...c, ...updates } : c) }));
     const comp = get().embedComponents.find(c => c.id === id);
@@ -412,14 +405,12 @@ export const useAppStore = create((set, get) => ({
   duplicateEmbedComponent: async (id) => {
     const comp = get().embedComponents.find(c => c.id === id);
     if (!comp) return null;
-    const { componentJsToDb } = await import('../lib/embedMapper');
-    const dup = { ...comp, name: comp.name + ' (Copy)', enabled: false, id: undefined };
+        const dup = { ...comp, name: comp.name + ' (Copy)', enabled: false, id: undefined };
     const row = componentJsToDb(dup);
     delete row.id;
     const { data, error } = await supabase.from('embed_components').insert(row).select();
     if (error) { console.warn('[store] duplicateEmbedComponent failed:', error.message); return null; }
-    const { componentDbToJs } = await import('../lib/embedMapper');
-    const newComp = componentDbToJs(data[0]);
+        const newComp = componentDbToJs(data[0]);
     set(s => ({ embedComponents: [...s.embedComponents, newComp] }));
     get().logAudit('Component', newComp.id, newComp.name, 'created', `Duplicated from "${comp.name}"`, 'Lifecycle');
     return newComp;
@@ -437,8 +428,7 @@ export const useAppStore = create((set, get) => ({
     if (entityId) query = query.eq('entity_id', entityId);
     const { data, error } = await query.limit(100);
     if (error) { console.warn('[store] fetchAuditLogs failed:', error.message); return []; }
-    const { auditLogDbToJs } = await import('../lib/embedMapper');
-    return (data || []).map(auditLogDbToJs);
+        return (data || []).map(auditLogDbToJs);
   },
 
   // FAQs

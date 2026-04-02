@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { Icon } from '../../components/Icon/Icon';
 import { Checkbox } from '../../components/ui/checkbox';
@@ -9,7 +9,12 @@ import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
 export function QueueTable() {
   const patients = useAppStore(s => s.patients);
   const patientsLoading = useAppStore(s => s.patientsLoading);
+  const fetchPatients = useAppStore(s => s.fetchPatients);
+  const fetchCallDetails = useAppStore(s => s.fetchCallDetails);
   const searchQuery = useAppStore(s => s.searchQuery);
+
+  // Fetch patients + call details when queue mounts (lazy)
+  useEffect(() => { if (!patients.length && !patientsLoading) { fetchPatients(); fetchCallDetails(); } }, []);
   const activeFilters = useAppStore(s => s.activeFilters);
   const currentPage = useAppStore(s => s.currentPage);
   const perPage = useAppStore(s => s.perPage);

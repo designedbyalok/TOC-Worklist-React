@@ -7,17 +7,16 @@ import { initRouter } from './lib/router';
 import { seedDatabaseIfEmpty } from './lib/seedDatabase';
 
 function App() {
-  const fetchPatients = useAppStore(s => s.fetchPatients);
-  const fetchCallDetails = useAppStore(s => s.fetchCallDetails);
   const routerInit = useRef(false);
+  const seeded = useRef(false);
 
+  // Auto-seed empty tables once (no eager data fetching — pages fetch what they need)
   useEffect(() => {
-    // Auto-seed empty tables, then fetch data
-    seedDatabaseIfEmpty().then(() => {
-      fetchPatients();
-      fetchCallDetails();
-    });
-  }, [fetchPatients, fetchCallDetails]);
+    if (!seeded.current) {
+      seeded.current = true;
+      seedDatabaseIfEmpty();
+    }
+  }, []);
 
   // Initialize hash router (once)
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { WorklistRow } from './WorklistRow';
 import { BulkBar } from '../../components/BulkBar/BulkBar';
@@ -122,6 +122,9 @@ export function WorklistTable() {
   const searchQuery = useAppStore(s => s.searchQuery);
   const activeFilters = useAppStore(s => s.activeFilters);
   const [expandedSections, setExpandedSections] = useState({});
+
+  // Fetch patients when component mounts (lazy — only when this page is visible)
+  useEffect(() => { if (!patients.length && !patientsLoading) fetchPatients(); }, []);
 
   const toggleExpand = (key) => setExpandedSections(s => ({ ...s, [key]: !s[key] }));
 
