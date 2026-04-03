@@ -3,6 +3,7 @@ import { Icon } from '../../../components/Icon/Icon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
+import { supabase } from '../../../lib/supabase';
 
 /* ── Audit Log Entry Icons — color-coded by action type ── */
 const ACTION_CONFIG = {
@@ -148,13 +149,11 @@ export function AuditLogDrawer({ entity, onClose }) {
 
   // Get current user name for "(Current User)" label
   useEffect(() => {
-    import('../../../lib/supabase').then(({ supabase }) => {
-      supabase.auth.getUser().then(({ data }) => {
-        const meta = data?.user?.user_metadata || {};
-        if (meta.first_name && meta.last_name) setCurrentUserName(`${meta.first_name} ${meta.last_name}`);
-        else if (meta.full_name) setCurrentUserName(meta.full_name);
-        else if (data?.user?.email) setCurrentUserName(data.user.email.split('@')[0]);
-      });
+    supabase.auth.getUser().then(({ data }) => {
+      const meta = data?.user?.user_metadata || {};
+      if (meta.first_name && meta.last_name) setCurrentUserName(`${meta.first_name} ${meta.last_name}`);
+      else if (meta.full_name) setCurrentUserName(meta.full_name);
+      else if (data?.user?.email) setCurrentUserName(data.user.email.split('@')[0]);
     });
   }, []);
 

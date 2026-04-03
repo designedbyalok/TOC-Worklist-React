@@ -308,6 +308,21 @@ export const COMPONENTS = [
   },
 ];
 
+/* ── Tab Widgets — existing widgets per patient profile tab ── */
+export const TAB_WIDGETS = {
+  'Summary': ['Patient synopsis', 'Sticky Notes', 'Health map', 'Visit Summary', 'Care Plans', 'Upcoming Appointments', 'Contact Notes', 'Active Care Journeys', 'Member Groups', 'Primary Care Team', 'Active Automations', 'Subscriptions', 'Insurance'],
+  'Insight': ['Health Map', 'Synopsis', 'Recent Clinical Events', 'PAMI', 'History'],
+  'Dashboard': ['Vitals', 'Home Monitoring', 'Lab Trends', 'Survey/Assessments'],
+  'Tasks': ['Patient Tasks', 'Internal Tasks'],
+  'Care Management': ['Active Program', 'Past Program', 'Recommended Programs'],
+  'Alerts': ['Reason for Prioritisation', 'Alerts', 'Care Gaps', 'Diagnosis Gaps', 'LLM Alerts'],
+  'Profile': ['Basic info', 'Contact info', 'Custom fields', 'Address', 'Family and care givers', 'Other info'],
+  'Gaps': ['HEDIS Gaps', 'Diagnosis Gaps', 'Care Gaps'],
+  'Communication': [],
+  'Patient Notes': [],
+  'Activity': [],
+};
+
 /* ── Mock Patient Profiles for Preview ── */
 export const MOCK_PATIENTS = [
   {

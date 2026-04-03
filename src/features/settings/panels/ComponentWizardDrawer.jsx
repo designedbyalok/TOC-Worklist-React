@@ -12,6 +12,7 @@ import {
   ACTIVATION_OPTIONS, CONDITION_OPTIONS, TOKEN_LIFETIME_OPTIONS, CONTEXT_FIELDS,
   WEB_PLACEMENT_OPTIONS, SIDECAR_PATIENT_PLACEMENTS, SIDECAR_GLOBAL_PLACEMENTS,
   MOBILE_PLACEMENTS, DRAWER_TAB_OPTIONS, ACTION_MENU_LOCATIONS, WORKLIST_OPTIONS,
+  TAB_WIDGETS,
 } from '../../../data/embeddedComponents';
 import s from './EmbeddedComponents.module.css';
 import g from './GoalsPanel.module.css';
@@ -169,6 +170,73 @@ function StepIdentity({ data, onChange }) {
   );
 }
 
+/* ── Widget Order List (sortable list for widget-card placement) ── */
+function WidgetOrderList({ tab, newWidgetName, order, onChange }) {
+  const existing = TAB_WIDGETS[tab] || [];
+  const items = order || [...existing, newWidgetName];
+
+  const moveItem = (fromIdx, toIdx) => {
+    if (toIdx < 0 || toIdx >= items.length) return;
+    const next = [...items];
+    const [moved] = next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, moved);
+    onChange(next);
+  };
+
+  // Initialize order if not set
+  if (!order && existing.length > 0) {
+    setTimeout(() => onChange([...existing, newWidgetName]), 0);
+  }
+
+  return (
+    <div>
+      <div style={{ fontSize: 12, fontWeight: 500, color: '#6F7A90', marginBottom: 6 }}>{tab}</div>
+      <div style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 8, overflow: 'hidden' }}>
+        {items.map((item, i) => {
+          const isNew = item === newWidgetName && i === items.indexOf(newWidgetName);
+          return (
+            <div key={`${item}-${i}`} style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px',
+              borderBottom: i < items.length - 1 ? '0.5px solid var(--neutral-100)' : 'none',
+              background: isNew ? 'var(--primary-50)' : '#fff',
+              transition: 'background .1s',
+            }}>
+              {/* Drag handle */}
+              <span style={{ color: 'var(--neutral-200)', cursor: 'grab', fontSize: 14, flexShrink: 0, userSelect: 'none' }}>⋮⋮</span>
+              {/* Widget name */}
+              <span style={{ flex: 1, fontSize: 14, color: isNew ? 'var(--primary-300)' : '#3A485F', fontWeight: isNew ? 500 : 400 }}>{item}</span>
+              {isNew && (
+                <span style={{
+                  fontSize: 11, fontWeight: 500, color: 'var(--primary-300)',
+                  background: 'var(--primary-100)', padding: '2px 6px', borderRadius: 4,
+                }}>New Widget</span>
+              )}
+              {/* Up/Down arrows */}
+              <div style={{ display: 'flex', gap: 2 }}>
+                <button onClick={() => moveItem(i, i - 1)} disabled={i === 0} style={{
+                  background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer',
+                  padding: 2, opacity: i === 0 ? 0.3 : 1, borderRadius: 4,
+                }}>
+                  <Icon name="solar:alt-arrow-up-linear" size={14} color="#6F7A90" />
+                </button>
+                <button onClick={() => moveItem(i, i + 1)} disabled={i === items.length - 1} style={{
+                  background: 'none', border: 'none', cursor: i === items.length - 1 ? 'default' : 'pointer',
+                  padding: 2, opacity: i === items.length - 1 ? 0.3 : 1, borderRadius: 4,
+                }}>
+                  <Icon name="solar:alt-arrow-down-linear" size={14} color="#6F7A90" />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ fontSize: 11, color: 'var(--neutral-200)', marginTop: 4 }}>
+        Use arrows to reorder. Your widget will appear at position {(items.indexOf(newWidgetName) + 1) || items.length}.
+      </div>
+    </div>
+  );
+}
+
 /* ── Step 2: Surfaces & Placement ── */
 function StepSurfaces({ data, onChange }) {
   const toggleSurface = (key) => {
@@ -278,23 +346,35 @@ function StepSurfaces({ data, onChange }) {
             )}
             {/* Widget card config */}
             {data.webPlacement === 'widget-card' && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <FormField label="Display in drawer tab" hint="Widget appears as a card within this tab">
-                  <Select value={data.drawerTab} onValueChange={v => onChange({ drawerTab: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {DRAWER_TAB_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </FormField>
-                <FormField label="Widget height">
-                  <Select value={data.widgetHeight} onValueChange={v => onChange({ widgetHeight: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {['Auto (up to 280px)', 'Fixed 200px', 'Fixed 300px'].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </FormField>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <FormField label="Display in drawer tab" hint="Widget appears as a card within this tab">
+                    <Select value={data.drawerTab} onValueChange={v => onChange({ drawerTab: v, widgetOrder: null })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {DRAWER_TAB_OPTIONS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </FormField>
+                  <FormField label="Widget height">
+                    <Select value={data.widgetHeight} onValueChange={v => onChange({ widgetHeight: v })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {['Auto (up to 280px)', 'Fixed 200px', 'Fixed 300px'].map(o => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </FormField>
+                </div>
+
+                {/* Widget ordering — show existing widgets in the selected tab */}
+                {data.drawerTab && (TAB_WIDGETS[data.drawerTab] || []).length > 0 && (
+                  <WidgetOrderList
+                    tab={data.drawerTab}
+                    newWidgetName={data.name || 'New Widget'}
+                    order={data.widgetOrder}
+                    onChange={order => onChange({ widgetOrder: order })}
+                  />
+                )}
               </div>
             )}
             {/* Action menu config */}

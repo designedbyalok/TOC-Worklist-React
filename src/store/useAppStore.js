@@ -287,6 +287,7 @@ export const useAppStore = create((set, get) => ({
         updatedBy: data[0].updated_by || '', activeChats: 0, hasAgent: data[0].has_agent, agentName: data[0].agent_name || '',
       };
       set(s => ({ chatGroupsData: [newGroup, ...(s.chatGroupsData || [])] }));
+      get().logAudit('ChatGroup', newGroup.id, newGroup.name, 'created', `Chat group created`, 'Lifecycle');
     }
   },
 
@@ -307,12 +308,16 @@ export const useAppStore = create((set, get) => ({
         updated: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
       } : g),
     }));
+    const group = (get().chatGroupsData || []).find(g => g.id === id);
+    get().logAudit('ChatGroup', id, group?.name || '', 'updated', Object.keys(updates).join(', ') + ' changed', 'Configuration');
   },
 
   deleteChatGroup: async (id) => {
+    const group = (get().chatGroupsData || []).find(g => g.id === id);
     set(s => ({ chatGroupsData: (s.chatGroupsData || []).filter(g => g.id !== id) }));
     const { error } = await supabase.from('chat_groups').delete().eq('id', id);
     if (error) console.warn('Failed to delete chat group:', error.message);
+    if (group) get().logAudit('ChatGroup', id, group.name, 'deleted', 'Chat group deleted', 'Lifecycle');
   },
 
   // Knowledge Base add trigger (used by AgentsTable to tell KnowledgeBasePanel to open add form)
@@ -615,6 +620,7 @@ export const useAppStore = create((set, get) => ({
     };
     const { error } = await supabase.from('goals').insert(row);
     if (error) console.warn('Failed to persist goal:', error.message);
+    get().logAudit('Goal', goal.id, goal.name, 'created', `Goal created — program: ${goal.program}, status: ${goal.status}`, 'Lifecycle');
   },
 
   updateGoal: async (goal) => {
@@ -639,12 +645,15 @@ export const useAppStore = create((set, get) => ({
     };
     const { error } = await supabase.from('goals').update(row).eq('id', goal.id);
     if (error) console.warn('Failed to update goal:', error.message);
+    get().logAudit('Goal', goal.id, goal.name, 'updated', `Goal updated — ${goal.name}`, 'Configuration');
   },
 
   deleteGoal: async (id) => {
+    const goal = (get().goalsData || []).find(g => g.id === id);
     set(s => ({ goalsData: (s.goalsData || []).filter(g => g.id !== id) }));
     const { error } = await supabase.from('goals').delete().eq('id', id);
     if (error) console.warn('Failed to delete goal:', error.message);
+    if (goal) get().logAudit('Goal', id, goal.name, 'deleted', `Goal deleted`, 'Lifecycle');
   },
 
   toggleSubnav: () => set(s => ({ subnavCollapsed: !s.subnavCollapsed })),
@@ -684,10 +693,12 @@ export const useAppStore = create((set, get) => ({
   },
 
   updateAgent: async (id, updates) => {
+    const agent = get().agents.find(a => a.id === id);
     set(s => ({
       agents: s.agents.map(a => a.id === id ? { ...a, ...updates } : a)
     }));
     await supabase.from('agents').update(updates).eq('id', id);
+    get().logAudit('Agent', id, agent?.name || '', 'updated', Object.keys(updates).join(', ') + ' changed', 'Configuration');
   },
 
   // ─── Agent Builder actions ───

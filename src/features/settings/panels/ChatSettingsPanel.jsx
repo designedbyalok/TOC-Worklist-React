@@ -7,6 +7,7 @@ import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { useAppStore } from '../../../store/useAppStore';
 import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
+import { AuditLogDrawer } from './AuditLogDrawer';
 
 const thStyle = {
   textAlign: 'left', padding: '8px 16px', color: 'var(--neutral-300)', fontWeight: 500,
@@ -52,6 +53,7 @@ function ChatGroupRow({ g, onOpen }) {
   const deleteChatGroup = useAppStore(s => s.deleteChatGroup);
   const setChatGroupDetailId = useAppStore(s => s.setChatGroupDetailId);
 
+  const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -125,6 +127,9 @@ function ChatGroupRow({ g, onOpen }) {
           <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit group"
             onClick={() => setChatGroupDetailId(g.id)} />
           <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+          <ActionButton icon="solar:history-linear" size="L" tooltip="Audit Log"
+            onClick={() => setAuditDrawerEntity({ type: 'ChatGroup', name: g.name, id: g.id })} />
+          <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
           <ActionButton icon="solar:menu-dots-linear" size="L" tooltip="More options"
             ref={moreBtnRef} onClick={handleMoreClick} />
         </div>
@@ -159,6 +164,7 @@ function ChatGroupRow({ g, onOpen }) {
             }}
           />
         )}
+        {auditDrawerEntity && <AuditLogDrawer entity={auditDrawerEntity} onClose={() => setAuditDrawerEntity(null)} />}
       </td>
     </tr>
   );

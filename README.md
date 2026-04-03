@@ -139,6 +139,16 @@ The platform follows the **Fold Health design system** with strict adherence to:
 
 ## Recent Changes
 
+### Audit Log Across All Settings + Widget Ordering (April 2026)
+- Audit log support added to **Agents**, **Goals**, and **Chat Settings** tables
+- All CRUD operations (create, update, delete) automatically logged to `audit_logs` table
+- Audit Log button (history icon) in table actions for all entity types
+- Rich diff display: status badges (Enabled→Disabled), text strikethrough (old→new)
+- Widget Card placement: sortable widget list shows existing widgets in selected tab
+- Tab widgets data from patient profile Excel (11 tabs, 50+ widgets)
+- User's full name (from Supabase auth metadata) shown in audit entries
+- "(Current User)" label for entries matching the logged-in user
+
 ### Supabase Persistence for Embedded Components (April 2026)
 - **New tables**: `embed_domains`, `embed_components`, `audit_logs` with full Supabase CRUD
 - All domain and component operations (create, update, delete, toggle, duplicate) persist to PostgreSQL

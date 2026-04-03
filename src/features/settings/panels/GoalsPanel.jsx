@@ -6,6 +6,7 @@ import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { useAppStore } from '../../../store/useAppStore';
 import { CardSkeleton, SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
+import { AuditLogDrawer } from './AuditLogDrawer';
 import s from './GoalsPanel.module.css';
 
 const PROGRAM_VARIANT = { purple: 'ai-care', blue: 'outreach-appointment', amber: 'outreach-care-gap' };
@@ -69,6 +70,7 @@ function GoalCard({ goal, onOpen, onEdit }) {
 function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
 
   const thStyle = {
     padding: '8px 16px', fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)',
@@ -142,6 +144,9 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
                     <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit goal"
                       onClick={() => onEdit(g.id)} />
                     <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                    <ActionButton icon="solar:history-linear" size="L" tooltip="Audit Log"
+                      onClick={() => setAuditDrawerEntity({ type: 'Goal', name: g.name, id: g.id })} />
+                    <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
                     <ActionButton icon="solar:trash-bin-minimalistic-linear" size="L" tooltip="Delete goal"
                       onClick={() => setDeleteTarget(g)} />
                   </div>
@@ -165,6 +170,7 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
           onConfirm={handleConfirmDelete}
         />
       )}
+      {auditDrawerEntity && <AuditLogDrawer entity={auditDrawerEntity} onClose={() => setAuditDrawerEntity(null)} />}
     </>
   );
 }

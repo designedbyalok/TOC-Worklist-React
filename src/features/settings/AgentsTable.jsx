@@ -14,6 +14,7 @@ import { FeatureTogglesPanel } from './panels/FeatureTogglesPanel';
 import { EscalationPolicyPanel } from './panels/EscalationPolicyPanel';
 import { KnowledgeBasePanel } from './panels/KnowledgeBasePanel';
 import { GoalsPanel } from './panels/GoalsPanel';
+import { AuditLogDrawer } from './panels/AuditLogDrawer';
 import styles from './AgentsTable.module.css';
 
 const TABS = ['Agents', 'Goals', 'Knowledge Base', 'Tools', 'Compliance Policies', 'Test Cases', 'Analytics'];
@@ -39,7 +40,7 @@ function VoiceBadge({ voice }) {
 import { Switch } from '../../components/Switch/Switch';
 
 /* ── 3-dot action dropdown ── */
-function AgentActionMenu({ agent, onClose, onRequestDelete }) {
+function AgentActionMenu({ agent, onClose, onRequestDelete, onAuditLog }) {
   const openBuilder = useAppStore(s => s.openBuilder);
   const fetchAgents = useAppStore(s => s.fetchAgents);
   const showToast = useAppStore(s => s.showToast);
@@ -71,6 +72,10 @@ function AgentActionMenu({ agent, onClose, onRequestDelete }) {
         <Icon name="solar:copy-linear" size={16} color="var(--neutral-300)" />
         Duplicate
       </button>
+      <button className={styles.dropdownItem} onClick={() => { onAuditLog(); onClose(); }}>
+        <Icon name="solar:history-linear" size={16} color="var(--neutral-300)" />
+        Audit Log
+      </button>
       <div className={styles.dropdownDivider} />
       <button className={`${styles.dropdownItem} ${styles.dropdownItemDanger}`} onClick={() => { onClose(); onRequestDelete(); }}>
         <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="var(--status-error)" />
@@ -89,6 +94,7 @@ function AgentRow({ agent }) {
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
   const moreBtnRef = useRef(null);
 
   const handleMoreClick = (e) => {
@@ -141,6 +147,7 @@ function AgentRow({ agent }) {
               agent={agent}
               onClose={() => setShowMenu(false)}
               onRequestDelete={() => setShowDeleteConfirm(true)}
+              onAuditLog={() => setAuditDrawerEntity({ type: 'Agent', name: agent.name, id: agent.id })}
             />
           </div>,
           document.body
@@ -166,6 +173,7 @@ function AgentRow({ agent }) {
             }}
           />
         )}
+        {auditDrawerEntity && <AuditLogDrawer entity={auditDrawerEntity} onClose={() => setAuditDrawerEntity(null)} />}
       </td>
     </tr>
   );
