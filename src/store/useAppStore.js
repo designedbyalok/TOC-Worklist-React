@@ -356,7 +356,7 @@ export const useAppStore = create((set, get) => ({
       return null;
     }
         const newDomain = domainDbToJs(data[0]);
-    set(s => ({ embedDomains: [...s.embedDomains, newDomain] }));
+    set(s => ({ embedDomains: [newDomain, ...s.embedDomains] }));
     get().logAudit('Domain', newDomain.id, newDomain.domain, 'created', `Registered — category: ${newDomain.category}, HIPAA: ${newDomain.hipaa}`, 'Lifecycle');
     return newDomain;
   },

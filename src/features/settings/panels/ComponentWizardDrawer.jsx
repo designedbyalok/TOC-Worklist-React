@@ -610,8 +610,8 @@ function StepContext({ data, onChange }) {
 }
 
 /* ── Step: Configure (merged Identity + Context) ── */
-function StepConfigure({ data, onChange }) {
-  const activeDomains = DOMAINS.filter(d => d.status === 'active');
+function StepConfigure({ data, onChange, embedDomains }) {
+  const activeDomains = (embedDomains && embedDomains.length > 0 ? embedDomains : DOMAINS).filter(d => d.enabled !== false && d.status !== 'removed');
   const selectedDomain = activeDomains.find(d => d.id === data.domainId);
   const fullUrl = selectedDomain ? `https://${selectedDomain.domain}${data.url}` : '';
   const [advancedOpen, setAdvancedOpen] = useState(false);
@@ -742,8 +742,9 @@ function StepConfigure({ data, onChange }) {
 }
 
 /* ── Step: Preview ── */
-function StepPreview({ data, onChange }) {
-  const selectedDomain = DOMAINS.find(d => d.id === data.domainId);
+function StepPreview({ data, onChange, embedDomains }) {
+  const allDomains = (embedDomains && embedDomains.length > 0) ? embedDomains : DOMAINS;
+  const selectedDomain = allDomains.find(d => d.id === data.domainId);
   const fullUrl = selectedDomain ? `https://${selectedDomain.domain}${data.url}` : '';
   const selectedFieldCount = data.contextFields.length;
   const totalFieldCount = CONTEXT_FIELDS.length;
@@ -1023,9 +1024,9 @@ export function ComponentWizardDrawer() {
     >
       <Stepper step={step} onStepClick={setStep} />
       <div style={{ padding: '4px 0' }}>
-        {step === 0 && <StepConfigure data={data} onChange={update} />}
+        {step === 0 && <StepConfigure data={data} onChange={update} embedDomains={embedDomains} />}
         {step === 1 && <StepSurfaces data={data} onChange={update} />}
-        {step === 2 && <StepPreview data={data} onChange={update} />}
+        {step === 2 && <StepPreview data={data} onChange={update} embedDomains={embedDomains} />}
       </div>
     </Drawer>
   );
