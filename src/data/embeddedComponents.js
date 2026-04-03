@@ -104,7 +104,7 @@ export const MOBILE_PLACEMENTS = [
 ];
 
 export const DRAWER_TAB_OPTIONS = [
-  'Gaps', 'Insights', 'Tasks', 'Communication', 'Summary', 'Activity', 'Profile',
+  'Gaps', 'Insight', 'Summary', 'Tasks', 'Profile', 'Activity', 'Communication', 'Outreach',
 ];
 
 export const ACTION_MENU_LOCATIONS = [
@@ -308,19 +308,16 @@ export const COMPONENTS = [
   },
 ];
 
-/* ── Tab Widgets — existing widgets per patient profile tab ── */
+/* ── Tab Widgets — existing widgets per patient profile tab (from Excel) ── */
 export const TAB_WIDGETS = {
-  'Summary': ['Patient synopsis', 'Sticky Notes', 'Health map', 'Visit Summary', 'Care Plans', 'Upcoming Appointments', 'Contact Notes', 'Active Care Journeys', 'Member Groups', 'Primary Care Team', 'Active Automations', 'Subscriptions', 'Insurance'],
-  'Insight': ['Health Map', 'Synopsis', 'Recent Clinical Events', 'PAMI', 'History'],
-  'Dashboard': ['Vitals', 'Home Monitoring', 'Lab Trends', 'Survey/Assessments'],
-  'Tasks': ['Patient Tasks', 'Internal Tasks'],
-  'Care Management': ['Active Program', 'Past Program', 'Recommended Programs'],
-  'Alerts': ['Reason for Prioritisation', 'Alerts', 'Care Gaps', 'Diagnosis Gaps', 'LLM Alerts'],
+  'Gaps': ['Care Gaps', 'Diagnosis Gaps'],
+  'Insight': ['Health Radar', 'Patient Synopsis', 'Care Plan Recommendation', 'Prior Authorization Request', 'Alerts', 'Diagnoses Surfacing', 'Recent Clinical Events', 'PAMI', 'Vitals', 'History', 'Home Monitoring', 'Lab Trends'],
+  'Summary': ['Sticky Notes', 'Upcoming Appointments', 'Contact Notes', 'Active Care Journeys', 'Family & Caregivers', 'Primary Care Team', 'Member Groups', 'Active Automations', 'Subscriptions', 'Insurance'],
+  'Tasks': ['My Tasks', 'Patient Tasks'],
   'Profile': ['Basic info', 'Contact info', 'Custom fields', 'Address', 'Family and care givers', 'Other info'],
-  'Gaps': ['HEDIS Gaps', 'Diagnosis Gaps', 'Care Gaps'],
-  'Communication': [],
-  'Patient Notes': [],
   'Activity': [],
+  'Communication': [],
+  'Outreach': [],
 };
 
 /* ── Mock Patient Profiles for Preview ── */
