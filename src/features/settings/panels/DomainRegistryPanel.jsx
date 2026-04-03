@@ -72,10 +72,10 @@ function AddDomainDrawer({ onClose, onSave }) {
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          <FormField label="Vendor / label">
+          <FormField label={<>Vendor / label <span style={{ color: 'var(--status-error)' }}>*</span></>}>
             <Input placeholder="e.g. Availity" value={form.vendor} onChange={e => setForm(f => ({ ...f, vendor: e.target.value }))} autoFocus />
           </FormField>
-          <FormField label="Domain" hint={domainHint}>
+          <FormField label={<>Domain <span style={{ color: 'var(--status-error)' }}>*</span></>} hint={domainHint}>
             <Input placeholder="e.g. portal.availity.com" value={form.domain} onChange={e => setForm(f => ({ ...f, domain: e.target.value }))} />
           </FormField>
         </div>
@@ -100,7 +100,7 @@ function AddDomainDrawer({ onClose, onSave }) {
           background: 'var(--status-warning-light)', border: '0.5px solid rgba(217,165,11,.2)',
         }}>
           <Icon name="solar:shield-warning-linear" size={16} color="var(--status-warning)" style={{ flexShrink: 0, marginTop: 1 }} />
-          <div style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>
+          <div style={{ fontSize: 12, color: 'var(--status-warning)', lineHeight: 1.5 }}>
             Patient context including patientId will be shared with iFrames on this domain. Only register domains from HIPAA-compliant vendors.
           </div>
         </div>
@@ -126,10 +126,10 @@ function EditDomainDrawer({ domain, onClose, onSave }) {
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          <FormField label="Vendor / label">
+          <FormField label={<>Vendor / label <span style={{ color: 'var(--status-error)' }}>*</span></>}>
             <Input value={form.vendor} onChange={e => setForm(f => ({ ...f, vendor: e.target.value }))} autoFocus />
           </FormField>
-          <FormField label="Domain">
+          <FormField label="Domain (read-only)">
             <Input value={domain.domain} disabled readOnly />
           </FormField>
         </div>
@@ -153,7 +153,7 @@ function EditDomainDrawer({ domain, onClose, onSave }) {
           background: 'var(--status-warning-light)', border: '0.5px solid rgba(217,165,11,.2)',
         }}>
           <Icon name="solar:info-circle-linear" size={16} color="var(--status-warning)" style={{ flexShrink: 0, marginTop: 1 }} />
-          <div style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>
+          <div style={{ fontSize: 12, color: 'var(--status-warning)', lineHeight: 1.5 }}>
             Domain URL cannot be changed after registration. Delete and re-add to change the domain.
           </div>
         </div>

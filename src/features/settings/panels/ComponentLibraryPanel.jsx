@@ -200,6 +200,67 @@ function ComponentRow({ comp, onToggle, onEdit, onPreview, onAuditLog, onDuplica
   );
 }
 
+/* ── Preview Drawer with collapse/expand + refresh ── */
+function PreviewDrawer({ comp, onClose }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [iframeKey, setIframeKey] = useState(0);
+  const fullUrl = comp.domain && comp.url ? `https://${comp.domain}${comp.url}` : '';
+
+  return (
+    <Drawer title={`Preview — ${comp.name}`} onClose={onClose}>
+      <div style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 8, overflow: 'hidden' }}>
+        {/* Collapsible header */}
+        <div
+          onClick={() => setCollapsed(c => !c)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px',
+            borderBottom: collapsed ? 'none' : '0.5px solid var(--neutral-100)',
+            background: '#fff', cursor: 'pointer', userSelect: 'none',
+          }}
+        >
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#3A485F', flex: 1 }}>{comp.name}</span>
+          <Badge variant="compliance-warn" label="External" />
+          <Icon name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'} size={12} color="#8A94A8" />
+        </div>
+
+        {!collapsed && (
+          <>
+            {fullUrl ? (
+              <iframe
+                key={iframeKey}
+                src={fullUrl}
+                title={comp.name}
+                style={{ width: '100%', height: 400, border: 'none', display: 'block' }}
+                sandbox="allow-scripts allow-same-origin"
+              />
+            ) : (
+              <div style={{ height: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, color: '#8A94A8' }}>
+                <Icon name="solar:widget-5-linear" size={32} color="var(--neutral-150)" />
+                <div style={{ fontSize: 13 }}>No URL configured for this component</div>
+              </div>
+            )}
+            {/* Footer with refresh */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '6px 12px', borderTop: '0.5px solid var(--neutral-100)', fontSize: 11, color: '#D9A50B',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Icon name="solar:link-round-linear" size={12} color="#D9A50B" />
+                External Content Provided by Your Org
+              </div>
+              <ActionButton icon="solar:refresh-linear" size="S" tooltip="Refresh preview" onClick={() => setIframeKey(k => k + 1)} />
+            </div>
+          </>
+        )}
+      </div>
+      <div style={{ marginTop: 12, fontSize: 12, color: '#6F7A90' }}>
+        Domain: <code style={{ background: 'var(--neutral-50)', padding: '1px 4px', borderRadius: 3, fontSize: 11 }}>{comp.domain}</code>
+        {' · '}Path: <code style={{ background: 'var(--neutral-50)', padding: '1px 4px', borderRadius: 3, fontSize: 11 }}>{comp.url}</code>
+      </div>
+    </Drawer>
+  );
+}
+
 export function ComponentLibraryPanel({ searchQuery = '' }) {
   const showToast = useAppStore(s => s.showToast);
   const setComponentWizard = useAppStore(s => s.setComponentWizard);
@@ -353,35 +414,7 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
 
       {/* Preview drawer */}
       {previewComp && (
-        <Drawer title={`Preview — ${previewComp.name}`} onClose={() => setPreviewComp(null)}>
-          <div style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 8, overflow: 'hidden' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderBottom: '0.5px solid var(--neutral-100)', background: '#fff' }}>
-              <span style={{ fontSize: 13, fontWeight: 500, color: '#3A485F', flex: 1 }}>{previewComp.name}</span>
-              <Badge variant="compliance-warn" label="External" />
-            </div>
-            {previewComp.domain && previewComp.url ? (
-              <iframe
-                src={`https://${previewComp.domain}${previewComp.url}`}
-                title={previewComp.name}
-                style={{ width: '100%', height: 400, border: 'none', display: 'block' }}
-                sandbox="allow-scripts allow-same-origin"
-              />
-            ) : (
-              <div style={{ height: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, color: '#8A94A8' }}>
-                <Icon name="solar:widget-5-linear" size={32} color="var(--neutral-150)" />
-                <div style={{ fontSize: 13 }}>No URL configured for this component</div>
-              </div>
-            )}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderTop: '0.5px solid var(--neutral-100)', fontSize: 11, color: '#D9A50B' }}>
-              <Icon name="solar:link-round-linear" size={12} color="#D9A50B" />
-              External Content Provided by Your Org
-            </div>
-          </div>
-          <div style={{ marginTop: 12, fontSize: 12, color: '#6F7A90' }}>
-            Domain: <code style={{ background: 'var(--neutral-50)', padding: '1px 4px', borderRadius: 3, fontSize: 11 }}>{previewComp.domain}</code>
-            {' · '}Path: <code style={{ background: 'var(--neutral-50)', padding: '1px 4px', borderRadius: 3, fontSize: 11 }}>{previewComp.url}</code>
-          </div>
-        </Drawer>
+        <PreviewDrawer comp={previewComp} onClose={() => setPreviewComp(null)} />
       )}
     </div>
   );

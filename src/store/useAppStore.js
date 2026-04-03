@@ -338,9 +338,23 @@ export const useAppStore = create((set, get) => ({
         set({ embedDomains: (data || []).map(domainDbToJs), embedDomainsLoading: false });
   },
   addEmbedDomain: async (domain) => {
-        const row = domainJsToDb(domain);
+    // Check for duplicate domain
+    const existing = get().embedDomains.find(d => d.domain?.toLowerCase() === domain.domain?.toLowerCase());
+    if (existing) {
+      get().showToast(`Domain "${domain.domain}" is already registered`);
+      return null;
+    }
+    const row = domainJsToDb(domain);
     const { data, error } = await supabase.from('embed_domains').insert(row).select();
-    if (error) { console.warn('[store] addEmbedDomain failed:', error.message); return null; }
+    if (error) {
+      console.warn('[store] addEmbedDomain failed:', error.message);
+      if (error.message?.includes('duplicate') || error.message?.includes('unique')) {
+        get().showToast(`Domain "${domain.domain}" already exists`);
+      } else {
+        get().showToast(`Failed to register domain: ${error.message}`);
+      }
+      return null;
+    }
         const newDomain = domainDbToJs(data[0]);
     set(s => ({ embedDomains: [...s.embedDomains, newDomain] }));
     get().logAudit('Domain', newDomain.id, newDomain.domain, 'created', `Registered — category: ${newDomain.category}, HIPAA: ${newDomain.hipaa}`, 'Lifecycle');
@@ -398,7 +412,7 @@ export const useAppStore = create((set, get) => ({
     const { data, error } = await supabase.from('embed_components').insert(row).select();
     if (error) { console.warn('[store] addEmbedComponent failed:', error.message); return null; }
         const newComp = componentDbToJs(data[0]);
-    set(s => ({ embedComponents: [...s.embedComponents, newComp] }));
+    set(s => ({ embedComponents: [newComp, ...s.embedComponents] }));
     get().logAudit('Component', newComp.id, newComp.name, 'created', `Created on domain ${newComp.domain}`, 'Lifecycle');
     return newComp;
   },
