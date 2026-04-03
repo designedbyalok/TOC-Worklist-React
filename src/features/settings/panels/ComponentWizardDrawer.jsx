@@ -726,65 +726,79 @@ function StepPreview({ data, onChange }) {
   const selectedFieldCount = data.contextFields.length;
   const totalFieldCount = CONTEXT_FIELDS.length;
   const [iframeLoading, setIframeLoading] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
+  const [iframeKey, setIframeKey] = useState(0);
   const previewHeight = data.previewHeight || 280;
+
+  const refreshIframe = () => { setIframeLoading(true); setIframeKey(k => k + 1); };
 
   return (
     <div>
-      {/* ── Widget Preview (top, matching Figma node 239:24297) ── */}
+      {/* ── Widget Preview (matching Figma node 239:24297) ── */}
       <div style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 8, overflow: 'hidden', marginBottom: 16 }}>
-        {/* Widget header — title dropdown */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px',
-          borderBottom: '0.5px solid var(--neutral-100)', background: '#fff',
-        }}>
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#3A485F' }}>{data.name || 'Widget'}</span>
-          <Icon name="solar:alt-arrow-down-linear" size={12} color="#8A94A8" />
+        {/* Widget header — collapsible */}
+        <div
+          onClick={() => setCollapsed(c => !c)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px',
+            borderBottom: collapsed ? 'none' : '0.5px solid var(--neutral-100)',
+            background: '#fff', cursor: 'pointer', userSelect: 'none',
+          }}
+        >
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#3A485F', flex: 1 }}>{data.name || 'Widget'}</span>
+          <Icon name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'} size={12} color="#8A94A8" />
         </div>
 
-        {/* iframe content */}
-        {fullUrl ? (
-          <div style={{ position: 'relative' }}>
-            {iframeLoading && (
+        {/* Collapsible content */}
+        {!collapsed && (
+          <>
+            {/* iframe content */}
+            {fullUrl ? (
+              <div style={{ position: 'relative' }}>
+                {iframeLoading && (
+                  <div style={{
+                    position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', justifyContent: 'center', gap: 8,
+                    background: '#fff', zIndex: 1,
+                  }}>
+                    <div style={{ width: 24, height: 24, border: '2px solid var(--neutral-100)', borderTopColor: 'var(--primary-300)', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />
+                    <span style={{ fontSize: 12, color: '#8A94A8' }}>Loading preview...</span>
+                  </div>
+                )}
+                <iframe
+                  key={iframeKey}
+                  src={fullUrl}
+                  title={data.name || 'Component preview'}
+                  style={{ width: '100%', height: previewHeight, border: 'none', display: 'block' }}
+                  sandbox="allow-scripts allow-same-origin"
+                  onLoad={() => setIframeLoading(false)}
+                />
+              </div>
+            ) : (
               <div style={{
-                position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center', gap: 8,
-                background: '#fff', zIndex: 1,
+                width: '100%', height: previewHeight,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
+                background: 'var(--neutral-50)', color: 'var(--neutral-200)',
               }}>
-                <div style={{ width: 24, height: 24, border: '2px solid var(--neutral-100)', borderTopColor: 'var(--primary-300)', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />
-                <span style={{ fontSize: 12, color: '#8A94A8' }}>Loading preview...</span>
+                <Icon name="solar:widget-5-linear" size={32} color="var(--neutral-200)" />
+                <div style={{ fontSize: 13 }}>Select a domain and enter a path to see a live preview</div>
               </div>
             )}
-            <iframe
-              src={fullUrl}
-              title={data.name || 'Component preview'}
-              style={{ width: '100%', height: previewHeight, border: 'none', display: 'block' }}
-              sandbox="allow-scripts allow-same-origin"
-              onLoad={() => setIframeLoading(false)}
-            />
-          </div>
-        ) : (
-          <div style={{
-            width: '100%', height: previewHeight,
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
-            background: 'var(--neutral-50)', color: 'var(--neutral-200)',
-          }}>
-            <Icon name="solar:widget-5-linear" size={32} color="var(--neutral-200)" />
-            <div style={{ fontSize: 13 }}>Select a domain and enter a path to see a live preview</div>
-          </div>
-        )}
 
-        {/* External content footer */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '6px 12px', borderTop: '0.5px solid var(--neutral-100)',
-          background: '#fff', fontSize: 11, color: '#8A94A8',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Icon name="solar:link-round-linear" size={12} color="#D9A50B" />
-            <span style={{ color: '#D9A50B' }}>External Content Provided by Your Org</span>
-          </div>
-          <Icon name="solar:refresh-linear" size={12} color="#8A94A8" style={{ cursor: 'pointer' }} />
-        </div>
+            {/* External content footer with refresh action button */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '6px 12px', borderTop: '0.5px solid var(--neutral-100)',
+              background: '#fff', fontSize: 11, color: '#8A94A8',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Icon name="solar:link-round-linear" size={12} color="#D9A50B" />
+                <span style={{ color: '#D9A50B' }}>External Content Provided by Your Org</span>
+              </div>
+              <ActionButton icon="solar:refresh-linear" size="S" tooltip="Refresh preview" onClick={refreshIframe} />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Height control slider */}
@@ -793,7 +807,7 @@ function StepPreview({ data, onChange }) {
         <input
           type="range" min={150} max={600} step={10} value={previewHeight}
           onChange={e => onChange({ previewHeight: Number(e.target.value) })}
-          className={s.sliderRange}
+          style={{ width: '100%', height: 8, accentColor: 'var(--primary-300)', cursor: 'pointer', background: 'var(--neutral-100)', borderRadius: 4, border: 'none', outline: 'none', appearance: 'auto' }}
         />
         <span style={{ fontSize: 12, fontWeight: 500, color: '#3A485F', minWidth: 40, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{previewHeight}px</span>
       </div>
@@ -816,7 +830,14 @@ function StepPreview({ data, onChange }) {
           <div className={s.summaryKey}>Token lifetime</div><div className={s.summaryVal}>{data.tokenLifetime} min</div>
           <div className={s.summaryKey}>Context scope</div><div className={s.summaryVal}>{selectedFieldCount} of {totalFieldCount} fields</div>
         </div>
-        <div className={s.infoAmber} style={{ marginTop: 12, fontSize: 11 }}>
+        {/* Info alert with warning styling */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, padding: '6px 10px',
+          borderRadius: 6, background: 'var(--status-warning-light)',
+          border: '0.5px solid rgba(217,165,11,.15)',
+          fontSize: 11, color: 'var(--status-warning)',
+        }}>
+          <Icon name="solar:info-circle-linear" size={14} color="var(--status-warning)" style={{ flexShrink: 0 }} />
           Saved as disabled. Enable from the library after testing in preview mode.
         </div>
       </div>
@@ -936,15 +957,27 @@ export function ComponentWizardDrawer() {
       previewed: false,
     };
 
-    if (editId) {
-      await updateEmbedComponent(editId, compData);
-      showToast(`"${data.name}" updated`);
-    } else {
-      await addEmbedComponent(compData);
-      showToast(`"${data.name}" created (disabled)`);
+    try {
+      if (editId) {
+        await updateEmbedComponent(editId, compData);
+        showToast(`"${data.name}" updated`);
+      } else {
+        const result = await addEmbedComponent(compData);
+        if (result) {
+          showToast(`"${data.name}" created (disabled)`);
+        } else {
+          showToast('Failed to save component. Check console for details.');
+          setSaving(false);
+          return;
+        }
+      }
+      setSaving(false);
+      close();
+    } catch (err) {
+      console.error('[ComponentWizard] Save failed:', err);
+      showToast(`Save failed: ${err.message || 'Unknown error'}`);
+      setSaving(false);
     }
-    setSaving(false);
-    close();
   };
 
   const canNext = step === 0 ? (data.name.trim().length > 0 && data.domainId > 0) : step === 1 ? data.surfaces.length > 0 : true;
