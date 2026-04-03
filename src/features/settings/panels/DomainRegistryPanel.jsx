@@ -4,8 +4,13 @@ import { Badge } from '../../../components/Badge/Badge';
 import { Button } from '../../../components/Button/Button';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { Switch } from '../../../components/Switch/Switch';
+import { Input } from '../../../components/Input/Input';
+import { Drawer } from '../../../components/Drawer/Drawer';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../../components/ui/select';
+import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
+import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 import { useAppStore } from '../../../store/useAppStore';
-import { DOMAINS, DOMAIN_CATEGORIES, HIPAA_OPTIONS, COMPONENTS } from '../../../data/embeddedComponents';
+import { DOMAIN_CATEGORIES, HIPAA_OPTIONS, COMPONENTS } from '../../../data/embeddedComponents';
 import { AuditLogDrawer } from './AuditLogDrawer';
 
 const thStyle = {
@@ -15,283 +20,145 @@ const thStyle = {
 };
 const tdStyle = { padding: '12px 16px', fontSize: 14, fontWeight: 400, color: '#3D4A5C', verticalAlign: 'middle' };
 
-const inputStyle = { padding: '8px 12px', border: '0.5px solid var(--neutral-150)', borderRadius: 8, fontSize: 13, fontFamily: "'Inter', sans-serif", width: '100%', outline: 'none', background: '#fff', color: 'var(--neutral-500)' };
-const labelStyle = { fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)', marginBottom: 4 };
-const selectStyle = {
-  ...inputStyle, appearance: 'none', cursor: 'pointer', paddingRight: 34,
-  backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238a94a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E\")",
-  backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center',
-};
-
 const CATEGORY_BADGE_MAP = {
-  'Internal': 'ai-care',
-  'Prior authorization': 'ai-care',
-  'Analytics': 'compliance-warn',
-  'Care gaps / HEDIS': 'toc-engaged',
+  'Internal': 'ai-care', 'Prior authorization': 'ai-care',
+  'Analytics': 'compliance-warn', 'Care gaps / HEDIS': 'toc-engaged',
 };
-
 const HIPAA_BADGE_MAP = {
-  'Verified': 'status-completed',
-  'BAA in place': 'status-completed',
-  'Pending BAA': 'compliance-warn',
-  'Verify externally': 'ai-neutral',
+  'Verified': 'status-completed', 'BAA in place': 'status-completed',
+  'Pending BAA': 'compliance-warn', 'Verify externally': 'ai-neutral',
 };
 
-function StatusDot({ color }) {
-  return (
-    <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: color, marginRight: 4 }} />
-  );
-}
-
-function getComponentsForDomain(domainId) {
-  return COMPONENTS.filter(c => c.domainId === domainId);
-}
-
-function getComponentStats(domainId) {
-  const comps = getComponentsForDomain(domainId);
+function getComponentStats(domainId, components) {
+  const comps = components.filter(c => c.domainId === domainId);
   const active = comps.filter(c => c.enabled).length;
   const disabled = comps.filter(c => !c.enabled).length;
   return { active, disabled, total: comps.length };
 }
 
-function getDomainStatus(domain) {
-  if (domain.status === 'removed') return { label: 'Removed', color: '#EF4444' };
-  if (domain.activeComponents === 0) return { label: 'Unused', color: '#F59E0B' };
-  return { label: 'Active', color: '#22C55E' };
-}
-
-/* ── Overlay backdrop + centered card ── */
-function ModalOverlay({ children }) {
+/* ── Form Field Wrapper ── */
+function FormField({ label, hint, children }) {
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 100,
-      background: 'rgba(0,0,0,0.4)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <div style={{
-        background: '#fff', borderRadius: 12, padding: 24,
-        maxWidth: 520, width: '100%',
-        boxShadow: '0 8px 32px rgba(0,0,0,.18)',
-        fontFamily: "'Inter', sans-serif",
-      }} onClick={e => e.stopPropagation()}>
-        {children}
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <label style={{ fontSize: 12, fontWeight: 500, color: '#6F7A90' }}>{label}</label>
+      {children}
+      {hint && <span style={{ fontSize: 11, color: hint.color || 'var(--neutral-200)' }}>{hint.text || hint}</span>}
     </div>
   );
 }
 
-/* ── Add Domain Modal ── */
-function AddDomainModal({ onClose, onSave }) {
+/* ── Add Domain Drawer ── */
+function AddDomainDrawer({ onClose, onSave }) {
   const [form, setForm] = useState({ vendor: '', domain: '', category: DOMAIN_CATEGORIES[0], hipaa: HIPAA_OPTIONS[0] });
 
   const domainHint = useMemo(() => {
     const d = form.domain;
-    if (d.includes('http')) return { text: 'Remove https:// \u2014 root domain only', color: '#EF4444' };
-    if (d.includes('/')) return { text: 'No paths \u2014 root domain only', color: '#EF4444' };
-    return { text: 'Root domain only \u2014 no https://, no paths', color: 'var(--neutral-200)' };
+    if (d.includes('http')) return { text: 'Remove https:// — root domain only', color: 'var(--status-error)' };
+    if (d.includes('/')) return { text: 'No paths — root domain only', color: 'var(--status-error)' };
+    return { text: 'Root domain only — no https://, no paths', color: 'var(--neutral-200)' };
   }, [form.domain]);
 
   const canSave = form.vendor.trim() && form.domain.trim() && !form.domain.includes('http') && !form.domain.includes('/');
 
   return (
-    <ModalOverlay>
-      <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--neutral-500)', marginBottom: 20 }}>
-        Register new domain
-      </div>
-
-      {/* 2x2 grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-        <div>
-          <div style={labelStyle}>Vendor / label</div>
-          <input
-            style={inputStyle}
-            placeholder="e.g. Availity"
-            value={form.vendor}
-            onChange={e => setForm(f => ({ ...f, vendor: e.target.value }))}
-            autoFocus
-          />
-        </div>
-        <div>
-          <div style={labelStyle}>Domain</div>
-          <input
-            style={inputStyle}
-            placeholder="e.g. portal.availity.com"
-            value={form.domain}
-            onChange={e => setForm(f => ({ ...f, domain: e.target.value }))}
-          />
-          <div style={{ fontSize: 11, color: domainHint.color, marginTop: 4 }}>{domainHint.text}</div>
-        </div>
-        <div>
-          <div style={labelStyle}>Category</div>
-          <select style={selectStyle} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
-            {DOMAIN_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-        <div>
-          <div style={labelStyle}>HIPAA compliance</div>
-          <select style={selectStyle} value={form.hipaa} onChange={e => setForm(f => ({ ...f, hipaa: e.target.value }))}>
-            {HIPAA_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
-          </select>
-        </div>
-      </div>
-
-      {/* Warning */}
-      <div style={{
-        display: 'flex', gap: 8, padding: '10px 12px', borderRadius: 8,
-        background: '#FFFBEB', border: '0.5px solid #FDE68A', marginBottom: 20,
-      }}>
-        <Icon name="solar:shield-warning-linear" size={16} color="#F59E0B" style={{ flexShrink: 0, marginTop: 1 }} />
-        <div style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>
-          Patient context including patientId will be shared with iFrames on this domain. Only register domains from HIPAA-compliant vendors.
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-        <Button variant="secondary" size="S" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" size="S" disabled={!canSave} onClick={() => canSave && onSave(form)}>
+    <Drawer
+      title="Register New Domain"
+      onClose={onClose}
+      headerRight={
+        <Button variant="primary" size="L" disabled={!canSave} onClick={() => canSave && onSave(form)}>
           Register domain
         </Button>
+      }
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <FormField label="Vendor / label">
+            <Input placeholder="e.g. Availity" value={form.vendor} onChange={e => setForm(f => ({ ...f, vendor: e.target.value }))} autoFocus />
+          </FormField>
+          <FormField label="Domain" hint={domainHint}>
+            <Input placeholder="e.g. portal.availity.com" value={form.domain} onChange={e => setForm(f => ({ ...f, domain: e.target.value }))} />
+          </FormField>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <FormField label="Category">
+            <Select value={form.category} onValueChange={v => setForm(f => ({ ...f, category: v }))}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{DOMAIN_CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+            </Select>
+          </FormField>
+          <FormField label="HIPAA compliance">
+            <Select value={form.hipaa} onValueChange={v => setForm(f => ({ ...f, hipaa: v }))}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{HIPAA_OPTIONS.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent>
+            </Select>
+          </FormField>
+        </div>
+
+        {/* Warning */}
+        <div style={{
+          display: 'flex', gap: 8, padding: '10px 12px', borderRadius: 8,
+          background: 'var(--status-warning-light)', border: '0.5px solid rgba(217,165,11,.2)',
+        }}>
+          <Icon name="solar:shield-warning-linear" size={16} color="var(--status-warning)" style={{ flexShrink: 0, marginTop: 1 }} />
+          <div style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>
+            Patient context including patientId will be shared with iFrames on this domain. Only register domains from HIPAA-compliant vendors.
+          </div>
+        </div>
       </div>
-    </ModalOverlay>
+    </Drawer>
   );
 }
 
-/* ── Edit Domain Modal ── */
-function EditDomainModal({ domain, onClose, onSave }) {
-  const [form, setForm] = useState({
-    vendor: domain.vendor,
-    category: domain.category,
-    hipaa: domain.hipaa,
-  });
-
+/* ── Edit Domain Drawer ── */
+function EditDomainDrawer({ domain, onClose, onSave }) {
+  const [form, setForm] = useState({ vendor: domain.vendor, category: domain.category, hipaa: domain.hipaa });
   const canSave = form.vendor.trim();
 
   return (
-    <ModalOverlay>
-      <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--neutral-500)', marginBottom: 20 }}>
-        Edit domain &mdash; {domain.domain}
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-        <div>
-          <div style={labelStyle}>Vendor / label</div>
-          <input
-            style={inputStyle}
-            value={form.vendor}
-            onChange={e => setForm(f => ({ ...f, vendor: e.target.value }))}
-            autoFocus
-          />
-        </div>
-        <div>
-          <div style={labelStyle}>Domain</div>
-          <div style={{
-            padding: '8px 12px', borderRadius: 8, fontSize: 13, color: 'var(--neutral-300)',
-            background: 'var(--neutral-50)', border: '0.5px solid var(--neutral-100)',
-            fontFamily: "'Inter', sans-serif",
-          }}>
-            {domain.domain}
-          </div>
-        </div>
-        <div>
-          <div style={labelStyle}>Category</div>
-          <select style={selectStyle} value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
-            {DOMAIN_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-        <div>
-          <div style={labelStyle}>HIPAA compliance</div>
-          <select style={selectStyle} value={form.hipaa} onChange={e => setForm(f => ({ ...f, hipaa: e.target.value }))}>
-            {HIPAA_OPTIONS.map(h => <option key={h} value={h}>{h}</option>)}
-          </select>
-        </div>
-      </div>
-
-      {/* Info */}
-      <div style={{
-        display: 'flex', gap: 8, padding: '10px 12px', borderRadius: 8,
-        background: '#FFFBEB', border: '0.5px solid #FDE68A', marginBottom: 20,
-      }}>
-        <Icon name="solar:info-circle-linear" size={16} color="#F59E0B" style={{ flexShrink: 0, marginTop: 1 }} />
-        <div style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>
-          Domain URL cannot be changed after registration. Delete and re-add to change the domain.
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-        <Button variant="secondary" size="S" onClick={onClose}>Cancel</Button>
-        <Button variant="primary" size="S" disabled={!canSave} onClick={() => canSave && onSave(form)}>
+    <Drawer
+      title={`Edit — ${domain.domain}`}
+      onClose={onClose}
+      headerRight={
+        <Button variant="primary" size="L" disabled={!canSave} onClick={() => canSave && onSave(form)}>
           Save changes
         </Button>
-      </div>
-    </ModalOverlay>
-  );
-}
+      }
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <FormField label="Vendor / label">
+            <Input value={form.vendor} onChange={e => setForm(f => ({ ...f, vendor: e.target.value }))} autoFocus />
+          </FormField>
+          <FormField label="Domain">
+            <Input value={domain.domain} disabled readOnly />
+          </FormField>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <FormField label="Category">
+            <Select value={form.category} onValueChange={v => setForm(f => ({ ...f, category: v }))}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{DOMAIN_CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+            </Select>
+          </FormField>
+          <FormField label="HIPAA compliance">
+            <Select value={form.hipaa} onValueChange={v => setForm(f => ({ ...f, hipaa: v }))}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{HIPAA_OPTIONS.map(h => <SelectItem key={h} value={h}>{h}</SelectItem>)}</SelectContent>
+            </Select>
+          </FormField>
+        </div>
 
-/* ── Delete Domain Modal ── */
-function DeleteDomainModal({ domain, onClose, onConfirm, deleting }) {
-  const affectedComponents = COMPONENTS.filter(c => c.domainId === domain.id && c.enabled);
-  const hasActive = affectedComponents.length > 0;
-
-  return (
-    <ModalOverlay>
-      <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--neutral-500)', marginBottom: 20 }}>
-        Remove domain
-      </div>
-
-      {!hasActive ? (
-        /* Safe to remove */
         <div style={{
           display: 'flex', gap: 8, padding: '10px 12px', borderRadius: 8,
-          background: '#F0FDF4', border: '0.5px solid #BBF7D0', marginBottom: 16,
+          background: 'var(--status-warning-light)', border: '0.5px solid rgba(217,165,11,.2)',
         }}>
-          <Icon name="solar:check-circle-linear" size={16} color="#22C55E" style={{ flexShrink: 0, marginTop: 1 }} />
-          <div style={{ fontSize: 13, color: '#166534', lineHeight: 1.5 }}>
-            No active components use this domain. Safe to remove.
+          <Icon name="solar:info-circle-linear" size={16} color="var(--status-warning)" style={{ flexShrink: 0, marginTop: 1 }} />
+          <div style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>
+            Domain URL cannot be changed after registration. Delete and re-add to change the domain.
           </div>
         </div>
-      ) : (
-        <>
-          {/* Warning banner */}
-          <div style={{
-            display: 'flex', gap: 8, padding: '10px 12px', borderRadius: 8,
-            background: '#FFFBEB', border: '0.5px solid #FDE68A', marginBottom: 12,
-          }}>
-            <Icon name="solar:danger-triangle-linear" size={16} color="#F59E0B" style={{ flexShrink: 0, marginTop: 1 }} />
-            <div style={{ fontSize: 13, color: '#92400E', lineHeight: 1.5 }}>
-              {affectedComponents.length} active component{affectedComponents.length > 1 ? 's' : ''} use this domain. Removing <strong>{domain.domain}</strong> will auto-disable the {affectedComponents.map(c => c.name).join(', ')}. Providers will see an error banner until the domain is re-registered.
-            </div>
-          </div>
-
-          {/* Affected components list */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
-            {affectedComponents.map(c => (
-              <Badge key={c.id} variant="status-failed" label={c.name} />
-            ))}
-          </div>
-
-          {/* Amber info */}
-          <div style={{
-            display: 'flex', gap: 8, padding: '10px 12px', borderRadius: 8,
-            background: '#FFFBEB', border: '0.5px solid #FDE68A', marginBottom: 16,
-          }}>
-            <Icon name="solar:info-circle-linear" size={16} color="#F59E0B" style={{ flexShrink: 0, marginTop: 1 }} />
-            <div style={{ fontSize: 12, color: '#92400E', lineHeight: 1.5 }}>
-              Consider disabling components manually before removing a domain to avoid an unexpected outage for providers.
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* Footer */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-        <Button variant="secondary" size="S" onClick={onClose} disabled={deleting}>Cancel</Button>
-        <Button variant="danger" size="S" onClick={onConfirm} disabled={deleting}>
-          {deleting ? 'Removing\u2026' : hasActive ? 'Remove anyway' : 'Remove domain'}
-        </Button>
       </div>
-    </ModalOverlay>
+    </Drawer>
   );
 }
 
@@ -299,94 +166,69 @@ function DeleteDomainModal({ domain, onClose, onConfirm, deleting }) {
 export function DomainRegistryPanel({ searchQuery = '' }) {
   const showToast = useAppStore(s => s.showToast);
   const domains = useAppStore(s => s.embedDomains);
+  const domainsLoading = useAppStore(s => s.embedDomainsLoading);
   const fetchEmbedDomains = useAppStore(s => s.fetchEmbedDomains);
   const addEmbedDomain = useAppStore(s => s.addEmbedDomain);
   const updateEmbedDomain = useAppStore(s => s.updateEmbedDomain);
   const deleteEmbedDomain = useAppStore(s => s.deleteEmbedDomain);
   const toggleEmbedDomain = useAppStore(s => s.toggleEmbedDomain);
+  const embedComponents = useAppStore(s => s.embedComponents);
 
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddDrawer, setShowAddDrawer] = useState(false);
   const [editingDomain, setEditingDomain] = useState(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deletingDomain, setDeletingDomain] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [infoDismissed, setInfoDismissed] = useState(false);
   const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
 
-  // Fetch on mount
   useEffect(() => { fetchEmbedDomains(); }, [fetchEmbedDomains]);
 
-  // Listen for "add new" trigger from parent (EmbeddedComponentsSettings)
   const domainAddTrigger = useAppStore(s => s.domainAddTrigger);
   const setDomainAddTrigger = useAppStore(s => s.setDomainAddTrigger);
   useEffect(() => {
-    if (domainAddTrigger) {
-      setShowAddModal(true);
-      setDomainAddTrigger(false);
-    }
+    if (domainAddTrigger) { setShowAddDrawer(true); setDomainAddTrigger(false); }
   }, [domainAddTrigger, setDomainAddTrigger]);
 
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return domains;
     const q = searchQuery.toLowerCase();
-    return domains.filter(d =>
-      d.vendor?.toLowerCase().includes(q) ||
-      d.domain?.toLowerCase().includes(q)
-    );
+    return domains.filter(d => d.vendor?.toLowerCase().includes(q) || d.domain?.toLowerCase().includes(q));
   }, [domains, searchQuery]);
 
-  const enabledDomains = domains.filter(d => d.enabled !== false);
-  const disabledDomains = domains.filter(d => d.enabled === false);
-
   const handleAdd = async (form) => {
-    const newDomain = await addEmbedDomain({
-      vendor: form.vendor,
-      domain: form.domain,
-      category: form.category,
-      hipaa: form.hipaa,
-      enabled: true,
-      addedDate: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
-    });
-    setShowAddModal(false);
-    if (newDomain) showToast(`Domain "${form.domain}" registered`);
+    const d = await addEmbedDomain({ vendor: form.vendor, domain: form.domain, category: form.category, hipaa: form.hipaa, enabled: true, addedDate: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) });
+    setShowAddDrawer(false);
+    if (d) showToast(`Domain "${form.domain}" registered`);
   };
 
   const handleEdit = async (form) => {
     await updateEmbedDomain(editingDomain.id, { vendor: form.vendor, category: form.category, hipaa: form.hipaa });
-    setShowEditModal(false);
     setEditingDomain(null);
     showToast(`Domain "${editingDomain.domain}" updated`);
   };
 
   const handleDelete = async () => {
     setDeleting(true);
-    await deleteEmbedDomain(deletingDomain.id);
-    showToast(`Domain "${deletingDomain.domain}" removed`);
+    await deleteEmbedDomain(deleteTarget.id);
+    showToast(`Domain "${deleteTarget.domain}" removed`);
     setDeleting(false);
-    setShowDeleteModal(false);
-    setDeletingDomain(null);
+    setDeleteTarget(null);
   };
 
-  const handleToggleDomain = async (id) => {
-    const domain = domains.find(d => d.id === id);
+  const handleToggle = async (id) => {
+    const d = domains.find(d => d.id === id);
     await toggleEmbedDomain(id);
-    if (domain) showToast(domain.enabled ? `Domain "${domain.domain}" disabled` : `Domain "${domain.domain}" enabled`);
+    if (d) showToast(d.enabled ? `Domain "${d.domain}" disabled` : `Domain "${d.domain}" enabled`);
   };
 
-  const openEdit = (domain) => {
-    setEditingDomain(domain);
-    setShowEditModal(true);
-  };
-
-  const openDelete = (domain) => {
-    setDeletingDomain(domain);
-    setShowDeleteModal(true);
-  };
+  // Loading skeleton
+  if (domainsLoading && domains.length === 0) {
+    return <SimpleTableSkeleton rows={4} cols={7} />;
+  }
 
   return (
     <>
-      {/* Blue info banner */}
+      {/* Info banner */}
       {!infoDismissed && (
         <div style={{
           display: 'flex', gap: 8, padding: '10px 16px', alignItems: 'center',
@@ -396,155 +238,98 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
           <div style={{ fontSize: 12, color: '#1E40AF', lineHeight: 1.5, flex: 1 }}>
             Domains are account-scoped. Only URLs from registered domains can be used when configuring components.
           </div>
-          <button onClick={() => setInfoDismissed(true)} style={{
-            background: 'none', border: 'none', cursor: 'pointer', padding: 4,
-            color: '#93C5FD', flexShrink: 0, lineHeight: 1, fontSize: 14,
-          }}>
+          <button onClick={() => setInfoDismissed(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, flexShrink: 0, lineHeight: 1 }}>
             <Icon name="solar:close-circle-linear" size={16} color="#93C5FD" />
           </button>
         </div>
       )}
 
-      {/* Table — edge-to-edge, no card wrapper */}
-      <div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
-          <thead>
+      {/* Table */}
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
+        <thead>
+          <tr>
+            <th style={thStyle}>Vendor / label</th>
+            <th style={thStyle}>Domain</th>
+            <th style={thStyle}>Category</th>
+            <th style={thStyle}>HIPAA</th>
+            <th style={thStyle}>Components</th>
+            <th style={thStyle}>Enabled</th>
+            <th style={thStyle}>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.length === 0 && (
             <tr>
-              <th style={thStyle}>Vendor / label</th>
-              <th style={thStyle}>Domain</th>
-              <th style={thStyle}>Category</th>
-              <th style={thStyle}>HIPAA</th>
-              <th style={thStyle}>Components</th>
-              <th style={thStyle}>Enabled</th>
-              <th style={thStyle}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 && (
-              <tr>
-                <td colSpan={7} style={{ textAlign: 'center', padding: 40, color: 'var(--neutral-200)' }}>
+              <td colSpan={7} style={{ padding: 48 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: '#6F7A90' }}>
                   <Icon name="solar:global-linear" size={32} color="var(--neutral-150)" />
-                  <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-300)', marginTop: 8 }}>No domains found</div>
-                  <div style={{ fontSize: 13, marginTop: 4 }}>
-                    {searchQuery.trim() ? 'Try adjusting your search.' : 'Register your first domain to start configuring embedded components.'}
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: '#3D4A5C' }}>No domains found</div>
+                    <div style={{ fontSize: 13, marginTop: 4 }}>
+                      {searchQuery.trim() ? 'Try adjusting your search.' : 'Register your first domain to start configuring embedded components.'}
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          )}
+          {filtered.map(d => {
+            const stats = getComponentStats(d.id, embedComponents);
+            const isDisabled = !d.enabled;
+            return (
+              <tr key={d.id}
+                style={{ borderBottom: '0.5px solid #EAECF0', transition: 'background .1s', ...(isDisabled ? { opacity: 0.55 } : {}) }}
+                onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25)'}
+                onMouseOut={e => e.currentTarget.style.background = ''}
+              >
+                <td style={{ ...tdStyle, fontWeight: 500, color: '#1A1F36' }}>{d.vendor}</td>
+                <td style={tdStyle}>
+                  <code style={{ background: 'var(--neutral-50)', padding: '2px 6px', borderRadius: 4, fontSize: 11, fontFamily: "'SF Mono', monospace", color: 'var(--neutral-400)' }}>{d.domain}</code>
+                </td>
+                <td style={tdStyle}><Badge variant={CATEGORY_BADGE_MAP[d.category] || 'ai-neutral'} label={d.category} /></td>
+                <td style={tdStyle}><Badge variant={HIPAA_BADGE_MAP[d.hipaa] || 'ai-neutral'} label={d.hipaa} /></td>
+                <td style={tdStyle}>
+                  {stats.active > 0 && <Badge variant="status-completed" label={`${stats.active} active`} />}
+                  {stats.active === 0 && stats.disabled === 0 && <Badge variant="status-queued" label="0 active" />}
+                  {stats.disabled > 0 && <span style={{ marginLeft: stats.active > 0 ? 4 : 0 }}><Badge variant="status-failed" label={`${stats.disabled} disabled`} /></span>}
+                </td>
+                <td style={tdStyle}><Switch checked={d.enabled !== false} onChange={() => handleToggle(d.id)} /></td>
+                <td style={tdStyle}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit" onClick={() => setEditingDomain(d)} />
+                    <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                    <ActionButton icon="solar:history-linear" size="L" tooltip="Audit Log" onClick={() => setAuditDrawerEntity({ type: 'Domain', name: d.vendor, domain: d.domain, id: d.id })} />
+                    <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                    <ActionButton icon="solar:trash-bin-minimalistic-linear" size="L" tooltip="Delete" onClick={() => setDeleteTarget(d)} />
                   </div>
                 </td>
               </tr>
-            )}
-            {filtered.map(d => {
-              const stats = getComponentStats(d.id);
-              const isDisabled = !d.enabled;
+            );
+          })}
+        </tbody>
+      </table>
 
-              return (
-                <tr
-                  key={d.id}
-                  style={{
-                    borderBottom: '0.5px solid #EAECF0',
-                    transition: 'background .1s',
-                    ...(isDisabled ? { opacity: 0.55 } : {}),
-                  }}
-                  onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25, #faf8ff)'}
-                  onMouseOut={e => e.currentTarget.style.background = ''}
-                >
-                  {/* Vendor */}
-                  <td style={{ ...tdStyle, fontWeight: 500, color: '#1A1F36' }}>
-                    {d.vendor}
-                  </td>
+      {/* Drawers */}
+      {showAddDrawer && <AddDomainDrawer onClose={() => setShowAddDrawer(false)} onSave={handleAdd} />}
+      {editingDomain && <EditDomainDrawer domain={editingDomain} onClose={() => setEditingDomain(null)} onSave={handleEdit} />}
 
-                  {/* Domain */}
-                  <td style={tdStyle}>
-                    <code style={{
-                      background: 'var(--neutral-50)', padding: '2px 6px', borderRadius: 4,
-                      fontSize: 11, fontFamily: "'SF Mono', 'Fira Code', monospace",
-                      color: 'var(--neutral-400)',
-                    }}>
-                      {d.domain}
-                    </code>
-                  </td>
-
-                  {/* Category */}
-                  <td style={tdStyle}>
-                    <Badge variant={CATEGORY_BADGE_MAP[d.category] || 'ai-neutral'} label={d.category} />
-                  </td>
-
-                  {/* HIPAA */}
-                  <td style={tdStyle}>
-                    <Badge variant={HIPAA_BADGE_MAP[d.hipaa] || 'ai-neutral'} label={d.hipaa} />
-                  </td>
-
-                  {/* Components */}
-                  <td style={tdStyle}>
-                    {stats.active > 0 && (
-                      <Badge variant="status-completed" label={`${stats.active} active`} />
-                    )}
-                    {stats.active === 0 && stats.disabled === 0 && (
-                      <Badge variant="status-queued" label="0 active" />
-                    )}
-                    {stats.disabled > 0 && (
-                      <span style={{ marginLeft: stats.active > 0 ? 4 : 0 }}>
-                        <Badge variant="status-failed" label={`${stats.disabled} disabled`} />
-                      </span>
-                    )}
-                  </td>
-
-                  {/* Enabled toggle */}
-                  <td style={tdStyle}>
-                    <Switch
-                      checked={d.enabled !== false}
-                      onChange={() => handleToggleDomain(d.id)}
-                    />
-                  </td>
-
-                  {/* Actions */}
-                  <td style={tdStyle}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit" onClick={() => openEdit(d)} />
-                      <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
-                      <ActionButton icon="solar:history-linear" size="L" tooltip="Audit Log" onClick={() => setAuditDrawerEntity({ type: 'Domain', name: d.vendor, domain: d.domain, id: d.id })} />
-                      <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
-                      <ActionButton icon="solar:trash-bin-minimalistic-linear" size="L" tooltip="Delete" onClick={() => openDelete(d)} />
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Footer */}
-      <div style={{ fontSize: 12, color: '#6F7A90', padding: '12px 16px' }}>
-        {domains.length} domain{domains.length !== 1 ? 's' : ''} &middot; {enabledDomains.length} enabled &middot; {disabledDomains.length} disabled
-      </div>
-
-      {/* Modals */}
-      {showAddModal && (
-        <AddDomainModal
-          onClose={() => setShowAddModal(false)}
-          onSave={handleAdd}
-        />
-      )}
-
-      {showEditModal && editingDomain && (
-        <EditDomainModal
-          domain={editingDomain}
-          onClose={() => { setShowEditModal(false); setEditingDomain(null); }}
-          onSave={handleEdit}
-        />
-      )}
-
-      {showDeleteModal && deletingDomain && (
-        <DeleteDomainModal
-          domain={deletingDomain}
-          onClose={() => { setShowDeleteModal(false); setDeletingDomain(null); }}
+      {/* Delete confirmation (stays as modal) */}
+      {deleteTarget && (
+        <ConfirmDialog
+          icon="solar:danger-triangle-linear"
+          iconColor="var(--status-error)"
+          title={`Remove "${deleteTarget.domain}"?`}
+          description={`This will remove the domain from the registry. Any components using this domain will be auto-disabled.`}
+          confirmLabel={deleting ? 'Removing...' : 'Remove domain'}
+          variant="error"
+          loading={deleting}
+          onCancel={() => setDeleteTarget(null)}
           onConfirm={handleDelete}
-          deleting={deleting}
         />
       )}
 
-      {auditDrawerEntity && (
-        <AuditLogDrawer entity={auditDrawerEntity} onClose={() => setAuditDrawerEntity(null)} />
-      )}
+      {/* Audit log drawer */}
+      {auditDrawerEntity && <AuditLogDrawer entity={auditDrawerEntity} onClose={() => setAuditDrawerEntity(null)} />}
     </>
   );
 }

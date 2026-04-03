@@ -166,11 +166,13 @@ export function AuditLogDrawer({ entity, onClose }) {
           ))}
 
           {filteredEntries.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '32px 16px', color: '#6F7A90' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '32px 16px', color: '#6F7A90' }}>
               <Icon name="solar:history-linear" size={32} color="var(--neutral-150)" />
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#3D4A5C', marginTop: 8 }}>No entries found</div>
-              <div style={{ fontSize: 13, marginTop: 4 }}>
-                {filter !== 'all' ? 'Try adjusting your filter.' : 'Activity will appear here as actions are taken.'}
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: '#3D4A5C' }}>No entries found</div>
+                <div style={{ fontSize: 13, marginTop: 4 }}>
+                  {filter !== 'all' ? 'Try adjusting your filter.' : 'Activity will appear here as actions are taken.'}
+                </div>
               </div>
             </div>
           )}

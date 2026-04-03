@@ -5,6 +5,7 @@ import { Badge } from '../../../components/Badge/Badge';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { Switch } from '../../../components/Switch/Switch';
 import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
+import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 import { useAppStore } from '../../../store/useAppStore';
 import { DOMAINS } from '../../../data/embeddedComponents';
 import { AuditLogDrawer } from './AuditLogDrawer';
@@ -204,12 +205,13 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
   const deleteEmbedComponent = useAppStore(s => s.deleteEmbedComponent);
   const duplicateEmbedComponent = useAppStore(s => s.duplicateEmbedComponent);
 
+  const componentsLoading = useAppStore(s => s.embedComponentsLoading);
+
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [warningDismissed, setWarningDismissed] = useState(false);
   const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
 
-  // Fetch on mount
   useEffect(() => { fetchEmbedComponents(); }, [fetchEmbedComponents]);
 
   const domains = DOMAINS;
@@ -246,8 +248,10 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
     setDeleteTarget(null);
   };
 
-  const enabledCount = components.filter(c => c.enabled).length;
-  const disabledCount = components.filter(c => !c.enabled).length;
+  // Loading skeleton
+  if (componentsLoading && components.length === 0) {
+    return <div style={{ flex: 1, overflow: 'auto' }}><SimpleTableSkeleton rows={5} cols={6} /></div>;
+  }
 
   return (
     <div style={{ flex: 1, overflow: 'auto' }}>
@@ -291,15 +295,19 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
         <tbody>
           {filtered.length === 0 && (
             <tr>
-              <td colSpan={6} style={{ textAlign: 'center', padding: 48, color: '#6F7A90' }}>
-                <Icon name={searchQuery.trim() ? 'solar:magnifer-linear' : 'solar:widget-5-linear'} size={32} color="var(--neutral-150)" />
-                <div style={{ fontSize: 16, fontWeight: 500, color: '#3D4A5C', marginTop: 8 }}>
-                  {searchQuery.trim() ? 'No results found' : 'No components configured yet'}
-                </div>
-                <div style={{ fontSize: 14, marginTop: 4 }}>
-                  {searchQuery.trim()
-                    ? <>No components match "<strong>{searchQuery.trim()}</strong>".</>
-                    : 'Register a domain first, then create your first embedded component.'}
+              <td colSpan={6} style={{ padding: 48 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: '#6F7A90' }}>
+                  <Icon name={searchQuery.trim() ? 'solar:magnifer-linear' : 'solar:widget-5-linear'} size={32} color="var(--neutral-150)" />
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: '#3D4A5C' }}>
+                      {searchQuery.trim() ? 'No results found' : 'No components configured yet'}
+                    </div>
+                    <div style={{ fontSize: 13, marginTop: 4 }}>
+                      {searchQuery.trim()
+                        ? <>No components match "<strong>{searchQuery.trim()}</strong>".</>
+                        : 'Register a domain first, then create your first embedded component.'}
+                    </div>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -318,11 +326,6 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
           ))}
         </tbody>
       </table>
-
-      {/* Footer count */}
-      <div style={{ fontSize: 12, color: '#6F7A90', padding: '12px 16px' }}>
-        {components.length} component{components.length !== 1 ? 's' : ''} &middot; {enabledCount} enabled &middot; {disabledCount} disabled
-      </div>
 
       {/* Delete confirm */}
       {deleteTarget && (
