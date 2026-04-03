@@ -716,3 +716,8 @@
 }
 .devConsoleKey { color: #7C5CFC; }
 .devConsoleStr { color: #22C55E; }
+
+/* Spinner animation for iframe loading */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

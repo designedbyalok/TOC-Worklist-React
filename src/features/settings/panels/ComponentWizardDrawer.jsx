@@ -720,15 +720,85 @@ function StepConfigure({ data, onChange }) {
 }
 
 /* ── Step: Preview ── */
-function StepPreview({ data }) {
+function StepPreview({ data, onChange }) {
   const selectedDomain = DOMAINS.find(d => d.id === data.domainId);
   const fullUrl = selectedDomain ? `https://${selectedDomain.domain}${data.url}` : '';
   const selectedFieldCount = data.contextFields.length;
   const totalFieldCount = CONTEXT_FIELDS.length;
+  const [iframeLoading, setIframeLoading] = useState(true);
+  const previewHeight = data.previewHeight || 280;
 
   return (
     <div>
-      {/* Save Summary (moved from StepContext) */}
+      {/* ── Widget Preview (top, matching Figma node 239:24297) ── */}
+      <div style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 8, overflow: 'hidden', marginBottom: 16 }}>
+        {/* Widget header — title dropdown */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px',
+          borderBottom: '0.5px solid var(--neutral-100)', background: '#fff',
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#3A485F' }}>{data.name || 'Widget'}</span>
+          <Icon name="solar:alt-arrow-down-linear" size={12} color="#8A94A8" />
+        </div>
+
+        {/* iframe content */}
+        {fullUrl ? (
+          <div style={{ position: 'relative' }}>
+            {iframeLoading && (
+              <div style={{
+                position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', gap: 8,
+                background: '#fff', zIndex: 1,
+              }}>
+                <div style={{ width: 24, height: 24, border: '2px solid var(--neutral-100)', borderTopColor: 'var(--primary-300)', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />
+                <span style={{ fontSize: 12, color: '#8A94A8' }}>Loading preview...</span>
+              </div>
+            )}
+            <iframe
+              src={fullUrl}
+              title={data.name || 'Component preview'}
+              style={{ width: '100%', height: previewHeight, border: 'none', display: 'block' }}
+              sandbox="allow-scripts allow-same-origin"
+              onLoad={() => setIframeLoading(false)}
+            />
+          </div>
+        ) : (
+          <div style={{
+            width: '100%', height: previewHeight,
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
+            background: 'var(--neutral-50)', color: 'var(--neutral-200)',
+          }}>
+            <Icon name="solar:widget-5-linear" size={32} color="var(--neutral-200)" />
+            <div style={{ fontSize: 13 }}>Select a domain and enter a path to see a live preview</div>
+          </div>
+        )}
+
+        {/* External content footer */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '6px 12px', borderTop: '0.5px solid var(--neutral-100)',
+          background: '#fff', fontSize: 11, color: '#8A94A8',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Icon name="solar:link-round-linear" size={12} color="#D9A50B" />
+            <span style={{ color: '#D9A50B' }}>External Content Provided by Your Org</span>
+          </div>
+          <Icon name="solar:refresh-linear" size={12} color="#8A94A8" style={{ cursor: 'pointer' }} />
+        </div>
+      </div>
+
+      {/* Height control slider */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+        <span style={{ fontSize: 12, fontWeight: 500, color: '#6F7A90', whiteSpace: 'nowrap' }}>Widget height</span>
+        <input
+          type="range" min={150} max={600} step={10} value={previewHeight}
+          onChange={e => onChange({ previewHeight: Number(e.target.value) })}
+          className={s.sliderRange}
+        />
+        <span style={{ fontSize: 12, fontWeight: 500, color: '#3A485F', minWidth: 40, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{previewHeight}px</span>
+      </div>
+
+      {/* ── Save Summary ── */}
       <div className={s.summaryCard} style={{ marginBottom: 16 }}>
         <div className={s.summaryLabel}>Save Summary</div>
         <div className={s.summaryGrid}>
@@ -740,7 +810,6 @@ function StepPreview({ data }) {
               data.sidecarPlacement && `Sidecar ${data.sidecarPlacement}`,
               data.mobilePlacement && MOBILE_PLACEMENTS.find(p => p.value === data.mobilePlacement)?.label,
             ].filter(Boolean).join(' · ') || '—'}
-            {data.webPlacement === 'side-drawer' && data.drawerWidth ? ` (${data.drawerWidth}px)` : ''}
           </div>
           <div className={s.summaryKey}>URL</div>
           <div className={s.summaryVal} style={{ fontFamily: "'SF Mono', monospace", fontSize: 11 }}>{fullUrl || '—'}</div>
@@ -752,46 +821,8 @@ function StepPreview({ data }) {
         </div>
       </div>
 
-      <div className={s.previewHint}>
-        This component will appear on: {data.surfaces.map(sf => sf === 'web' ? 'Fold Web' : sf === 'sidecar' ? 'Sidecar' : 'Mobile').join(', ')}.
-        Below is a preview of how providers will see it.
-      </div>
-
-      {/* Third-party widget indicator */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-        <Badge variant="compliance-warn" label="Third-party widget" />
-      </div>
-
-      {/* External content warning */}
-      <div className={s.externalBanner} style={{ marginBottom: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <Icon name="solar:danger-triangle-bold" size={12} color="#D97706" />
-          <span style={{ fontWeight: 500 }}>External content</span> · {selectedDomain?.domain || 'domain.com'}
-        </div>
-        <span className={s.externalBannerLink}>What's shared?</span>
-      </div>
-
-      {/* Real iframe preview */}
-      {fullUrl ? (
-        <iframe
-          src={fullUrl}
-          title={data.name || 'Component preview'}
-          style={{ width: '100%', height: 300, borderRadius: 8, border: '1px solid var(--neutral-150)' }}
-          sandbox="allow-scripts allow-same-origin"
-        />
-      ) : (
-        <div style={{
-          width: '100%', height: 300, borderRadius: 8, border: '1px dashed var(--neutral-150)',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
-          background: 'var(--neutral-50)', color: 'var(--neutral-200)',
-        }}>
-          <Icon name="solar:widget-5-linear" size={32} color="var(--neutral-200)" />
-          <div style={{ fontSize: 13 }}>Select a domain and enter a path to see a live preview</div>
-        </div>
-      )}
-
-      {/* Dev console stub */}
-      <div className={s.devConsole} style={{ marginTop: 16 }}>
+      {/* ── Developer Console ── */}
+      <div className={s.devConsole}>
         <div className={s.devConsoleHeader}>
           <span className={s.devConsoleTitle}>Developer Console</span>
           <Icon name="solar:alt-arrow-down-linear" size={12} color="rgba(255,255,255,.4)" />
@@ -817,8 +848,12 @@ export function ComponentWizardDrawer() {
   const setComponentWizard = useAppStore(s => s.setComponentWizard);
   const editId = useAppStore(s => s.componentWizardEditId);
   const showToast = useAppStore(s => s.showToast);
+  const addEmbedComponent = useAppStore(s => s.addEmbedComponent);
+  const updateEmbedComponent = useAppStore(s => s.updateEmbedComponent);
+  const embedDomains = useAppStore(s => s.embedDomains);
+  const embedComponents = useAppStore(s => s.embedComponents);
 
-  const existing = editId ? COMPONENTS.find(c => c.id === editId) : null;
+  const existing = editId ? (embedComponents.find(c => c.id === editId) || COMPONENTS.find(c => c.id === editId)) : null;
 
   const [step, setStep] = useState(0);
   const [data, setData] = useState({
@@ -858,8 +893,57 @@ export function ComponentWizardDrawer() {
   const update = (patch) => setData(prev => ({ ...prev, ...patch }));
   const close = () => setComponentWizard(false, null);
 
-  const handleSave = () => {
-    showToast(editId ? `"${data.name}" updated` : `"${data.name}" created (disabled)`);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const selectedDomain = (embedDomains.length > 0 ? embedDomains : DOMAINS).find(d => d.id === data.domainId);
+    const compData = {
+      name: data.name,
+      category: data.category,
+      description: data.description,
+      domainId: data.domainId,
+      domain: selectedDomain?.domain || '',
+      surfaces: data.surfaces,
+      placements: {
+        ...(data.surfaces.includes('web') ? { web: data.webPlacement } : {}),
+        ...(data.surfaces.includes('sidecar') ? { sidecar: data.sidecarPlacement } : {}),
+        ...(data.surfaces.includes('mobile') ? { mobile: data.mobilePlacement } : {}),
+      },
+      webConfig: {
+        drawerWidth: data.drawerWidth,
+        opensVia: data.opensVia,
+        tabContext: data.tabContext,
+        background: data.background,
+        tabLabel: data.webTabLabel,
+        drawerTab: data.drawerTab,
+        widgetHeight: data.widgetHeight,
+        widgetOrder: data.widgetOrder,
+        actionMenus: data.actionMenus,
+        worklists: data.worklists,
+        actionTrigger: data.actionTrigger,
+      },
+      sidecarConfig: { placement: data.sidecarPlacement, tabLabel: data.sidecarTabLabel, widgetTab: data.sidecarWidgetTab, globalPlacement: data.sidecarGlobalPlacement },
+      mobileConfig: { placement: data.mobilePlacement, tabLabel: data.mobileTabLabel },
+      url: data.url,
+      stagingUrl: data.stagingUrl || '',
+      tokenLifetime: data.tokenLifetime,
+      contextFields: data.contextFields,
+      visibleTo: data.visibleTo,
+      activation: data.activation,
+      condition: data.condition,
+      enabled: false,
+      previewed: false,
+    };
+
+    if (editId) {
+      await updateEmbedComponent(editId, compData);
+      showToast(`"${data.name}" updated`);
+    } else {
+      await addEmbedComponent(compData);
+      showToast(`"${data.name}" created (disabled)`);
+    }
+    setSaving(false);
     close();
   };
 
@@ -867,11 +951,11 @@ export function ComponentWizardDrawer() {
 
   const headerRight = (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <Button variant="primary" size="L" disabled={!canNext} onClick={() => {
+      <Button variant="primary" size="L" disabled={!canNext || saving} onClick={() => {
         if (step < STEPS.length - 1) setStep(step + 1);
         else handleSave();
       }}>
-        {step === STEPS.length - 1 ? (editId ? 'Save Changes' : 'Save & Enable') : 'Next'}
+        {saving ? 'Saving...' : step === STEPS.length - 1 ? (editId ? 'Save Changes' : 'Save & Enable') : 'Next'}
       </Button>
     </div>
   );
@@ -886,7 +970,7 @@ export function ComponentWizardDrawer() {
       <div style={{ padding: '16px 0' }}>
         {step === 0 && <StepConfigure data={data} onChange={update} />}
         {step === 1 && <StepSurfaces data={data} onChange={update} />}
-        {step === 2 && <StepPreview data={data} />}
+        {step === 2 && <StepPreview data={data} onChange={update} />}
       </div>
     </Drawer>
   );
