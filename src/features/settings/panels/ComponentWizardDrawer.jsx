@@ -808,7 +808,7 @@ function StepPreview({ data, onChange }) {
         <input
           type="range" min={150} max={600} step={10} value={previewHeight}
           onChange={e => onChange({ previewHeight: Number(e.target.value) })}
-          style={{ width: '100%', height: 8, accentColor: 'var(--primary-300)', cursor: 'pointer', background: 'var(--neutral-100)', borderRadius: 4, border: 'none', outline: 'none', appearance: 'auto' }}
+          style={{ width: '100%', height: 8, accentColor: 'var(--primary-300)', cursor: 'pointer', background: 'var(--neutral-100)', borderRadius: 4, border: 'none', outline: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
         />
         <span style={{ fontSize: 12, fontWeight: 500, color: '#3A485F', minWidth: 40, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{previewHeight}px</span>
       </div>

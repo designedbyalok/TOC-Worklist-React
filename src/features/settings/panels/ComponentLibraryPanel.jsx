@@ -5,6 +5,7 @@ import { Badge } from '../../../components/Badge/Badge';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { Switch } from '../../../components/Switch/Switch';
 import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
+import { Drawer } from '../../../components/Drawer/Drawer';
 import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 import { useAppStore } from '../../../store/useAppStore';
 import { DOMAINS } from '../../../data/embeddedComponents';
@@ -148,10 +149,13 @@ function ComponentRow({ comp, onToggle, onEdit, onPreview, onAuditLog, onDuplica
         </div>
       </td>
 
-      {/* Errors 24h */}
+      {/* Errors 24h — with tooltip on hover */}
       <td style={tdStyle}>
         {comp.errors24h > 0 ? (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: comp.errors24h >= 3 ? 'var(--status-error)' : 'var(--status-warning)', fontSize: 14, fontWeight: 500 }}>
+          <span
+            title={comp.errors24h >= 3 ? `${comp.errors24h} errors in 24h — component may be misconfigured or domain unreachable` : `${comp.errors24h} warning(s) in 24h — intermittent issues detected`}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: comp.errors24h >= 3 ? 'var(--status-error)' : 'var(--status-warning)', fontSize: 14, fontWeight: 500, cursor: 'help' }}
+          >
             <Icon name={comp.errors24h >= 3 ? 'solar:close-circle-bold' : 'solar:danger-triangle-linear'} size={14} color={comp.errors24h >= 3 ? 'var(--status-error)' : 'var(--status-warning)'} />
             {comp.errors24h}
           </span>
@@ -165,7 +169,7 @@ function ComponentRow({ comp, onToggle, onEdit, onPreview, onAuditLog, onDuplica
         <Switch
           checked={comp.enabled}
           onChange={() => onToggle(comp.id)}
-          disabled={isDomainRemoved || !comp.previewed}
+          disabled={isDomainRemoved}
         />
       </td>
 
@@ -211,6 +215,7 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
   const [deleting, setDeleting] = useState(false);
   const [warningDismissed, setWarningDismissed] = useState(false);
   const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
+  const [previewComp, setPreviewComp] = useState(null);
 
   useEffect(() => { fetchEmbedComponents(); }, [fetchEmbedComponents]);
 
@@ -318,7 +323,7 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
               comp={comp}
               onToggle={handleToggle}
               onEdit={(id) => setComponentWizard(true, id)}
-              onPreview={(id) => { showToast('Preview mode — coming soon'); }}
+              onPreview={(id) => { const c = components.find(x => x.id === id); if (c) setPreviewComp(c); }}
               onAuditLog={(c) => setAuditDrawerEntity({ type: 'Component', name: c.name, domain: c.domain, id: c.id })}
               onDuplicate={handleDuplicate}
               onRequestDelete={setDeleteTarget}
@@ -344,6 +349,39 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
 
       {auditDrawerEntity && (
         <AuditLogDrawer entity={auditDrawerEntity} onClose={() => setAuditDrawerEntity(null)} />
+      )}
+
+      {/* Preview drawer */}
+      {previewComp && (
+        <Drawer title={`Preview — ${previewComp.name}`} onClose={() => setPreviewComp(null)}>
+          <div style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 8, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderBottom: '0.5px solid var(--neutral-100)', background: '#fff' }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: '#3A485F', flex: 1 }}>{previewComp.name}</span>
+              <Badge variant="compliance-warn" label="External" />
+            </div>
+            {previewComp.domain && previewComp.url ? (
+              <iframe
+                src={`https://${previewComp.domain}${previewComp.url}`}
+                title={previewComp.name}
+                style={{ width: '100%', height: 400, border: 'none', display: 'block' }}
+                sandbox="allow-scripts allow-same-origin"
+              />
+            ) : (
+              <div style={{ height: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, color: '#8A94A8' }}>
+                <Icon name="solar:widget-5-linear" size={32} color="var(--neutral-150)" />
+                <div style={{ fontSize: 13 }}>No URL configured for this component</div>
+              </div>
+            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderTop: '0.5px solid var(--neutral-100)', fontSize: 11, color: '#D9A50B' }}>
+              <Icon name="solar:link-round-linear" size={12} color="#D9A50B" />
+              External Content Provided by Your Org
+            </div>
+          </div>
+          <div style={{ marginTop: 12, fontSize: 12, color: '#6F7A90' }}>
+            Domain: <code style={{ background: 'var(--neutral-50)', padding: '1px 4px', borderRadius: 3, fontSize: 11 }}>{previewComp.domain}</code>
+            {' · '}Path: <code style={{ background: 'var(--neutral-50)', padding: '1px 4px', borderRadius: 3, fontSize: 11 }}>{previewComp.url}</code>
+          </div>
+        </Drawer>
       )}
     </div>
   );

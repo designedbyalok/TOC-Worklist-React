@@ -230,7 +230,7 @@ export const useAppStore = create((set, get) => ({
   setAgentRulesGroupId: (id) => { set({ agentRulesGroupId: id }); updateHash(get); },
   setBusinessHoursOpen: (open) => { set({ businessHoursOpen: open }); updateHash(get); },
 
-  setEmbeddedComponentsTab: (tab) => { set({ embeddedComponentsTab: tab }); },
+  setEmbeddedComponentsTab: (tab) => { set({ embeddedComponentsTab: tab }); updateHash(get); },
   setComponentWizard: (open, editId = null) => { set({ componentWizardOpen: open, componentWizardEditId: editId }); },
   setComponentPreviewId: (id) => { set({ componentPreviewId: id }); },
 
@@ -403,11 +403,21 @@ export const useAppStore = create((set, get) => ({
     return newComp;
   },
   updateEmbedComponent: async (id, updates) => {
-        const dbUpdates = componentJsToDb(updates);
+    const oldComp = get().embedComponents.find(c => c.id === id);
+    const dbUpdates = componentJsToDb(updates);
     await supabase.from('embed_components').update(dbUpdates).eq('id', id);
     set(s => ({ embedComponents: s.embedComponents.map(c => c.id === id ? { ...c, ...updates } : c) }));
-    const comp = get().embedComponents.find(c => c.id === id);
-    get().logAudit('Component', id, comp?.name || '', 'updated', Object.keys(updates).join(', ') + ' changed', 'Configuration');
+    // Build structured changes for rich audit log
+    const changes = [];
+    if (oldComp) {
+      const trackFields = ['name', 'category', 'description', 'domain', 'url', 'visibleTo', 'activation', 'tokenLifetime', 'enabled'];
+      for (const key of trackFields) {
+        if (updates[key] !== undefined && String(oldComp[key] || '') !== String(updates[key] || '')) {
+          changes.push({ field: key, from: String(oldComp[key] || ''), to: String(updates[key] || ''), type: key === 'enabled' ? 'status' : 'text' });
+        }
+      }
+    }
+    get().logAudit('Component', id, oldComp?.name || '', 'updated', Object.keys(updates).join(', ') + ' changed', 'Configuration', changes);
   },
   deleteEmbedComponent: async (id) => {
     const comp = get().embedComponents.find(c => c.id === id);
