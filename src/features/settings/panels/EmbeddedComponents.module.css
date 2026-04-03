@@ -151,8 +151,9 @@
 }
 .textarea {
   composes: input;
-  resize: none;
-  min-height: 64px;
+  resize: vertical;
+  min-height: 80px;
+  max-height: 200px;
 }
 .hint {
   font-size: 11px;

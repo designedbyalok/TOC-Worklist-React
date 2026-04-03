@@ -209,8 +209,10 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
 
   const handleDelete = async () => {
     setDeleting(true);
-    await deleteEmbedDomain(deleteTarget.id);
-    showToast(`Domain "${deleteTarget.domain}" removed`);
+    const success = await deleteEmbedDomain(deleteTarget.id);
+    if (success !== false) {
+      showToast(`Domain "${deleteTarget.domain}" removed`);
+    }
     setDeleting(false);
     setDeleteTarget(null);
   };

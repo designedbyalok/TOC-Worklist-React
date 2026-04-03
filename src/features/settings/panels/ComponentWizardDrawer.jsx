@@ -17,7 +17,7 @@ import {
 import s from './EmbeddedComponents.module.css';
 import g from './GoalsPanel.module.css';
 
-const STEPS = ['Identity', 'Surfaces', 'Context', 'Preview'];
+const STEPS = ['Configure', 'Surfaces', 'Preview'];
 
 /* ── Placement SVG Thumbnails ── */
 function P360TabSvg() {
@@ -77,7 +77,7 @@ const WEB_SVG_MAP = {
 };
 
 /* ── Stepper (reuses Goal Wizard CSS classes from GoalsPanel.module.css) ── */
-function Stepper({ step }) {
+function Stepper({ step, onStepClick }) {
   return (
     <div className={g.stepper}>
       {STEPS.map((label, i) => {
@@ -87,7 +87,8 @@ function Stepper({ step }) {
           <div key={label} style={{ display: 'contents' }}>
             <div
               className={`${g.wizStep} ${current ? g.wizStepActive : done ? g.wizStepDone : ''}`}
-              onClick={() => done && step > i}
+              onClick={() => i < step && onStepClick(i)}
+              style={{ cursor: i < step ? 'pointer' : 'default' }}
             >
               <div className={g.wizStepNum}>{done ? <Icon name="solar:check-read-linear" size={12} /> : i + 1}</div>
               <span className={g.wizStepLabel}>{label}</span>
@@ -607,49 +608,190 @@ function StepContext({ data, onChange }) {
   );
 }
 
-/* ── Step 4: Preview (stub, links to full preview panel) ── */
-function StepPreview({ data }) {
-  const selectedDomain = DOMAINS.find(d => d.id === data.domainId);
+/* ── Step: Configure (merged Identity + Context) ── */
+function StepConfigure({ data, onChange }) {
+  const activeDomains = DOMAINS.filter(d => d.status === 'active');
+  const selectedDomain = activeDomains.find(d => d.id === data.domainId);
+  const fullUrl = selectedDomain ? `https://${selectedDomain.domain}${data.url}` : '';
+  const selectedFieldCount = data.contextFields.length;
+  const totalFieldCount = CONTEXT_FIELDS.length;
 
   return (
     <div>
+      {/* Section 1: Basic Info */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <FormField label="Component name *">
+          <Input value={data.name} onChange={e => onChange({ name: e.target.value })} placeholder="e.g. Prior Auth Widget" />
+        </FormField>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <FormField label="Category">
+            <Select value={data.category} onValueChange={v => onChange({ category: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {COMPONENT_CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </FormField>
+          <FormField label="Visible to">
+            <Select value={data.visibleTo} onValueChange={v => onChange({ visibleTo: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {VISIBILITY_OPTIONS.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </FormField>
+        </div>
+        <FormField label={<>Description <span style={{ fontWeight: 400, color: 'var(--neutral-200)' }}>(shown to providers in About popup)</span></>} hint={`${data.description.length}/800`}>
+          <textarea className={s.textarea} value={data.description} onChange={e => onChange({ description: e.target.value.slice(0, 800) })} maxLength={800} placeholder="What does this component do?" style={{ resize: 'vertical' }} />
+        </FormField>
+        <FormField label="Activation">
+          <Select value={data.activation} onValueChange={v => onChange({ activation: v })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {ACTIVATION_OPTIONS.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </FormField>
+      </div>
+      {data.activation === 'conditional' && (
+        <div style={{ marginTop: 10 }}>
+          <div className={s.infoBox} style={{ background: 'var(--primary-50)', color: 'var(--primary-400)', border: '0.5px solid rgba(140,90,226,.15)' }}>
+            Component surfaces only when the selected condition is true — prevents irrelevant components from cluttering the provider view.
+          </div>
+          <FormField label="Show when">
+            <Select value={data.condition} onValueChange={v => onChange({ condition: v })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {CONDITION_OPTIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </FormField>
+        </div>
+      )}
+
+      {/* Section 2: Domain & Security */}
+      <div style={{ borderTop: '1px solid var(--neutral-100)', marginTop: 20, paddingTop: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--neutral-400)', marginBottom: 12 }}>Domain & Security</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+          <FormField label="Domain *">
+            <Select value={String(data.domainId)} onValueChange={v => onChange({ domainId: Number(v) })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {activeDomains.map(d => <SelectItem key={d.id} value={String(d.id)}>{d.domain}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </FormField>
+          <FormField label="Path *" hint={fullUrl ? `Full URL: ${fullUrl}` : undefined}>
+            <Input value={data.url} onChange={e => onChange({ url: e.target.value })} placeholder="/widget/..." />
+          </FormField>
+        </div>
+        <FormField label="Token lifetime" hint={data.tokenLifetime === 30 ? 'Use 30 min for complex workflows like prior auth' : undefined} style={{ marginBottom: 16 }}>
+          <Select value={String(data.tokenLifetime)} onValueChange={v => onChange({ tokenLifetime: Number(v) })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {TOKEN_LIFETIME_OPTIONS.map(t => <SelectItem key={t.value} value={String(t.value)}>{t.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </FormField>
+
+        <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)', marginBottom: 8 }}>
+          JWT context scope — fields sent to this component
+        </div>
+        <div className={s.modalGrid} style={{ gap: 6 }}>
+          {CONTEXT_FIELDS.map(field => {
+            const active = data.contextFields.includes(field.key);
+            return (
+              <div key={field.key}
+                className={field.locked ? s.checkItemLocked : active ? s.checkItemActive : s.checkItem}
+                onClick={() => {
+                  if (field.locked) return;
+                  const fields = active ? data.contextFields.filter(f => f !== field.key) : [...data.contextFields, field.key];
+                  onChange({ contextFields: fields });
+                }}>
+                <div className={s.checkBox}>{active ? '✓' : ''}</div>
+                {field.label}{field.description ? ` — ${field.description}` : ''}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Step: Preview ── */
+function StepPreview({ data }) {
+  const selectedDomain = DOMAINS.find(d => d.id === data.domainId);
+  const fullUrl = selectedDomain ? `https://${selectedDomain.domain}${data.url}` : '';
+  const selectedFieldCount = data.contextFields.length;
+  const totalFieldCount = CONTEXT_FIELDS.length;
+
+  return (
+    <div>
+      {/* Save Summary (moved from StepContext) */}
+      <div className={s.summaryCard} style={{ marginBottom: 16 }}>
+        <div className={s.summaryLabel}>Save Summary</div>
+        <div className={s.summaryGrid}>
+          <div className={s.summaryKey}>Name</div><div className={s.summaryVal}>{data.name || '—'}</div>
+          <div className={s.summaryKey}>Surfaces</div><div className={s.summaryVal}>{data.surfaces.map(sf => sf === 'web' ? 'Fold Web' : sf === 'sidecar' ? 'Sidecar' : 'Mobile').join(' · ') || '—'}</div>
+          <div className={s.summaryKey}>Placement</div>
+          <div className={s.summaryVal}>
+            {[data.webPlacement && WEB_PLACEMENT_OPTIONS.find(p => p.value === data.webPlacement)?.label,
+              data.sidecarPlacement && `Sidecar ${data.sidecarPlacement}`,
+              data.mobilePlacement && MOBILE_PLACEMENTS.find(p => p.value === data.mobilePlacement)?.label,
+            ].filter(Boolean).join(' · ') || '—'}
+            {data.webPlacement === 'side-drawer' && data.drawerWidth ? ` (${data.drawerWidth}px)` : ''}
+          </div>
+          <div className={s.summaryKey}>URL</div>
+          <div className={s.summaryVal} style={{ fontFamily: "'SF Mono', monospace", fontSize: 11 }}>{fullUrl || '—'}</div>
+          <div className={s.summaryKey}>Token lifetime</div><div className={s.summaryVal}>{data.tokenLifetime} min</div>
+          <div className={s.summaryKey}>Context scope</div><div className={s.summaryVal}>{selectedFieldCount} of {totalFieldCount} fields</div>
+        </div>
+        <div className={s.infoAmber} style={{ marginTop: 12, fontSize: 11 }}>
+          Saved as disabled. Enable from the library after testing in preview mode.
+        </div>
+      </div>
+
       <div className={s.previewHint}>
         This component will appear on: {data.surfaces.map(sf => sf === 'web' ? 'Fold Web' : sf === 'sidecar' ? 'Sidecar' : 'Mobile').join(', ')}.
         Below is a preview of how providers will see it.
       </div>
 
-      {/* Simple preview mockup */}
-      <div className={s.previewFrame} style={{ height: 260, display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '8px 14px', borderBottom: '0.5px solid var(--neutral-150)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--primary-50)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>
-            {data.icon}
-          </div>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 500 }}>{data.name || 'Component Name'}</div>
-            <div style={{ fontSize: 11, color: 'var(--neutral-200)' }}>{selectedDomain?.domain || 'domain.com'}</div>
-          </div>
-          <Badge variant="compliance-warn" label="External" style={{ marginLeft: 'auto' }} />
-        </div>
-        <div className={s.externalBanner}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Icon name="solar:danger-triangle-bold" size={12} color="#D97706" />
-            <span style={{ fontWeight: 500 }}>External content</span> · {selectedDomain?.domain || 'domain.com'}
-          </div>
-          <span className={s.externalBannerLink}>What's shared?</span>
-        </div>
-        <div style={{ flex: 1, background: 'var(--neutral-50)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          <Icon name="solar:widget-5-linear" size={32} color="var(--neutral-200)" />
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--neutral-300)' }}>{data.name || 'Component'}</div>
-          <div style={{ fontSize: 11, color: 'var(--neutral-200)' }}>iFrame · JWT {data.tokenLifetime} min token</div>
-        </div>
-        <div style={{ padding: '6px 14px', borderTop: '0.5px solid var(--neutral-150)', display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--neutral-200)' }}>
-          <span>Token {data.tokenLifetime - 1}m 58s</span>
-          <span style={{ color: 'var(--primary-300)', cursor: 'pointer' }}>Refresh</span>
-        </div>
+      {/* Third-party widget indicator */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+        <Badge variant="compliance-warn" label="Third-party widget" />
       </div>
 
+      {/* External content warning */}
+      <div className={s.externalBanner} style={{ marginBottom: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <Icon name="solar:danger-triangle-bold" size={12} color="#D97706" />
+          <span style={{ fontWeight: 500 }}>External content</span> · {selectedDomain?.domain || 'domain.com'}
+        </div>
+        <span className={s.externalBannerLink}>What's shared?</span>
+      </div>
+
+      {/* Real iframe preview */}
+      {fullUrl ? (
+        <iframe
+          src={fullUrl}
+          title={data.name || 'Component preview'}
+          style={{ width: '100%', height: 300, borderRadius: 8, border: '1px solid var(--neutral-150)' }}
+          sandbox="allow-scripts allow-same-origin"
+        />
+      ) : (
+        <div style={{
+          width: '100%', height: 300, borderRadius: 8, border: '1px dashed var(--neutral-150)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
+          background: 'var(--neutral-50)', color: 'var(--neutral-200)',
+        }}>
+          <Icon name="solar:widget-5-linear" size={32} color="var(--neutral-200)" />
+          <div style={{ fontSize: 13 }}>Select a domain and enter a path to see a live preview</div>
+        </div>
+      )}
+
       {/* Dev console stub */}
-      <div className={s.devConsole}>
+      <div className={s.devConsole} style={{ marginTop: 16 }}>
         <div className={s.devConsoleHeader}>
           <span className={s.devConsoleTitle}>Developer Console</span>
           <Icon name="solar:alt-arrow-down-linear" size={12} color="rgba(255,255,255,.4)" />
@@ -721,7 +863,7 @@ export function ComponentWizardDrawer() {
     close();
   };
 
-  const canNext = step === 0 ? data.name.trim().length > 0 : step === 1 ? data.surfaces.length > 0 : true;
+  const canNext = step === 0 ? (data.name.trim().length > 0 && data.domainId > 0) : step === 1 ? data.surfaces.length > 0 : true;
 
   const headerRight = (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -740,17 +882,11 @@ export function ComponentWizardDrawer() {
       onClose={close}
       headerRight={headerRight}
     >
-      {step > 0 && (
-        <Button variant="ghost" size="S" leadingIcon="solar:alt-arrow-left-linear" onClick={() => setStep(step - 1)} style={{ marginBottom: 12 }}>
-          Back
-        </Button>
-      )}
-      <Stepper step={step} />
+      <Stepper step={step} onStepClick={setStep} />
       <div style={{ padding: '16px 0' }}>
-        {step === 0 && <StepIdentity data={data} onChange={update} />}
+        {step === 0 && <StepConfigure data={data} onChange={update} />}
         {step === 1 && <StepSurfaces data={data} onChange={update} />}
-        {step === 2 && <StepContext data={data} onChange={update} />}
-        {step === 3 && <StepPreview data={data} />}
+        {step === 2 && <StepPreview data={data} />}
       </div>
     </Drawer>
   );

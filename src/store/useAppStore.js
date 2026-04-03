@@ -362,10 +362,17 @@ export const useAppStore = create((set, get) => ({
     get().logAudit('Domain', id, oldDomain?.domain || '', 'updated', Object.keys(updates).join(', ') + ' changed', 'Configuration', changes);
   },
   deleteEmbedDomain: async (id) => {
+    // Block deletion if components reference this domain
+    const compsUsingDomain = get().embedComponents.filter(c => c.domainId === id);
+    if (compsUsingDomain.length > 0) {
+      get().showToast(`Cannot delete — ${compsUsingDomain.length} component(s) use this domain. Remove or reassign them first.`);
+      return false;
+    }
     const domain = get().embedDomains.find(d => d.id === id);
     await supabase.from('embed_domains').delete().eq('id', id);
     set(s => ({ embedDomains: s.embedDomains.filter(d => d.id !== id) }));
     if (domain) get().logAudit('Domain', id, domain.domain, 'deleted', `Domain removed`, 'Lifecycle');
+    return true;
   },
   toggleEmbedDomain: async (id) => {
     const domain = get().embedDomains.find(d => d.id === id);
