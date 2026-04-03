@@ -614,107 +614,128 @@ function StepConfigure({ data, onChange }) {
   const activeDomains = DOMAINS.filter(d => d.status === 'active');
   const selectedDomain = activeDomains.find(d => d.id === data.domainId);
   const fullUrl = selectedDomain ? `https://${selectedDomain.domain}${data.url}` : '';
-  const selectedFieldCount = data.contextFields.length;
-  const totalFieldCount = CONTEXT_FIELDS.length;
+  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   return (
-    <div>
-      {/* Section 1: Basic Info */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <FormField label="Component name *">
-          <Input value={data.name} onChange={e => onChange({ name: e.target.value })} placeholder="e.g. Prior Auth Widget" />
-        </FormField>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-          <FormField label="Category">
-            <Select value={data.category} onValueChange={v => onChange({ category: v })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {COMPONENT_CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </FormField>
-          <FormField label="Visible to">
-            <Select value={data.visibleTo} onValueChange={v => onChange({ visibleTo: v })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {VISIBILITY_OPTIONS.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </FormField>
-        </div>
-        <FormField label={<>Description <span style={{ fontWeight: 400, color: 'var(--neutral-200)' }}>(shown to providers in About popup)</span></>} hint={`${data.description.length}/800`}>
-          <textarea className={s.textarea} value={data.description} onChange={e => onChange({ description: e.target.value.slice(0, 800) })} maxLength={800} placeholder="What does this component do?" style={{ resize: 'vertical' }} />
-        </FormField>
-        <FormField label="Activation">
-          <Select value={data.activation} onValueChange={v => onChange({ activation: v })}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {/* 1. Component Name */}
+      <FormField label="Component name *">
+        <Input value={data.name} onChange={e => onChange({ name: e.target.value })} placeholder="e.g. Prior Auth Widget" />
+      </FormField>
+
+      {/* 2. Description */}
+      <FormField label={<>Description <span style={{ fontWeight: 400, color: 'var(--neutral-200)' }}>(shown to providers)</span></>} hint={`${data.description.length}/800`}>
+        <textarea className={s.textarea} value={data.description} onChange={e => onChange({ description: e.target.value.slice(0, 800) })} maxLength={800} placeholder="What does this component do?" style={{ resize: 'vertical' }} />
+      </FormField>
+
+      {/* 3. Domain & Path */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        <FormField label="Domain *">
+          <Select value={String(data.domainId)} onValueChange={v => onChange({ domainId: Number(v) })}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              {ACTIVATION_OPTIONS.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
+              {activeDomains.map(d => <SelectItem key={d.id} value={String(d.id)}>{d.domain}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </FormField>
+        <FormField label="Path *" hint={fullUrl ? `${fullUrl}` : undefined}>
+          <Input value={data.url} onChange={e => onChange({ url: e.target.value })} placeholder="/widget/..." />
+        </FormField>
+      </div>
+
+      {/* 4. Category & Visible To */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        <FormField label="Category">
+          <Select value={data.category} onValueChange={v => onChange({ category: v })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {COMPONENT_CATEGORIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </FormField>
+        <FormField label="Visible to">
+          <Select value={data.visibleTo} onValueChange={v => onChange({ visibleTo: v })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {VISIBILITY_OPTIONS.map(v => <SelectItem key={v} value={v}>{v}</SelectItem>)}
             </SelectContent>
           </Select>
         </FormField>
       </div>
-      {data.activation === 'conditional' && (
-        <div style={{ marginTop: 10 }}>
-          <div className={s.infoBox} style={{ background: 'var(--primary-50)', color: 'var(--primary-400)', border: '0.5px solid rgba(140,90,226,.15)' }}>
-            Component surfaces only when the selected condition is true — prevents irrelevant components from cluttering the provider view.
-          </div>
-          <FormField label="Show when">
-            <Select value={data.condition} onValueChange={v => onChange({ condition: v })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {CONDITION_OPTIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </FormField>
-        </div>
-      )}
 
-      {/* Section 2: Domain & Security */}
-      <div style={{ borderTop: '1px solid var(--neutral-100)', marginTop: 20, paddingTop: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--neutral-400)', marginBottom: 12 }}>Domain & Security</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
-          <FormField label="Domain *">
-            <Select value={String(data.domainId)} onValueChange={v => onChange({ domainId: Number(v) })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {activeDomains.map(d => <SelectItem key={d.id} value={String(d.id)}>{d.domain}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </FormField>
-          <FormField label="Path *" hint={fullUrl ? `Full URL: ${fullUrl}` : undefined}>
-            <Input value={data.url} onChange={e => onChange({ url: e.target.value })} placeholder="/widget/..." />
-          </FormField>
-        </div>
-        <FormField label="Token lifetime" hint={data.tokenLifetime === 30 ? 'Use 30 min for complex workflows like prior auth' : undefined} style={{ marginBottom: 16 }}>
-          <Select value={String(data.tokenLifetime)} onValueChange={v => onChange({ tokenLifetime: Number(v) })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {TOKEN_LIFETIME_OPTIONS.map(t => <SelectItem key={t.value} value={String(t.value)}>{t.label}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </FormField>
+      {/* 5. Additional Settings (collapsible) */}
+      <div style={{ border: '0.5px solid var(--neutral-100)', borderRadius: 8, overflow: 'hidden' }}>
+        <button
+          onClick={() => setAdvancedOpen(o => !o)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 12px',
+            background: 'var(--neutral-50)', border: 'none', cursor: 'pointer',
+            fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 500, color: '#3A485F',
+          }}
+        >
+          <Icon name={advancedOpen ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'} size={14} color="#6F7A90" />
+          Additional Settings
+          <span style={{ fontSize: 11, fontWeight: 400, color: '#8A94A8', marginLeft: 'auto' }}>
+            {advancedOpen ? 'Collapse' : 'Expand'}
+          </span>
+        </button>
+        {advancedOpen && (
+          <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {/* Activation */}
+            <FormField label="Activation">
+              <Select value={data.activation} onValueChange={v => onChange({ activation: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {ACTIVATION_OPTIONS.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </FormField>
+            {data.activation === 'conditional' && (
+              <FormField label="Show when">
+                <Select value={data.condition} onValueChange={v => onChange({ condition: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {CONDITION_OPTIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </FormField>
+            )}
 
-        <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)', marginBottom: 8 }}>
-          JWT context scope — fields sent to this component
-        </div>
-        <div className={s.modalGrid} style={{ gap: 6 }}>
-          {CONTEXT_FIELDS.map(field => {
-            const active = data.contextFields.includes(field.key);
-            return (
-              <div key={field.key}
-                className={field.locked ? s.checkItemLocked : active ? s.checkItemActive : s.checkItem}
-                onClick={() => {
-                  if (field.locked) return;
-                  const fields = active ? data.contextFields.filter(f => f !== field.key) : [...data.contextFields, field.key];
-                  onChange({ contextFields: fields });
-                }}>
-                <div className={s.checkBox}>{active ? '✓' : ''}</div>
-                {field.label}{field.description ? ` — ${field.description}` : ''}
+            {/* Token Lifetime */}
+            <FormField label="Token lifetime" hint={data.tokenLifetime === 30 ? 'Use 30 min for complex workflows' : undefined}>
+              <Select value={String(data.tokenLifetime)} onValueChange={v => onChange({ tokenLifetime: Number(v) })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {TOKEN_LIFETIME_OPTIONS.map(t => <SelectItem key={t.value} value={String(t.value)}>{t.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </FormField>
+
+            {/* JWT Context Scope */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 500, color: '#6F7A90', marginBottom: 6 }}>
+                JWT context scope
               </div>
-            );
-          })}
-        </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+                {CONTEXT_FIELDS.map(field => {
+                  const active = data.contextFields.includes(field.key);
+                  return (
+                    <div key={field.key}
+                      className={field.locked ? s.checkItemLocked : active ? s.checkItemActive : s.checkItem}
+                      onClick={() => {
+                        if (field.locked) return;
+                        const fields = active ? data.contextFields.filter(f => f !== field.key) : [...data.contextFields, field.key];
+                        onChange({ contextFields: fields });
+                      }}>
+                      <div className={s.checkBox}>{active ? '✓' : ''}</div>
+                      {field.label}{field.description ? ` — ${field.description}` : ''}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1001,7 +1022,7 @@ export function ComponentWizardDrawer() {
       headerRight={headerRight}
     >
       <Stepper step={step} onStepClick={setStep} />
-      <div style={{ padding: '16px 0' }}>
+      <div style={{ padding: '4px 0' }}>
         {step === 0 && <StepConfigure data={data} onChange={update} />}
         {step === 1 && <StepSurfaces data={data} onChange={update} />}
         {step === 2 && <StepPreview data={data} onChange={update} />}
