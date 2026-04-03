@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
+import { Badge } from '../../../components/Badge/Badge';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
 
@@ -14,6 +15,53 @@ const ACTION_CONFIG = {
 };
 
 const DEFAULT_CONFIG = { icon: 'solar:document-text-linear', bg: '#F6F7F8', border: 'rgba(111,122,144,.1)', color: '#6F7A90' };
+
+/* ── Status badge colors ── */
+const STATUS_COLORS = {
+  Enabled:  { bg: '#E8FDF3', color: '#12B76A' },
+  Disabled: { bg: '#FEF4E6', color: '#F79009' },
+  Active:   { bg: '#E8FDF3', color: '#12B76A' },
+  Inactive: { bg: '#FEF4E6', color: '#F79009' },
+  Verified: { bg: '#E8FDF3', color: '#12B76A' },
+  Removed:  { bg: '#FFF5F5', color: '#D72825' },
+};
+
+/* ── Arrow icon between old→new ── */
+function ArrowRight() {
+  return (
+    <Icon name="solar:arrow-right-linear" size={14} color="#8A94A8" />
+  );
+}
+
+/* ── Render a single field change ── */
+function ChangeDisplay({ change }) {
+  if (change.type === 'status') {
+    const fromColor = STATUS_COLORS[change.from] || { bg: '#F6F7F8', color: '#6F7A90' };
+    const toColor = STATUS_COLORS[change.to] || { bg: '#F6F7F8', color: '#6F7A90' };
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <span style={{
+          display: 'inline-flex', padding: '2px 6px', borderRadius: 4, fontSize: 12,
+          background: fromColor.bg, color: fromColor.color,
+        }}>{change.from}</span>
+        <ArrowRight />
+        <span style={{
+          display: 'inline-flex', padding: '2px 6px', borderRadius: 4, fontSize: 12,
+          background: toColor.bg, color: toColor.color,
+        }}>{change.to}</span>
+      </div>
+    );
+  }
+
+  // Text change: strikethrough old → arrow → new
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', fontSize: 13 }}>
+      <span style={{ color: '#6F7A90', textDecoration: 'line-through' }}>{change.from || '(empty)'}</span>
+      <ArrowRight />
+      <span style={{ color: '#3A485F' }}>{change.to || '(empty)'}</span>
+    </div>
+  );
+}
 
 /* ── Group entries by month ── */
 function groupByMonth(entries) {
@@ -60,11 +108,26 @@ function TimelineEntry({ entry, isFirst, isLast }) {
             <span style={{ color: '#D0D6E1' }}>•</span>
             <span>{entry.user}</span>
           </div>
-          <div style={{ fontSize: 14, color: '#3A485F', lineHeight: 1.2, marginBottom: entry.details || entry.category ? 4 : 0 }}>
+          {/* Description text */}
+          <div style={{ fontSize: 14, color: '#3A485F', lineHeight: 1.2, marginBottom: 4 }}>
             {entry.details || `${entry.action} ${entry.entityName}`}
           </div>
+
+          {/* Structured changes (field diffs) */}
+          {entry.changes && entry.changes.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 6, marginBottom: 4 }}>
+              {entry.changes.map((c, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 11, fontWeight: 500, color: '#8A94A8', minWidth: 60, textTransform: 'capitalize' }}>{c.field}</span>
+                  <ChangeDisplay change={c} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Category link */}
           {entry.category && (
-            <span style={{ fontSize: 14, color: '#145ECC', cursor: 'pointer' }}>
+            <span style={{ fontSize: 12, color: '#8A94A8' }}>
               {entry.category}
             </span>
           )}

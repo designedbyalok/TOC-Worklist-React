@@ -89,6 +89,17 @@ export function componentJsToDb(js) {
 
 // ── Audit Log ──
 export function auditLogDbToJs(row) {
+  let detailsText = row.details || '';
+  let changes = null;
+  // Parse structured changes from JSON details
+  if (detailsText && detailsText.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(detailsText);
+      detailsText = parsed.text || '';
+      changes = parsed.changes || null;
+    } catch (e) { /* not JSON, use as plain text */ }
+  }
+
   return {
     id: row.id,
     entityType: row.entity_type,
@@ -96,10 +107,10 @@ export function auditLogDbToJs(row) {
     entityName: row.entity_name,
     action: row.action,
     user: row.user_name,
-    details: row.details,
+    details: detailsText,
+    changes, // [{field, from, to, type: 'text'|'status'}]
     category: row.category,
     createdAt: row.created_at,
-    // Derived fields for display
     date: row.created_at ? new Date(row.created_at).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : '',
     time: row.created_at ? new Date(row.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : '',
   };

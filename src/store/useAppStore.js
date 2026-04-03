@@ -342,11 +342,19 @@ export const useAppStore = create((set, get) => ({
     return newDomain;
   },
   updateEmbedDomain: async (id, updates) => {
-        const dbUpdates = domainJsToDb(updates);
+    const oldDomain = get().embedDomains.find(d => d.id === id);
+    const dbUpdates = domainJsToDb(updates);
     await supabase.from('embed_domains').update(dbUpdates).eq('id', id);
     set(s => ({ embedDomains: s.embedDomains.map(d => d.id === id ? { ...d, ...updates } : d) }));
-    const domain = get().embedDomains.find(d => d.id === id);
-    get().logAudit('Domain', id, domain?.domain || '', 'updated', Object.keys(updates).join(', ') + ' changed', 'Configuration');
+    const changes = [];
+    if (oldDomain) {
+      for (const key of Object.keys(updates)) {
+        if (oldDomain[key] !== updates[key]) {
+          changes.push({ field: key, from: String(oldDomain[key] || ''), to: String(updates[key] || ''), type: key === 'enabled' ? 'status' : 'text' });
+        }
+      }
+    }
+    get().logAudit('Domain', id, oldDomain?.domain || '', 'updated', Object.keys(updates).join(', ') + ' changed', 'Configuration', changes);
   },
   deleteEmbedDomain: async (id) => {
     const domain = get().embedDomains.find(d => d.id === id);
@@ -360,7 +368,8 @@ export const useAppStore = create((set, get) => ({
     const newEnabled = !domain.enabled;
     await supabase.from('embed_domains').update({ enabled: newEnabled }).eq('id', id);
     set(s => ({ embedDomains: s.embedDomains.map(d => d.id === id ? { ...d, enabled: newEnabled } : d) }));
-    get().logAudit('Domain', id, domain.domain, newEnabled ? 'enabled' : 'disabled', newEnabled ? 'Domain enabled' : 'Domain disabled', 'Status');
+    get().logAudit('Domain', id, domain.domain, newEnabled ? 'enabled' : 'disabled', newEnabled ? 'Domain enabled' : 'Domain disabled', 'Status',
+      [{ field: 'enabled', from: domain.enabled ? 'Enabled' : 'Disabled', to: newEnabled ? 'Enabled' : 'Disabled', type: 'status' }]);
   },
 
   // ── Embed Components (Supabase-backed) ──
@@ -400,7 +409,8 @@ export const useAppStore = create((set, get) => ({
     const newEnabled = !comp.enabled;
     await supabase.from('embed_components').update({ enabled: newEnabled }).eq('id', id);
     set(s => ({ embedComponents: s.embedComponents.map(c => c.id === id ? { ...c, enabled: newEnabled } : c) }));
-    get().logAudit('Component', id, comp.name, newEnabled ? 'enabled' : 'disabled', newEnabled ? 'Component enabled' : 'Component disabled', 'Status');
+    get().logAudit('Component', id, comp.name, newEnabled ? 'enabled' : 'disabled', newEnabled ? 'Component enabled' : 'Component disabled', 'Status',
+      [{ field: 'enabled', from: comp.enabled ? 'Enabled' : 'Disabled', to: newEnabled ? 'Enabled' : 'Disabled', type: 'status' }]);
   },
   duplicateEmbedComponent: async (id) => {
     const comp = get().embedComponents.find(c => c.id === id);
@@ -417,8 +427,17 @@ export const useAppStore = create((set, get) => ({
   },
 
   // ── Audit Log (Supabase-backed) ──
-  logAudit: async (entityType, entityId, entityName, action, details, category) => {
-    const row = { entity_type: entityType, entity_id: entityId, entity_name: entityName, action, user_name: 'Current User', details: details || null, category: category || null };
+  // changes: JSON string of [{field, from, to, type}] for rich diff display
+  logAudit: async (entityType, entityId, entityName, action, details, category, changes) => {
+    const row = {
+      entity_type: entityType, entity_id: entityId, entity_name: entityName,
+      action, user_name: 'Current User', details: details || null,
+      category: category || null,
+    };
+    // Store changes in the details field as JSON if provided
+    if (changes && changes.length > 0) {
+      row.details = JSON.stringify({ text: details, changes });
+    }
     const { error } = await supabase.from('audit_logs').insert(row);
     if (error) console.warn('[store] logAudit failed:', error.message);
   },
