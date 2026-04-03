@@ -429,9 +429,18 @@ export const useAppStore = create((set, get) => ({
   // ── Audit Log (Supabase-backed) ──
   // changes: JSON string of [{field, from, to, type}] for rich diff display
   logAudit: async (entityType, entityId, entityName, action, details, category, changes) => {
+    // Get the current user's full name from Supabase auth
+    let userName = 'Current User';
+    try {
+      const { data } = await supabase.auth.getUser();
+      const meta = data?.user?.user_metadata || {};
+      if (meta.first_name && meta.last_name) userName = `${meta.first_name} ${meta.last_name}`;
+      else if (meta.full_name) userName = meta.full_name;
+      else if (data?.user?.email) userName = data.user.email.split('@')[0];
+    } catch (e) { /* fallback to Current User */ }
     const row = {
       entity_type: entityType, entity_id: entityId, entity_name: entityName,
-      action, user_name: 'Current User', details: details || null,
+      action, user_name: userName, details: details || null,
       category: category || null,
     };
     // Store changes in the details field as JSON if provided

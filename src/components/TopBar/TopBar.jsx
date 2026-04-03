@@ -1,15 +1,41 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { Icon } from '../Icon/Icon';
 import { ActionButton } from '../ActionButton/ActionButton';
 import { Avatar } from '../Avatar/Avatar';
+import { Input } from '../Input/Input';
+import { Button } from '../Button/Button';
 import { CreateNewPopover } from '../CreateNewPopover/CreateNewPopover';
 import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import styles from './TopBar.module.css';
 
-/* ── Profile Popover (matches Figma node 1904:6423) ── */
+/* ── Get user initials from Supabase user_metadata ── */
+function getUserInitials(user) {
+  if (!user) return 'U';
+  const meta = user.user_metadata || {};
+  const first = meta.first_name || '';
+  const last = meta.last_name || '';
+  if (first && last) return (first[0] + last[0]).toUpperCase();
+  if (meta.full_name) return meta.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+  const local = (user.email || '').split('@')[0] || '';
+  return local.slice(0, 2).toUpperCase();
+}
+
+function getUserDisplayName(user) {
+  if (!user) return 'User';
+  const meta = user.user_metadata || {};
+  if (meta.first_name && meta.last_name) return `${meta.first_name} ${meta.last_name}`;
+  if (meta.full_name) return meta.full_name;
+  return user.email?.split('@')[0] || 'User';
+}
+
+/* ── Profile Popover (Figma node 1904:6423) ── */
 function ProfilePopover({ user, onClose }) {
   const popoverRef = useRef(null);
+  const [editing, setEditing] = useState(false);
+  const [firstName, setFirstName] = useState(user?.user_metadata?.first_name || '');
+  const [lastName, setLastName] = useState(user?.user_metadata?.last_name || '');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const close = (e) => {
@@ -20,7 +46,7 @@ function ProfilePopover({ user, onClose }) {
   }, [onClose]);
 
   const initials = getUserInitials(user);
-  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+  const displayName = getUserDisplayName(user);
   const email = user?.email || '';
 
   const handleLogout = async () => {
@@ -29,11 +55,21 @@ function ProfilePopover({ user, onClose }) {
     onClose();
   };
 
+  const handleSaveName = async () => {
+    if (!firstName.trim() || !lastName.trim()) return;
+    setSaving(true);
+    await supabase.auth.updateUser({
+      data: { first_name: firstName.trim(), last_name: lastName.trim(), full_name: `${firstName.trim()} ${lastName.trim()}` },
+    });
+    setSaving(false);
+    setEditing(false);
+  };
+
   return (
     <div ref={popoverRef} style={{
       position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 9999,
       background: '#fff', border: '0.5px solid #D0D6E1', borderRadius: 12,
-      padding: 12, width: 280,
+      padding: 12, width: 300,
       boxShadow: '0 12px 60px rgba(0,0,0,.06)',
       fontFamily: "'Inter', sans-serif",
     }}>
@@ -46,7 +82,6 @@ function ProfilePopover({ user, onClose }) {
           fontFamily: "'Inter', sans-serif", flexShrink: 0, position: 'relative',
         }}>
           {initials}
-          {/* Online dot */}
           <div style={{
             position: 'absolute', top: -1, right: -3, width: 10, height: 10,
             borderRadius: '50%', background: '#12B76A', border: '2px solid #fff',
@@ -54,22 +89,44 @@ function ProfilePopover({ user, onClose }) {
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 16, fontWeight: 500, color: '#000', lineHeight: 1.2 }}>{displayName}</div>
-          <div style={{ fontSize: 14, color: '#6F7A90', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</div>
+          <div style={{ fontSize: 13, color: '#6F7A90', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</div>
         </div>
       </div>
 
+      {/* Editable name section */}
+      {editing ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12, padding: '8px 0', borderTop: '0.5px solid #E9ECF1', borderBottom: '0.5px solid #E9ECF1' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div>
+              <label style={{ fontSize: 11, fontWeight: 500, color: '#6F7A90', marginBottom: 2, display: 'block' }}>First Name</label>
+              <Input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="First" autoFocus />
+            </div>
+            <div>
+              <label style={{ fontSize: 11, fontWeight: 500, color: '#6F7A90', marginBottom: 2, display: 'block' }}>Last Name</label>
+              <Input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Last" />
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+            <Button variant="ghost" size="S" onClick={() => setEditing(false)}>Cancel</Button>
+            <Button variant="primary" size="S" disabled={saving || !firstName.trim() || !lastName.trim()} onClick={handleSaveName}>
+              {saving ? 'Saving...' : 'Save'}
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
       {/* Menu items */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <button onClick={onClose} style={menuItemStyle}>
+        <button onClick={() => setEditing(true)} style={menuItemStyle} onMouseOver={e => e.currentTarget.style.background = '#F6F7F8'} onMouseOut={e => e.currentTarget.style.background = ''}>
           <Icon name="solar:settings-linear" size={20} color="#3A485F" />
           <span>Preferences</span>
         </button>
-        <button onClick={onClose} style={menuItemStyle}>
+        <button onClick={onClose} style={menuItemStyle} onMouseOver={e => e.currentTarget.style.background = '#F6F7F8'} onMouseOut={e => e.currentTarget.style.background = ''}>
           <Icon name="solar:users-group-rounded-linear" size={20} color="#3A485F" />
           <span style={{ flex: 1 }}>Switch Account</span>
           <Icon name="solar:alt-arrow-right-linear" size={12} color="#8A94A8" />
         </button>
-        <button onClick={handleLogout} style={{ ...menuItemStyle, color: '#D92D20' }}>
+        <button onClick={handleLogout} style={{ ...menuItemStyle, color: '#D92D20' }} onMouseOver={e => e.currentTarget.style.background = '#FEF2F2'} onMouseOut={e => e.currentTarget.style.background = ''}>
           <Icon name="solar:logout-2-linear" size={20} color="#D92D20" />
           <span>Log Out</span>
         </button>
@@ -85,18 +142,6 @@ const menuItemStyle = {
   fontSize: 14, fontWeight: 500, color: '#3A485F', transition: 'background .1s',
 };
 
-/* ── Get user initials from Supabase session ── */
-function getUserInitials(user) {
-  if (!user) return 'U';
-  const name = user.user_metadata?.full_name || user.email || '';
-  if (user.user_metadata?.full_name) {
-    return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-  }
-  // From email: take first 2 chars of local part
-  const local = name.split('@')[0] || '';
-  return local.slice(0, 2).toUpperCase();
-}
-
 export function TopBar() {
   const toggleSubnav = useAppStore(s => s.toggleSubnav);
   const subnavCollapsed = useAppStore(s => s.subnavCollapsed);
@@ -107,7 +152,6 @@ export function TopBar() {
   const [showProfile, setShowProfile] = useState(false);
   const [user, setUser] = useState(null);
 
-  // Get current user from Supabase
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data?.user || null));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {

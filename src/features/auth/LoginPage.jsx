@@ -8,6 +8,8 @@ import styles from './LoginPage.module.css';
 
 export function LoginPage({ onBypass }) {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -30,6 +32,7 @@ export function LoginPage({ onBypass }) {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    if (!firstName.trim() || !lastName.trim()) { setError('First name and last name are required'); return; }
     if (!email.trim() || !password.trim()) { setError('Please enter email and password'); return; }
     if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
     if (password !== confirmPassword) { setError('Passwords do not match'); return; }
@@ -39,7 +42,10 @@ export function LoginPage({ onBypass }) {
     const { error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin },
+      options: {
+        emailRedirectTo: window.location.origin,
+        data: { first_name: firstName.trim(), last_name: lastName.trim(), full_name: `${firstName.trim()} ${lastName.trim()}` },
+      },
     });
     if (authError) {
       setError(authError.message);
@@ -105,6 +111,30 @@ export function LoginPage({ onBypass }) {
 
           {/* Login/Signup form */}
           <form className={styles.form} onSubmit={handleSubmit}>
+            {isSignUp && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div className={styles.field}>
+                  <label className={styles.label}>First Name <span style={{ color: 'var(--status-error)' }}>*</span></label>
+                  <Input
+                    type="text"
+                    value={firstName}
+                    onChange={e => setFirstName(e.target.value)}
+                    placeholder="First name"
+                    autoComplete="given-name"
+                  />
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.label}>Last Name <span style={{ color: 'var(--status-error)' }}>*</span></label>
+                  <Input
+                    type="text"
+                    value={lastName}
+                    onChange={e => setLastName(e.target.value)}
+                    placeholder="Last name"
+                    autoComplete="family-name"
+                  />
+                </div>
+              </div>
+            )}
             <div className={styles.field}>
               <label className={styles.label}>Email</label>
               <Input

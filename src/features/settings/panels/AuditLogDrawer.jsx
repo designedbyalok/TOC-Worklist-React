@@ -77,8 +77,9 @@ function groupByMonth(entries) {
 }
 
 /* ── Timeline Entry ── */
-function TimelineEntry({ entry, isFirst, isLast }) {
+function TimelineEntry({ entry, isFirst, isLast, currentUserName }) {
   const cfg = ACTION_CONFIG[entry.action] || DEFAULT_CONFIG;
+  const isCurrentUser = currentUserName && entry.user && entry.user.toLowerCase() === currentUserName.toLowerCase();
 
   return (
     <div style={{ display: 'flex', gap: 4 }}>
@@ -106,7 +107,7 @@ function TimelineEntry({ entry, isFirst, isLast }) {
             <span style={{ color: '#D0D6E1' }}>•</span>
             <span>{entry.time}</span>
             <span style={{ color: '#D0D6E1' }}>•</span>
-            <span>{entry.user}</span>
+            <span>{entry.user}{isCurrentUser && <span style={{ color: '#8A94A8', fontWeight: 400 }}> (Current User)</span>}</span>
           </div>
           {/* Description text */}
           <div style={{ fontSize: 14, color: '#3A485F', lineHeight: 1.2, marginBottom: 4 }}>
@@ -143,6 +144,19 @@ export function AuditLogDrawer({ entity, onClose }) {
   const [filter, setFilter] = useState('all');
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserName, setCurrentUserName] = useState('');
+
+  // Get current user name for "(Current User)" label
+  useEffect(() => {
+    import('../../../lib/supabase').then(({ supabase }) => {
+      supabase.auth.getUser().then(({ data }) => {
+        const meta = data?.user?.user_metadata || {};
+        if (meta.first_name && meta.last_name) setCurrentUserName(`${meta.first_name} ${meta.last_name}`);
+        else if (meta.full_name) setCurrentUserName(meta.full_name);
+        else if (data?.user?.email) setCurrentUserName(data.user.email.split('@')[0]);
+      });
+    });
+  }, []);
 
   // Fetch real audit log data from Supabase
   useEffect(() => {
@@ -223,6 +237,7 @@ export function AuditLogDrawer({ entity, onClose }) {
                   entry={entry}
                   isFirst={gi === 0 && ei === 0}
                   isLast={gi === monthGroups.length - 1 && ei === group.entries.length - 1}
+                  currentUserName={currentUserName}
                 />
               ))}
             </div>
