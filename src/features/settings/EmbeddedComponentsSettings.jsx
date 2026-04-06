@@ -3,6 +3,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { Icon } from '../../components/Icon/Icon';
 import { Button } from '../../components/Button/Button';
 import { SearchIconButton } from '../../components/SearchIconButton/SearchIconButton';
+import { ProductTour } from '../../components/ProductTour/ProductTour';
 import { DomainRegistryPanel } from './panels/DomainRegistryPanel';
 import { ComponentLibraryPanel } from './panels/ComponentLibraryPanel';
 import styles from './EmbeddedComponentsSettings.module.css';
@@ -24,7 +25,7 @@ export function EmbeddedComponentsSettings() {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.tabBar}>
+      <div className={styles.tabBar} data-tour="embed-tabs">
         <div className={styles.tabs}>
           {TAB_KEYS.map(key => (
             <div
@@ -61,6 +62,7 @@ export function EmbeddedComponentsSettings() {
             variant="secondary"
             size="L"
             leadingIcon="solar:add-circle-linear"
+            data-tour="embed-register-btn"
             onClick={() => {
               if (embeddedComponentsTab === 'component-library') {
                 setComponentWizard(true, null);
@@ -81,6 +83,43 @@ export function EmbeddedComponentsSettings() {
           <ComponentLibraryPanel searchQuery={searchVal} />
         )}
       </div>
+
+      <ProductTour tourId="embed-settings" steps={EMBED_TOUR_STEPS} />
     </div>
   );
 }
+
+const EMBED_TOUR_STEPS = [
+  {
+    target: '[data-tour="embed-tabs"]',
+    title: 'Embed Settings',
+    content: 'Switch between Domain Registry to manage allowed domains and Component Library to configure embeddable widgets.',
+    icon: 'solar:code-linear',
+    placement: 'bottom',
+    skipBeacon: true,
+  },
+  {
+    target: '[data-tour="embed-register-btn"]',
+    title: 'Register New Domain',
+    content: 'Add third-party domains that are authorized to host your embedded components. Each domain requires HIPAA verification.',
+    icon: 'solar:add-circle-linear',
+    placement: 'bottom-end',
+    skipBeacon: true,
+  },
+  {
+    target: '[data-tour="embed-toggle"]',
+    title: 'Enable or Disable',
+    content: 'Toggle domains on or off instantly. Disabled domains will stop serving all embedded components.',
+    icon: 'solar:toggle-on-linear',
+    placement: 'left',
+    skipBeacon: true,
+  },
+  {
+    target: '[data-tour="embed-actions"]',
+    title: 'Domain Actions',
+    content: 'Edit domain settings, view the audit log for change history, or remove a domain entirely.',
+    icon: 'solar:widget-linear',
+    placement: 'left',
+    skipBeacon: true,
+  },
+];

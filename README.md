@@ -139,6 +139,15 @@ The platform follows the **Fold Health design system** with strict adherence to:
 
 ## Recent Changes
 
+### Agent Call Queue Drawer + Updated Agent Actions (April 2026)
+- Redesigned agent listing action buttons: **Call Queue**, **Call Analytics**, **Edit Agent** (pencil icon), **More Options**
+- All action buttons now show tooltips on hover
+- New **CallQueueDrawer** component with 3 tabs: Ongoing Call, In Queue, Call Log
+- **Ongoing Call tab**: shows active calls with member info, live call duration (green), Live Transcript button, listen icon, and more options
+- **In Queue tab**: shows queued members with priority ordering, Call Order reorder buttons (up/down arrows), remove from queue, and more options
+- Agent banner in drawer shows agent name/role with Edit Configuration and Stop buttons
+- Tab bar includes refresh, filter, and search action buttons
+
 ### Audit Log Across All Settings + Widget Ordering (April 2026)
 - Audit log support added to **Agents**, **Goals**, and **Chat Settings** tables
 - All CRUD operations (create, update, delete) automatically logged to `audit_logs` table

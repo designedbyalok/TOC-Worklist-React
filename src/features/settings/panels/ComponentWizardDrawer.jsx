@@ -176,19 +176,43 @@ function StepIdentity({ data, onChange }) {
 function WidgetOrderList({ tab, newWidgetName, order, onChange }) {
   const existing = TAB_WIDGETS[tab] || [];
   const items = order || [...existing, newWidgetName];
-
-  const moveItem = (fromIdx, toIdx) => {
-    if (toIdx < 0 || toIdx >= items.length) return;
-    const next = [...items];
-    const [moved] = next.splice(fromIdx, 1);
-    next.splice(toIdx, 0, moved);
-    onChange(next);
-  };
+  const [dragIdx, setDragIdx] = useState(null);
+  const [overIdx, setOverIdx] = useState(null);
 
   // Initialize order if not set
   if (!order && existing.length > 0) {
     setTimeout(() => onChange([...existing, newWidgetName]), 0);
   }
+
+  const handleDragStart = (e, idx) => {
+    setDragIdx(idx);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(idx));
+    requestAnimationFrame(() => { if (e.target) e.target.style.opacity = '0.4'; });
+  };
+
+  const handleDragEnd = (e) => {
+    e.target.style.opacity = '1';
+    setDragIdx(null);
+    setOverIdx(null);
+  };
+
+  const handleDragOver = (e, idx) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (overIdx !== idx) setOverIdx(idx);
+  };
+
+  const handleDrop = (e, toIdx) => {
+    e.preventDefault();
+    if (dragIdx === null || dragIdx === toIdx) return;
+    const next = [...items];
+    const [moved] = next.splice(dragIdx, 1);
+    next.splice(toIdx, 0, moved);
+    onChange(next);
+    setDragIdx(null);
+    setOverIdx(null);
+  };
 
   return (
     <div>
@@ -196,16 +220,35 @@ function WidgetOrderList({ tab, newWidgetName, order, onChange }) {
       <div style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 8, overflow: 'hidden' }}>
         {items.map((item, i) => {
           const isNew = item === newWidgetName && i === items.indexOf(newWidgetName);
+          const isDragging = dragIdx === i;
+          const isDropTarget = overIdx === i && dragIdx !== null && dragIdx !== i;
           return (
-            <div key={`${item}-${i}`} style={{
-              display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px',
-              borderBottom: i < items.length - 1 ? '0.5px solid var(--neutral-100)' : 'none',
-              background: isNew ? 'var(--primary-50)' : '#fff',
-              transition: 'background .1s',
-            }}>
-              {/* Drag handle */}
-              <span style={{ color: 'var(--neutral-200)', cursor: 'grab', fontSize: 14, flexShrink: 0, userSelect: 'none' }}>⋮⋮</span>
-              {/* Widget name */}
+            <div
+              key={`${item}-${i}`}
+              draggable
+              onDragStart={e => handleDragStart(e, i)}
+              onDragEnd={handleDragEnd}
+              onDragOver={e => handleDragOver(e, i)}
+              onDragLeave={() => { if (overIdx === i) setOverIdx(null); }}
+              onDrop={e => handleDrop(e, i)}
+              onMouseOver={e => { if (!isDragging && !isDropTarget && !isNew) e.currentTarget.style.background = 'var(--neutral-50)'; }}
+              onMouseOut={e => { if (!isDragging && !isDropTarget && !isNew) e.currentTarget.style.background = '#fff'; }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px',
+                borderBottomWidth: isDropTarget && dragIdx < i ? 2 : 0.5,
+                borderBottomStyle: 'solid',
+                borderBottomColor: isDropTarget && dragIdx < i ? 'var(--primary-300)' : 'var(--neutral-150)',
+                background: isDropTarget ? 'var(--primary-25)' : isNew ? 'var(--primary-50)' : '#fff',
+                borderTopWidth: isDropTarget && dragIdx > i ? 2 : 0,
+                borderTopStyle: 'solid',
+                borderTopColor: isDropTarget && dragIdx > i ? 'var(--primary-300)' : 'transparent',
+                transition: 'background .1s',
+                cursor: 'grab',
+                opacity: isDragging ? 0.4 : 1,
+                userSelect: 'none',
+              }}
+            >
+              <span style={{ color: 'var(--neutral-200)', fontSize: 14, flexShrink: 0 }}>⋮⋮</span>
               <span style={{ flex: 1, fontSize: 14, color: isNew ? 'var(--primary-300)' : '#3A485F', fontWeight: isNew ? 500 : 400 }}>{item}</span>
               {isNew && (
                 <span style={{
@@ -213,27 +256,12 @@ function WidgetOrderList({ tab, newWidgetName, order, onChange }) {
                   background: 'var(--primary-100)', padding: '2px 6px', borderRadius: 4,
                 }}>New Widget</span>
               )}
-              {/* Up/Down arrows */}
-              <div style={{ display: 'flex', gap: 2 }}>
-                <button onClick={() => moveItem(i, i - 1)} disabled={i === 0} style={{
-                  background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer',
-                  padding: 2, opacity: i === 0 ? 0.3 : 1, borderRadius: 4,
-                }}>
-                  <Icon name="solar:alt-arrow-up-linear" size={14} color="#6F7A90" />
-                </button>
-                <button onClick={() => moveItem(i, i + 1)} disabled={i === items.length - 1} style={{
-                  background: 'none', border: 'none', cursor: i === items.length - 1 ? 'default' : 'pointer',
-                  padding: 2, opacity: i === items.length - 1 ? 0.3 : 1, borderRadius: 4,
-                }}>
-                  <Icon name="solar:alt-arrow-down-linear" size={14} color="#6F7A90" />
-                </button>
-              </div>
             </div>
           );
         })}
       </div>
       <div style={{ fontSize: 11, color: 'var(--neutral-200)', marginTop: 4 }}>
-        Use arrows to reorder. Your widget will appear at position {(items.indexOf(newWidgetName) + 1) || items.length}.
+        Drag to reorder. Your widget will appear at position {(items.indexOf(newWidgetName) + 1) || items.length}.
       </div>
     </div>
   );

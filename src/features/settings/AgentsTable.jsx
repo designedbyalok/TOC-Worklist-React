@@ -15,6 +15,8 @@ import { EscalationPolicyPanel } from './panels/EscalationPolicyPanel';
 import { KnowledgeBasePanel } from './panels/KnowledgeBasePanel';
 import { GoalsPanel } from './panels/GoalsPanel';
 import { AuditLogDrawer } from './panels/AuditLogDrawer';
+import { CallQueueDrawer } from '../../components/CallQueueDrawer/CallQueueDrawer';
+import { ProductTour } from '../../components/ProductTour/ProductTour';
 import styles from './AgentsTable.module.css';
 
 const TABS = ['Agents', 'Goals', 'Knowledge Base', 'Tools', 'Compliance Policies', 'Test Cases', 'Analytics'];
@@ -85,7 +87,7 @@ function AgentActionMenu({ agent, onClose, onRequestDelete, onAuditLog }) {
   );
 }
 
-function AgentRow({ agent }) {
+function AgentRow({ agent, isFirst }) {
   const updateAgent = useAppStore(s => s.updateAgent);
   const openBuilder = useAppStore(s => s.openBuilder);
   const fetchAgents = useAppStore(s => s.fetchAgents);
@@ -95,6 +97,8 @@ function AgentRow({ agent }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
+  const [showCallQueue, setShowCallQueue] = useState(false);
+  const [callQueueInitTab, setCallQueueInitTab] = useState(null);
   const moreBtnRef = useRef(null);
 
   const handleMoreClick = (e) => {
@@ -134,12 +138,18 @@ function AgentRow({ agent }) {
         <Switch checked={agent.enabled} onChange={() => updateAgent(agent.id, { enabled: !agent.enabled })} />
       </td>
       <td>
-        <div className={styles.actions}>
-          <ActionButton icon="solar:pen-new-square-linear" size="L" tooltip="Edit" onClick={() => openBuilder({ id: agent.id, name: agent.name })} />
+        <div className={styles.actions} {...(isFirst ? { 'data-tour': 'agent-actions' } : {})}>
+          <ActionButton size="L" tooltip="Call Queue" onClick={() => setShowCallQueue(true)} {...(isFirst ? { 'data-tour': 'call-queue-btn' } : {})}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14.1333 4.18663V5.86663L15.1833 6.91663M11.7506 13.2226L12.1301 12.823C12.6548 12.2706 13.4727 12.1571 14.144 12.5435L15.7361 13.4599C16.7585 14.0484 16.9838 15.4907 16.1847 16.332L15.0009 17.5783C14.6999 17.8952 14.3264 18.1268 13.8969 18.1692C12.539 18.3032 9.21841 18.1551 5.67943 14.4292C2.34222 10.9158 1.74416 7.90447 1.66903 6.50487C1.63967 5.9578 1.88182 5.46464 2.24317 5.08421L3.55117 3.70713C4.27993 2.93988 5.50853 3.05868 6.14434 3.95794L7.19516 5.44418C7.70886 6.17073 7.65335 7.16596 7.06456 7.78586L6.82555 8.03749C6.82555 8.03749 5.92339 8.98729 8.3859 11.5798C10.8484 14.1724 11.7506 13.2226 11.7506 13.2226ZM18.3333 5.86663C18.3333 8.18622 16.4529 10.0666 14.1333 10.0666C11.8137 10.0666 9.93329 8.18622 9.93329 5.86663C9.93329 3.54703 11.8137 1.66663 14.1333 1.66663C16.4529 1.66663 18.3333 3.54703 18.3333 5.86663Z" stroke="#6F7A90" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </ActionButton>
           <span className={styles.actionDivider} />
-          <ActionButton icon="solar:chart-2-linear" size="L" tooltip="Analytics" />
+          <ActionButton icon="solar:chart-outline" size="L" tooltip="Call Analytics" onClick={() => { setCallQueueInitTab('analytics'); setShowCallQueue(true); }} {...(isFirst ? { 'data-tour': 'call-analytics-btn' } : {})} />
           <span className={styles.actionDivider} />
-          <ActionButton icon="solar:menu-dots-bold" size="L" tooltip="More" ref={moreBtnRef} onClick={handleMoreClick} />
+          <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit Agent" onClick={() => openBuilder({ id: agent.id, name: agent.name })} {...(isFirst ? { 'data-tour': 'edit-agent-btn' } : {})} />
+          <span className={styles.actionDivider} />
+          <ActionButton icon="solar:menu-dots-bold" size="L" tooltip="More Options" ref={moreBtnRef} onClick={handleMoreClick} {...(isFirst ? { 'data-tour': 'more-options-btn' } : {})} />
         </div>
         {showMenu && createPortal(
           <div style={{ position: 'fixed', top: menuPos.top, right: menuPos.right, zIndex: 9999 }}>
@@ -174,6 +184,7 @@ function AgentRow({ agent }) {
           />
         )}
         {auditDrawerEntity && <AuditLogDrawer entity={auditDrawerEntity} onClose={() => setAuditDrawerEntity(null)} />}
+        {showCallQueue && <CallQueueDrawer agent={agent} initialTab={callQueueInitTab} onClose={() => { setShowCallQueue(false); setCallQueueInitTab(null); }} />}
       </td>
     </tr>
   );
@@ -216,7 +227,7 @@ export function AgentsTable() {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.tabBar}>
+      <div className={styles.tabBar} data-tour="settings-tabs">
         <div className={styles.tabs}>
           {TABS.map(tab => (
             <div
@@ -335,8 +346,8 @@ export function AgentsTable() {
                     </tr>
                   </thead>
                   <tbody>
-                    {paginatedAgents.map(agent => (
-                      <AgentRow key={agent.id} agent={agent} />
+                    {paginatedAgents.map((agent, idx) => (
+                      <AgentRow key={agent.id} agent={agent} isFirst={idx === 0} />
                     ))}
                   </tbody>
                 </table>
@@ -359,6 +370,65 @@ export function AgentsTable() {
           <Pagination totalItems={filteredAgents.length} />
         </>
       )}
+
+      {/* Product Tour — shown once for new users on the Agents tab */}
+      {settingsTab === 'agents' && !agentsLoading && paginatedAgents.length > 0 && (
+        <ProductTour
+          tourId="agents-call-queue"
+          steps={AGENT_TOUR_STEPS}
+        />
+      )}
     </div>
   );
 }
+
+const AGENT_TOUR_STEPS = [
+  {
+    target: '[data-tour="settings-tabs"]',
+    title: 'Agent Settings',
+    content: 'Manage your AI agents, goals, knowledge base, tools, and compliance policies from these tabs.',
+    icon: 'solar:settings-linear',
+    placement: 'bottom',
+    skipBeacon: true,
+  },
+  {
+    target: '[data-tour="agent-actions"]',
+    title: 'Agent Actions',
+    content: 'Each agent has quick actions for managing calls, viewing analytics, editing configuration, and more.',
+    icon: 'solar:widget-linear',
+    placement: 'left',
+    skipBeacon: true,
+  },
+  {
+    target: '[data-tour="call-queue-btn"]',
+    title: 'Call Queue',
+    content: 'View ongoing calls, manage the outreach queue, and browse call logs for this agent.',
+    icon: 'solar:phone-calling-rounded-linear',
+    placement: 'bottom',
+    skipBeacon: true,
+  },
+  {
+    target: '[data-tour="call-analytics-btn"]',
+    title: 'Call Analytics',
+    content: 'Jump directly into call performance — see goal progress, engagement scores, and sentiment analysis.',
+    icon: 'solar:chart-outline',
+    placement: 'bottom',
+    skipBeacon: true,
+  },
+  {
+    target: '[data-tour="edit-agent-btn"]',
+    title: 'Edit Agent',
+    content: 'Open the agent builder to modify conversation flows, prompts, and configuration.',
+    icon: 'solar:pen-linear',
+    placement: 'bottom',
+    skipBeacon: true,
+  },
+  {
+    target: '[data-tour="more-options-btn"]',
+    title: 'More Options',
+    content: 'Duplicate, view audit logs, or delete this agent from the overflow menu.',
+    icon: 'solar:menu-dots-bold',
+    placement: 'bottom',
+    skipBeacon: true,
+  },
+];

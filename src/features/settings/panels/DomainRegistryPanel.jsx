@@ -275,9 +275,10 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
               </td>
             </tr>
           )}
-          {filtered.map(d => {
+          {filtered.map((d, idx) => {
             const stats = getComponentStats(d.id, embedComponents);
             const isDisabled = !d.enabled;
+            const isFirst = idx === 0;
             return (
               <tr key={d.id}
                 style={{ borderBottom: '0.5px solid #EAECF0', transition: 'background .1s', ...(isDisabled ? { opacity: 0.55 } : {}) }}
@@ -295,9 +296,9 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
                   {stats.active === 0 && stats.disabled === 0 && <Badge variant="status-queued" label="0 active" />}
                   {stats.disabled > 0 && <span style={{ marginLeft: stats.active > 0 ? 4 : 0 }}><Badge variant="status-failed" label={`${stats.disabled} disabled`} /></span>}
                 </td>
-                <td style={tdStyle}><Switch checked={d.enabled !== false} onChange={() => handleToggle(d.id)} /></td>
+                <td style={tdStyle} {...(isFirst ? { 'data-tour': 'embed-toggle' } : {})}><Switch checked={d.enabled !== false} onChange={() => handleToggle(d.id)} /></td>
                 <td style={tdStyle}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }} {...(isFirst ? { 'data-tour': 'embed-actions' } : {})}>
                     <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit" onClick={() => setEditingDomain(d)} />
                     <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
                     <ActionButton icon="solar:history-linear" size="L" tooltip="Audit Log" onClick={() => setAuditDrawerEntity({ type: 'Domain', name: d.vendor, domain: d.domain, id: d.id })} />

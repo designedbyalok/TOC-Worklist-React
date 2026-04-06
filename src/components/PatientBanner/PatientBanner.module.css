@@ -1,0 +1,253 @@
+/* ── PatientBanner ──
+   Reusable patient context banner for drawers.
+   Figma: 263:19234
+   Default: compact (263:19235)
+   Expanded: with Patient Details + Synopsis (263:19400)
+*/
+
+.banner {
+  background: #fcfaff;
+  border-bottom: 0.5px solid var(--neutral-100, #e9ecf1);
+  flex-shrink: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Compact header row */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  min-height: 57px;
+  box-sizing: border-box;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #fcfaff;
+  border: 0.5px solid var(--primary-200, #d7c0ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--primary-300, #8c5ae2);
+  flex-shrink: 0;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-400, #3a485f);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-300, #6f7a90);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.dot {
+  color: var(--neutral-300, #6f7a90);
+}
+
+.rafValue {
+  font-weight: 400;
+  color: var(--neutral-400, #3a485f);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.divider {
+  width: 0.5px;
+  height: 16px;
+  background: var(--neutral-150, #d0d6e1);
+  flex-shrink: 0;
+}
+
+/* Chevron rotation when expanded */
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* ── Expandable section ── */
+.expandable {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .25s ease;
+  overflow: hidden;
+}
+
+.expandableOpen {
+  grid-template-rows: 1fr;
+}
+
+.expandContent {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Sections (Patient Details, Synopsis) ── */
+.section {
+  padding: 12px 16px;
+  border-top: 0.5px solid var(--neutral-100, #e9ecf1);
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-400, #3a485f);
+  margin-bottom: 8px;
+}
+
+/* Patient Details rows */
+.detailRows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--neutral-300, #6f7a90);
+  line-height: 1.4;
+}
+
+.linkText {
+  color: var(--primary-300, #8c5ae2);
+  cursor: pointer;
+}
+
+.linkText:hover {
+  text-decoration: underline;
+}
+
+.utrBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #D72825;
+}
+
+/* Synopsis */
+.synopsisHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.conditionSelect {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--neutral-400, #3a485f);
+  border: 0.5px solid var(--neutral-150, #d0d6e1);
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: var(--neutral-0, #fff);
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+}
+
+.synopsisCard {
+  border: 0.5px solid var(--neutral-150, #d0d6e1);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--neutral-0, #fff);
+}
+
+.synopsisText {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--neutral-400, #3a485f);
+  line-height: 1.6;
+  margin: 0 0 8px;
+}
+
+.seeMore {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--primary-300, #8c5ae2);
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.seeMore:hover {
+  text-decoration: underline;
+}
+
+.synopsisFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 0.5px solid var(--neutral-100, #e9ecf1);
+  padding-top: 8px;
+}
+
+.synopsisFooterLeft {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.poweredBy {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--neutral-300, #6f7a90);
+}
+
+.synopsisFooterRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.generatedAt {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--primary-300, #8c5ae2);
+}

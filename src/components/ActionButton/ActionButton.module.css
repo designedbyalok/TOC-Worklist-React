@@ -140,6 +140,47 @@
   right: -3px;
 }
 
+/* ── Tooltip ── */
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--neutral-0, #fff);
+  color: var(--neutral-400, #3a485f);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.2;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 0.5px solid var(--neutral-150, #d0d6e1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s, visibility 0.15s;
+  z-index: 9999;
+}
+
+/* Tooltip arrow */
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--neutral-0, #fff);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.05));
+}
+
+.root:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
 /* ── Chevron ── */
 .chevron {
   width: 10px;

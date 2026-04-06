@@ -22,13 +22,13 @@ import styles from './Drawer.module.css';
  *  - Footer padding: 16px 24px (if present)
  *  - Animation: slideIn .25s ease (translateX)
  */
-export function Drawer({ title, onClose, headerRight, footer, children, className }) {
+export function Drawer({ title, onClose, headerRight, footer, children, className, bodyClassName, headerStyle, titleStyle }) {
   return (
     <>
       <div className={styles.overlay} onClick={onClose} />
       <div className={`${styles.panel}${className ? ` ${className}` : ''}`}>
-        <div className={styles.header}>
-          <h2 className={styles.headerTitle}>{title}</h2>
+        <div className={styles.header} style={headerStyle}>
+          <h2 className={styles.headerTitle} style={titleStyle}>{title}</h2>
           <div className={styles.headerRight}>
             {headerRight}
             <button className={styles.closeBtn} onClick={onClose}>
@@ -36,7 +36,7 @@ export function Drawer({ title, onClose, headerRight, footer, children, classNam
             </button>
           </div>
         </div>
-        <div className={styles.body}>
+        <div className={`${styles.body}${bodyClassName ? ` ${bodyClassName}` : ''}`}>
           {children}
         </div>
         {footer && <div className={styles.footer}>{footer}</div>}

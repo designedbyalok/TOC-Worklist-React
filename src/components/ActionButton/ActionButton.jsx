@@ -11,20 +11,22 @@ import styles from './ActionButton.module.css';
  * and any place a compact icon-only button is needed with optional badges.
  *
  * @param {object}   props
- * @param {string}   props.icon                      – Solar icon name (e.g. "solar:filter-linear")
- * @param {'S'|'L'|'XL'} [props.size='L']            – S=16px icon, L=20px icon, XL=32px icon
+ * @param {string}   [props.icon]                      – Solar icon name (e.g. "solar:filter-linear")
+ * @param {React.ReactNode} [props.children]            – Custom icon element (used instead of icon prop)
+ * @param {'S'|'L'|'XL'} [props.size='L']              – S=16px icon, L=20px icon, XL=32px icon
  * @param {'active'|'disabled'|'error'} [props.state='active']
- * @param {string}   [props.tooltip]                  – Tooltip text (rendered via title attr)
- * @param {boolean}  [props.notification=false]        – Show orange notification badge
- * @param {string}   [props.count]                    – Badge count text (shows grey count badge)
- * @param {boolean}  [props.dot=false]                – Show red status dot
- * @param {boolean}  [props.chevron=false]            – Show dropdown chevron
- * @param {boolean}  [props.chevronOpen=false]        – Rotate chevron when open
- * @param {string}   [props.className]                – Extra class
- * @param {string}   [props.iconColor]                – Override icon color
+ * @param {string}   [props.tooltip]                    – Tooltip text (styled bubble on hover)
+ * @param {boolean}  [props.notification=false]          – Show orange notification badge
+ * @param {string}   [props.count]                      – Badge count text (shows grey count badge)
+ * @param {boolean}  [props.dot=false]                  – Show red status dot
+ * @param {boolean}  [props.chevron=false]              – Show dropdown chevron
+ * @param {boolean}  [props.chevronOpen=false]          – Rotate chevron when open
+ * @param {string}   [props.className]                  – Extra class
+ * @param {string}   [props.iconColor]                  – Override icon color
  */
 export const ActionButton = forwardRef(function ActionButton({
   icon,
+  children,
   size = 'L',
   state = 'active',
   tooltip,
@@ -60,10 +62,15 @@ export const ActionButton = forwardRef(function ActionButton({
       ref={ref}
       className={cls}
       disabled={state === 'disabled'}
-      title={tooltip}
+      aria-label={tooltip}
       {...rest}
     >
-      <Icon name={icon} size={iconSize} color={resolvedColor} />
+      {children || <Icon name={icon} size={iconSize} color={resolvedColor} />}
+
+      {/* Styled tooltip bubble */}
+      {tooltip && (
+        <span className={styles.tooltip}>{tooltip}</span>
+      )}
 
       {/* Notification badge (orange with count) */}
       {notification && (
