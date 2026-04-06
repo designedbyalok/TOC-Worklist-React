@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Joyride, STATUS, ACTIONS } from 'react-joyride';
 import { TourTooltip } from './TourTooltip';
 
@@ -18,6 +18,7 @@ function markTourSeen(tourId) {
 
 /**
  * ProductTour — wraps React Joyride with Fold Health design system.
+ * Tour is shown only once per user — marked as seen on first render.
  */
 export function ProductTour({ tourId, steps, run = true, onFinish, continuous = true }) {
   const [running, setRunning] = useState(() => {
@@ -26,15 +27,22 @@ export function ProductTour({ tourId, steps, run = true, onFinish, continuous = 
     return !seen[tourId];
   });
 
+  // Mark tour as seen immediately when it starts — ensures it won't
+  // reappear on refresh even if user doesn't complete the tour
+  useEffect(() => {
+    if (running) {
+      markTourSeen(tourId);
+    }
+  }, [running, tourId]);
+
   const handleCallback = useCallback((data) => {
     const { status, action } = data;
 
     if (status === STATUS.FINISHED || status === STATUS.SKIPPED || action === ACTIONS.CLOSE) {
-      markTourSeen(tourId);
       setRunning(false);
       onFinish?.();
     }
-  }, [tourId, onFinish]);
+  }, [onFinish]);
 
   if (!running || !steps?.length) return null;
 
