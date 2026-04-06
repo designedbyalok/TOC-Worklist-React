@@ -21,7 +21,8 @@
 .tabs {
   display: flex;
   gap: 4px;
-  overflow-x: auto;
+  position: relative;
+  overflow: hidden;
 }
 
 .tab {
@@ -212,7 +213,44 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.actionDivider {
+  width: 0.5px;
+  height: 16px;
+  background: var(--neutral-150);
+  flex-shrink: 0;
+}
+
+/* More dropdown */
+.moreDropdown {
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 8px;
+  min-width: 180px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.moreItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--neutral-400);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: background .1s;
+}
+
+.moreItem:hover {
+  background: var(--neutral-50);
 }
 
 /* Empty state */
