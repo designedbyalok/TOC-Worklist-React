@@ -81,6 +81,7 @@ export const useAppStore = create((set, get) => ({
 
   // Embedded Components
   embeddedComponentsTab: 'domain-registry',
+  accountTab: 'users',
   componentWizardOpen: false,
   componentWizardEditId: null,
   componentPreviewId: null,
@@ -231,6 +232,7 @@ export const useAppStore = create((set, get) => ({
   setBusinessHoursOpen: (open) => { set({ businessHoursOpen: open }); updateHash(get); },
 
   setEmbeddedComponentsTab: (tab) => { set({ embeddedComponentsTab: tab }); updateHash(get); },
+  setAccountTab: (tab) => { set({ accountTab: tab }); updateHash(get); },
   setComponentWizard: (open, editId = null) => { set({ componentWizardOpen: open, componentWizardEditId: editId }); },
   setComponentPreviewId: (id) => { set({ componentPreviewId: id }); },
 

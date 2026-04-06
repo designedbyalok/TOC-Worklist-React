@@ -45,6 +45,10 @@ export function stateToHash(state) {
       const ecTab = state.embeddedComponentsTab || 'domain-registry';
       return buildHash('settings', 'embedded-components', ecTab);
     }
+    if (settingsNavItem === 'account') {
+      const acTab = state.accountTab || 'users';
+      return buildHash('settings', 'account', acTab);
+    }
     // Agents section
     if (goalWizardOpen) return buildHash('settings', 'agents', 'goals', goalWizardEditId ? String(goalWizardEditId) : 'new');
     if (goalDetailId) return buildHash('settings', 'agents', 'goals', String(goalDetailId));
@@ -94,6 +98,12 @@ export function hashToState(route) {
     if (route.section === 'embedded-components') {
       updates.settingsNavItem = 'embedded-components';
       updates.embeddedComponentsTab = route.tab || 'domain-registry';
+      return updates;
+    }
+    // Account / IAM section
+    if (route.section === 'account') {
+      updates.settingsNavItem = 'account';
+      updates.accountTab = route.tab || 'users';
       return updates;
     }
     // Agents section
