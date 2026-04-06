@@ -2,6 +2,7 @@ import { SettingsSubNav } from './SettingsSubNav';
 import { AgentsTable } from './AgentsTable';
 import { MessagesSettings } from './MessagesSettings';
 import { EmbeddedComponentsSettings } from './EmbeddedComponentsSettings';
+import { AccountPanel } from './AccountPanel';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './SettingsLayout.module.css';
 
@@ -16,6 +17,8 @@ export function SettingsLayout() {
         <MessagesSettings />
       ) : settingsNavItem === 'embedded-components' ? (
         <EmbeddedComponentsSettings />
+      ) : settingsNavItem === 'account' ? (
+        <AccountPanel />
       ) : (
         <AgentsTable />
       )}
