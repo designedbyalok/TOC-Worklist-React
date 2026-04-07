@@ -35,13 +35,12 @@ function FilterDropdown({ label, options }) {
 }
 
 export function CalendarView() {
-  const eventsService = useMemo(() => createEventsServicePlugin(), []);
+  const eventsService = useState(() => createEventsServicePlugin())[0];
 
   const calendar = useCalendarApp({
     views: [createViewWeek(), createViewDay(), createViewMonthGrid()],
     defaultView: 'week',
     events: SAMPLE_EVENTS,
-    plugins: [eventsService],
     calendars: {
       scheduled: { colorName: 'scheduled', lightColors: { main: '#8C5AE2', container: '#F5F0FF', onContainer: '#3A485F' }, darkColors: { main: '#8C5AE2', container: '#2D1B69', onContainer: '#E8D5FF' } },
       confirmed: { colorName: 'confirmed', lightColors: { main: '#009B53', container: '#F0FDF4', onContainer: '#3A485F' }, darkColors: { main: '#009B53', container: '#1B4332', onContainer: '#D1FAE5' } },
@@ -49,7 +48,7 @@ export function CalendarView() {
     dayBoundaries: { start: '00:00', end: '23:59' },
     weekOptions: { gridHeight: 1200, nDays: 7 },
     locale: 'en-US',
-  });
+  }, [eventsService]);
 
   return (
     <div className={styles.wrapper}>
@@ -82,7 +81,7 @@ export function CalendarView() {
 
       {/* Calendar */}
       <div className={styles.calendarWrap}>
-        <ScheduleXCalendar calendarApp={calendar} />
+        {calendar && <ScheduleXCalendar calendarApp={calendar} />}
       </div>
     </div>
   );
