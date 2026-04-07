@@ -3,19 +3,73 @@ import { createPortal } from 'react-dom';
 import { Icon } from '../../components/Icon/Icon';
 import { ActionButton } from '../../components/ActionButton/ActionButton';
 import { Avatar } from '../../components/Avatar/Avatar';
-import { ScheduleDrawer, APPOINTMENT_TYPES } from '../../components/ScheduleDrawer/ScheduleDrawer';
+import { ScheduleDrawer, FALLBACK_APPOINTMENT_TYPES } from '../../components/ScheduleDrawer/ScheduleDrawer';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/select';
+import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import styles from './CalendarView.module.css';
 
-const RAW_EVENTS = [
-  { id: '1', title: 'Richard Wilson', start: '2026-04-07 09:00', end: '2026-04-07 10:30', description: 'Back Pain • CCM First Visit', calendarId: 'scheduled' },
-  { id: '2', title: 'Elaine Beatty', start: '2026-04-08 11:00', end: '2026-04-08 12:00', description: 'Follow-up • Scheduled', calendarId: 'scheduled' },
-  { id: '3', title: 'Carlos Hernandez', start: '2026-04-07 14:00', end: '2026-04-07 15:00', description: 'Annual Wellness Visit • Confirmed', calendarId: 'confirmed' },
-  { id: '4', title: 'William Davis', start: '2026-04-09 10:00', end: '2026-04-09 10:30', description: 'Telehealth • Scheduled', calendarId: 'scheduled' },
-  { id: '5', title: 'Ralph Halvorson', start: '2026-04-10 11:00', end: '2026-04-10 12:00', description: 'Specialty Consultation • Confirmed', calendarId: 'confirmed' },
-  { id: '6', title: 'Elena Garcia', start: '2026-04-11 08:30', end: '2026-04-11 09:30', description: 'Lab Results • Scheduled', calendarId: 'scheduled' },
-];
+// Default calendar color configs (used when DB types aren't loaded yet)
+const DEFAULT_CALENDARS = {
+  awv:        { colorName: 'awv',        lightColors: { main: '#D9A50B', container: '#FEF9E7', onContainer: '#3A485F' }, darkColors: { main: '#D9A50B', container: '#4A3600', onContainer: '#FEF3CD' } },
+  followup:   { colorName: 'followup',   lightColors: { main: '#8C5AE2', container: '#F5F0FF', onContainer: '#3A485F' }, darkColors: { main: '#8C5AE2', container: '#2D1B69', onContainer: '#E8D5FF' } },
+  specialty:  { colorName: 'specialty',  lightColors: { main: '#009B53', container: '#F0FDF4', onContainer: '#3A485F' }, darkColors: { main: '#009B53', container: '#1B4332', onContainer: '#D1FAE5' } },
+  telehealth: { colorName: 'telehealth', lightColors: { main: '#145ECC', container: '#EEF4FF', onContainer: '#3A485F' }, darkColors: { main: '#145ECC', container: '#1A2744', onContainer: '#C7DEFF' } },
+  selection:  { colorName: 'selection',  lightColors: { main: '#8C5AE2', container: 'transparent', onContainer: '#8C5AE2' }, darkColors: { main: '#8C5AE2', container: 'transparent', onContainer: '#8C5AE2' } },
+};
+
+// Build calendar color configs dynamically from appointment types
+function buildCalendars(appointmentTypes) {
+  const cals = { selection: DEFAULT_CALENDARS.selection };
+  for (const t of appointmentTypes) {
+    const key = t.name.toLowerCase().replace(/\s+/g, '_').substring(0, 20);
+    const c = t.color || '#8C5AE2';
+    cals[key] = {
+      colorName: key,
+      lightColors: { main: c, container: `${c}15`, onContainer: '#3A485F' },
+      darkColors: { main: c, container: `${c}33`, onContainer: '#E0E0E0' },
+    };
+  }
+  return cals;
+}
+
+// Map a DB appointment row to a schedule-x event object (needs Temporal T)
+function apptToEvent(appt, appointmentTypes, T) {
+  // Parse "MM-DD-YYYY" date and "h:mm am/pm" time into "YYYY-MM-DD HH:mm"
+  function toDateTime(dateStr, timeStr) {
+    if (!dateStr || !timeStr) return null;
+    const [mo, dd, yyyy] = dateStr.split('-');
+    const match = timeStr.match(/(\d+):(\d+)\s*(am|pm)/i);
+    if (!match) return null;
+    let h = parseInt(match[1]);
+    const m = parseInt(match[2]);
+    const p = match[3].toLowerCase();
+    if (p === 'pm' && h < 12) h += 12;
+    if (p === 'am' && h === 12) h = 0;
+    return `${yyyy}-${mo}-${dd} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  }
+
+  const startStr = toDateTime(appt.date, appt.time_start);
+  const endStr = toDateTime(appt.date, appt.time_end);
+  if (!startStr || !endStr) return null;
+
+  const [sd, st] = startStr.split(' ');
+  const [ed, et] = endStr.split(' ');
+  const start = T.PlainDateTime.from(`${sd}T${st}`).toZonedDateTime('America/New_York');
+  const end = T.PlainDateTime.from(`${ed}T${et}`).toZonedDateTime('America/New_York');
+
+  // Derive calendarId from appointment type
+  const calId = appt.calendar_id || 'followup';
+
+  return {
+    id: appt.id,
+    start,
+    end,
+    title: appt.patient_name || 'Appointment',
+    description: `${appt.appointment_type_name || ''} • ${appt.status || 'Scheduled'}`,
+    calendarId: calId,
+  };
+}
 
 const LOCATIONS = ['Fold Health, NY', '7 Hills Department', '68th Street'];
 const STATUSES = ['Scheduled', 'Confirmed', 'Completed', 'Cancelled'];
@@ -23,11 +77,19 @@ const STATUSES = ['Scheduled', 'Confirmed', 'Completed', 'Cancelled'];
 const VIEWS = ['week', 'day', 'month-grid'];
 const VIEW_LABELS = { 'week': 'Week', 'day': 'Day', 'month-grid': 'Month' };
 
-function CalendarContent({ onSlotClick, calendarRef, eventsPluginRef }) {
+function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginRef, dbAppointments, appointmentTypes }) {
   const [calendarApp, setCalendarApp] = useState(null);
   const [SXCalendar, setSXCalendar] = useState(null);
   const [error, setError] = useState(null);
+  const internalPluginRef = useRef(null);
 
+  // Use refs for callbacks so the calendar always calls the latest handlers
+  const slotClickRef = useRef(onSlotClick);
+  const eventClickRef = useRef(onEventClick);
+  slotClickRef.current = onSlotClick;
+  eventClickRef.current = onEventClick;
+
+  // Initialize calendar ONCE
   useEffect(() => {
     (async () => {
       try {
@@ -35,14 +97,6 @@ function CalendarContent({ onSlotClick, calendarRef, eventsPluginRef }) {
         if (typeof globalThis.Temporal === 'undefined') {
           globalThis.Temporal = temporalMod.Temporal;
         }
-        const T = globalThis.Temporal;
-
-        function toZDT(str) {
-          const [date, time] = str.split(' ');
-          return T.PlainDateTime.from(`${date}T${time}`).toZonedDateTime('America/New_York');
-        }
-
-        const events = RAW_EVENTS.map(e => ({ ...e, start: toZDT(e.start), end: toZDT(e.end) }));
 
         const calMod = await import('@schedule-x/calendar');
         const reactMod = await import('@schedule-x/react');
@@ -50,22 +104,21 @@ function CalendarContent({ onSlotClick, calendarRef, eventsPluginRef }) {
         await import('@schedule-x/theme-default/dist/index.css');
 
         const eventsPlugin = eventsMod.createEventsServicePlugin();
+        internalPluginRef.current = eventsPlugin;
         if (eventsPluginRef) eventsPluginRef.current = eventsPlugin;
+
         const app = calMod.createCalendar({
           views: [calMod.createViewWeek(), calMod.createViewDay(), calMod.createViewMonthGrid()],
           defaultView: 'week',
-          events,
-          calendars: {
-            scheduled: { colorName: 'scheduled', lightColors: { main: '#8C5AE2', container: '#F5F0FF', onContainer: '#3A485F' }, darkColors: { main: '#8C5AE2', container: '#2D1B69', onContainer: '#E8D5FF' } },
-            confirmed: { colorName: 'confirmed', lightColors: { main: '#009B53', container: '#F0FDF4', onContainer: '#3A485F' }, darkColors: { main: '#009B53', container: '#1B4332', onContainer: '#D1FAE5' } },
-            selection: { colorName: 'selection', lightColors: { main: '#8C5AE2', container: 'transparent', onContainer: '#8C5AE2' }, darkColors: { main: '#8C5AE2', container: 'transparent', onContainer: '#8C5AE2' } },
-          },
+          events: [],
+          calendars: DEFAULT_CALENDARS,
           dayBoundaries: { start: '06:00', end: '20:00' },
           weekOptions: { gridHeight: 2000, nDays: 7 },
           locale: 'en-US',
           callbacks: {
-            onClickDateTime: (dateTime) => { if (onSlotClick) onSlotClick(dateTime); },
-            onClickDate: (date) => { if (onSlotClick) onSlotClick(date); },
+            onClickDateTime: (dateTime) => { if (slotClickRef.current) slotClickRef.current(dateTime); },
+            onClickDate: (date) => { if (slotClickRef.current) slotClickRef.current(date); },
+            onEventClick: (event) => { if (eventClickRef.current && event.id !== '__selection__') eventClickRef.current(event); },
           },
         }, [eventsPlugin]);
 
@@ -78,6 +131,28 @@ function CalendarContent({ onSlotClick, calendarRef, eventsPluginRef }) {
       }
     })();
   }, []);
+
+  // Sync events dynamically when DB data changes (without recreating calendar)
+  useEffect(() => {
+    const ep = internalPluginRef.current;
+    const T = globalThis.Temporal;
+    if (!ep || !T) return;
+
+    const newEvents = (dbAppointments || [])
+      .map(a => apptToEvent(a, appointmentTypes, T))
+      .filter(Boolean);
+
+    // Replace all events (except __selection__) with fresh DB events
+    try {
+      const existing = ep.getAll();
+      for (const e of existing) {
+        if (e.id !== '__selection__') ep.remove(e.id);
+      }
+    } catch {}
+    for (const e of newEvents) {
+      try { ep.add(e); } catch {}
+    }
+  }, [dbAppointments, appointmentTypes]);
 
   if (error) return <div style={{ padding: 32, color: 'var(--status-error)', fontFamily: 'Inter' }}>Calendar error: {error}</div>;
   if (!calendarApp || !SXCalendar) return <div style={{ padding: 32, color: 'var(--neutral-300)', textAlign: 'center', fontFamily: 'Inter' }}>Loading calendar...</div>;
@@ -149,6 +224,20 @@ export function CalendarView() {
   const [filterType, setFilterType] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
 
+  // Fetch appointments and appointment types from store
+  const appointments = useAppStore(s => s.appointments);
+  const appointmentTypes = useAppStore(s => s.appointmentTypes);
+  const fetchAppointments = useAppStore(s => s.fetchAppointments);
+  const fetchAppointmentTypes = useAppStore(s => s.fetchAppointmentTypes);
+
+  useEffect(() => {
+    fetchAppointments();
+    fetchAppointmentTypes();
+  }, []);
+
+  // Use DB types for filter dropdown, fall back to hardcoded
+  const apptTypesForFilter = appointmentTypes.length > 0 ? appointmentTypes : FALLBACK_APPOINTMENT_TYPES;
+
   // Fetch users from Supabase profiles
   const [users, setUsers] = useState([]);
   useEffect(() => {
@@ -165,6 +254,19 @@ export function CalendarView() {
         }
       });
   }, []);
+
+  // Filter appointments by selected user and type
+  const filteredAppointments = useMemo(() => {
+    let filtered = appointments || [];
+    if (filterUser !== 'all') {
+      const userName = users.find(u => u.id === filterUser)?.name;
+      if (userName) filtered = filtered.filter(a => a.primary_user === userName);
+    }
+    if (filterType !== 'all') {
+      filtered = filtered.filter(a => a.appointment_type_name === filterType);
+    }
+    return filtered;
+  }, [appointments, filterUser, filterType, users]);
 
   const handleViewChange = (view) => {
     setCurrentView(view);
@@ -205,12 +307,30 @@ export function CalendarView() {
   }, []);
 
   const handleSlotClick = useCallback((dateTime) => {
+    // Skip if an event click just happened (both callbacks fire for event clicks)
+    if (eventClickRef.current) return;
+
+    // Check for overlapping events using the eventsPlugin (always in sync)
+    const ep = eventsPluginRef.current;
+    const T = globalThis.Temporal;
+    if (ep && T && dateTime?.add) {
+      const clickStart = dateTime.epochMilliseconds;
+      const clickEnd = dateTime.add({ minutes: 30 }).epochMilliseconds;
+      try {
+        const allEvents = ep.getAll();
+        const hasOverlap = allEvents.some(e => {
+          if (e.id === '__selection__') return false;
+          return clickStart < e.end.epochMilliseconds && clickEnd > e.start.epochMilliseconds;
+        });
+        if (hasOverlap) return; // Slot occupied — onEventClick will handle it
+      } catch {}
+    }
+
+    setClickedAppointment(null);
     setSelectedSlot(dateTime);
     setShowSchedule(true);
 
     // Add a 30-min selection block on the time grid
-    const ep = eventsPluginRef.current;
-    const T = globalThis.Temporal;
     if (ep && T && dateTime?.add) {
       clearSelection();
       const end = dateTime.add({ minutes: 30 });
@@ -224,8 +344,22 @@ export function CalendarView() {
     }
   }, [clearSelection]);
 
+  const [clickedAppointment, setClickedAppointment] = useState(null);
+  const eventClickRef = useRef(false);
+
+  const handleEventClick = useCallback((event) => {
+    // Flag that an event click just happened — prevents handleSlotClick from overriding
+    eventClickRef.current = true;
+    setTimeout(() => { eventClickRef.current = false; }, 100);
+    const appt = appointments.find(a => a.id === event.id);
+    setClickedAppointment(appt || null);
+    setSelectedSlot(event.start);
+    setShowSchedule(true);
+  }, [appointments]);
+
   const handleCloseDrawer = useCallback(() => {
     setShowSchedule(false);
+    setClickedAppointment(null);
     clearSelection();
   }, [clearSelection]);
 
@@ -254,6 +388,12 @@ export function CalendarView() {
     }
 
     function handleMove(e) {
+      // Hide preview when hovering over an existing event
+      if (e.target.closest('.sx__event')) {
+        const overlay = hoverRef.current;
+        if (overlay) overlay.style.opacity = '0';
+        return;
+      }
       const col = e.currentTarget;
       const rect = col.getBoundingClientRect();
       const y = e.clientY - rect.top;
@@ -337,14 +477,14 @@ export function CalendarView() {
             </SelectContent>
           </Select>
 
-          {/* Appointment Types — from ScheduleDrawer constant */}
+          {/* Appointment Types — from DB or fallback */}
           <Select value={filterType} onValueChange={setFilterType}>
             <SelectTrigger className="h-7 text-xs min-w-[140px] max-w-[180px]">
               <SelectValue placeholder="All Appointment Types" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Appointment Types</SelectItem>
-              {APPOINTMENT_TYPES.map(t => (
+              {apptTypesForFilter.map(t => (
                 <SelectItem key={t.name} value={t.name}>
                   <span className="flex items-center gap-1.5">
                     <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ background: t.color }} />
@@ -379,11 +519,18 @@ export function CalendarView() {
 
       {/* Calendar — schedule-x header hidden via CSS */}
       <div className={styles.calendarWrap}>
-        <CalendarContent onSlotClick={handleSlotClick} calendarRef={calendarRef} eventsPluginRef={eventsPluginRef} />
+        <CalendarContent
+          onSlotClick={handleSlotClick}
+          onEventClick={handleEventClick}
+          calendarRef={calendarRef}
+          eventsPluginRef={eventsPluginRef}
+          dbAppointments={filteredAppointments}
+          appointmentTypes={apptTypesForFilter}
+        />
       </div>
 
       {/* Schedule drawer opens when clicking a time slot */}
-      {showSchedule && <ScheduleDrawer selectedSlot={selectedSlot} onClose={handleCloseDrawer} />}
+      {showSchedule && <ScheduleDrawer selectedSlot={selectedSlot} existingAppointment={clickedAppointment} onClose={handleCloseDrawer} onSave={fetchAppointments} />}
     </div>
   );
 }

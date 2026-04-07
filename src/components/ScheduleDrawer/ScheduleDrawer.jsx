@@ -5,11 +5,12 @@ import { Button } from '../Button/Button';
 import { Drawer } from '../Drawer/Drawer';
 import { Avatar } from '../Avatar/Avatar';
 import { ActionButton } from '../ActionButton/ActionButton';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import styles from './ScheduleDrawer.module.css';
 
-export const APPOINTMENT_TYPES = [
+export const FALLBACK_APPOINTMENT_TYPES = [
   { name: 'Annual Wellness Visit', code: 'AWV', mode: 'In-person', duration: '60 min', color: '#D9A50B' },
   { name: 'Follow-up Appointment', code: 'Routine', mode: 'In-person/Virtual', duration: '15-30 min', color: '#8C5AE2' },
   { name: 'Specialty Consultation', code: 'Routine', mode: 'In-person', duration: '45 min', color: '#009B53' },
@@ -100,12 +101,12 @@ function PatientSearch({ patients, onSelect }) {
 }
 
 /* ── Appointment Type Picker ── */
-function AppointmentTypePicker({ value, onSelect }) {
+function AppointmentTypePicker({ value, onSelect, appointmentTypes }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const btnRef = useRef(null);
 
-  const filtered = APPOINTMENT_TYPES.filter(t => !search || t.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = appointmentTypes.filter(t => !search || t.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div style={{ position: 'relative' }}>
@@ -340,10 +341,27 @@ function DatePicker({ value, onSelect }) {
   );
 }
 
+const APPOINTMENT_STATUSES = ['Booked', 'Cancelled', 'No Show', 'Checked In'];
+
 /* ── Main Drawer ── */
-export function ScheduleDrawer({ onClose, selectedSlot }) {
+export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointment }) {
+  const isViewMode = !!existingAppointment;
   const patients = useAppStore(s => s.patients);
+  const fetchPatients = useAppStore(s => s.fetchPatients);
   const showToast = useAppStore(s => s.showToast);
+  const createAppointment = useAppStore(s => s.createAppointment);
+  const updateAppointment = useAppStore(s => s.updateAppointment);
+  const storeApptTypes = useAppStore(s => s.appointmentTypes);
+  const fetchAppointmentTypes = useAppStore(s => s.fetchAppointmentTypes);
+
+  // Use DB types, fall back to hardcoded
+  const appointmentTypes = storeApptTypes.length > 0 ? storeApptTypes : FALLBACK_APPOINTMENT_TYPES;
+
+  // Ensure patients and appointment types are loaded
+  useEffect(() => {
+    if (fetchPatients) fetchPatients();
+    if (fetchAppointmentTypes) fetchAppointmentTypes();
+  }, []);
 
   // Derive initial date/time from selectedSlot (Temporal.ZonedDateTime)
   const initialDate = (() => {
@@ -380,6 +398,14 @@ export function ScheduleDrawer({ onClose, selectedSlot }) {
   const [memberInstruction, setMemberInstruction] = useState('');
   const [showStaffInstructions, setShowStaffInstructions] = useState(false);
   const [staffInstruction, setStaffInstruction] = useState('');
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const rawStatus = existingAppointment?.status;
+  const [apptStatus, setApptStatus] = useState(rawStatus === 'Scheduled' ? 'Booked' : (rawStatus || 'Booked'));
+  const [editingInstruction, setEditingInstruction] = useState(false);
+  const [instructionDraft, setInstructionDraft] = useState(existingAppointment?.member_instruction || '');
+  const [showViewStaffInstructions, setShowViewStaffInstructions] = useState(!!existingAppointment?.staff_instruction);
+  const [editingStaffInstruction, setEditingStaffInstruction] = useState(false);
+  const [staffInstructionDraft, setStaffInstructionDraft] = useState(existingAppointment?.staff_instruction || '');
 
   // Fetch staff users from profiles DB
   useEffect(() => {
@@ -401,10 +427,282 @@ export function ScheduleDrawer({ onClose, selectedSlot }) {
 
   const canSchedule = selectedPatient && appointmentType;
 
-  const handleSchedule = () => {
-    showToast(`Appointment scheduled for ${selectedPatient.name}`);
-    onClose();
+  const handleSchedule = async () => {
+    // Compute end time (+30 min)
+    const computeEndTime = (t) => {
+      const match = t.match(/(\d+):(\d+)\s*(am|pm)/i);
+      if (!match) return t;
+      const [, h, m, p] = match;
+      const mins = (parseInt(m) || 0) + 30;
+      return mins >= 60
+        ? `${(parseInt(h) || 0) + 1}:${String(mins - 60).padStart(2, '0')} ${p}`
+        : `${h}:${String(mins).padStart(2, '0')} ${p}`;
+    };
+
+    // Derive calendar_id from appointment type color
+    const colorToCalId = { '#D9A50B': 'awv', '#8C5AE2': 'followup', '#009B53': 'specialty', '#145ECC': 'telehealth' };
+    const calId = appointmentType ? (colorToCalId[appointmentType.color] || 'followup') : 'followup';
+
+    const row = {
+      patient_id: selectedPatient?.id || null,
+      patient_name: selectedPatient?.name || '',
+      appointment_type_id: appointmentType?.id || null,
+      appointment_type_name: appointmentType?.name || '',
+      mode,
+      location,
+      primary_user: provider,
+      secondary_users: secondaryUsers,
+      date,
+      time_start: time,
+      time_end: time ? computeEndTime(time) : '',
+      reason_for_visit: reasonForVisit,
+      member_instruction: memberInstruction,
+      staff_instruction: staffInstruction,
+      require_rsvp: requireRsvp,
+      recurring,
+      status: 'Scheduled',
+      calendar_id: calId,
+    };
+
+    const result = await createAppointment(row);
+    if (result) {
+      if (onSave) onSave();
+      setBookingSuccess(true);
+      setTimeout(() => onClose(), 2000);
+    } else {
+      showToast('Failed to save appointment');
+    }
   };
+
+  const handleStatusChange = async (newStatus) => {
+    setApptStatus(newStatus);
+    if (existingAppointment?.id) {
+      await updateAppointment(existingAppointment.id, { status: newStatus });
+      if (onSave) onSave();
+    }
+  };
+
+  const handleSaveInstruction = async () => {
+    if (existingAppointment?.id) {
+      await updateAppointment(existingAppointment.id, { member_instruction: instructionDraft });
+      if (onSave) onSave();
+    }
+    setEditingInstruction(false);
+  };
+
+  const handleSaveStaffInstruction = async () => {
+    if (existingAppointment?.id) {
+      await updateAppointment(existingAppointment.id, { staff_instruction: staffInstructionDraft });
+      if (onSave) onSave();
+    }
+    setEditingStaffInstruction(false);
+  };
+
+  // Inline SVG for the Add Staff Instruction icon
+  const StaffInstructionIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12.8278 3.37739L12.4933 3.74903L12.8278 3.37739ZM16.1268 6.34647L15.7923 6.71812L16.1268 6.34647ZM18.0453 8.4611L17.5886 8.66451L18.0453 8.4611ZM2.6433 17.3564L2.99686 17.0028L2.6433 17.3564ZM17.3573 17.3564L17.0038 17.0028L17.3573 17.3564ZM4.58366 13.2493C4.30752 13.2493 4.08366 13.4732 4.08366 13.7493C4.08366 14.0255 4.30752 14.2493 4.58366 14.2493V13.2493ZM7.91699 14.2493C8.19313 14.2493 8.41699 14.0255 8.41699 13.7493C8.41699 13.4732 8.19313 13.2493 7.91699 13.2493V14.2493ZM5.75033 15.416C5.75033 15.6922 5.97418 15.916 6.25033 15.916C6.52647 15.916 6.75033 15.6922 6.75033 15.416H5.75033ZM6.75033 12.0827C6.75033 11.8065 6.52647 11.5827 6.25033 11.5827C5.97418 11.5827 5.75033 11.8065 5.75033 12.0827H6.75033ZM11.667 18.3327V17.8327H8.33366V18.8327H11.667V18.3327ZM1.66699 11.666H2.16699V8.33268H1.16699V11.666H1.66699ZM18.3337 11.3018H17.8337V11.666H18.8337V11.3018H18.3337ZM12.4933 3.74903L15.7923 6.71812L16.4612 5.97482L13.1623 3.00574L12.4933 3.74903ZM18.8337 11.3018C18.8337 9.88376 18.8438 9.02486 18.5021 8.25768L17.5886 8.66452C17.8236 9.19215 17.8337 9.79543 17.8337 11.3018H18.8337ZM15.7923 6.71812C16.9119 7.7258 17.3536 8.13688 17.5886 8.66451L18.5021 8.25768C18.1604 7.49049 17.5152 6.92342 16.4612 5.97482L15.7923 6.71812ZM8.35849 2.16602C9.66718 2.16602 10.1922 2.17373 10.6622 2.35409L11.0205 1.42047C10.3373 1.1583 9.59146 1.16602 8.35849 1.16602V2.16602ZM13.1623 3.00574C12.2503 2.18497 11.7036 1.68262 11.0205 1.42047L10.6622 2.35409C11.1323 2.53447 11.5255 2.87802 12.4933 3.74903L13.1623 3.00574ZM8.33366 17.8327C6.74818 17.8327 5.60936 17.8316 4.74271 17.7151C3.89044 17.6005 3.37663 17.3826 2.99686 17.0028L2.28975 17.7099C2.88629 18.3065 3.6463 18.5767 4.60946 18.7062C5.55824 18.8337 6.77644 18.8327 8.33366 18.8327V17.8327ZM1.16699 11.666C1.16699 13.2232 1.16593 14.4414 1.29349 15.3902C1.42298 16.3534 1.69321 17.1134 2.28975 17.7099L2.99686 17.0028C2.61709 16.623 2.39916 16.1092 2.28457 15.257C2.16805 14.3903 2.16699 13.2515 2.16699 11.666H1.16699ZM11.667 18.8327C13.2242 18.8327 14.4424 18.8337 15.3912 18.7062C16.3543 18.5767 17.1144 18.3065 17.7109 17.7099L17.0038 17.0028C16.624 17.3826 16.1102 17.6005 15.2579 17.7151C14.3913 17.8316 13.2525 17.8327 11.667 17.8327V18.8327ZM18.8337 11.666C18.8337 13.2515 18.8326 14.3903 17.7161 15.257C17.6015 16.1092 17.3836 16.623 17.0038 17.0028L17.7109 17.7099C18.3074 17.1134 18.5777 16.3534 18.7072 15.3902C18.8347 14.4414 18.8337 13.2232 18.8337 11.666H18.8337ZM2.16699 8.33268C2.16699 6.7472 2.16805 5.60839 2.28457 4.74173C2.39916 3.88946 2.61709 3.37565 2.99686 2.99588L2.28975 2.28877C1.69321 2.88531 1.42298 3.64533 1.29349 4.60849C1.16593 5.55726 1.16699 6.77547 1.16699 8.33268H2.16699ZM8.35849 1.16602C6.79295 1.16602 5.5687 1.16496 4.61597 1.29247C3.64923 1.42186 2.88668 1.69184 2.28975 2.28877L2.99686 2.99588C3.37624 2.6165 3.89166 2.39833 4.74862 2.28364C5.61959 2.16707 6.76477 2.16602 8.35849 2.16602V1.16602ZM10.3337 2.08268V4.16602H11.3337V2.08268H10.3337ZM15.0003 8.83268H17.9837V7.83268H15.0003V8.83268ZM10.3337 4.16602C10.3337 5.13397 10.3326 5.91024 10.4144 6.51862C10.4981 7.14139 10.6768 7.66256 11.0903 8.07604L11.7974 7.36893C11.6007 7.17222 11.4743 6.89725 11.4055 6.38537C11.3347 5.85911 11.3337 5.16224 11.3337 4.16602H10.3337ZM15.0003 7.83268C14.0041 7.83268 13.3072 7.83162 12.781 7.76087C12.2691 7.69205 11.9941 7.56565 11.7974 7.36893L11.0903 8.07604C11.5038 8.48952 12.025 8.66822 12.6477 8.75195C13.2561 8.83374 14.0324 8.83268 15.0003 8.83268V7.83268ZM4.58366 14.2493H7.91699V13.2493H4.58366V14.2493ZM6.75033 15.416V13.7493H5.75033V15.416H6.75033ZM6.75033 13.7493V12.0827H5.75033V13.7493H6.75033Z" fill="currentColor"/>
+    </svg>
+  );
+
+  // ── View Mode: Appointment Details ──
+  if (isViewMode) {
+    const ea = existingAppointment;
+    // Resolve appointment type color from DB types
+    const matchedType = appointmentTypes.find(t => t.name === ea.appointment_type_name);
+    const apptTypeColor = matchedType?.color || ea.appointment_type_name?.includes('Wellness') ? '#D9A50B' : '#8C5AE2';
+    const apptTypeForPicker = appointmentType || (ea.appointment_type_name ? { name: ea.appointment_type_name, color: matchedType?.color || apptTypeColor, id: matchedType?.id } : null);
+
+    return (
+      <Drawer title="Appointment Details" onClose={onClose} bodyClassName={styles.drawerBody}>
+        <div className={styles.content} style={{ gap: 16 }}>
+          {/* Status bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--neutral-50)', borderRadius: 8, padding: 8 }}>
+            <div style={{ flex: 1 }}>
+              <Select value={apptStatus} onValueChange={handleStatusChange}>
+                <SelectTrigger className="h-8 text-sm w-[120px]" style={{ background: 'white' }}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {APPOINTMENT_STATUSES.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <ActionButton icon="solar:paperclip-linear" size="L" tooltip="Attach" />
+            <span style={{ width: 0.5, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+            {!showViewStaffInstructions && (
+              <ActionButton size="L" tooltip="Add Staff Instructions" onClick={() => setShowViewStaffInstructions(true)}>
+                <StaffInstructionIcon />
+              </ActionButton>
+            )}
+            {!showViewStaffInstructions && <span style={{ width: 0.5, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />}
+            <ActionButton icon="solar:menu-dots-bold" size="L" tooltip="More" />
+          </div>
+
+          {/* Patient Details */}
+          <div className={styles.section}>
+            <label className={styles.sectionLabel}>Patient Details</label>
+            <div className={styles.patientCard}>
+              <div className={styles.patientCardHeader}>
+                <Avatar variant="patient" initials={getInitials(ea.patient_name).toUpperCase()} />
+                <div className={styles.patientCardInfo}>
+                  <div className={styles.patientCardName}>{ea.patient_name || 'Unknown'}</div>
+                  <div className={styles.patientCardMeta}>
+                    <span style={{ color: '#D72825', fontWeight: 500 }}>RAF Score: 3.5</span>{' '}
+                    <span style={{ color: '#009B53', display: 'inline-flex', alignItems: 'center', gap: 2 }}>+0.5 <Icon name="solar:arrow-up-linear" size={10} color="#009B53" /></span>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                  <ActionButton icon="solar:phone-linear" size="L" tooltip="Call" />
+                  <span style={{ width: 0.5, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                  <ActionButton icon="solar:chat-round-line-linear" size="L" tooltip="Chat" />
+                  <span style={{ width: 0.5, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                  <ActionButton icon="solar:menu-dots-bold" size="L" tooltip="More" />
+                </div>
+              </div>
+              {ea.reason_for_visit && (
+                <div className={styles.reasonField} style={{ pointerEvents: 'none' }}>
+                  <label className={styles.reasonLabel}>Reason for Visit</label>
+                  <div className={styles.reasonInput} style={{ background: 'var(--neutral-50)', minHeight: 32 }}>{ea.reason_for_visit}</div>
+                </div>
+              )}
+              <div className={styles.patientInfoGrid}>
+                <div className={styles.patientInfoRow}>
+                  <span className={styles.patientInfoLabel} style={{ fontSize: 14, fontWeight: 500 }}>Patient Location</span>
+                  <span className={styles.patientInfoValue} style={{ fontSize: 14 }}>{ea.location || 'New York'}</span>
+                </div>
+                <div className={styles.patientInfoRow}>
+                  <span className={styles.patientInfoLabel} style={{ fontSize: 14, fontWeight: 500 }}>Last Appointment</span>
+                  <span className={styles.patientInfoValue} style={{ fontSize: 14 }}>07-26-2023 with Katherine Moss <button className={styles.viewDetailsLink}>View Details</button></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Appointment Details — editable pickers (except patient) */}
+          <div className={styles.section}>
+            <label className={styles.sectionLabel}>Appointment Details</label>
+            <div className={styles.detailsCard}>
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Appointment Type</span>
+                <AppointmentTypePicker value={apptTypeForPicker} onSelect={(v) => { setAppointmentType(v); if (v && ea.id) updateAppointment(ea.id, { appointment_type_name: v.name, appointment_type_id: v.id || null }); }} appointmentTypes={appointmentTypes} />
+              </div>
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Mode of Appointment</span>
+                <DetailDropdown value={mode || ea.mode} placeholder="Select Mode" icon={mode === 'Virtual' || ea.mode === 'Virtual' ? 'solar:monitor-linear' : 'solar:buildings-linear'} options={MODE_OPTIONS.map(m => ({ label: m.label, icon: m.icon }))} onSelect={v => { setMode(v); if (ea.id) updateAppointment(ea.id, { mode: v }); }} renderItem={(opt) => <><Icon name={opt.icon} size={16} color="var(--neutral-300)" /> {opt.label}</>} />
+              </div>
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Location</span>
+                <DetailDropdown value={location || ea.location} placeholder="Select Location" icon="solar:map-point-linear" options={LOCATION_OPTIONS.map(l => ({ label: l }))} onSelect={v => { setLocation(v); if (ea.id) updateAppointment(ea.id, { location: v }); }} />
+              </div>
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Primary User</span>
+                <ProviderPicker value={provider || ea.primary_user} onSelect={v => { setProvider(v); if (ea.id) updateAppointment(ea.id, { primary_user: v }); }} profileUsers={profileUsers} onAddSecondary={() => setShowSecondary(true)} />
+              </div>
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Date</span>
+                <DatePicker value={date || ea.date} onSelect={v => { setDate(v); if (ea.id) updateAppointment(ea.id, { date: v }); }} />
+              </div>
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Time</span>
+                <span className={styles.detailValue}><Icon name="solar:clock-circle-linear" size={16} color="var(--neutral-300)" /> {ea.time_start || '—'} - {ea.time_end || '—'} (GMT-4)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Member Instruction — rich text editor with save/discard */}
+          <div className={styles.section}>
+            <label className={styles.sectionLabel}>Member Instruction</label>
+            {editingInstruction ? (
+              <div className={styles.instructionEditor}>
+                <div
+                  className={styles.instructionEditable}
+                  contentEditable
+                  suppressContentEditableWarning
+                  dangerouslySetInnerHTML={{ __html: instructionDraft }}
+                  onInput={e => setInstructionDraft(e.currentTarget.innerHTML)}
+                />
+                <div className={styles.instructionToolbar}>
+                  <ActionButton icon="solar:paperclip-linear" size="S" tooltip="Attach" />
+                  <span className={styles.toolbarDivider} />
+                  <ActionButton icon="solar:text-bold-linear" size="S" tooltip="Bold" onClick={() => document.execCommand('bold')} />
+                  <ActionButton icon="solar:text-italic-linear" size="S" tooltip="Italic" onClick={() => document.execCommand('italic')} />
+                  <ActionButton icon="solar:text-underline-linear" size="S" tooltip="Underline" onClick={() => document.execCommand('underline')} />
+                  <span className={styles.toolbarDivider} />
+                  <ActionButton icon="solar:text-field-linear" size="S" tooltip="Heading" onClick={() => document.execCommand('formatBlock', false, 'h3')} />
+                  <ActionButton icon="solar:list-linear" size="S" tooltip="List" onClick={() => document.execCommand('insertUnorderedList')} />
+                  <div style={{ flex: 1 }} />
+                  <ActionButton icon="solar:close-linear" size="S" tooltip="Discard" state="error" onClick={() => { setInstructionDraft(ea.member_instruction || ''); setEditingInstruction(false); }} />
+                  <ActionButton icon="solar:check-read-linear" size="S" tooltip="Save" onClick={handleSaveInstruction} />
+                </div>
+              </div>
+            ) : (
+              <div
+                onClick={() => setEditingInstruction(true)}
+                style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 4, padding: 8, fontSize: 14, color: ea.member_instruction ? 'var(--neutral-400)' : 'var(--neutral-200)', fontFamily: 'Inter, sans-serif', lineHeight: 1.4, background: 'var(--neutral-50)', cursor: 'pointer', minHeight: 36 }}
+              >
+                {ea.member_instruction || 'Click to add instructions...'}
+              </div>
+            )}
+          </div>
+
+          {/* Staff Instructions — only shown when action button is clicked */}
+          {showViewStaffInstructions && (
+            <div className={styles.section}>
+              <label className={styles.sectionLabel}>Staff Instructions</label>
+              {editingStaffInstruction ? (
+                <div className={styles.instructionEditor}>
+                  <div
+                    className={styles.instructionEditable}
+                    contentEditable
+                    suppressContentEditableWarning
+                    dangerouslySetInnerHTML={{ __html: staffInstructionDraft }}
+                    onInput={e => setStaffInstructionDraft(e.currentTarget.innerHTML)}
+                  />
+                  <div className={styles.instructionToolbar}>
+                    <ActionButton icon="solar:paperclip-linear" size="S" tooltip="Attach" />
+                    <span className={styles.toolbarDivider} />
+                    <ActionButton icon="solar:text-bold-linear" size="S" tooltip="Bold" onClick={() => document.execCommand('bold')} />
+                    <ActionButton icon="solar:text-italic-linear" size="S" tooltip="Italic" onClick={() => document.execCommand('italic')} />
+                    <ActionButton icon="solar:text-underline-linear" size="S" tooltip="Underline" onClick={() => document.execCommand('underline')} />
+                    <span className={styles.toolbarDivider} />
+                    <ActionButton icon="solar:text-field-linear" size="S" tooltip="Heading" onClick={() => document.execCommand('formatBlock', false, 'h3')} />
+                    <ActionButton icon="solar:list-linear" size="S" tooltip="List" onClick={() => document.execCommand('insertUnorderedList')} />
+                    <div style={{ flex: 1 }} />
+                    <ActionButton icon="solar:trash-bin-minimalistic-linear" size="S" tooltip="Remove" state="error" onClick={() => { setShowViewStaffInstructions(false); setStaffInstructionDraft(''); if (ea.id) updateAppointment(ea.id, { staff_instruction: '' }); }} />
+                    <ActionButton icon="solar:close-linear" size="S" tooltip="Discard" state="error" onClick={() => { setStaffInstructionDraft(ea.staff_instruction || ''); setEditingStaffInstruction(false); }} />
+                    <ActionButton icon="solar:check-read-linear" size="S" tooltip="Save" onClick={handleSaveStaffInstruction} />
+                  </div>
+                </div>
+              ) : (
+                <div
+                  onClick={() => setEditingStaffInstruction(true)}
+                  style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 4, padding: 8, fontSize: 14, color: ea.staff_instruction ? 'var(--neutral-400)' : 'var(--neutral-200)', fontFamily: 'Inter, sans-serif', lineHeight: 1.4, background: 'var(--neutral-50)', cursor: 'pointer', minHeight: 36 }}
+                >
+                  {ea.staff_instruction || 'Click to add staff instructions...'}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Drawer>
+    );
+  }
+
+  // ── Booking Success Screen ──
+  if (bookingSuccess) {
+    return (
+      <Drawer title="Schedule Appointment" onClose={onClose} bodyClassName={styles.drawerBody}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 24, padding: '120px 0' }}>
+          <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+            <circle cx="40" cy="40" r="36" stroke="#009B53" strokeWidth="4" fill="none" />
+            <path d="M24 40L36 52L56 28" stroke="#009B53" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </svg>
+          <span style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-400)', fontFamily: 'Inter, sans-serif' }}>Appointment Booked Successfully</span>
+        </div>
+      </Drawer>
+    );
+  }
 
   return (
     <Drawer title="Schedule Appointment" onClose={onClose} headerRight={
@@ -470,7 +768,7 @@ export function ScheduleDrawer({ onClose, selectedSlot }) {
             {/* Appointment Type */}
             <div className={styles.detailRow}>
               <span className={styles.detailLabel}>Appointment Type</span>
-              <AppointmentTypePicker value={appointmentType} onSelect={setAppointmentType} />
+              <AppointmentTypePicker value={appointmentType} onSelect={setAppointmentType} appointmentTypes={appointmentTypes} />
             </div>
 
             {/* Mode of Appointment — dropdown */}

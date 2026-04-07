@@ -225,13 +225,19 @@
   color: #6F7A90;
 }
 
-/* Events */
+/* Events — let schedule-x handle the left border color per calendar type */
 .calendarWrap :global(.sx__event) {
   border-radius: 4px !important;
-  border-left: 3px solid var(--sx-color-primary) !important;
   font-size: 12px !important;
   padding: 4px 6px !important;
   cursor: pointer;
+  transition: box-shadow 0.12s, filter 0.12s;
+}
+
+.calendarWrap :global(.sx__event:hover:not(.sx__event--selection)) {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+  filter: brightness(0.97);
+  z-index: 2;
 }
 
 /* Selection highlight — dotted 30-min block */

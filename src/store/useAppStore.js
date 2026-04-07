@@ -1247,4 +1247,59 @@ export const useAppStore = create((set, get) => ({
       return configRowToJs(data);
     });
   },
+
+  // ── Appointment Types ──
+  appointmentTypes: [],
+  fetchAppointmentTypes: async () => {
+    const { data, error } = await supabase
+      .from('appointment_types')
+      .select('*')
+      .order('name');
+    if (!error && data) set({ appointmentTypes: data });
+  },
+
+  // ── Appointments ──
+  appointments: [],
+  appointmentsLoading: false,
+  fetchAppointments: async () => {
+    set({ appointmentsLoading: true });
+    const { data, error } = await supabase
+      .from('appointments')
+      .select('*')
+      .order('date', { ascending: true });
+    if (!error && data) set({ appointments: data });
+    set({ appointmentsLoading: false });
+  },
+
+  createAppointment: async (appt) => {
+    const { data, error } = await supabase
+      .from('appointments')
+      .insert(appt)
+      .select()
+      .single();
+    if (error) { console.error('Create appointment error:', error); return null; }
+    // Refresh list
+    get().fetchAppointments();
+    return data;
+  },
+
+  updateAppointment: async (id, updates) => {
+    const { error } = await supabase
+      .from('appointments')
+      .update(updates)
+      .eq('id', id);
+    if (error) { console.error('Update appointment error:', error); return false; }
+    get().fetchAppointments();
+    return true;
+  },
+
+  deleteAppointment: async (id) => {
+    const { error } = await supabase
+      .from('appointments')
+      .delete()
+      .eq('id', id);
+    if (error) { console.error('Delete appointment error:', error); return false; }
+    get().fetchAppointments();
+    return true;
+  },
 }));
