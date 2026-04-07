@@ -40,15 +40,38 @@
   font-family: 'Inter', sans-serif;
 }
 
-.viewSelect {
-  padding: 4px 8px;
+/* View tabs (Week / Day / Month) */
+.viewTabs {
+  display: flex;
   border: 0.5px solid var(--neutral-150);
-  border-radius: 4px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.viewTab {
+  padding: 4px 12px;
   font-size: 13px;
+  font-weight: 500;
   font-family: 'Inter', sans-serif;
-  color: var(--neutral-400);
+  color: var(--neutral-300);
   background: var(--neutral-0);
+  border: none;
   cursor: pointer;
+  transition: all .12s;
+  border-right: 0.5px solid var(--neutral-150);
+}
+
+.viewTab:last-child {
+  border-right: none;
+}
+
+.viewTabActive {
+  color: var(--primary-300);
+  background: var(--primary-50);
+}
+
+.viewTab:hover:not(.viewTabActive) {
+  background: var(--neutral-50);
 }
 
 .todayBtn {
@@ -94,15 +117,22 @@
   accent-color: var(--primary-300);
 }
 
-/* Calendar container */
+/* Calendar container — fill remaining height */
 .calendarWrap {
   flex: 1;
   overflow: auto;
+  min-height: 0;
 }
 
-/* ── Override schedule-x theme to match Fold design ── */
+/* ── Hide schedule-x built-in header (we use our own toolbar) ── */
+.calendarWrap :global(.sx__calendar-header) {
+  display: none !important;
+}
+
+/* ── Schedule-x theme overrides to match Fold design ── */
 .calendarWrap :global(.sx__calendar) {
   font-family: 'Inter', sans-serif !important;
+  height: 100% !important;
   --sx-color-primary: #8C5AE2;
   --sx-color-primary-container: #F5F0FF;
   --sx-color-on-primary-container: #3A485F;
@@ -114,6 +144,18 @@
   --sx-color-outline-variant: #E9ECF1;
 }
 
+/* Make the calendar grid fill available height */
+.calendarWrap :global(.sx__calendar-content) {
+  height: 100% !important;
+}
+
+.calendarWrap :global(.sx__week-wrapper),
+.calendarWrap :global(.sx__month-grid-wrapper) {
+  height: 100% !important;
+  flex: 1;
+}
+
+/* Day headers */
 .calendarWrap :global(.sx__time-grid-day__header) {
   font-family: 'Inter', sans-serif !important;
   font-size: 12px;
@@ -121,13 +163,16 @@
   color: #6F7A90;
 }
 
+/* Events */
 .calendarWrap :global(.sx__event) {
   border-radius: 4px !important;
   border-left: 3px solid var(--sx-color-primary) !important;
   font-size: 12px !important;
   padding: 4px 6px !important;
+  cursor: pointer;
 }
 
+/* Today highlight */
 .calendarWrap :global(.sx__date-grid-day--is-today .sx__date-grid-day__header-day-number) {
   background: #8C5AE2 !important;
   color: #fff !important;
@@ -137,4 +182,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Time grid clickable */
+.calendarWrap :global(.sx__time-grid-day) {
+  cursor: pointer;
+}
+
+.calendarWrap :global(.sx__time-grid-day:hover) {
+  background: rgba(140, 90, 226, 0.02);
+}
+
+/* Month grid cells clickable */
+.calendarWrap :global(.sx__date-grid-day) {
+  cursor: pointer;
+  min-height: 100px;
+}
+
+.calendarWrap :global(.sx__date-grid-day:hover) {
+  background: rgba(140, 90, 226, 0.02);
 }

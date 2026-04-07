@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Icon } from '../../components/Icon/Icon';
 import { ActionButton } from '../../components/ActionButton/ActionButton';
+import { ScheduleDrawer } from '../../components/ScheduleDrawer/ScheduleDrawer';
 import styles from './CalendarView.module.css';
 
-// Raw event data — will be converted to Temporal objects at runtime
 const RAW_EVENTS = [
   { id: '1', title: 'Richard Wilson', start: '2026-04-07 09:00', end: '2026-04-07 10:30', description: 'Back Pain • CCM First Visit', calendarId: 'scheduled' },
   { id: '2', title: 'Elaine Beatty', start: '2026-04-08 11:00', end: '2026-04-08 12:00', description: 'Follow-up • Scheduled', calendarId: 'scheduled' },
@@ -20,7 +20,10 @@ const FILTER_OPTIONS = {
   status: ['All Status', 'Scheduled', 'Confirmed', 'Completed', 'Cancelled'],
 };
 
-function CalendarContent() {
+const VIEWS = ['week', 'day', 'month-grid'];
+const VIEW_LABELS = { 'week': 'Week', 'day': 'Day', 'month-grid': 'Month' };
+
+function CalendarContent({ onSlotClick, calendarRef }) {
   const [calendarApp, setCalendarApp] = useState(null);
   const [SXCalendar, setSXCalendar] = useState(null);
   const [error, setError] = useState(null);
@@ -28,27 +31,19 @@ function CalendarContent() {
   useEffect(() => {
     (async () => {
       try {
-        // 1. Load temporal polyfill and set it globally FIRST
         const temporalMod = await import('temporal-polyfill');
         if (typeof globalThis.Temporal === 'undefined') {
           globalThis.Temporal = temporalMod.Temporal;
         }
         const T = globalThis.Temporal;
 
-        // 2. Helper to convert "YYYY-MM-DD HH:MM" to ZonedDateTime
         function toZDT(str) {
           const [date, time] = str.split(' ');
           return T.PlainDateTime.from(`${date}T${time}`).toZonedDateTime('America/New_York');
         }
 
-        // 3. Convert raw events
-        const events = RAW_EVENTS.map(e => ({
-          ...e,
-          start: toZDT(e.start),
-          end: toZDT(e.end),
-        }));
+        const events = RAW_EVENTS.map(e => ({ ...e, start: toZDT(e.start), end: toZDT(e.end) }));
 
-        // 4. Now load schedule-x (after Temporal is global)
         const calMod = await import('@schedule-x/calendar');
         const reactMod = await import('@schedule-x/react');
         const eventsMod = await import('@schedule-x/events-service');
@@ -64,10 +59,15 @@ function CalendarContent() {
             confirmed: { colorName: 'confirmed', lightColors: { main: '#009B53', container: '#F0FDF4', onContainer: '#3A485F' }, darkColors: { main: '#009B53', container: '#1B4332', onContainer: '#D1FAE5' } },
           },
           dayBoundaries: { start: '06:00', end: '20:00' },
-          weekOptions: { gridHeight: 800, nDays: 7 },
+          weekOptions: { gridHeight: 2000, nDays: 7 },
           locale: 'en-US',
+          callbacks: {
+            onClickDateTime: (dateTime) => { if (onSlotClick) onSlotClick(dateTime); },
+            onClickDate: (date) => { if (onSlotClick) onSlotClick(date); },
+          },
         }, [eventsPlugin]);
 
+        calendarRef.current = app;
         setSXCalendar(() => reactMod.ScheduleXCalendar);
         setCalendarApp(app);
       } catch (err) {
@@ -84,20 +84,54 @@ function CalendarContent() {
 }
 
 export function CalendarView() {
+  const [currentView, setCurrentView] = useState('week');
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+  const calendarRef = useRef(null);
+
+  const handleViewChange = (view) => {
+    setCurrentView(view);
+    if (calendarRef.current) {
+      calendarRef.current.setView(view);
+    }
+  };
+
+  const handleToday = () => {
+    if (calendarRef.current) {
+      const today = new Date().toISOString().split('T')[0];
+      calendarRef.current.setDate(today);
+    }
+  };
+
+  const handlePrev = () => {
+    if (calendarRef.current) calendarRef.current.previous();
+  };
+
+  const handleNext = () => {
+    if (calendarRef.current) calendarRef.current.next();
+  };
+
+  const handleSlotClick = useCallback((dateTime) => {
+    setSelectedSlot(dateTime);
+    setShowSchedule(true);
+  }, []);
+
   return (
     <div className={styles.wrapper}>
-      {/* Toolbar */}
+      {/* Our custom toolbar */}
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft}>
           <h2 className={styles.monthTitle}>April 2026</h2>
-          <select className={styles.viewSelect}>
-            <option value="week">Week</option>
-            <option value="day">Day</option>
-            <option value="month">Month</option>
-          </select>
-          <button className={styles.todayBtn}>Today</button>
-          <ActionButton icon="solar:alt-arrow-left-linear" size="S" tooltip="Previous" />
-          <ActionButton icon="solar:alt-arrow-right-linear" size="S" tooltip="Next" />
+          <div className={styles.viewTabs}>
+            {VIEWS.map(v => (
+              <button key={v} className={`${styles.viewTab} ${currentView === v ? styles.viewTabActive : ''}`} onClick={() => handleViewChange(v)}>
+                {VIEW_LABELS[v]}
+              </button>
+            ))}
+          </div>
+          <button className={styles.todayBtn} onClick={handleToday}>Today</button>
+          <ActionButton icon="solar:alt-arrow-left-linear" size="S" tooltip="Previous" onClick={handlePrev} />
+          <ActionButton icon="solar:alt-arrow-right-linear" size="S" tooltip="Next" onClick={handleNext} />
         </div>
         <div className={styles.toolbarRight}>
           {Object.values(FILTER_OPTIONS).map((opts, i) => (
@@ -114,10 +148,13 @@ export function CalendarView() {
         </div>
       </div>
 
-      {/* Calendar */}
+      {/* Calendar — schedule-x header hidden via CSS */}
       <div className={styles.calendarWrap}>
-        <CalendarContent />
+        <CalendarContent onSlotClick={handleSlotClick} calendarRef={calendarRef} />
       </div>
+
+      {/* Schedule drawer opens when clicking a time slot */}
+      {showSchedule && <ScheduleDrawer onClose={() => setShowSchedule(false)} />}
     </div>
   );
 }
