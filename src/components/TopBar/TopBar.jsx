@@ -5,6 +5,7 @@ import { Avatar } from '../Avatar/Avatar';
 import { Input } from '../Input/Input';
 import { Button } from '../Button/Button';
 import { CreateNewPopover } from '../CreateNewPopover/CreateNewPopover';
+import { PreferencesDrawer } from '../PreferencesDrawer/PreferencesDrawer';
 import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import styles from './TopBar.module.css';
@@ -30,7 +31,7 @@ function getUserDisplayName(user) {
 }
 
 /* ── Profile Popover (Figma node 1904:6423) ── */
-function ProfilePopover({ user, onClose }) {
+function ProfilePopover({ user, onClose, onPreferences }) {
   const popoverRef = useRef(null);
   const [editing, setEditing] = useState(false);
   const [firstName, setFirstName] = useState(user?.user_metadata?.first_name || '');
@@ -117,7 +118,7 @@ function ProfilePopover({ user, onClose }) {
 
       {/* Menu items */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <button onClick={() => setEditing(true)} style={menuItemStyle} onMouseOver={e => e.currentTarget.style.background = '#F6F7F8'} onMouseOut={e => e.currentTarget.style.background = ''}>
+        <button onClick={() => { onClose(); onPreferences?.(); }} style={menuItemStyle} onMouseOver={e => e.currentTarget.style.background = '#F6F7F8'} onMouseOut={e => e.currentTarget.style.background = ''}>
           <Icon name="solar:settings-linear" size={20} color="#3A485F" />
           <span>Preferences</span>
         </button>
@@ -150,6 +151,7 @@ export function TopBar() {
   const setShowCreateNew = useAppStore(s => s.setShowCreateNew);
   const btnRef = useRef(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -165,6 +167,7 @@ export function TopBar() {
   const isAnalytics = activePage === 'analytics';
 
   return (
+    <>
     <header className={styles.topbar}>
       <div className={styles.left}>
         {!isSettings && !isAnalytics && (
@@ -241,10 +244,13 @@ export function TopBar() {
             <Avatar variant="provider" initials={initials} />
           </button>
           {showProfile && (
-            <ProfilePopover user={user} onClose={() => setShowProfile(false)} />
+            <ProfilePopover user={user} onClose={() => setShowProfile(false)} onPreferences={() => setShowPreferences(true)} />
           )}
         </div>
       </div>
     </header>
+
+    {showPreferences && <PreferencesDrawer onClose={() => setShowPreferences(false)} />}
+  </>
   );
 }
