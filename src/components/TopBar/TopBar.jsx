@@ -6,6 +6,7 @@ import { Input } from '../Input/Input';
 import { Button } from '../Button/Button';
 import { CreateNewPopover } from '../CreateNewPopover/CreateNewPopover';
 import { PreferencesDrawer } from '../PreferencesDrawer/PreferencesDrawer';
+import { ScheduleDrawer } from '../ScheduleDrawer/ScheduleDrawer';
 import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import styles from './TopBar.module.css';
@@ -152,6 +153,7 @@ export function TopBar() {
   const btnRef = useRef(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
+  const [showSchedule, setShowSchedule] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -234,7 +236,7 @@ export function TopBar() {
             <CreateNewPopover onClose={() => setShowCreateNew(false)} anchorRef={btnRef} />
           )}
         </div>
-        <button className={styles.btnSecondary}>Schedule</button>
+        <button className={styles.btnSecondary} onClick={() => setShowSchedule(true)}>Schedule</button>
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => setShowProfile(v => !v)}
@@ -251,6 +253,7 @@ export function TopBar() {
     </header>
 
     {showPreferences && <PreferencesDrawer onClose={() => setShowPreferences(false)} />}
+    {showSchedule && <ScheduleDrawer onClose={() => setShowSchedule(false)} />}
   </>
   );
 }
