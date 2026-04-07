@@ -92,15 +92,25 @@
 }
 
 .filterSelect {
-  padding: 4px 8px;
+  height: 28px;
+  padding: 0 24px 0 8px;
   border: 0.5px solid var(--neutral-150);
   border-radius: 4px;
   font-size: 12px;
   font-family: 'Inter', sans-serif;
+  font-weight: 400;
   color: var(--neutral-400);
-  background: var(--neutral-0);
+  background: var(--neutral-0) url("data:image/svg+xml,%3csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M2 3.5L5 6.5L8 3.5' stroke='%236F7A90' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e") no-repeat right 6px center;
+  -webkit-appearance: none;
+  appearance: none;
   cursor: pointer;
-  max-width: 150px;
+  max-width: 160px;
+  transition: border-color .12s;
+}
+
+.filterSelect:focus {
+  border-color: var(--primary-300);
+  outline: none;
 }
 
 .availabilityToggle {
@@ -127,6 +137,43 @@
 /* ── Hide schedule-x built-in header (we use our own toolbar) ── */
 .calendarWrap :global(.sx__calendar-header) {
   display: none !important;
+}
+
+/* Remove outer border */
+.calendarWrap :global(.sx__calendar) {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Reduce day name and date number size */
+.calendarWrap :global(.sx__week-grid__day-name) {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  text-transform: uppercase;
+  color: #6F7A90 !important;
+  letter-spacing: 0.04em;
+}
+
+.calendarWrap :global(.sx__week-grid__date-number) {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #3A485F !important;
+}
+
+/* Today date number with purple circle */
+.calendarWrap :global(.sx__week-grid__date--is-today .sx__week-grid__date-number) {
+  background: #8C5AE2 !important;
+  color: #fff !important;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendarWrap :global(.sx__week-grid__date--is-today .sx__week-grid__day-name) {
+  color: #8C5AE2 !important;
 }
 
 /* ── Schedule-x theme overrides to match Fold design ── */

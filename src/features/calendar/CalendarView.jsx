@@ -91,24 +91,30 @@ export function CalendarView() {
 
   const handleViewChange = (view) => {
     setCurrentView(view);
-    if (calendarRef.current) {
-      calendarRef.current.setView(view);
+    const app = calendarRef.current;
+    if (app?.$app?.calendarState) {
+      const selectedDate = app.$app.datePickerState?.selectedDate?.value || new Date().toISOString().split('T')[0];
+      app.$app.calendarState.setView(view, selectedDate);
     }
   };
 
   const handleToday = () => {
-    if (calendarRef.current) {
+    const app = calendarRef.current;
+    if (app?.$app?.datePickerState) {
       const today = new Date().toISOString().split('T')[0];
-      calendarRef.current.setDate(today);
+      app.$app.datePickerState.selectedDate.value = today;
     }
   };
 
   const handlePrev = () => {
-    if (calendarRef.current) calendarRef.current.previous();
+    // Simulate clicking the built-in previous button
+    const btn = document.querySelector('.sx__chevron--previous')?.closest('button');
+    if (btn) btn.click();
   };
 
   const handleNext = () => {
-    if (calendarRef.current) calendarRef.current.next();
+    const btn = document.querySelector('.sx__chevron--next')?.closest('button');
+    if (btn) btn.click();
   };
 
   const handleSlotClick = useCallback((dateTime) => {
