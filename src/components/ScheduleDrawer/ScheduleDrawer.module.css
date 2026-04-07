@@ -119,10 +119,6 @@
 
 .detailRow:last-child { border-bottom: none; }
 
-.detailRow:hover {
-  background: var(--neutral-50);
-}
-
 .detailLabel {
   font-size: 14px; font-weight: 500; color: var(--neutral-400);
   min-width: 150px; flex-shrink: 0;
@@ -142,6 +138,13 @@
 }
 
 .detailValuePlaceholder:hover { color: var(--primary-300); }
+
+.detailValue:hover, .detailValuePlaceholder:hover {
+  background: var(--neutral-50);
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin: -4px -8px;
+}
 
 /* ── Appointment Type Picker ── */
 .apptDot {
@@ -315,6 +318,13 @@
 .calendarDay:hover { background: var(--primary-50); color: var(--primary-300); }
 
 /* ── Time Slots ── */
+.timeSlotDropdown {
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
+  border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  padding: 10px 12px; min-width: 360px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
 .timeSlotArea {
   display: flex; flex-direction: column; gap: 8px; width: 100%;
   border: 0.5px solid var(--neutral-150); border-radius: 6px;

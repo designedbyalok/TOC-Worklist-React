@@ -318,6 +318,8 @@ export function ScheduleDrawer({ onClose }) {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [recurring, setRecurring] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const timeBtnRef = useRef(null);
   const [requireRsvp, setRequireRsvp] = useState(false);
   const [showSecondary, setShowSecondary] = useState(false);
   const [secondaryUsers, setSecondaryUsers] = useState([]);
@@ -472,24 +474,43 @@ export function ScheduleDrawer({ onClose }) {
               )}
             </div>
 
-            {/* Time — slot picker (shows after date is selected) */}
+            {/* Time — inline after selection, slot picker when choosing */}
             {date && (
-              <div className={styles.detailRow} style={{ flexWrap: 'wrap' }}>
+              <div className={styles.detailRow}>
                 <span className={styles.detailLabel}>Time</span>
-                <div className={styles.timeSlotArea}>
-                  <div className={styles.timeSlotHeader}>
-                    <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>Available Slots (15 mins)</span>
-                    <button className={styles.pickTimeBtn}><Icon name="solar:clock-circle-linear" size={12} color="var(--primary-300)" /> Pick Time</button>
-                    <span style={{ fontSize: 11, color: 'var(--neutral-200)' }}>USA (GMT-4)</span>
-                  </div>
-                  <div className={styles.timeSlots}>
-                    {TIME_SLOTS.map(t => (
-                      <button key={t} className={`${styles.timeSlot} ${time === t ? styles.timeSlotActive : ''}`} onClick={() => setTime(t)}>
-                        {t}
+                {time && !showTimePicker ? (
+                  <button className={styles.detailValue} onClick={() => setShowTimePicker(true)} style={{ cursor: 'pointer' }}>
+                    <Icon name="solar:clock-circle-linear" size={16} color="var(--neutral-300)" />
+                    {time} - {(() => { const [h, m, p] = time.match(/(\d+):(\d+)\s*(am|pm)/i)?.slice(1) || []; const mins = (parseInt(m) || 0) + 15; return mins >= 60 ? `${(parseInt(h) || 0) + 1}:${String(mins - 60).padStart(2, '0')} ${p}` : `${h}:${String(mins).padStart(2, '0')} ${p}`; })()} (GMT-4)
+                  </button>
+                ) : (
+                  <div style={{ position: 'relative', flex: 1 }}>
+                    {!time ? (
+                      <button className={styles.detailValuePlaceholder} onClick={() => setShowTimePicker(true)}>
+                        <Icon name="solar:clock-circle-linear" size={16} color="var(--neutral-200)" /> Select Time
                       </button>
-                    ))}
+                    ) : null}
+                    {(showTimePicker || !time) && createPortal(
+                      <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setShowTimePicker(false)}>
+                        <div className={styles.timeSlotDropdown} style={{ position: 'fixed', top: (timeBtnRef.current || document.querySelector('[class*="detailLabel"]'))?.getBoundingClientRect?.()?.bottom + 4 || 400, left: 300, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+                          <div className={styles.timeSlotHeader}>
+                            <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>Available Slots (15 mins)</span>
+                            <button className={styles.pickTimeBtn}><Icon name="solar:clock-circle-linear" size={12} color="var(--primary-300)" /> Pick Time</button>
+                            <span style={{ fontSize: 11, color: 'var(--neutral-200)' }}>USA (GMT-4)</span>
+                          </div>
+                          <div className={styles.timeSlots}>
+                            {TIME_SLOTS.map(t => (
+                              <button key={t} className={`${styles.timeSlot} ${time === t ? styles.timeSlotActive : ''}`} onClick={() => { setTime(t); setShowTimePicker(false); }}>
+                                {t}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>,
+                      document.body
+                    )}
                   </div>
-                </div>
+                )}
               </div>
             )}
           </div>
