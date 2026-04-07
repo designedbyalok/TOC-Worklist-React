@@ -474,9 +474,34 @@
 }
 .bulkInput:focus { border-color: var(--primary-300); }
 
+.bulkSelectTrigger {
+  height: 30px !important;
+  font-size: 13px !important;
+  min-width: 120px;
+}
+
+/* Sticky columns with right/left border line */
+.stickyLeft {
+  position: sticky;
+  left: 0;
+  background: #fff;
+  z-index: 2;
+  min-width: 180;
+  border-right: 0.5px solid var(--neutral-150);
+}
+
+.stickyRight {
+  position: sticky;
+  right: 0;
+  background: #fff;
+  z-index: 2;
+  min-width: 70px;
+  border-left: 0.5px solid var(--neutral-150);
+}
+
 /* Add Column Dropdown */
 .addColDropdown {
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  position: absolute; top: 100%; right: 0; margin-top: 4px;
   background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.15);
   min-width: 240px; max-height: 400px; overflow-y: auto; z-index: 10000;

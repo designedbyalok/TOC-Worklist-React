@@ -518,7 +518,7 @@ function ViewUserDrawer({ user, onClose, onEdit }) {
   const licenceStates = raw.licence_states?.length > 0 ? raw.licence_states : [];
 
   return (
-    <Drawer title="User Profile" onClose={onClose} bodyClassName={styles.editDrawerBody} headerStyle={{ padding: '12px 16px' }} titleStyle={{ fontSize: 14 }}>
+    <Drawer title="User Profile" onClose={onClose} bodyClassName={styles.editDrawerBody} headerStyle={{ padding: '12px' }} titleStyle={{ fontSize: 14 }}>
       {/* User header */}
       <div className={styles.editHeader}>
         <Avatar variant="assignee" initials={user.initials} className={styles.editAvatar} />
@@ -799,9 +799,10 @@ function MultiSelectField({ label, required, options, value = [], onChange }) {
 /* ── Add Column Dropdown for Bulk Import ── */
 function AddColumnDropdown({ available, labels, onAdd, onClose }) {
   const [selected, setSelected] = useState([]);
-  return createPortal(
-    <div style={{ position: 'fixed', inset: 0, zIndex: 9999 }} onClick={onClose}>
-      <div className={styles.addColDropdown} onClick={e => e.stopPropagation()}>
+  return (
+    <>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={onClose} />
+      <div className={styles.addColDropdown}>
         {available.map(col => (
           <label key={col} className={styles.addColOption}>
             <input type="checkbox" checked={selected.includes(col)} onChange={() => setSelected(prev => prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col])} />
@@ -814,8 +815,7 @@ function AddColumnDropdown({ available, labels, onAdd, onClose }) {
           <Button variant="primary" size="S" onClick={() => onAdd(selected)} disabled={selected.length === 0}>Add Columns</Button>
         </div>
       </div>
-    </div>,
-    document.body
+    </>
   );
 }
 
@@ -831,7 +831,10 @@ function InviteUserDrawer({ onClose, onInvited }) {
   const [bulkRows, setBulkRows] = useState([]);
   const [bulkColumns, setBulkColumns] = useState(['first_name', 'middle_name', 'last_name', 'email', 'admin_role']);
   const [addColOpen, setAddColOpen] = useState(false);
+  const [highlightId, setHighlightId] = useState(null);
+  const [highlightCol, setHighlightCol] = useState(null);
   const fileInputRef = useRef(null);
+  const tableRef = useRef(null);
   const [form, setForm] = useState({
     first_name: '', middle_name: '', last_name: '', email: '',
     admin_role: 'Business/Practice Owner', clinical_roles: [],
@@ -1036,16 +1039,31 @@ function InviteUserDrawer({ onClose, onInvited }) {
     const COL_LABELS = { first_name: 'First Name', middle_name: 'Middle Name', last_name: 'Last Name', email: 'Email', admin_role: 'Administrative Role', credentials: 'Credentials', gender: 'Gender', profile: 'Profile', licence_state: 'Licence State', location: 'Location', languages: 'Languages', mobile: 'Mobile Number', fax: 'Fax Number', zip_code: 'Zip Code' };
 
     const addRow = () => {
-      setBulkRows(prev => [...prev, { _id: Date.now(), first_name: '', middle_name: '', last_name: '', email: '', admin_role: 'Employer' }]);
+      const newId = Date.now();
+      setBulkRows(prev => [...prev, { _id: newId, first_name: '', middle_name: '', last_name: '', email: '', admin_role: '' }]);
+      setHighlightId(newId);
+      setTimeout(() => { setHighlightId(null); tableRef.current?.querySelector('tbody tr:last-child')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
+      setTimeout(() => setHighlightId(null), 1500);
     };
     const deleteRow = (id) => setBulkRows(prev => prev.filter(r => r._id !== id));
-    const duplicateRow = (row) => setBulkRows(prev => [...prev, { ...row, _id: Date.now(), email: '' }]);
+    const duplicateRow = (row) => {
+      const newId = Date.now();
+      setBulkRows(prev => [...prev, { ...row, _id: newId, email: '' }]);
+      setHighlightId(newId);
+      setTimeout(() => setHighlightId(null), 1500);
+    };
     const updateRow = (id, field, value) => {
       setBulkRows(prev => prev.map(r => r._id === id ? { ...r, [field]: value } : r));
     };
     const addColumns = (cols) => {
       setBulkColumns(prev => [...prev, ...cols.filter(c => !prev.includes(c))]);
       setAddColOpen(false);
+      if (cols.length > 0) {
+        setHighlightCol(cols[0]);
+        setTimeout(() => setHighlightCol(null), 1500);
+        // Scroll table right to show new column
+        setTimeout(() => { const scrollArea = tableRef.current?.parentElement; if (scrollArea) scrollArea.scrollLeft = scrollArea.scrollWidth; }, 100);
+      }
     };
 
     const handleBulkImport = async () => {
@@ -1109,47 +1127,61 @@ function InviteUserDrawer({ onClose, onInvited }) {
 
           {/* Table */}
           <div style={{ flex: 1, overflow: 'auto' }}>
-            <table className={styles.bulkTable}>
+            <table className={styles.bulkTable} ref={tableRef}>
               <thead>
                 <tr>
-                  <th style={{ position: 'sticky', left: 0, background: '#fff', zIndex: 2, minWidth: 180 }}>Users</th>
+                  <th className={styles.stickyLeft}>Users</th>
                   {bulkColumns.map(col => (
-                    <th key={col} style={{ minWidth: 140 }}>{COL_LABELS[col] || col} {['first_name', 'last_name', 'email'].includes(col) && <span style={{ color: 'var(--status-error)' }}>*</span>}</th>
+                    <th key={col} style={{ minWidth: 140, background: highlightCol === col ? 'var(--primary-50)' : undefined, transition: 'background .5s' }}>{COL_LABELS[col] || col} {['first_name', 'last_name', 'email'].includes(col) && <span style={{ color: 'var(--status-error)' }}>*</span>}</th>
                   ))}
-                  <th style={{ position: 'sticky', right: 0, background: '#fff', zIndex: 2, minWidth: 70 }}>Action</th>
+                  <th className={styles.stickyRight}>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {bulkRows.map(row => (
-                  <tr key={row._id}>
-                    <td style={{ position: 'sticky', left: 0, background: '#fff', zIndex: 1 }}>
+                {bulkRows.map(row => {
+                  const isEmpty = !row.first_name && !row.last_name;
+                  const isHighlighted = highlightId === row._id;
+                  return (
+                  <tr key={row._id} style={{ background: isHighlighted ? 'var(--primary-25)' : undefined, transition: 'background .5s' }}>
+                    <td className={styles.stickyLeft} style={{ background: isHighlighted ? 'var(--primary-25)' : '#fff' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Avatar variant="assignee" initials={getInitials(`${row.first_name} ${row.last_name}`).toUpperCase()} />
+                        {isEmpty ? (
+                          <Icon name="solar:user-linear" size={24} color="var(--neutral-200)" />
+                        ) : (
+                          <Avatar variant="assignee" initials={getInitials(`${row.first_name} ${row.last_name}`).toUpperCase()} />
+                        )}
                         <div>
-                          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--neutral-400)' }}>{row.first_name} {row.last_name}</div>
-                          <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{row.email}</div>
+                          <div style={{ fontSize: 13, fontWeight: 500, color: isEmpty ? 'var(--neutral-200)' : 'var(--neutral-400)' }}>{isEmpty ? 'Unnamed' : `${row.first_name} ${row.last_name}`}</div>
+                          <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{row.email || 'abc@xyz.com'}</div>
                         </div>
                       </div>
                     </td>
                     {bulkColumns.map(col => (
-                      <td key={col}>
+                      <td key={col} style={{ background: highlightCol === col ? 'var(--primary-25)' : undefined, transition: 'background .5s' }}>
                         {col === 'admin_role' ? (
-                          <select value={row[col] || 'Employer'} onChange={e => updateRow(row._id, col, e.target.value)} className={styles.bulkInput}>
-                            {ADMIN_ROLES.map(r => <option key={r} value={r}>{r.length > 18 ? r.substring(0, 18) + '...' : r}</option>)}
-                          </select>
+                          <Select value={row[col] || undefined} onValueChange={v => updateRow(row._id, col, v)}>
+                            <SelectTrigger className={styles.bulkSelectTrigger}><SelectValue placeholder="Select Admin R..." /></SelectTrigger>
+                            <SelectContent>{ADMIN_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+                          </Select>
+                        ) : col === 'gender' ? (
+                          <Select value={row[col] || undefined} onValueChange={v => updateRow(row._id, col, v)}>
+                            <SelectTrigger className={styles.bulkSelectTrigger}><SelectValue placeholder="Select..." /></SelectTrigger>
+                            <SelectContent>{GENDER_OPTIONS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent>
+                          </Select>
                         ) : (
                           <input className={styles.bulkInput} value={row[col] || ''} onChange={e => updateRow(row._id, col, e.target.value)} placeholder={COL_LABELS[col] || ''} />
                         )}
                       </td>
                     ))}
-                    <td style={{ position: 'sticky', right: 0, background: '#fff', zIndex: 1 }}>
+                    <td className={styles.stickyRight} style={{ background: isHighlighted ? 'var(--primary-25)' : '#fff' }}>
                       <div style={{ display: 'flex', gap: 4 }}>
                         <ActionButton icon="solar:copy-linear" size="S" tooltip="Duplicate" onClick={() => duplicateRow(row)} />
                         <ActionButton icon="solar:trash-bin-minimalistic-linear" size="S" tooltip="Delete" state="error" onClick={() => deleteRow(row._id)} />
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -1348,7 +1380,7 @@ function EditUserDrawer({ user, onClose, onSave }) {
   const handleDiscard = () => { onClose(); };
 
   return (
-    <Drawer title="User Profile" onClose={onClose} bodyClassName={styles.editDrawerBody} headerStyle={{ padding: '12px 16px' }} titleStyle={{ fontSize: 14 }}>
+    <Drawer title="User Profile" onClose={onClose} bodyClassName={styles.editDrawerBody} headerStyle={{ padding: '12px' }} titleStyle={{ fontSize: 14 }}>
       {/* User header — warm gradient */}
       <div className={styles.editHeader}>
         <Avatar variant="assignee" initials={user.initials} className={styles.editAvatar} />
