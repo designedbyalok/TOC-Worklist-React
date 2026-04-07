@@ -100,22 +100,25 @@ export function CalendarView() {
 
   const handleToday = () => {
     const app = calendarRef.current;
-    if (app?.$app?.datePickerState) {
-      const today = new Date().toISOString().split('T')[0];
-      app.$app.datePickerState.selectedDate.value = today;
+    if (!app?.$app) return;
+    const T = globalThis.Temporal;
+    if (T) {
+      app.$app.datePickerState.selectedDate.value = T.Now.plainDateISO();
     }
   };
 
-  const handlePrev = () => {
-    // Simulate clicking the built-in previous button
-    const btn = document.querySelector('.sx__chevron--previous')?.closest('button');
-    if (btn) btn.click();
-  };
+  const navigateCalendar = useCallback((direction) => {
+    const app = calendarRef.current;
+    if (!app?.$app) return;
+    const $app = app.$app;
+    const currentView = $app.config.views.value.find(v => v.name === $app.calendarState.view.value);
+    if (!currentView) return;
+    const units = direction === 'forward' ? currentView.backwardForwardUnits : -currentView.backwardForwardUnits;
+    $app.datePickerState.selectedDate.value = currentView.backwardForwardFn($app.datePickerState.selectedDate.value, units);
+  }, []);
 
-  const handleNext = () => {
-    const btn = document.querySelector('.sx__chevron--next')?.closest('button');
-    if (btn) btn.click();
-  };
+  const handlePrev = () => navigateCalendar('backward');
+  const handleNext = () => navigateCalendar('forward');
 
   const handleSlotClick = useCallback((dateTime) => {
     setSelectedSlot(dateTime);
