@@ -1,10 +1,12 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '../Icon/Icon';
 import { Button } from '../Button/Button';
 import { Drawer } from '../Drawer/Drawer';
 import { Avatar } from '../Avatar/Avatar';
 import { ActionButton } from '../ActionButton/ActionButton';
 import { useAppStore } from '../../store/useAppStore';
+import { supabase } from '../../lib/supabase';
 import styles from './ScheduleDrawer.module.css';
 
 const APPOINTMENT_TYPES = [
@@ -141,36 +143,43 @@ function AppointmentTypePicker({ value, onSelect }) {
 /* ── Generic Detail Dropdown ── */
 function DetailDropdown({ value, placeholder, icon, options, onSelect, renderItem }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-  useEffect(() => { if (!open) return; const c = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); }; document.addEventListener('click', c); return () => document.removeEventListener('click', c); }, [open]);
+  const btnRef = useRef(null);
 
   if (value) {
     return <button className={styles.detailValue} onClick={() => onSelect('')} style={{ cursor: 'pointer' }}><Icon name={icon} size={16} color="var(--neutral-300)" /> {value}</button>;
   }
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}><Icon name={icon} size={16} color="var(--neutral-200)" /> {placeholder}</button>
-      {open && (
-        <div className={styles.simpleDropdown}>
-          {options.map(opt => (
-            <button key={opt.label} className={styles.simpleDropItem} onClick={() => { onSelect(opt.label); setOpen(false); }}>
-              {renderItem ? renderItem(opt) : opt.label}
-            </button>
-          ))}
-        </div>
+    <div style={{ position: 'relative' }}>
+      <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}><Icon name={icon} size={16} color="var(--neutral-200)" /> {placeholder}</button>
+      {open && createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setOpen(false)}>
+          <div className={styles.simpleDropdown} style={{ position: 'fixed', top: btnRef.current?.getBoundingClientRect().bottom + 4, left: btnRef.current?.getBoundingClientRect().left, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+            {options.map(opt => (
+              <button key={opt.label} className={styles.simpleDropItem} onClick={() => { onSelect(opt.label); setOpen(false); }}>
+                {renderItem ? renderItem(opt) : opt.label}
+              </button>
+            ))}
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
 }
 
 /* ── Provider Picker (searchable with avatar + slots) ── */
-function ProviderPicker({ value, onSelect }) {
+function ProviderPicker({ value, onSelect, profileUsers = [], onAddSecondary }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const ref = useRef(null);
-  useEffect(() => { if (!open) return; const c = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); }; document.addEventListener('click', c); return () => document.removeEventListener('click', c); }, [open]);
+  const btnRef = useRef(null);
 
-  const filtered = PROVIDER_OPTIONS.filter(p => !search || p.name.toLowerCase().includes(search.toLowerCase()));
+  // Merge DB users with fallback providers
+  const allProviders = useMemo(() => {
+    const dbUsers = profileUsers.map(u => ({ name: u.name, gender: 'Staff', dob: '', age: '', slots: 'Available' }));
+    return dbUsers.length > 0 ? dbUsers : PROVIDER_OPTIONS;
+  }, [profileUsers]);
+
+  const filtered = allProviders.filter(p => !search || p.name.toLowerCase().includes(search.toLowerCase()));
 
   if (value) {
     return (
@@ -178,28 +187,80 @@ function ProviderPicker({ value, onSelect }) {
         <button className={styles.detailValue} onClick={() => onSelect('')} style={{ cursor: 'pointer', flex: 1 }}>
           <Avatar variant="assignee" initials={getInitials(value).toUpperCase()} /> {value}
         </button>
-        <button className={styles.addSecondaryBtn}><Icon name="solar:user-plus-linear" size={14} color="var(--primary-300)" /> Add Secondary</button>
+        <button className={styles.addSecondaryBtn} onClick={onAddSecondary}><Icon name="solar:user-plus-linear" size={14} color="var(--primary-300)" /> Add Secondary</button>
       </div>
     );
   }
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}><Icon name="solar:user-linear" size={16} color="var(--neutral-200)" /> Select Provider</button>
-      {open && (
-        <div className={styles.providerDropdown}>
-          <div className={styles.apptSearchWrap}><Icon name="solar:magnifer-linear" size={14} color="var(--neutral-200)" /><input className={styles.apptSearchInput} placeholder="Search" value={search} onChange={e => setSearch(e.target.value)} autoFocus /></div>
-          {filtered.map(p => (
-            <button key={p.name} className={styles.providerItem} onClick={() => { onSelect(p.name); setOpen(false); }}>
-              <Avatar variant="assignee" initials={getInitials(p.name).toUpperCase()} />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)' }}>{p.name}</div>
-                <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{p.gender} &bull; {p.age}Y({p.dob})</div>
-              </div>
-              <span style={{ fontSize: 12, color: p.slots === 'Not Available' ? 'var(--neutral-200)' : 'var(--primary-300)' }}>{p.slots}</span>
-            </button>
-          ))}
-        </div>
+    <div style={{ position: 'relative' }}>
+      <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}><Icon name="solar:user-linear" size={16} color="var(--neutral-200)" /> Select Provider</button>
+      {open && createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setOpen(false)}>
+          <div className={styles.providerDropdown} style={{ position: 'fixed', top: btnRef.current?.getBoundingClientRect().bottom + 4, left: btnRef.current?.getBoundingClientRect().left, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+            <div className={styles.apptSearchWrap}><Icon name="solar:magnifer-linear" size={14} color="var(--neutral-200)" /><input className={styles.apptSearchInput} placeholder="Search" value={search} onChange={e => setSearch(e.target.value)} autoFocus /></div>
+            {filtered.map(p => (
+              <button key={p.name} className={styles.providerItem} onClick={() => { onSelect(p.name); setOpen(false); }}>
+                <Avatar variant="assignee" initials={getInitials(p.name).toUpperCase()} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)' }}>{p.name}</div>
+                  <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{p.gender}</div>
+                </div>
+                <span style={{ fontSize: 12, color: p.slots === 'Not Available' ? 'var(--neutral-200)' : 'var(--primary-300)' }}>{p.slots || ''}</span>
+              </button>
+            ))}
+          </div>
+        </div>,
+        document.body
       )}
+    </div>
+  );
+}
+
+/* ── Secondary User Multi-Picker ── */
+function SecondaryUserPicker({ selected, onChange, profileUsers, primary }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const btnRef = useRef(null);
+
+  const allProviders = useMemo(() => {
+    const dbUsers = profileUsers.map(u => u.name);
+    const fallback = PROVIDER_OPTIONS.map(p => p.name);
+    return (dbUsers.length > 0 ? dbUsers : fallback).filter(n => n !== primary);
+  }, [profileUsers, primary]);
+
+  const filtered = allProviders.filter(n => !search || n.toLowerCase().includes(search.toLowerCase()));
+  const toggle = (name) => onChange(selected.includes(name) ? selected.filter(n => n !== name) : [...selected, name]);
+
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6, flex: 1 }}>
+      {selected.map(name => (
+        <span key={name} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, color: 'var(--neutral-400)', background: 'var(--neutral-50)', padding: '2px 8px', borderRadius: 4, border: '0.5px solid var(--neutral-100)' }}>
+          <Avatar variant="assignee" initials={getInitials(name).toUpperCase()} /> {name}
+          <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }} onClick={() => toggle(name)}>
+            <Icon name="solar:close-linear" size={10} color="var(--neutral-300)" />
+          </button>
+        </span>
+      ))}
+      <div style={{ position: 'relative' }}>
+        <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)} style={{ fontSize: 13 }}>
+          <Icon name="solar:add-circle-linear" size={14} color="var(--primary-300)" /> {selected.length === 0 ? 'Select Secondary Users' : 'Add More'}
+        </button>
+        {open && createPortal(
+          <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setOpen(false)}>
+            <div className={styles.providerDropdown} style={{ position: 'fixed', top: btnRef.current?.getBoundingClientRect().bottom + 4, left: btnRef.current?.getBoundingClientRect().left, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+              <div className={styles.apptSearchWrap}><Icon name="solar:magnifer-linear" size={14} color="var(--neutral-200)" /><input className={styles.apptSearchInput} placeholder="Search" value={search} onChange={e => setSearch(e.target.value)} autoFocus /></div>
+              {filtered.map(name => (
+                <button key={name} className={styles.providerItem} onClick={() => toggle(name)} style={{ background: selected.includes(name) ? 'var(--primary-25)' : undefined }}>
+                  <input type="checkbox" checked={selected.includes(name)} readOnly style={{ accentColor: 'var(--primary-300)', width: 15, height: 15 }} />
+                  <Avatar variant="assignee" initials={getInitials(name).toUpperCase()} />
+                  <span style={{ fontSize: 14, color: 'var(--neutral-400)' }}>{name}</span>
+                </button>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
+      </div>
     </div>
   );
 }
@@ -252,7 +313,6 @@ export function ScheduleDrawer({ onClose }) {
 
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [reasonForVisit, setReasonForVisit] = useState('');
-  const [editingReason, setEditingReason] = useState(false);
   const [appointmentType, setAppointmentType] = useState(null);
   const [mode, setMode] = useState('');
   const [location, setLocation] = useState('');
@@ -261,9 +321,22 @@ export function ScheduleDrawer({ onClose }) {
   const [time, setTime] = useState('');
   const [recurring, setRecurring] = useState(false);
   const [requireRsvp, setRequireRsvp] = useState(false);
+  const [showSecondary, setShowSecondary] = useState(false);
+  const [secondaryUsers, setSecondaryUsers] = useState([]);
+  const [profileUsers, setProfileUsers] = useState([]);
   const [memberInstruction, setMemberInstruction] = useState('');
   const [showStaffInstructions, setShowStaffInstructions] = useState(false);
   const [staffInstruction, setStaffInstruction] = useState('');
+
+  // Fetch staff users from profiles DB
+  useEffect(() => {
+    supabase.from('profiles').select('id, full_name, first_name, last_name, email, status').order('full_name').then(({ data }) => {
+      if (data) setProfileUsers(data.filter(u => u.status === 'Active').map(u => ({
+        name: u.full_name?.trim() || `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
+        email: u.email,
+      })));
+    });
+  }, []);
 
   // Auto-fill mode and location when appointment type is selected
   useEffect(() => {
@@ -308,21 +381,15 @@ export function ScheduleDrawer({ onClose }) {
                 <ActionButton icon="solar:close-linear" size="S" tooltip="Remove" onClick={() => setSelectedPatient(null)} />
               </div>
 
-              {/* Reason for Visit */}
+              {/* Reason for Visit — always editable */}
               <div className={styles.reasonField}>
                 <label className={styles.reasonLabel}>Reason for Visit</label>
-                {editingReason || !reasonForVisit ? (
-                  <input
-                    className={styles.reasonInput}
-                    placeholder="Enter Reason for Visit"
-                    value={reasonForVisit}
-                    onChange={e => setReasonForVisit(e.target.value)}
-                    onBlur={() => setEditingReason(false)}
-                    autoFocus={editingReason}
-                  />
-                ) : (
-                  <div className={styles.reasonValue} onClick={() => setEditingReason(true)}>{reasonForVisit}</div>
-                )}
+                <input
+                  className={styles.reasonInput}
+                  placeholder="Enter Reason for Visit"
+                  value={reasonForVisit}
+                  onChange={e => setReasonForVisit(e.target.value)}
+                />
               </div>
 
               {/* Patient Info */}
@@ -381,8 +448,16 @@ export function ScheduleDrawer({ onClose }) {
             {/* Primary User — dropdown with search, avatar, slots */}
             <div className={styles.detailRow}>
               <span className={styles.detailLabel}>Primary User</span>
-              <ProviderPicker value={provider} onSelect={setProvider} />
+              <ProviderPicker value={provider} onSelect={setProvider} profileUsers={profileUsers} onAddSecondary={() => setShowSecondary(true)} />
             </div>
+
+            {/* Secondary Users */}
+            {showSecondary && (
+              <div className={styles.detailRow}>
+                <span className={styles.detailLabel}>Secondary User</span>
+                <SecondaryUserPicker selected={secondaryUsers} onChange={setSecondaryUsers} profileUsers={profileUsers} primary={provider} />
+              </div>
+            )}
 
             {/* Date — calendar picker */}
             <div className={styles.detailRow}>
@@ -462,14 +537,25 @@ export function ScheduleDrawer({ onClose }) {
         ) : (
           <div className={styles.section}>
             <label className={styles.sectionLabel}>Staff Instructions</label>
-            <textarea
-              className={styles.instructionTextarea}
-              placeholder="Add Instructions for Staff"
-              value={staffInstruction}
-              onChange={e => setStaffInstruction(e.target.value)}
-              rows={3}
-              autoFocus
-            />
+            <div className={styles.instructionEditor}>
+              <textarea
+                className={styles.instructionTextarea}
+                placeholder="Add Instructions for Staff"
+                value={staffInstruction}
+                onChange={e => setStaffInstruction(e.target.value)}
+                rows={3}
+                autoFocus
+              />
+              <div className={styles.instructionToolbar}>
+                <ActionButton icon="solar:paperclip-linear" size="S" tooltip="Attach" />
+                <span className={styles.toolbarDivider} />
+                <ActionButton icon="solar:text-bold-linear" size="S" tooltip="Bold" />
+                <ActionButton icon="solar:text-italic-linear" size="S" tooltip="Italic" />
+                <ActionButton icon="solar:text-underline-linear" size="S" tooltip="Underline" />
+                <div style={{ flex: 1 }} />
+                <ActionButton icon="solar:trash-bin-minimalistic-linear" size="S" tooltip="Remove" state="error" onClick={() => { setShowStaffInstructions(false); setStaffInstruction(''); }} />
+              </div>
+            </div>
           </div>
         )}
       </div>
