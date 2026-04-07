@@ -139,6 +139,11 @@
   display: none !important;
 }
 
+/* Hide empty all-day events grid */
+.calendarWrap :global(.sx__date-grid) {
+  display: none !important;
+}
+
 /* Remove outer border */
 .calendarWrap :global(.sx__calendar) {
   border: none !important;
