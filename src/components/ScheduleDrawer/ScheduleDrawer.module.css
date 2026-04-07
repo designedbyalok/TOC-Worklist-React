@@ -228,3 +228,104 @@
 }
 
 .addStaffBtn:hover { text-decoration: underline; }
+
+/* ── Simple Dropdown ── */
+.simpleDropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; min-width: 220px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
+  border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 50;
+  padding: 4px 0; overflow: hidden;
+}
+.simpleDropItem {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border: none; background: none;
+  cursor: pointer; width: 100%; text-align: left;
+  font-size: 14px; color: var(--neutral-400); font-family: 'Inter', sans-serif;
+  transition: background .1s;
+}
+.simpleDropItem:hover { background: var(--neutral-50); }
+
+/* ── Provider Dropdown ── */
+.providerDropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; min-width: 340px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
+  border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 50;
+  overflow: hidden;
+}
+.providerItem {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border: none; background: none;
+  cursor: pointer; width: 100%; text-align: left;
+  font-family: 'Inter', sans-serif; transition: background .1s;
+  border-bottom: 0.5px solid var(--neutral-100);
+}
+.providerItem:last-child { border-bottom: none; }
+.providerItem:hover { background: var(--neutral-50); }
+.addSecondaryBtn {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 500; color: var(--primary-300);
+  background: none; border: none; cursor: pointer;
+  font-family: 'Inter', sans-serif; white-space: nowrap;
+}
+
+/* ── Calendar Dropdown ── */
+.calendarDropdown {
+  position: absolute; top: calc(100% + 4px); left: 0;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
+  border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.12); z-index: 50;
+  padding: 16px; min-width: 280px;
+}
+.calendarHeader {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.calendarTitle { font-size: 14px; font-weight: 600; color: var(--neutral-400); }
+.calendarGrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.calendarDayLabel { font-size: 12px; font-weight: 500; color: var(--neutral-200); padding: 6px 0; }
+.calendarDay {
+  width: 36px; height: 36px; border-radius: 50%; border: none;
+  background: none; cursor: pointer; font-size: 13px; color: var(--neutral-400);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif; transition: background .1s;
+}
+.calendarDay:hover { background: var(--primary-50); color: var(--primary-300); }
+
+/* ── Time Slots ── */
+.timeSlotArea {
+  display: flex; flex-direction: column; gap: 8px; width: 100%;
+  border: 0.5px solid var(--neutral-150); border-radius: 6px;
+  padding: 8px 10px;
+}
+.timeSlotHeader { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pickTimeBtn {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--primary-300); font-weight: 500;
+  background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif;
+}
+.timeSlots { display: flex; flex-wrap: wrap; gap: 6px; }
+.timeSlot {
+  padding: 6px 12px; border: 0.5px solid var(--neutral-150); border-radius: 4px;
+  font-size: 13px; color: var(--neutral-400); background: var(--neutral-0);
+  cursor: pointer; font-family: 'Inter', sans-serif; transition: all .1s;
+}
+.timeSlot:hover { border-color: var(--primary-200); background: var(--primary-50); }
+.timeSlotActive {
+  border-color: var(--primary-300) !important; background: var(--primary-50) !important;
+  color: var(--primary-300) !important; font-weight: 500;
+}
+
+/* ── Recurring Toggle ── */
+.recurringToggle { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.switchLabel { display: inline-flex; align-items: center; cursor: pointer; }
+.switchInput { display: none; }
+.switchTrack {
+  width: 32px; height: 18px; border-radius: 9px;
+  background: var(--neutral-150); position: relative; transition: background .2s;
+}
+.switchInput:checked + .switchTrack { background: var(--primary-300); }
+.switchThumb {
+  position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px; border-radius: 50%; background: #fff;
+  transition: transform .2s; box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+.switchInput:checked + .switchTrack .switchThumb { transform: translateX(14px); }
