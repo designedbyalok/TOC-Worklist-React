@@ -33,9 +33,42 @@ function buildCalendars(appointmentTypes) {
   return cals;
 }
 
-// Map a DB appointment row to a schedule-x event object (needs Temporal T)
-function apptToEvent(appt, appointmentTypes, T) {
-  // Parse "MM-DD-YYYY" date and "h:mm am/pm" time into "YYYY-MM-DD HH:mm"
+// ── Timezone helpers ──
+const TIMEZONE_OPTIONS = [
+  { value: 'Asia/Kolkata', label: 'IST (GMT+5:30)' },
+  { value: 'America/New_York', label: 'EST (GMT-5)' },
+  { value: 'America/Chicago', label: 'CST (GMT-6)' },
+  { value: 'America/Denver', label: 'MST (GMT-7)' },
+  { value: 'America/Los_Angeles', label: 'PST (GMT-8)' },
+  { value: 'Europe/London', label: 'GMT (GMT+0)' },
+  { value: 'Europe/Berlin', label: 'CET (GMT+1)' },
+  { value: 'Asia/Dubai', label: 'GST (GMT+4)' },
+  { value: 'Asia/Tokyo', label: 'JST (GMT+9)' },
+  { value: 'Australia/Sydney', label: 'AEST (GMT+11)' },
+];
+
+function getTimezoneOffset(tz) {
+  try {
+    const parts = new Intl.DateTimeFormat('en', { timeZone: tz, timeZoneName: 'shortOffset' }).formatToParts(new Date());
+    const tzPart = parts.find(p => p.type === 'timeZoneName');
+    return tzPart?.value || 'GMT';
+  } catch { return 'GMT'; }
+}
+
+function getTodayInTimezone(tz) {
+  return new Date().toLocaleDateString('en-CA', { timeZone: tz }); // YYYY-MM-DD
+}
+
+function getNowInTimezone(tz) {
+  const str = new Date().toLocaleString('en-US', { timeZone: tz, hour: 'numeric', minute: 'numeric', hour12: false });
+  const [h, m] = str.split(':').map(Number);
+  return { hours: h, minutes: m };
+}
+
+const BROWSER_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
+
+// Map a DB appointment row to a schedule-x event object (needs Temporal T + timezone)
+function apptToEvent(appt, appointmentTypes, T, tz) {
   function toDateTime(dateStr, timeStr) {
     if (!dateStr || !timeStr) return null;
     const [mo, dd, yyyy] = dateStr.split('-');
@@ -55,10 +88,9 @@ function apptToEvent(appt, appointmentTypes, T) {
 
   const [sd, st] = startStr.split(' ');
   const [ed, et] = endStr.split(' ');
-  const start = T.PlainDateTime.from(`${sd}T${st}`).toZonedDateTime('America/New_York');
-  const end = T.PlainDateTime.from(`${ed}T${et}`).toZonedDateTime('America/New_York');
+  const start = T.PlainDateTime.from(`${sd}T${st}`).toZonedDateTime(tz);
+  const end = T.PlainDateTime.from(`${ed}T${et}`).toZonedDateTime(tz);
 
-  // Derive calendarId from appointment type
   const calId = appt.calendar_id || 'followup';
 
   return {
@@ -77,7 +109,7 @@ const STATUSES = ['Scheduled', 'Confirmed', 'Completed', 'Cancelled'];
 const VIEWS = ['week', 'day', 'month-grid'];
 const VIEW_LABELS = { 'week': 'Week', 'day': 'Day', 'month-grid': 'Month' };
 
-function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginRef, dbAppointments, appointmentTypes }) {
+function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginRef, dbAppointments, appointmentTypes, timezone }) {
   const [calendarApp, setCalendarApp] = useState(null);
   const [SXCalendar, setSXCalendar] = useState(null);
   const [error, setError] = useState(null);
@@ -112,7 +144,7 @@ function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginR
           defaultView: 'week',
           events: [],
           calendars: DEFAULT_CALENDARS,
-          dayBoundaries: { start: '06:00', end: '20:00' },
+          dayBoundaries: { start: '00:00', end: '23:00' },
           weekOptions: { gridHeight: 2000, nDays: 7 },
           locale: 'en-US',
           callbacks: {
@@ -139,7 +171,7 @@ function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginR
     if (!ep || !T) return;
 
     const newEvents = (dbAppointments || [])
-      .map(a => apptToEvent(a, appointmentTypes, T))
+      .map(a => apptToEvent(a, appointmentTypes, T, timezone))
       .filter(Boolean);
 
     // Replace all events (except __selection__) with fresh DB events
@@ -152,7 +184,16 @@ function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginR
     for (const e of newEvents) {
       try { ep.add(e); } catch {}
     }
-  }, [dbAppointments, appointmentTypes]);
+
+    // Mark cancelled events in the DOM with a CSS class
+    setTimeout(() => {
+      const cancelledIds = (dbAppointments || []).filter(a => a.status === 'Cancelled').map(a => a.id);
+      cancelledIds.forEach(id => {
+        const el = document.querySelector(`[data-event-id="${id}"]`);
+        if (el) el.classList.add('is-cancelled');
+      });
+    }, 100);
+  }, [dbAppointments, appointmentTypes, timezone]);
 
   if (error) return <div style={{ padding: 32, color: 'var(--status-error)', fontFamily: 'Inter' }}>Calendar error: {error}</div>;
   if (!calendarApp || !SXCalendar) return <div style={{ padding: 32, color: 'var(--neutral-300)', textAlign: 'center', fontFamily: 'Inter' }}>Loading calendar...</div>;
@@ -211,12 +252,22 @@ function UserPickerDropdown({ users, value, onChange }) {
   );
 }
 
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
 export function CalendarView() {
   const [currentView, setCurrentView] = useState('week');
   const [showSchedule, setShowSchedule] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const calendarRef = useRef(null);
   const eventsPluginRef = useRef(null);
+  const [timezone, setTimezone] = useState(BROWSER_TIMEZONE);
+  const timezoneLabel = getTimezoneOffset(timezone);
+
+  const [calendarTitle, setCalendarTitle] = useState(() => {
+    const today = getTodayInTimezone(timezone);
+    const [y, m] = today.split('-');
+    return `${MONTH_NAMES[parseInt(m) - 1]} ${y}`;
+  });
 
   // Filter state
   const [filterUser, setFilterUser] = useState('all');
@@ -282,7 +333,8 @@ export function CalendarView() {
     if (!app?.$app) return;
     const T = globalThis.Temporal;
     if (T) {
-      app.$app.datePickerState.selectedDate.value = T.Now.plainDateISO();
+      app.$app.datePickerState.selectedDate.value = T.Now.plainDateISO(timezone);
+      setTimeout(() => { updateTitle(); applyPastOverlays(); applyTimeIndicator(); }, 50);
     }
   };
 
@@ -296,8 +348,20 @@ export function CalendarView() {
     $app.datePickerState.selectedDate.value = currentView.backwardForwardFn($app.datePickerState.selectedDate.value, units);
   }, []);
 
-  const handlePrev = () => navigateCalendar('backward');
-  const handleNext = () => navigateCalendar('forward');
+  const updateTitle = useCallback(() => {
+    const app = calendarRef.current;
+    if (!app?.$app) return;
+    const dateVal = app.$app.datePickerState?.selectedDate?.value;
+    if (dateVal) {
+      // dateVal is a Temporal.PlainDate — has .year and .month
+      const m = typeof dateVal.month === 'number' ? dateVal.month - 1 : new Date().getMonth();
+      const y = typeof dateVal.year === 'number' ? dateVal.year : new Date().getFullYear();
+      setCalendarTitle(`${MONTH_NAMES[m]} ${y}`);
+    }
+  }, []);
+
+  const handlePrev = () => { navigateCalendar('backward'); setTimeout(() => { updateTitle(); applyPastOverlays(); applyTimeIndicator(); }, 50); };
+  const handleNext = () => { navigateCalendar('forward'); setTimeout(() => { updateTitle(); applyPastOverlays(); applyTimeIndicator(); }, 50); };
 
   const clearSelection = useCallback(() => {
     const ep = eventsPluginRef.current;
@@ -306,13 +370,25 @@ export function CalendarView() {
     }
   }, []);
 
+  const showToast = useAppStore(s => s.showToast);
+
   const handleSlotClick = useCallback((dateTime) => {
     // Skip if an event click just happened (both callbacks fire for event clicks)
     if (eventClickRef.current) return;
 
+    // Prevent booking in the past (must be at least 15 min from now)
+    const T = globalThis.Temporal;
+    if (T && dateTime?.epochMilliseconds) {
+      const now = T.Now.zonedDateTimeISO(timezone);
+      const minTime = now.add({ minutes: 15 });
+      if (dateTime.epochMilliseconds < minTime.epochMilliseconds) {
+        showToast('Cannot book in the past. Appointment must be at least 15 minutes from now.');
+        return;
+      }
+    }
+
     // Check for overlapping events using the eventsPlugin (always in sync)
     const ep = eventsPluginRef.current;
-    const T = globalThis.Temporal;
     if (ep && T && dateTime?.add) {
       const clickStart = dateTime.epochMilliseconds;
       const clickEnd = dateTime.add({ minutes: 30 }).epochMilliseconds;
@@ -363,11 +439,58 @@ export function CalendarView() {
     clearSelection();
   }, [clearSelection]);
 
+  // Reusable functions for past-day overlays and time indicator
+  const applyPastOverlays = useCallback(() => {
+    const today = getTodayInTimezone(timezone);
+    document.querySelectorAll('.sx__week-grid__date').forEach(dateEl => {
+      const dateStr = dateEl.getAttribute('data-date');
+      dateEl.style.opacity = (dateStr && dateStr < today) ? '0.4' : '';
+    });
+    document.querySelectorAll('.sx__time-grid-day').forEach((dayCol, i) => {
+      dayCol.querySelectorAll('[data-past-overlay]').forEach(el => el.remove());
+      const dateEls = document.querySelectorAll('.sx__week-grid__date');
+      const dateStr = dateEls[i]?.getAttribute('data-date');
+      if (dateStr && dateStr < today) {
+        const overlay = document.createElement('div');
+        overlay.setAttribute('data-past-overlay', '1');
+        overlay.className = styles.pastDayOverlay;
+        dayCol.appendChild(overlay);
+      }
+    });
+    // Also handle month view past days
+    document.querySelectorAll('.sx__date-grid-day').forEach(cell => {
+      cell.querySelectorAll('[data-past-overlay]').forEach(el => el.remove());
+      const dateStr = cell.getAttribute('data-date');
+      if (dateStr && dateStr < today) {
+        cell.style.opacity = '0.5';
+      } else {
+        cell.style.opacity = '';
+      }
+    });
+  }, [timezone]);
+
+  const applyTimeIndicator = useCallback(() => {
+    const START_HOUR = 0, END_HOUR = 23, GRID_HEIGHT = 2000;
+    const weekGridEl = document.querySelector('.sx__week-grid');
+    if (!weekGridEl) return;
+    weekGridEl.querySelectorAll('[data-time-indicator]').forEach(el => el.remove());
+    const { hours, minutes } = getNowInTimezone(timezone);
+    const totalMinutesFromStart = (hours - START_HOUR) * 60 + minutes;
+    if (totalMinutesFromStart >= 0 && totalMinutesFromStart <= (END_HOUR - START_HOUR) * 60) {
+      const topPx = (totalMinutesFromStart / ((END_HOUR - START_HOUR) * 60)) * GRID_HEIGHT;
+      const line = document.createElement('div');
+      line.setAttribute('data-time-indicator', '1');
+      line.className = styles.currentTimeLine;
+      line.style.top = `${topPx}px`;
+      weekGridEl.appendChild(line);
+    }
+  }, [timezone]);
+
   // Hover preview overlay for 30-min slot selection
   const hoverRef = useRef(null);
   useEffect(() => {
-    const START_HOUR = 6;
-    const END_HOUR = 20;
+    const START_HOUR = 0;
+    const END_HOUR = 23;
     const GRID_HEIGHT = 2000;
     const TOTAL_HOURS = END_HOUR - START_HOUR;
     const PX_PER_HOUR = GRID_HEIGHT / TOTAL_HOURS;
@@ -427,6 +550,21 @@ export function CalendarView() {
         day.addEventListener('mousemove', handleMove);
         day.addEventListener('mouseleave', handleLeave);
       });
+
+      // Inject/update timezone label
+      const weekGrid = document.querySelector('.sx__week-grid');
+      document.querySelectorAll('[data-tz-label]').forEach(el => el.remove());
+      if (weekGrid) {
+        const tzEl = document.createElement('div');
+        tzEl.setAttribute('data-tz-label', '1');
+        tzEl.className = styles.timezoneLabel;
+        tzEl.textContent = timezoneLabel;
+        weekGrid.insertBefore(tzEl, weekGrid.firstChild);
+      }
+
+      // Apply past-day overlays and time indicator
+      applyPastOverlays();
+      applyTimeIndicator();
     }, 800);
 
     return () => {
@@ -441,14 +579,14 @@ export function CalendarView() {
       }
       hoverRef.current = null;
     };
-  }, [currentView]);
+  }, [currentView, timezone, timezoneLabel, applyPastOverlays, applyTimeIndicator]);
 
   return (
     <div className={styles.wrapper}>
       {/* Our custom toolbar */}
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft}>
-          <h2 className={styles.monthTitle}>April 2026</h2>
+          <h2 className={styles.monthTitle}>{calendarTitle}</h2>
           <div className={styles.viewTabs}>
             {VIEWS.map(v => (
               <button key={v} className={`${styles.viewTab} ${currentView === v ? styles.viewTabActive : ''}`} onClick={() => handleViewChange(v)}>
@@ -508,6 +646,18 @@ export function CalendarView() {
             </SelectContent>
           </Select>
 
+          {/* Timezone */}
+          <Select value={timezone} onValueChange={setTimezone}>
+            <SelectTrigger className="h-7 text-xs min-w-[100px] max-w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TIMEZONE_OPTIONS.map(tz => (
+                <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <label className={styles.availabilityToggle}>
             <input type="checkbox" />
             <span>Availability</span>
@@ -526,11 +676,12 @@ export function CalendarView() {
           eventsPluginRef={eventsPluginRef}
           dbAppointments={filteredAppointments}
           appointmentTypes={apptTypesForFilter}
+          timezone={timezone}
         />
       </div>
 
       {/* Schedule drawer opens when clicking a time slot */}
-      {showSchedule && <ScheduleDrawer selectedSlot={selectedSlot} existingAppointment={clickedAppointment} onClose={handleCloseDrawer} onSave={fetchAppointments} />}
+      {showSchedule && <ScheduleDrawer selectedSlot={selectedSlot} existingAppointment={clickedAppointment} onClose={handleCloseDrawer} onSave={fetchAppointments} timezoneLabel={timezoneLabel} />}
     </div>
   );
 }

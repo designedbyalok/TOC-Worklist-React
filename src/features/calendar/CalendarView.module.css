@@ -133,6 +133,22 @@
   flex-direction: column !important;
 }
 
+/* Sticky week/day header when scrolling */
+.calendarWrap :global(.sx__week-header) {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 8 !important;
+  background: var(--neutral-0, #fff) !important;
+  border-bottom: 0.5px solid var(--neutral-150) !important;
+}
+
+/* Ensure no overflow hidden on parent chain breaks sticky */
+.calendarWrap :global(.sx__calendar),
+.calendarWrap :global(.sx__view-container),
+.calendarWrap :global(.sx__calendar-content) {
+  overflow: visible !important;
+}
+
 /* ── Hide schedule-x built-in header (we use our own toolbar) ── */
 .calendarWrap :global(.sx__calendar-header) {
   display: none !important;
@@ -249,6 +265,74 @@
   font-size: 11px !important;
   font-weight: 500 !important;
   box-shadow: none !important;
+}
+
+/* Timezone label — positioned absolutely in time axis column */
+.timezoneLabel {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: 48px;
+  font-size: 10px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  color: #8A94A8;
+  letter-spacing: 0.02em;
+  text-align: center;
+  z-index: 1;
+}
+
+/* Ensure the week grid is positioned for the absolute label */
+.calendarWrap :global(.sx__week-grid) {
+  position: relative;
+}
+
+/* Current time indicator line */
+.currentTimeLine {
+  position: absolute;
+  left: 48px;
+  right: 0;
+  height: 2px;
+  background: #8C5AE2;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.currentTimeLine::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  background: #8C5AE2;
+  border-radius: 50%;
+}
+
+/* Past day overlay — semi-transparent so grid lines stay visible */
+.pastDayOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(246, 247, 248, 0.6);
+  cursor: not-allowed;
+  z-index: 1;
+}
+
+/* Cancelled events — disabled look with strikethrough */
+.calendarWrap :global(.sx__event.is-cancelled) {
+  opacity: 0.5 !important;
+  pointer-events: none;
+}
+
+.calendarWrap :global(.sx__event.is-cancelled .sx__time-grid-event-title) {
+  text-decoration: line-through;
+}
+
+.calendarWrap :global(.sx__event.is-cancelled .sx__time-grid-event-time) {
+  text-decoration: line-through;
 }
 
 /* Today highlight */

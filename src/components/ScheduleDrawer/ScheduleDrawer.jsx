@@ -344,7 +344,7 @@ function DatePicker({ value, onSelect }) {
 const APPOINTMENT_STATUSES = ['Booked', 'Cancelled', 'No Show', 'Checked In'];
 
 /* ── Main Drawer ── */
-export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointment }) {
+export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointment, timezoneLabel = 'GMT' }) {
   const isViewMode = !!existingAppointment;
   const patients = useAppStore(s => s.patients);
   const fetchPatients = useAppStore(s => s.fetchPatients);
@@ -605,7 +605,7 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
               </div>
               <div className={styles.detailRow}>
                 <span className={styles.detailLabel}>Time</span>
-                <span className={styles.detailValue}><Icon name="solar:clock-circle-linear" size={16} color="var(--neutral-300)" /> {ea.time_start || '—'} - {ea.time_end || '—'} (GMT-4)</span>
+                <span className={styles.detailValue}><Icon name="solar:clock-circle-linear" size={16} color="var(--neutral-300)" /> {ea.time_start || '—'} - {ea.time_end || '—'} ({timezoneLabel})</span>
               </div>
             </div>
           </div>
@@ -833,7 +833,7 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
                   <button ref={timeBtnRef} className={time ? styles.detailValue : styles.detailValuePlaceholder} onClick={() => setShowTimePicker(v => !v)} style={{ cursor: 'pointer' }}>
                     <Icon name="solar:clock-circle-linear" size={16} color={time ? 'var(--neutral-300)' : 'var(--neutral-200)'} />
                     {time ? (
-                      <>{time} - {(() => { const [h, m, p] = time.match(/(\d+):(\d+)\s*(am|pm)/i)?.slice(1) || []; const mins = (parseInt(m) || 0) + 30; return mins >= 60 ? `${(parseInt(h) || 0) + 1}:${String(mins - 60).padStart(2, '0')} ${p}` : `${h}:${String(mins).padStart(2, '0')} ${p}`; })()} (GMT-4)</>
+                      <>{time} - {(() => { const [h, m, p] = time.match(/(\d+):(\d+)\s*(am|pm)/i)?.slice(1) || []; const mins = (parseInt(m) || 0) + 30; return mins >= 60 ? `${(parseInt(h) || 0) + 1}:${String(mins - 60).padStart(2, '0')} ${p}` : `${h}:${String(mins).padStart(2, '0')} ${p}`; })()} ({timezoneLabel})</>
                     ) : 'Select Time'}
                   </button>
                   {showTimePicker && (
@@ -841,7 +841,7 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
                       <div className={styles.timeSlotHeader}>
                         <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>Available Slots (30 mins)</span>
                         <button className={styles.pickTimeBtn}><Icon name="solar:clock-circle-linear" size={12} color="var(--primary-300)" /> Pick Time</button>
-                        <span style={{ fontSize: 11, color: 'var(--neutral-200)' }}>USA (GMT-4)</span>
+                        <span style={{ fontSize: 11, color: 'var(--neutral-200)' }}>{timezoneLabel}</span>
                       </div>
                       <div className={styles.timeSlots}>
                         {TIME_SLOTS.map(t => (
