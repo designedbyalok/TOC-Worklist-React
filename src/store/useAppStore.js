@@ -477,7 +477,7 @@ export const useAppStore = create((set, get) => ({
       else if (data?.user?.email) userName = data.user.email.split('@')[0];
     } catch (e) { /* fallback to Current User */ }
     const row = {
-      entity_type: entityType, entity_id: entityId, entity_name: entityName,
+      entity_type: entityType, entity_id: String(entityId), entity_name: entityName,
       action, user_name: userName, details: details || null,
       category: category || null,
     };

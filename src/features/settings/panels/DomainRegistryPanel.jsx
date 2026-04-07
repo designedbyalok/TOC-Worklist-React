@@ -12,6 +12,8 @@ import { SimpleTableSkeleton } from '../../../components/Skeleton/CardSkeleton';
 import { useAppStore } from '../../../store/useAppStore';
 import { DOMAIN_CATEGORIES, HIPAA_OPTIONS, COMPONENTS } from '../../../data/embeddedComponents';
 import { AuditLogDrawer } from './AuditLogDrawer';
+import { useTableSort } from '../../../components/Table/useTableSort';
+import { SortableHeader } from '../../../components/Table/SortableHeader';
 
 const thStyle = {
   textAlign: 'left', padding: '8px 16px', color: '#6F7A90', fontWeight: 500,
@@ -189,11 +191,12 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
     if (domainAddTrigger) { setShowAddDrawer(true); setDomainAddTrigger(false); }
   }, [domainAddTrigger, setDomainAddTrigger]);
 
-  const filtered = useMemo(() => {
+  const filteredDomains = useMemo(() => {
     if (!searchQuery.trim()) return domains;
     const q = searchQuery.toLowerCase();
     return domains.filter(d => d.vendor?.toLowerCase().includes(q) || d.domain?.toLowerCase().includes(q));
   }, [domains, searchQuery]);
+  const { sorted: filtered, sortKey: dSortKey, sortDir: dSortDir, requestSort: dRequestSort } = useTableSort(filteredDomains, 'vendor');
 
   const handleAdd = async (form) => {
     const d = await addEmbedDomain({ vendor: form.vendor, domain: form.domain, category: form.category, hipaa: form.hipaa, enabled: true, addedDate: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) });
@@ -250,10 +253,10 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
       <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
         <thead>
           <tr>
-            <th style={thStyle}>Vendor / label</th>
-            <th style={thStyle}>Domain</th>
-            <th style={thStyle}>Category</th>
-            <th style={thStyle}>HIPAA</th>
+            <SortableHeader label="Vendor / label" sortKey="vendor" currentKey={dSortKey} currentDir={dSortDir} onSort={dRequestSort} style={thStyle} />
+            <SortableHeader label="Domain" sortKey="domain" currentKey={dSortKey} currentDir={dSortDir} onSort={dRequestSort} style={thStyle} />
+            <SortableHeader label="Category" sortKey="category" currentKey={dSortKey} currentDir={dSortDir} onSort={dRequestSort} style={thStyle} />
+            <SortableHeader label="HIPAA" sortKey="hipaa" currentKey={dSortKey} currentDir={dSortDir} onSort={dRequestSort} style={thStyle} />
             <th style={thStyle}>Components</th>
             <th style={thStyle}>Enabled</th>
             <th style={thStyle}>Actions</th>

@@ -1,0 +1,30 @@
+/* SortableHeader — clickable column header with sort indicators */
+
+.th {
+  user-select: none;
+}
+
+.sortable {
+  cursor: pointer;
+  transition: color .12s;
+}
+
+.sortable:hover {
+  color: var(--neutral-400, #3a485f);
+}
+
+.active {
+  color: var(--primary-300, #8c5ae2) !important;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sortIcon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}

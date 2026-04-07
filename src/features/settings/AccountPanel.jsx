@@ -13,6 +13,9 @@ import { SearchIconButton } from '../../components/SearchIconButton/SearchIconBu
 import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/select';
 import { RadioGroup, RadioGroupItem } from '../../components/ui/radio-group';
+import { useTableSort } from '../../components/Table/useTableSort';
+import { SortableHeader } from '../../components/Table/SortableHeader';
+import { AuditLogContent } from './panels/AuditLogDrawer';
 import styles from './AccountPanel.module.css';
 
 const ALL_TABS = ['Users', 'Teams', 'Access Control', 'Locations', 'Holiday Configuration', 'Merged Or Delayed', 'Allowed Phone', 'Allowed Emails'];
@@ -165,6 +168,30 @@ function OverflowTabs({ tabs, activeTab, onTabChange }) {
   );
 }
 
+/* ── Overflow Badge with hover dropdown ── */
+function OverflowBadge({ count, items }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  return (
+    <div
+      className={styles.overflowBadgeWrap}
+      ref={ref}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <Badge variant="ai-neutral" label={`+${count}`} />
+      {open && items.length > 0 && (
+        <div className={styles.overflowDropdown}>
+          {items.map((item, i) => (
+            <div key={i} className={styles.overflowItem}>{item}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function AccountPanel() {
   const storeTab = useAppStore(s => s.accountTab);
   const setStoreTab = useAppStore(s => s.setAccountTab);
@@ -178,6 +205,7 @@ export function AccountPanel() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchVal, setSearchVal] = useState('');
   const [editingUser, setEditingUser] = useState(null);
+  const [viewingUser, setViewingUser] = useState(null);
   const showToast = useAppStore(s => s.showToast);
 
   // Fetch users from profiles table (synced with Supabase Auth)
@@ -196,10 +224,12 @@ export function AccountPanel() {
           email: u.email || '',
           initials: getInitials(u.full_name?.trim() || u.email?.split('@')[0] || '').toUpperCase(),
           status: u.status || 'Active',
-          role: u.role || 'Viewer',
-          extraRoles: u.extra_roles || 0,
-          location: u.practice_location || '',
-          extraLocations: u.extra_locations || 0,
+          role: u.clinical_roles?.length > 0 ? u.clinical_roles[0] : (u.role || 'Viewer'),
+          clinicalRoles: u.clinical_roles || [],
+          extraRoles: u.clinical_roles?.length > 1 ? u.clinical_roles.length - 1 : (u.extra_roles || 0),
+          location: u.locations?.length > 0 ? u.locations[0] : (u.practice_location || ''),
+          locations: u.locations || [],
+          extraLocations: u.locations?.length > 1 ? u.locations.length - 1 : (u.extra_locations || 0),
           department: u.department || '',
           phone: u.phone || u.mobile || '',
           avatarUrl: u.avatar_url || '',
@@ -286,6 +316,8 @@ export function AccountPanel() {
     return users.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.role.toLowerCase().includes(q) || u.location.toLowerCase().includes(q));
   }, [users, searchVal]);
 
+  const { sorted: sortedUsers, sortKey: userSortKey, sortDir: userSortDir, requestSort: requestUserSort } = useTableSort(filteredUsers, 'name');
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.tabBar}>
@@ -317,18 +349,18 @@ export function AccountPanel() {
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>User Name</th>
-                    <th>Status</th>
-                    <th>Roles</th>
-                    <th>Practice Location</th>
+                    <SortableHeader label="User Name" sortKey="name" currentKey={userSortKey} currentDir={userSortDir} onSort={requestUserSort} />
+                    <SortableHeader label="Status" sortKey="status" currentKey={userSortKey} currentDir={userSortDir} onSort={requestUserSort} />
+                    <SortableHeader label="Roles" sortKey="role" currentKey={userSortKey} currentDir={userSortDir} onSort={requestUserSort} />
+                    <SortableHeader label="Practice Location" sortKey="location" currentKey={userSortKey} currentDir={userSortDir} onSort={requestUserSort} />
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map(user => (
+                  {sortedUsers.map(user => (
                     <tr key={user.id}>
                       <td>
-                        <div className={styles.userCell}>
+                        <div className={styles.userCell} onClick={() => setViewingUser(user)} style={{ cursor: 'pointer' }}>
                           <Avatar variant="assignee" initials={user.initials} />
                           <div className={styles.userInfo}>
                             <span className={styles.userName}>{user.name}</span>
@@ -345,14 +377,18 @@ export function AccountPanel() {
                       </td>
                       <td>
                         <div className={styles.rolesCell}>
-                          <span className={styles.roleName}>{user.role}</span>
-                          {user.extraRoles > 0 && <Badge variant="ai-neutral" icon="solar:users-group-rounded-linear" label={`+${user.extraRoles}`} />}
+                          <Badge variant={ROLE_COLORS[user.role] || 'ai-neutral'} label={user.role} />
+                          {user.extraRoles > 0 && (
+                            <OverflowBadge count={user.extraRoles} items={user.clinicalRoles?.slice(1) || []} />
+                          )}
                         </div>
                       </td>
                       <td>
                         <div className={styles.locationCell}>
                           <span>{user.location}</span>
-                          {user.extraLocations > 0 && <Badge variant="ai-neutral" icon="solar:map-point-linear" label={`+${user.extraLocations}`} />}
+                          {user.extraLocations > 0 && (
+                            <OverflowBadge count={user.extraLocations} items={user.locations?.slice(1) || []} />
+                          )}
                         </div>
                       </td>
                       <td>
@@ -384,6 +420,15 @@ export function AccountPanel() {
           </div>
         )}
       </div>
+
+      {/* View User Drawer (read-only) */}
+      {viewingUser && (
+        <ViewUserDrawer
+          user={viewingUser}
+          onClose={() => setViewingUser(null)}
+          onEdit={() => { setEditingUser(viewingUser); setViewingUser(null); }}
+        />
+      )}
 
       {/* Edit User Drawer */}
       {editingUser && (
@@ -445,11 +490,223 @@ function UserActions({ user, onResetPassword, onToggleStatus, onEdit, onDelete }
   );
 }
 
+/* ── View User Drawer (Read-Only) ── */
+
+const VIEW_TABS = ['User Details', 'Business Hours', 'Assigned Patients', 'Audit Log'];
+
+function ViewUserDrawer({ user, onClose, onEdit }) {
+  const raw = user._raw || {};
+  const [viewTab, setViewTab] = useState('User Details');
+
+  const adminRole = raw.admin_role || 'Business/Practice Owner';
+  const roles = raw.clinical_roles?.length > 0 ? raw.clinical_roles : (raw.role && raw.role !== 'Viewer' ? [raw.role] : []);
+  const locations = raw.locations?.length > 0 ? raw.locations : [];
+  const languages = raw.languages?.length > 0 ? raw.languages : [];
+  const credentials = raw.credentials?.length > 0 ? raw.credentials : [];
+  const licenceStates = raw.licence_states?.length > 0 ? raw.licence_states : [];
+
+  return (
+    <Drawer title="User Profile" onClose={onClose} bodyClassName={styles.editDrawerBody} headerStyle={{ padding: '12px 16px' }} titleStyle={{ fontSize: 14 }}>
+      {/* User header */}
+      <div className={styles.editHeader}>
+        <Avatar variant="assignee" initials={user.initials} className={styles.editAvatar} />
+        <div className={styles.editHeaderInfo}>
+          <div className={styles.editHeaderName}>
+            {user.name}
+            {user.status === 'Active' && <Icon name="solar:verified-check-bold" size={16} color="#009B53" />}
+          </div>
+          <span className={styles.editHeaderEmail}>{user.email}</span>
+        </div>
+        <div className={styles.editHeaderActions}>
+          <div className={styles.editHeaderActionItem}>
+            <ActionButton icon="solar:phone-calling-rounded-linear" size="L" tooltip="Call" />
+            <span className={styles.editHeaderActionLabel}>Call</span>
+          </div>
+          <span className={styles.editHeaderDivider} />
+          <div className={styles.editHeaderActionItem}>
+            <ActionButton icon="solar:chat-round-line-linear" size="L" tooltip="Chat" />
+            <span className={styles.editHeaderActionLabel}>Chat</span>
+          </div>
+          <span className={styles.editHeaderDivider} />
+          <div className={styles.editHeaderActionItem}>
+            <ActionButton icon="solar:videocamera-record-linear" size="L" tooltip="Meet" />
+            <span className={styles.editHeaderActionLabel}>Meet</span>
+          </div>
+          <span className={styles.editHeaderDivider} />
+          <ActionButton icon="solar:menu-dots-bold" size="L" tooltip="More" />
+        </div>
+      </div>
+
+      {/* Inner tabs */}
+      <div className={styles.drawerTabs}>
+        {VIEW_TABS.map(tab => (
+          <div key={tab} className={`${styles.drawerTab} ${viewTab === tab ? styles.drawerTabActive : ''}`} onClick={() => setViewTab(tab)}>
+            {tab}
+          </div>
+        ))}
+        <div style={{ flex: 1 }} />
+        <ActionButton icon="solar:pen-linear" size="S" tooltip="Edit Profile" onClick={onEdit} />
+      </div>
+
+      {viewTab === 'Audit Log' ? (
+        <div className={styles.formScroll}>
+          <AuditLogContent entityType="UserProfile" entityId={user.id} />
+        </div>
+      ) : viewTab === 'User Details' ? (
+        <div className={styles.formScroll}>
+          {/* Administrative Role */}
+          <div className={styles.viewSection}>
+            <div className={styles.viewSectionLabel}>Administrative Role</div>
+            <div className={styles.viewBadges}>
+              <Badge variant="ai-neutral" label={adminRole} />
+            </div>
+          </div>
+
+          {/* Roles */}
+          {roles.length > 0 && (
+            <div className={styles.viewSection}>
+              <div className={styles.viewSectionLabel}>Roles</div>
+              <div className={styles.viewBadges}>
+                {roles.map(r => <Badge key={r} variant="ai-care" label={r} />)}
+              </div>
+            </div>
+          )}
+
+          {/* Location */}
+          {locations.length > 0 && (
+            <div className={styles.viewSection}>
+              <div className={styles.viewSectionLabel}>Location</div>
+              <div className={styles.viewBadges}>
+                {locations.map(l => <Badge key={l} variant="ai-neutral" label={l} />)}
+              </div>
+            </div>
+          )}
+
+          {/* Languages */}
+          {languages.length > 0 && (
+            <div className={styles.viewSection}>
+              <div className={styles.viewSectionLabel}>Languages</div>
+              <div className={styles.viewBadges}>
+                {languages.map(l => <Badge key={l} variant="toc-engaged" label={l} />)}
+              </div>
+            </div>
+          )}
+
+          {/* Basic Info */}
+          <div className={styles.viewSection}>
+            <div className={styles.viewSectionTitle}>Basic Info</div>
+            <div className={styles.viewGrid}>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>First Name</span>
+                <span className={styles.viewFieldValue}>{raw.first_name || user.name?.split(' ')[0] || '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Middle Name</span>
+                <span className={styles.viewFieldValue}>{raw.middle_name || '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Last Name</span>
+                <span className={styles.viewFieldValue}>{raw.last_name || user.name?.split(' ').slice(1).join(' ') || '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Date of Birth</span>
+                <span className={styles.viewFieldValue}>{raw.date_of_birth || '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Credentials</span>
+                <span className={styles.viewFieldValue}>{credentials.length > 0 ? credentials.join(', ') : '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Email</span>
+                <span className={styles.viewFieldValue}>{user.email || '-'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Profile */}
+          {raw.bio && (
+            <div className={styles.viewSection}>
+              <div className={styles.viewFieldLabel}>Profile</div>
+              <p className={styles.viewBio}>{raw.bio}</p>
+            </div>
+          )}
+
+          {/* Licence State & Gender */}
+          <div className={styles.viewSection}>
+            <div className={styles.viewGrid}>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Licence State</span>
+                <span className={styles.viewFieldValue}>{licenceStates.length > 0 ? licenceStates.join(', ') : '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Gender</span>
+                <span className={styles.viewFieldValue}>{raw.gender || '-'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Info */}
+          <div className={styles.viewSection}>
+            <div className={styles.viewSectionTitle}>Contact Info</div>
+            <div className={styles.viewGrid}>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Mobile Number</span>
+                <span className={styles.viewFieldValue}>{raw.mobile || raw.phone || '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Email</span>
+                <span className={styles.viewFieldValue}>{user.email || '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Fax Number</span>
+                <span className={styles.viewFieldValue}>{raw.fax || '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Zipcode</span>
+                <span className={styles.viewFieldValue}>{raw.zip_code || '-'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Additional Info */}
+          <div className={styles.viewSection}>
+            <div className={styles.viewSectionTitle}>Additional Info</div>
+            <div className={styles.viewGrid}>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Address Line 1</span>
+                <span className={styles.viewFieldValue}>{raw.address_line1 || '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>Address Line 2</span>
+                <span className={styles.viewFieldValue}>{raw.address_line2 || '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>State</span>
+                <span className={styles.viewFieldValue}>{raw.state || '-'}</span>
+              </div>
+              <div className={styles.viewField}>
+                <span className={styles.viewFieldLabel}>City</span>
+                <span className={styles.viewFieldValue}>{raw.city || '-'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className={styles.emptyState}>
+          <Icon name="solar:widget-linear" size={40} color="var(--neutral-150)" />
+          <p className={styles.emptyTitle}>{viewTab}</p>
+          <p className={styles.emptyDesc}>Coming soon.</p>
+        </div>
+      )}
+    </Drawer>
+  );
+}
+
 /* ── Edit User Drawer ── */
 
 const ADMIN_ROLES = ['Business/Practice Owner', 'Operations/Clinical Analyst', 'Employer'];
 const GENDER_OPTIONS = ['Male', 'Female', 'Non-binary', 'Prefer not to say'];
-const DRAWER_TABS = ['User Details', 'Business Hours', 'Assigned Patients', 'Audit Log'];
+const DRAWER_TABS = ['User Details', 'Business Hours', 'Assigned Patients'];
 const EHR_SYSTEMS = ['Athena Health', 'Epic', 'Cerner', 'eClinicalWorks', 'Allscripts', 'NextGen', 'Greenway Health', 'DrChrono'];
 const LANGUAGE_OPTIONS = ['English', 'Spanish', 'Cantonese', 'Mandarin', 'Vietnamese', 'Korean', 'Tagalog', 'Arabic', 'French', 'Hindi', 'Portuguese', 'Russian'];
 const LOCATION_OPTIONS = ['SEB Office', 'Downtown Clinic', 'AstranaCare Centennial Hills', 'Valley Medical Center', 'Sunrise Health', 'Palm Desert Office', 'Riverside Clinic', 'Carson City Center'];
@@ -527,58 +784,6 @@ function MultiSelectField({ label, required, options, value = [], onChange }) {
 }
 
 /* ── Inline Audit Log for User Profile ── */
-function UserAuditLog({ userId }) {
-  const fetchAuditLogs = useAppStore(s => s.fetchAuditLogs);
-  const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      const data = await fetchAuditLogs('UserProfile', userId);
-      setLogs(data);
-      setLoading(false);
-    })();
-  }, [userId, fetchAuditLogs]);
-
-  if (loading) return <div style={{ padding: 24, textAlign: 'center', color: 'var(--neutral-300)', fontSize: 14 }}>Loading audit log...</div>;
-  if (logs.length === 0) return (
-    <div className={styles.emptyState}>
-      <Icon name="solar:history-linear" size={40} color="var(--neutral-150)" />
-      <p className={styles.emptyTitle}>No changes recorded yet</p>
-      <p className={styles.emptyDesc}>Changes to this profile will appear here.</p>
-    </div>
-  );
-
-  return (
-    <div style={{ padding: '12px 0' }}>
-      {logs.map((log, i) => (
-        <div key={i} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: '0.5px solid var(--neutral-100)' }}>
-          <Icon name={log.action === 'created' ? 'solar:add-circle-linear' : log.action === 'deleted' ? 'solar:trash-bin-minimalistic-linear' : 'solar:pen-linear'} size={16} color="var(--neutral-300)" style={{ marginTop: 2, flexShrink: 0 }} />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--neutral-400)' }}>{log.details || log.action}</div>
-            <div style={{ fontSize: 12, color: 'var(--neutral-200)', marginTop: 2 }}>
-              {log.userName} &bull; {new Date(log.createdAt).toLocaleString()}
-            </div>
-            {log.changes && log.changes.length > 0 && (
-              <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                {log.changes.map((c, ci) => (
-                  <div key={ci} style={{ fontSize: 12, color: 'var(--neutral-300)' }}>
-                    <strong>{c.field}:</strong>{' '}
-                    <span style={{ textDecoration: 'line-through', color: 'var(--status-error)' }}>{c.from || '(empty)'}</span>
-                    {' → '}
-                    <span style={{ color: 'var(--status-success)' }}>{c.to || '(empty)'}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function EditUserDrawer({ user, onClose, onSave }) {
   const raw = user._raw || {};
   const logAudit = useAppStore(s => s.logAudit);
@@ -642,12 +847,7 @@ function EditUserDrawer({ user, onClose, onSave }) {
   const handleDiscard = () => { onClose(); };
 
   return (
-    <Drawer title="User Profile" onClose={onClose} bodyClassName={styles.editDrawerBody} headerRight={
-      <div style={{ display: 'flex', gap: 8 }}>
-        <Button variant="ghost" size="L" onClick={handleDiscard}>Discard</Button>
-        <Button variant="primary" size="L" onClick={handleSave}>Save Changes</Button>
-      </div>
-    }>
+    <Drawer title="User Profile" onClose={onClose} bodyClassName={styles.editDrawerBody} headerStyle={{ padding: '12px 16px' }} titleStyle={{ fontSize: 14 }}>
       {/* User header — warm gradient */}
       <div className={styles.editHeader}>
         <Avatar variant="assignee" initials={user.initials} className={styles.editAvatar} />
@@ -686,13 +886,11 @@ function EditUserDrawer({ user, onClose, onSave }) {
           </div>
         ))}
         <div style={{ flex: 1 }} />
-        <ActionButton icon="solar:check-read-linear" size="S" tooltip="Mark Complete" />
-        <ActionButton icon="solar:close-linear" size="S" tooltip="Cancel" onClick={onClose} />
+        <Button variant="ghost" size="S" onClick={handleDiscard}>Discard</Button>
+        <Button variant="primary" size="S" onClick={handleSave}>Save</Button>
       </div>
 
-      {drawerTab === 'Audit Log' ? (
-        <UserAuditLog userId={user.id} />
-      ) : drawerTab === 'User Details' ? (
+      {drawerTab === 'User Details' ? (
         <div className={styles.formScroll}>
           {/* Administrative Roles */}
           <div className={styles.formSection}>
@@ -709,14 +907,8 @@ function EditUserDrawer({ user, onClose, onSave }) {
 
           {/* Clinical & Operational Roles */}
           <div className={styles.formSection}>
-            <label className={styles.formLabel}>Clinical & Operational Roles <span className={styles.required}>*</span></label>
             <p className={styles.formHint}>Select at least one role if the user interacts with patients or schedules appointments.</p>
-            <Select value={form.role && form.role !== 'Viewer' ? form.role : undefined} onValueChange={v => set('role', v)}>
-              <SelectTrigger className={styles.fullWidthSelect}><SelectValue placeholder="Select Clinical & Operational Roles" /></SelectTrigger>
-              <SelectContent>
-                {MOCK_ROLES.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
-              </SelectContent>
-            </Select>
+            <MultiSelectField label="Clinical & Operational Roles" required options={MOCK_ROLES} value={form.clinical_roles} onChange={v => { set('clinical_roles', v); if (v.length > 0) set('role', v[0]); }} />
           </div>
 
           {/* Location */}

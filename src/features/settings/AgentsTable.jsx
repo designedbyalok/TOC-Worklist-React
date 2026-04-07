@@ -17,6 +17,8 @@ import { GoalsPanel } from './panels/GoalsPanel';
 import { AuditLogDrawer } from './panels/AuditLogDrawer';
 import { CallQueueDrawer } from '../../components/CallQueueDrawer/CallQueueDrawer';
 import { ProductTour } from '../../components/ProductTour/ProductTour';
+import { useTableSort } from '../../components/Table/useTableSort';
+import { SortableHeader } from '../../components/Table/SortableHeader';
 import styles from './AgentsTable.module.css';
 
 const TABS = ['Agents', 'Goals', 'Knowledge Base', 'Tools', 'Compliance Policies', 'Test Cases', 'Analytics'];
@@ -222,8 +224,9 @@ export function AgentsTable() {
     );
   }, [agents, searchVal]);
 
+  const { sorted: sortedAgents, sortKey, sortDir, requestSort } = useTableSort(filteredAgents, 'name');
   const startIdx = (currentPage - 1) * perPage;
-  const paginatedAgents = filteredAgents.slice(startIdx, startIdx + perPage);
+  const paginatedAgents = sortedAgents.slice(startIdx, startIdx + perPage);
 
   return (
     <div className={styles.wrapper}>
@@ -341,8 +344,14 @@ export function AgentsTable() {
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>Agent Name</th><th>Use Case</th><th>Version</th><th>Voice</th>
-                      <th>Last Updated</th><th>Last Updated By</th><th>Status</th><th>Actions</th>
+                      <SortableHeader label="Agent Name" sortKey="name" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} />
+                      <SortableHeader label="Use Case" sortKey="use_case" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} />
+                      <SortableHeader label="Version" sortKey="version" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} />
+                      <th>Voice</th>
+                      <SortableHeader label="Last Updated" sortKey="last_updated" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} />
+                      <SortableHeader label="Last Updated By" sortKey="last_updated_by" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} />
+                      <th>Status</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>

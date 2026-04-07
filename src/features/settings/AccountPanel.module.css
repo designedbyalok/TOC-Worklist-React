@@ -276,10 +276,43 @@
   background: #FEF2F2;
 }
 
+/* Overflow badge with hover dropdown */
+.overflowBadgeWrap {
+  position: relative;
+  display: inline-flex;
+  cursor: default;
+}
+
+.overflowDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 4px 0;
+  z-index: 50;
+  min-width: 140px;
+  white-space: nowrap;
+}
+
+.overflowItem {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--neutral-400);
+  font-family: 'Inter', sans-serif;
+}
+
 /* ── Edit User Drawer ── */
 
 .editDrawerBody {
   overflow-x: hidden !important;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
 }
 
 .editHeader {
@@ -287,9 +320,9 @@
   align-items: center;
   gap: 12px;
   padding: 12px 24px;
-  margin: 0 -24px;
   background: linear-gradient(90deg, rgba(255, 237, 218, 0.2) 17%, rgba(255, 255, 255, 0.2) 100%);
   border-bottom: 0.5px solid var(--neutral-150);
+  flex-shrink: 0;
 }
 
 .editAvatar {
@@ -347,9 +380,10 @@
   display: flex;
   align-items: center;
   gap: 0;
-  padding: 0 0 0 12px;
-  margin: 0 -24px;
+  padding: 0 12px;
   border-bottom: 0.5px solid var(--neutral-150);
+  flex-shrink: 0;
+  background: var(--neutral-0, #fff);
 }
 
 .drawerTab {
@@ -376,9 +410,11 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 12px 0;
+  padding: 12px 24px;
+  overflow-y: auto;
   overflow-x: hidden;
-  max-width: 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 .required {
@@ -575,6 +611,67 @@
 
 .formTextarea:focus {
   border-color: var(--primary-300);
+}
+
+/* ── Read-only View Drawer ── */
+
+.viewSection {
+  margin: 0;
+  padding: 0;
+}
+
+.viewSectionLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--neutral-900, #16181d);
+  margin-bottom: 6px;
+}
+
+.viewSectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--neutral-900, #16181d);
+  margin-bottom: 12px;
+  padding-top: 4px;
+  border-top: 0.5px solid var(--neutral-100);
+}
+
+.viewBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.viewGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 12px;
+}
+
+.viewField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viewFieldLabel {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-200, #8a94a8);
+}
+
+.viewFieldValue {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-400, #3a485f);
+}
+
+.viewBio {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-400, #3a485f);
+  line-height: 1.6;
+  margin: 4px 0 0;
 }
 
 .radioGroup {
