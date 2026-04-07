@@ -206,6 +206,8 @@ export function AccountPanel() {
   const [searchVal, setSearchVal] = useState('');
   const [editingUser, setEditingUser] = useState(null);
   const [viewingUser, setViewingUser] = useState(null);
+  const [showInvite, setShowInvite] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
   const showToast = useAppStore(s => s.showToast);
 
   // Fetch users from profiles table (synced with Supabase Auth)
@@ -311,10 +313,12 @@ export function AccountPanel() {
   };
 
   const filteredUsers = useMemo(() => {
-    if (!searchVal.trim()) return users;
+    let list = users;
+    if (statusFilter !== 'all') list = list.filter(u => u.status.toLowerCase() === statusFilter);
+    if (!searchVal.trim()) return list;
     const q = searchVal.toLowerCase();
-    return users.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.role.toLowerCase().includes(q) || u.location.toLowerCase().includes(q));
-  }, [users, searchVal]);
+    return list.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.role.toLowerCase().includes(q) || u.location.toLowerCase().includes(q));
+  }, [users, searchVal, statusFilter]);
 
   const { sorted: sortedUsers, sortKey: userSortKey, sortDir: userSortDir, requestSort: requestUserSort } = useTableSort(filteredUsers, 'name');
 
@@ -336,9 +340,12 @@ export function AccountPanel() {
               <SearchIconButton title="Search" onClick={() => setSearchOpen(true)} />
             )}
           </div>
-          <ActionButton icon="solar:filter-linear" size="L" tooltip="Filter" />
+          <ActionButton icon="solar:filter-linear" size="L" tooltip="Filter" onClick={() => setStatusFilter(f => f === 'all' ? 'active' : f === 'active' ? 'inactive' : f === 'inactive' ? 'invited' : 'all')} />
+          {statusFilter !== 'all' && (
+            <Badge variant={statusFilter === 'active' ? 'status-completed' : statusFilter === 'invited' ? 'status-queued' : 'status-failed'} label={statusFilter} style={{ textTransform: 'capitalize', cursor: 'pointer' }} onClick={() => setStatusFilter('all')} />
+          )}
           <span className={styles.tabDivider} />
-          <Button variant="secondary" size="L" leadingIcon="solar:add-circle-linear">+ Invite User</Button>
+          <Button variant="secondary" size="L" leadingIcon="solar:add-circle-linear" onClick={() => setShowInvite(true)}>Invite User</Button>
         </div>
       </div>
 
@@ -437,6 +444,11 @@ export function AccountPanel() {
           onClose={() => setEditingUser(null)}
           onSave={(updates) => saveUserProfile(editingUser.id, updates)}
         />
+      )}
+
+      {/* Invite User Drawer */}
+      {showInvite && (
+        <InviteUserDrawer onClose={() => setShowInvite(false)} onInvited={() => { setShowInvite(false); fetchUsers(); }} />
       )}
     </div>
   );
@@ -784,6 +796,495 @@ function MultiSelectField({ label, required, options, value = [], onChange }) {
 }
 
 /* ── Inline Audit Log for User Profile ── */
+/* ── Add Column Dropdown for Bulk Import ── */
+function AddColumnDropdown({ available, labels, onAdd, onClose }) {
+  const [selected, setSelected] = useState([]);
+  return createPortal(
+    <div style={{ position: 'fixed', inset: 0, zIndex: 9999 }} onClick={onClose}>
+      <div className={styles.addColDropdown} onClick={e => e.stopPropagation()}>
+        {available.map(col => (
+          <label key={col} className={styles.addColOption}>
+            <input type="checkbox" checked={selected.includes(col)} onChange={() => setSelected(prev => prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col])} />
+            <span>{labels[col] || col}</span>
+          </label>
+        ))}
+        {available.length === 0 && <div style={{ padding: 12, color: 'var(--neutral-300)', fontSize: 13 }}>All columns added</div>}
+        <div style={{ display: 'flex', gap: 8, padding: '8px 12px', borderTop: '0.5px solid var(--neutral-100)' }}>
+          <Button variant="ghost" size="S" onClick={onClose}>Cancel</Button>
+          <Button variant="primary" size="S" onClick={() => onAdd(selected)} disabled={selected.length === 0}>Add Columns</Button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+/* ── Invite User Drawer ── */
+
+function InviteUserDrawer({ onClose, onInvited }) {
+  const [step, setStep] = useState('choose'); // 'choose' | 'form' | 'bulk-upload' | 'bulk-review'
+  const [showAdditional, setShowAdditional] = useState(false);
+  const showToast = useAppStore(s => s.showToast);
+  const logAudit = useAppStore(s => s.logAudit);
+  // Bulk import state
+  const [bulkFile, setBulkFile] = useState(null);
+  const [bulkRows, setBulkRows] = useState([]);
+  const [bulkColumns, setBulkColumns] = useState(['first_name', 'middle_name', 'last_name', 'email', 'admin_role']);
+  const [addColOpen, setAddColOpen] = useState(false);
+  const fileInputRef = useRef(null);
+  const [form, setForm] = useState({
+    first_name: '', middle_name: '', last_name: '', email: '',
+    admin_role: 'Business/Practice Owner', clinical_roles: [],
+    gender: '', bio: '', mobile: '', fax: '', zip_code: '',
+    address_line1: '', address_line2: '', state: '', city: '',
+    credentials: [], licence_states: [], locations: [], languages: [],
+  });
+  const [sending, setSending] = useState(false);
+
+  const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
+
+  const handleSendInvite = async () => {
+    if (!form.first_name.trim() || !form.last_name.trim() || !form.email.trim()) {
+      showToast('First name, last name, and email are required');
+      return;
+    }
+    setSending(true);
+    try {
+      // 1. Invite user via Supabase Auth (sends signup email)
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: form.email,
+        password: crypto.randomUUID(), // temp password — user resets via email
+        options: {
+          data: { first_name: form.first_name, last_name: form.last_name, full_name: `${form.first_name} ${form.last_name}`.trim() },
+          emailRedirectTo: `${window.location.origin}/#/reset-password`,
+        },
+      });
+      if (authError) { showToast(`Invite failed: ${authError.message}`); setSending(false); return; }
+
+      // 2. Create profile with 'Invited' status
+      const userId = authData?.user?.id;
+      if (userId) {
+        const profileData = {
+          id: userId,
+          email: form.email,
+          full_name: `${form.first_name} ${form.last_name}`.trim(),
+          first_name: form.first_name, middle_name: form.middle_name, last_name: form.last_name,
+          status: 'Invited',
+          admin_role: form.admin_role,
+          role: form.clinical_roles.length > 0 ? form.clinical_roles[0] : 'Viewer',
+          clinical_roles: form.clinical_roles,
+          gender: form.gender, bio: form.bio, mobile: form.mobile, fax: form.fax,
+          zip_code: form.zip_code, address_line1: form.address_line1, address_line2: form.address_line2,
+          state: form.state, city: form.city,
+          credentials: form.credentials, licence_states: form.licence_states,
+          locations: form.locations, languages: form.languages,
+        };
+        await supabase.from('profiles').upsert(profileData, { onConflict: 'id' });
+        logAudit('UserProfile', userId, profileData.full_name, 'created', `Invited user: ${form.email}`, 'Lifecycle');
+      }
+
+      // 3. Send password reset email so user can set their password
+      await supabase.auth.resetPasswordForEmail(form.email, {
+        redirectTo: `${window.location.origin}/#/reset-password`,
+      });
+
+      showToast(`Invitation sent to ${form.email}`);
+      onInvited();
+    } catch (e) {
+      showToast(`Error: ${e.message}`);
+    }
+    setSending(false);
+  };
+
+  if (step === 'choose') {
+    return (
+      <Drawer title="Invite User" onClose={onClose}>
+        <div className={styles.inviteChoose}>
+          <p className={styles.inviteChooseTitle}>Choose how you'd like to add team members</p>
+          <div className={styles.inviteCard} onClick={() => setStep('form')}>
+            <Icon name="solar:user-plus-linear" size={32} color="var(--primary-300)" />
+            <h4>Single Invite</h4>
+            <p>Invite one team member at a time by filling out a form</p>
+            <Button variant="secondary" size="L">Invite Individual</Button>
+          </div>
+          <div className={styles.inviteCard} style={{ background: '#FFF8F5', borderColor: 'rgba(244,122,62,0.2)' }} onClick={() => setStep('bulk-upload')}>
+            <Icon name="solar:users-group-rounded-linear" size={32} color="#F47A3E" />
+            <h4>Bulk Import</h4>
+            <p>Upload a CSV file to add multiple team members at once</p>
+            <Button variant="secondary" size="L" style={{ color: '#F47A3E', borderColor: '#F47A3E' }}>Import Multiple</Button>
+          </div>
+        </div>
+      </Drawer>
+    );
+  }
+
+  // ── Bulk Upload Step ──
+  if (step === 'bulk-upload') {
+    const handleFileSelect = (file) => {
+      if (!file) return;
+      setBulkFile(file);
+      // Parse CSV
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        const lines = text.split('\n').filter(l => l.trim());
+        if (lines.length < 2) { showToast('CSV must have a header row and at least one data row'); return; }
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/ /g, '_'));
+        const rows = lines.slice(1).map((line, i) => {
+          const vals = line.split(',').map(v => v.trim());
+          const row = { _id: i };
+          headers.forEach((h, hi) => { row[h] = vals[hi] || ''; });
+          // Ensure required fields
+          if (!row.first_name) row.first_name = '';
+          if (!row.last_name) row.last_name = '';
+          if (!row.email) row.email = '';
+          if (!row.admin_role) row.admin_role = 'Employer';
+          return row;
+        });
+        setBulkRows(rows);
+        // Auto-detect columns from CSV headers
+        const detected = ['first_name', 'middle_name', 'last_name', 'email', 'admin_role'];
+        headers.forEach(h => { if (!detected.includes(h) && h !== '_id') detected.push(h); });
+        setBulkColumns(detected);
+      };
+      reader.readAsText(file);
+    };
+
+    const handleDrop = (e) => { e.preventDefault(); handleFileSelect(e.dataTransfer.files[0]); };
+    const handleDragOver = (e) => { e.preventDefault(); };
+
+    return (
+      <Drawer title={<div><div style={{ fontSize: 16, fontWeight: 600 }}>Bulk Import Users</div><div style={{ fontSize: 13, color: 'var(--neutral-300)', fontWeight: 400 }}>Import the users in bulk by uploading a spreadsheet.</div></div>} onClose={onClose} bodyClassName={styles.inviteDrawerBody} headerRight={
+        <Button variant="primary" size="L" disabled={!bulkFile} onClick={() => setStep('bulk-review')}>Next</Button>
+      }>
+        <div className={styles.inviteFormScroll}>
+          {/* Stepper */}
+          <div className={styles.bulkStepper}>
+            <span className={styles.bulkStepActive}><span className={styles.bulkStepNum}>1</span> Upload File</span>
+            <span className={styles.bulkStepLine} />
+            <span className={styles.bulkStepInactive}><span className={styles.bulkStepNum}>2</span> Profile Review</span>
+          </div>
+
+          {/* Icon */}
+          <div className={styles.bulkIcon}>
+            <Icon name="solar:users-group-rounded-linear" size={48} color="var(--neutral-200)" />
+          </div>
+
+          {/* Instructions */}
+          <div className={styles.bulkInfo}>
+            <div className={styles.bulkInfoTitle}><Icon name="solar:info-circle-linear" size={16} color="var(--primary-300)" /> How to import team members</div>
+            <ol className={styles.bulkInfoList}>
+              <li>Download the CSV template below</li>
+              <li>Fill in the team member details in the spreadsheet</li>
+              <li>Save the file and upload it here</li>
+              <li>Review the preview and confirm the import</li>
+            </ol>
+          </div>
+
+          {/* Upload area */}
+          {!bulkFile ? (
+            <div className={styles.bulkDropZone} onDrop={handleDrop} onDragOver={handleDragOver} onClick={() => fileInputRef.current?.click()}>
+              <Icon name="solar:upload-linear" size={24} color="var(--neutral-200)" />
+              <p>Drag and drop file here or <span className={styles.bulkChooseFile}>Choose file</span></p>
+              <input ref={fileInputRef} type="file" accept=".csv,.xls,.xlsx" style={{ display: 'none' }} onChange={e => handleFileSelect(e.target.files[0])} />
+            </div>
+          ) : (
+            <div className={styles.bulkFileCard}>
+              <Icon name="solar:document-text-linear" size={24} color="var(--neutral-300)" />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)' }}>{bulkFile.name}</div>
+                <div style={{ fontSize: 12, color: 'var(--neutral-300)' }}>{(bulkFile.size / (1024 * 1024)).toFixed(1)} MB</div>
+              </div>
+              <button className={styles.bulkChooseFile} onClick={() => { setBulkFile(null); setBulkRows([]); }}>Change file</button>
+            </div>
+          )}
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--neutral-200)' }}>
+            <span>Supported formats: CSV, XLS, XLSX</span>
+            <span>Max size: 5 MB</span>
+          </div>
+
+          {/* Template download */}
+          {!bulkFile && (
+            <div className={styles.bulkTemplate}>
+              <Icon name="solar:file-text-linear" size={24} color="var(--neutral-300)" />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--neutral-400)' }}>User Details Import Template</div>
+                <div style={{ fontSize: 13, color: 'var(--neutral-300)' }}>You can download the attached example and use it as a template to add users</div>
+              </div>
+              <button className={styles.bulkChooseFile} onClick={() => {
+                const csv = 'First Name,Middle Name,Last Name,Email,Admin Role\nAmy,,Brenneman,amy@fold.health,Employer\n';
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = 'user_import_template.csv'; a.click();
+              }}>Download sample</button>
+            </div>
+          )}
+
+          {/* Info notice */}
+          <div className={styles.bulkNotice}>
+            <Icon name="solar:info-circle-linear" size={14} color="var(--neutral-200)" />
+            <span>{bulkFile ? 'Once users are generated through the bulk import method, their login credentials will be sent out promptly.' : 'After users are successfully created through the bulk import process, they will receive their login credentials via email.'}</span>
+          </div>
+        </div>
+      </Drawer>
+    );
+  }
+
+  // ── Bulk Review Step ──
+  if (step === 'bulk-review') {
+    const EXTRA_COLUMNS = ['credentials', 'gender', 'profile', 'licence_state', 'location', 'languages', 'mobile', 'fax', 'zip_code'];
+    const COL_LABELS = { first_name: 'First Name', middle_name: 'Middle Name', last_name: 'Last Name', email: 'Email', admin_role: 'Administrative Role', credentials: 'Credentials', gender: 'Gender', profile: 'Profile', licence_state: 'Licence State', location: 'Location', languages: 'Languages', mobile: 'Mobile Number', fax: 'Fax Number', zip_code: 'Zip Code' };
+
+    const addRow = () => {
+      setBulkRows(prev => [...prev, { _id: Date.now(), first_name: '', middle_name: '', last_name: '', email: '', admin_role: 'Employer' }]);
+    };
+    const deleteRow = (id) => setBulkRows(prev => prev.filter(r => r._id !== id));
+    const duplicateRow = (row) => setBulkRows(prev => [...prev, { ...row, _id: Date.now(), email: '' }]);
+    const updateRow = (id, field, value) => {
+      setBulkRows(prev => prev.map(r => r._id === id ? { ...r, [field]: value } : r));
+    };
+    const addColumns = (cols) => {
+      setBulkColumns(prev => [...prev, ...cols.filter(c => !prev.includes(c))]);
+      setAddColOpen(false);
+    };
+
+    const handleBulkImport = async () => {
+      setSending(true);
+      let successCount = 0;
+      for (const row of bulkRows) {
+        if (!row.email?.trim()) continue;
+        try {
+          const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: row.email, password: crypto.randomUUID(),
+            options: { data: { first_name: row.first_name, last_name: row.last_name, full_name: `${row.first_name} ${row.last_name}`.trim() } },
+          });
+          if (authError) continue;
+          const userId = authData?.user?.id;
+          if (userId) {
+            await supabase.from('profiles').upsert({
+              id: userId, email: row.email, full_name: `${row.first_name} ${row.last_name}`.trim(),
+              first_name: row.first_name, middle_name: row.middle_name, last_name: row.last_name,
+              status: 'Invited', admin_role: row.admin_role || 'Employer', role: 'Viewer',
+              gender: row.gender, mobile: row.mobile, fax: row.fax, zip_code: row.zip_code,
+            }, { onConflict: 'id' });
+            await supabase.auth.resetPasswordForEmail(row.email, { redirectTo: `${window.location.origin}/#/reset-password` });
+            successCount++;
+          }
+        } catch (e) { /* skip failed rows */ }
+      }
+      logAudit('UserProfile', 'bulk', 'Bulk Import', 'created', `Bulk imported ${successCount} users`, 'Lifecycle');
+      showToast(`${successCount} user(s) invited successfully`);
+      setSending(false);
+      onInvited();
+    };
+
+    return (
+      <Drawer title={<div><div style={{ fontSize: 16, fontWeight: 600 }}>Bulk Import Users</div><div style={{ fontSize: 13, color: 'var(--neutral-300)', fontWeight: 400 }}>Import the Prospect in bulk by uploading a spreadsheet.</div></div>} onClose={onClose} className={styles.bulkReviewDrawer} bodyClassName={styles.inviteDrawerBody} headerRight={
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button variant="secondary" size="L" onClick={() => setStep('bulk-upload')}>Previous</Button>
+          <Button variant="primary" size="L" onClick={handleBulkImport} disabled={sending}>{sending ? 'Importing...' : 'Import'}</Button>
+        </div>
+      }>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          {/* Stepper + actions */}
+          <div style={{ display: 'flex', alignItems: 'center', padding: '8px 16px', borderBottom: '0.5px solid var(--neutral-150)', gap: 16, flexShrink: 0 }}>
+            <div className={styles.bulkStepper} style={{ flex: 1 }}>
+              <span className={styles.bulkStepDone}><span className={styles.bulkStepNum}>1</span> Upload File</span>
+              <span className={styles.bulkStepLine} />
+              <span className={styles.bulkStepActive}><span className={styles.bulkStepNum}>2</span> Profile Review</span>
+            </div>
+            <Button variant="ghost" size="S" leadingIcon="solar:add-circle-linear" onClick={addRow}>Add Row</Button>
+            <div style={{ position: 'relative' }}>
+              <Button variant="ghost" size="S" leadingIcon="solar:add-circle-linear" onClick={() => setAddColOpen(v => !v)}>Add Column</Button>
+              {addColOpen && (
+                <AddColumnDropdown
+                  available={EXTRA_COLUMNS.filter(c => !bulkColumns.includes(c))}
+                  labels={COL_LABELS}
+                  onAdd={addColumns}
+                  onClose={() => setAddColOpen(false)}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Table */}
+          <div style={{ flex: 1, overflow: 'auto' }}>
+            <table className={styles.bulkTable}>
+              <thead>
+                <tr>
+                  <th style={{ position: 'sticky', left: 0, background: '#fff', zIndex: 2, minWidth: 180 }}>Users</th>
+                  {bulkColumns.map(col => (
+                    <th key={col} style={{ minWidth: 140 }}>{COL_LABELS[col] || col} {['first_name', 'last_name', 'email'].includes(col) && <span style={{ color: 'var(--status-error)' }}>*</span>}</th>
+                  ))}
+                  <th style={{ position: 'sticky', right: 0, background: '#fff', zIndex: 2, minWidth: 70 }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bulkRows.map(row => (
+                  <tr key={row._id}>
+                    <td style={{ position: 'sticky', left: 0, background: '#fff', zIndex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Avatar variant="assignee" initials={getInitials(`${row.first_name} ${row.last_name}`).toUpperCase()} />
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--neutral-400)' }}>{row.first_name} {row.last_name}</div>
+                          <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{row.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    {bulkColumns.map(col => (
+                      <td key={col}>
+                        {col === 'admin_role' ? (
+                          <select value={row[col] || 'Employer'} onChange={e => updateRow(row._id, col, e.target.value)} className={styles.bulkInput}>
+                            {ADMIN_ROLES.map(r => <option key={r} value={r}>{r.length > 18 ? r.substring(0, 18) + '...' : r}</option>)}
+                          </select>
+                        ) : (
+                          <input className={styles.bulkInput} value={row[col] || ''} onChange={e => updateRow(row._id, col, e.target.value)} placeholder={COL_LABELS[col] || ''} />
+                        )}
+                      </td>
+                    ))}
+                    <td style={{ position: 'sticky', right: 0, background: '#fff', zIndex: 1 }}>
+                      <div style={{ display: 'flex', gap: 4 }}>
+                        <ActionButton icon="solar:copy-linear" size="S" tooltip="Duplicate" onClick={() => duplicateRow(row)} />
+                        <ActionButton icon="solar:trash-bin-minimalistic-linear" size="S" tooltip="Delete" state="error" onClick={() => deleteRow(row._id)} />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Notice */}
+          <div className={styles.bulkNotice} style={{ margin: 0, padding: '8px 16px', borderTop: '0.5px solid var(--neutral-150)' }}>
+            <Icon name="solar:info-circle-linear" size={14} color="var(--neutral-200)" />
+            <span>Following the successful creation of users through bulk import, their login credentials will be made available to them.</span>
+          </div>
+        </div>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Drawer title="Invite User" onClose={onClose} bodyClassName={styles.inviteDrawerBody} headerRight={
+      <Button variant="primary" size="L" onClick={handleSendInvite} disabled={sending}>{sending ? 'Sending...' : 'Send Invite'}</Button>
+    }>
+      <div className={styles.inviteFormScroll}>
+        {/* Basic Info */}
+        <h4 className={styles.formSectionTitle} style={{ borderTop: 'none', paddingTop: 0, marginTop: 0 }}>Basic Info</h4>
+        <div className={styles.formGrid}>
+          <div className={styles.formField}>
+            <label className={styles.formLabel}>First Name <span className={styles.required}>*</span></label>
+            <Input value={form.first_name} onChange={e => set('first_name', e.target.value)} placeholder="First Name" />
+          </div>
+          <div className={styles.formField}>
+            <label className={styles.formLabel}>Middle Name</label>
+            <Input value={form.middle_name} onChange={e => set('middle_name', e.target.value)} placeholder="Middle Name" />
+          </div>
+          <div className={styles.formField}>
+            <label className={styles.formLabel}>Last Name <span className={styles.required}>*</span></label>
+            <Input value={form.last_name} onChange={e => set('last_name', e.target.value)} placeholder="Last Name" />
+          </div>
+          <div className={styles.formField}>
+            <label className={styles.formLabel}>Email <span className={styles.required}>*</span></label>
+            <Input value={form.email} onChange={e => set('email', e.target.value)} placeholder="Enter email" type="email" />
+          </div>
+        </div>
+
+        {/* Administrative Roles */}
+        <div className={styles.formSection}>
+          <label className={styles.formLabel}>Administrative Roles <span className={styles.required}>*</span></label>
+          <RadioGroup value={form.admin_role} onValueChange={v => set('admin_role', v)} className={styles.radioGroup}>
+            {ADMIN_ROLES.map(role => (
+              <label key={role} className={styles.radioItem}><RadioGroupItem value={role} /><span>{role}</span></label>
+            ))}
+          </RadioGroup>
+        </div>
+
+        {/* Clinical Roles */}
+        <div className={styles.formSection}>
+          <label className={styles.formLabel}>Clinical & Operational Roles <span className={styles.required}>*</span></label>
+          <p className={styles.formHint}>Select at least one role if the user interacts with patients or schedules appointments.</p>
+          <MultiSelectField label="" options={MOCK_ROLES} value={form.clinical_roles} onChange={v => set('clinical_roles', v)} />
+        </div>
+
+        {/* Additional Fields toggle */}
+        <button className={styles.additionalToggle} onClick={() => setShowAdditional(v => !v)}>
+          Additional Fields <Icon name={showAdditional ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'} size={14} color="var(--neutral-400)" />
+        </button>
+
+        {showAdditional && (
+          <>
+            <div className={styles.formGrid}>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>Credentials <span className={styles.required}>*</span></label>
+                <TagInput value={form.credentials} onChange={v => set('credentials', v)} placeholder="e.g. Dr, NP" />
+              </div>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>Gender <span className={styles.required}>*</span></label>
+                <Select value={form.gender || undefined} onValueChange={v => set('gender', v)}>
+                  <SelectTrigger><SelectValue placeholder="Select gender" /></SelectTrigger>
+                  <SelectContent>{GENDER_OPTIONS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className={styles.formSection}>
+              <label className={styles.formLabel}>Profile</label>
+              <textarea className={styles.formTextarea} rows={4} value={form.bio} onChange={e => set('bio', e.target.value)} placeholder="Brief bio..." />
+            </div>
+
+            <MultiSelectField label="Licence State" required options={['Nevada', 'New York', 'California', 'Texas', 'Florida']} value={form.licence_states} onChange={v => set('licence_states', v)} />
+            <MultiSelectField label="Location" required options={LOCATION_OPTIONS} value={form.locations} onChange={v => set('locations', v)} />
+            <MultiSelectField label="Languages" required options={LANGUAGE_OPTIONS} value={form.languages} onChange={v => set('languages', v)} />
+
+            {/* Contact Info */}
+            <h4 className={styles.formSectionTitle}>Contact Info</h4>
+            <div className={styles.formGrid}>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>Mobile Number <span className={styles.required}>*</span></label>
+                <Input value={form.mobile} onChange={e => set('mobile', e.target.value)} placeholder="+1 234 567 890" />
+              </div>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>Email <span className={styles.required}>*</span></label>
+                <Input value={form.email} disabled />
+              </div>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>Fax Number <span className={styles.required}>*</span></label>
+                <Input value={form.fax} onChange={e => set('fax', e.target.value)} placeholder="+1 234 567 890" />
+              </div>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>Zip Code <span className={styles.required}>*</span></label>
+                <Input value={form.zip_code} onChange={e => set('zip_code', e.target.value)} placeholder="12345" />
+              </div>
+            </div>
+
+            {/* Additional Info */}
+            <h4 className={styles.formSectionTitle}>Additional Info</h4>
+            <div className={styles.formGrid}>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>Address Line 1 <span className={styles.required}>*</span></label>
+                <Input value={form.address_line1} onChange={e => set('address_line1', e.target.value)} placeholder="Street address" />
+              </div>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>Address Line 2 <span className={styles.required}>*</span></label>
+                <Input value={form.address_line2} onChange={e => set('address_line2', e.target.value)} placeholder="Apt, suite" />
+              </div>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>State <span className={styles.required}>*</span></label>
+                <Input value={form.state} onChange={e => set('state', e.target.value)} placeholder="State" />
+              </div>
+              <div className={styles.formField}>
+                <label className={styles.formLabel}>City <span className={styles.required}>*</span></label>
+                <Input value={form.city} onChange={e => set('city', e.target.value)} placeholder="City" />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </Drawer>
+  );
+}
+
 function EditUserDrawer({ user, onClose, onSave }) {
   const raw = user._raw || {};
   const logAudit = useAppStore(s => s.logAudit);
