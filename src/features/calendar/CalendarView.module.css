@@ -1,0 +1,140 @@
+/* ── Calendar View ── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--neutral-0);
+  overflow: hidden;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 0.5px solid var(--neutral-150);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.monthTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--neutral-400);
+  margin: 0;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+}
+
+.viewSelect {
+  padding: 4px 8px;
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  color: var(--neutral-400);
+  background: var(--neutral-0);
+  cursor: pointer;
+}
+
+.todayBtn {
+  padding: 4px 12px;
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  color: var(--neutral-400);
+  background: var(--neutral-0);
+  cursor: pointer;
+  transition: background .1s;
+}
+
+.todayBtn:hover {
+  background: var(--neutral-50);
+}
+
+.filterSelect {
+  padding: 4px 8px;
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  color: var(--neutral-400);
+  background: var(--neutral-0);
+  cursor: pointer;
+  max-width: 150px;
+}
+
+.availabilityToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--neutral-300);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.availabilityToggle input {
+  accent-color: var(--primary-300);
+}
+
+/* Calendar container */
+.calendarWrap {
+  flex: 1;
+  overflow: auto;
+}
+
+/* ── Override schedule-x theme to match Fold design ── */
+.calendarWrap :global(.sx__calendar) {
+  font-family: 'Inter', sans-serif !important;
+  --sx-color-primary: #8C5AE2;
+  --sx-color-primary-container: #F5F0FF;
+  --sx-color-on-primary-container: #3A485F;
+  --sx-color-surface: #FFFFFF;
+  --sx-color-on-surface: #3A485F;
+  --sx-color-surface-variant: #F6F7F8;
+  --sx-color-on-surface-variant: #6F7A90;
+  --sx-color-outline: #D0D6E1;
+  --sx-color-outline-variant: #E9ECF1;
+}
+
+.calendarWrap :global(.sx__time-grid-day__header) {
+  font-family: 'Inter', sans-serif !important;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6F7A90;
+}
+
+.calendarWrap :global(.sx__event) {
+  border-radius: 4px !important;
+  border-left: 3px solid var(--sx-color-primary) !important;
+  font-size: 12px !important;
+  padding: 4px 6px !important;
+}
+
+.calendarWrap :global(.sx__date-grid-day--is-today .sx__date-grid-day__header-day-number) {
+  background: #8C5AE2 !important;
+  color: #fff !important;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

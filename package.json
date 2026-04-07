@@ -23,6 +23,10 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@schedule-x/calendar": "^4.3.1",
+    "@schedule-x/events-service": "^4.3.1",
+    "@schedule-x/react": "^4.1.0",
+    "@schedule-x/theme-default": "^4.3.1",
     "@supabase/supabase-js": "^2.99.3",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
@@ -34,6 +38,7 @@
     "react-joyride": "^3.0.2",
     "recharts": "^3.8.1",
     "tailwind-merge": "^3.5.0",
+    "temporal-polyfill": "^0.3.2",
     "zustand": "^5.0.12"
   },
   "devDependencies": {

@@ -33,6 +33,7 @@ export function stateToHash(state) {
     const view = state.analyticsView || 'executive';
     return view === 'executive' ? buildHash('analytics') : buildHash('analytics', view);
   }
+  if (activePage === 'calendar') return buildHash('calendar');
 
   if (activePage === 'settings') {
     if (settingsNavItem === 'messages') {
@@ -73,6 +74,7 @@ export function hashToState(route) {
     updates.analyticsView = route.section || 'executive';
     return updates;
   }
+  if (route.page === 'calendar') { updates.activePage = 'calendar'; return updates; }
 
   if (route.page === 'settings') {
     updates.activePage = 'settings';

@@ -25,7 +25,7 @@ export function Sidebar() {
   const setCurrentPage = useAppStore(s => s.setCurrentPage);
 
   const showToast = useAppStore(s => s.showToast);
-  const implementedPages = ['population', 'settings', 'analytics'];
+  const implementedPages = ['population', 'settings', 'analytics', 'calendar'];
 
   const handleClick = (e, page) => {
     e.preventDefault();

@@ -1,4 +1,5 @@
 import { Sidebar } from '../components/Sidebar/Sidebar';
+import { CalendarView as CalendarPageView } from '../features/calendar/CalendarView';
 import { SubNav } from '../components/SubNav/SubNav';
 import { TopBar } from '../components/TopBar/TopBar';
 import { TabBar } from '../components/TabBar/TabBar';
@@ -114,6 +115,17 @@ function AnalyticsView() {
   );
 }
 
+function CalendarViewPage() {
+  return (
+    <div className={styles.main}>
+      <TopBar />
+      <div className={styles.content}>
+        <CalendarPageView />
+      </div>
+    </div>
+  );
+}
+
 export function AppLayout() {
   const activePage = useAppStore(s => s.activePage);
   const showCreateAgent = useAppStore(s => s.showCreateAgent);
@@ -142,7 +154,7 @@ export function AppLayout() {
   return (
     <div className={styles.app}>
       <Sidebar />
-      {activePage === 'analytics' ? <AnalyticsView /> : activePage === 'settings' ? <SettingsView /> : <PopulationView />}
+      {activePage === 'analytics' ? <AnalyticsView /> : activePage === 'settings' ? <SettingsView /> : activePage === 'calendar' ? <CalendarViewPage /> : <PopulationView />}
 
       {showCreateAgent && <CreateAgentDrawer />}
       {workflowPatient && <WorkflowPanel />}
