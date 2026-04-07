@@ -1,7 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '../../components/Icon/Icon';
 import { ActionButton } from '../../components/ActionButton/ActionButton';
-import { ScheduleDrawer } from '../../components/ScheduleDrawer/ScheduleDrawer';
+import { Avatar } from '../../components/Avatar/Avatar';
+import { ScheduleDrawer, APPOINTMENT_TYPES } from '../../components/ScheduleDrawer/ScheduleDrawer';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../components/ui/select';
+import { supabase } from '../../lib/supabase';
 import styles from './CalendarView.module.css';
 
 const RAW_EVENTS = [
@@ -13,17 +17,13 @@ const RAW_EVENTS = [
   { id: '6', title: 'Elena Garcia', start: '2026-04-11 08:30', end: '2026-04-11 09:30', description: 'Lab Results • Scheduled', calendarId: 'scheduled' },
 ];
 
-const FILTER_OPTIONS = {
-  users: ['All Users', 'Dr. Katherine Moss', 'Dr. James Chen', 'Ralph Kessler'],
-  locations: ['All Locations', 'Fold Health, NY', '7 Hills Department', '68th Street'],
-  types: ['All Appointment Types', 'AWV', 'Follow-up', 'Specialty', 'Telehealth'],
-  status: ['All Status', 'Scheduled', 'Confirmed', 'Completed', 'Cancelled'],
-};
+const LOCATIONS = ['Fold Health, NY', '7 Hills Department', '68th Street'];
+const STATUSES = ['Scheduled', 'Confirmed', 'Completed', 'Cancelled'];
 
 const VIEWS = ['week', 'day', 'month-grid'];
 const VIEW_LABELS = { 'week': 'Week', 'day': 'Day', 'month-grid': 'Month' };
 
-function CalendarContent({ onSlotClick, calendarRef }) {
+function CalendarContent({ onSlotClick, calendarRef, eventsPluginRef }) {
   const [calendarApp, setCalendarApp] = useState(null);
   const [SXCalendar, setSXCalendar] = useState(null);
   const [error, setError] = useState(null);
@@ -50,6 +50,7 @@ function CalendarContent({ onSlotClick, calendarRef }) {
         await import('@schedule-x/theme-default/dist/index.css');
 
         const eventsPlugin = eventsMod.createEventsServicePlugin();
+        if (eventsPluginRef) eventsPluginRef.current = eventsPlugin;
         const app = calMod.createCalendar({
           views: [calMod.createViewWeek(), calMod.createViewDay(), calMod.createViewMonthGrid()],
           defaultView: 'week',
@@ -57,6 +58,7 @@ function CalendarContent({ onSlotClick, calendarRef }) {
           calendars: {
             scheduled: { colorName: 'scheduled', lightColors: { main: '#8C5AE2', container: '#F5F0FF', onContainer: '#3A485F' }, darkColors: { main: '#8C5AE2', container: '#2D1B69', onContainer: '#E8D5FF' } },
             confirmed: { colorName: 'confirmed', lightColors: { main: '#009B53', container: '#F0FDF4', onContainer: '#3A485F' }, darkColors: { main: '#009B53', container: '#1B4332', onContainer: '#D1FAE5' } },
+            selection: { colorName: 'selection', lightColors: { main: '#8C5AE2', container: 'transparent', onContainer: '#8C5AE2' }, darkColors: { main: '#8C5AE2', container: 'transparent', onContainer: '#8C5AE2' } },
           },
           dayBoundaries: { start: '06:00', end: '20:00' },
           weekOptions: { gridHeight: 2000, nDays: 7 },
@@ -83,11 +85,86 @@ function CalendarContent({ onSlotClick, calendarRef }) {
   return <SXCalendar calendarApp={calendarApp} />;
 }
 
+function getInitials(name) {
+  if (!name) return '??';
+  const parts = name.trim().split(/\s+/);
+  return (parts[0]?.[0] || '') + (parts[parts.length - 1]?.[0] || '');
+}
+
+/* ── User Picker Dropdown (ProviderPicker-style for calendar toolbar) ── */
+function UserPickerDropdown({ users, value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const btnRef = useRef(null);
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return users;
+    const q = search.toLowerCase();
+    return users.filter(u => u.name.toLowerCase().includes(q));
+  }, [users, search]);
+
+  const selectedName = value === 'all' ? 'All Users' : users.find(u => u.id === value)?.name || 'All Users';
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button ref={btnRef} onClick={() => setOpen(v => !v)} className={styles.userPickerTrigger}>
+        <span>{selectedName}</span>
+        <svg width="10" height="10" viewBox="0 0 10 10" className="shrink-0 opacity-60"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </button>
+      {open && createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => { setOpen(false); setSearch(''); }}>
+          <div className={styles.userPickerDropdown} style={{ position: 'fixed', top: btnRef.current?.getBoundingClientRect().bottom + 4, left: btnRef.current?.getBoundingClientRect().left, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+            <div className={styles.userPickerSearch}>
+              <Icon name="solar:magnifer-linear" size={14} color="var(--neutral-200)" />
+              <input placeholder="Search users" value={search} onChange={e => setSearch(e.target.value)} autoFocus />
+            </div>
+            <button className={`${styles.userPickerItem} ${value === 'all' ? styles.userPickerItemActive : ''}`} onClick={() => { onChange('all'); setOpen(false); setSearch(''); }}>
+              <Icon name="solar:users-group-rounded-linear" size={16} color="var(--neutral-300)" />
+              <span>All Users</span>
+            </button>
+            {filtered.map(u => (
+              <button key={u.id} className={`${styles.userPickerItem} ${value === u.id ? styles.userPickerItemActive : ''}`} onClick={() => { onChange(u.id); setOpen(false); setSearch(''); }}>
+                <Avatar variant="assignee" initials={getInitials(u.name).toUpperCase()} />
+                <span>{u.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+}
+
 export function CalendarView() {
   const [currentView, setCurrentView] = useState('week');
   const [showSchedule, setShowSchedule] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const calendarRef = useRef(null);
+  const eventsPluginRef = useRef(null);
+
+  // Filter state
+  const [filterUser, setFilterUser] = useState('all');
+  const [filterLocation, setFilterLocation] = useState('all');
+  const [filterType, setFilterType] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
+
+  // Fetch users from Supabase profiles
+  const [users, setUsers] = useState([]);
+  useEffect(() => {
+    supabase
+      .from('profiles')
+      .select('id, full_name, email, status')
+      .order('full_name')
+      .then(({ data }) => {
+        if (data?.length) {
+          setUsers(data.map(u => ({
+            id: u.id,
+            name: u.full_name?.trim() || u.email?.split('@')[0] || 'Unknown',
+          })));
+        }
+      });
+  }, []);
 
   const handleViewChange = (view) => {
     setCurrentView(view);
@@ -120,10 +197,111 @@ export function CalendarView() {
   const handlePrev = () => navigateCalendar('backward');
   const handleNext = () => navigateCalendar('forward');
 
+  const clearSelection = useCallback(() => {
+    const ep = eventsPluginRef.current;
+    if (ep) {
+      try { ep.remove('__selection__'); } catch {}
+    }
+  }, []);
+
   const handleSlotClick = useCallback((dateTime) => {
     setSelectedSlot(dateTime);
     setShowSchedule(true);
-  }, []);
+
+    // Add a 30-min selection block on the time grid
+    const ep = eventsPluginRef.current;
+    const T = globalThis.Temporal;
+    if (ep && T && dateTime?.add) {
+      clearSelection();
+      const end = dateTime.add({ minutes: 30 });
+      ep.add({
+        id: '__selection__',
+        start: dateTime,
+        end,
+        title: 'New Appointment',
+        calendarId: 'selection',
+      });
+    }
+  }, [clearSelection]);
+
+  const handleCloseDrawer = useCallback(() => {
+    setShowSchedule(false);
+    clearSelection();
+  }, [clearSelection]);
+
+  // Hover preview overlay for 30-min slot selection
+  const hoverRef = useRef(null);
+  useEffect(() => {
+    const START_HOUR = 6;
+    const END_HOUR = 20;
+    const GRID_HEIGHT = 2000;
+    const TOTAL_HOURS = END_HOUR - START_HOUR;
+    const PX_PER_HOUR = GRID_HEIGHT / TOTAL_HOURS;
+    const PX_PER_30 = PX_PER_HOUR / 2;
+
+    function formatTime(h, m) {
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+    }
+
+    function getOrCreateOverlay() {
+      if (hoverRef.current) return hoverRef.current;
+      const el = document.createElement('div');
+      el.className = styles.hoverPreview;
+      hoverRef.current = el;
+      return el;
+    }
+
+    function handleMove(e) {
+      const col = e.currentTarget;
+      const rect = col.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const slotIndex = Math.floor(y / PX_PER_30);
+      const snappedY = slotIndex * PX_PER_30;
+      const totalMinutes = (START_HOUR * 60) + (slotIndex * 30);
+      const startH = Math.floor(totalMinutes / 60);
+      const startM = totalMinutes % 60;
+      const endH = Math.floor((totalMinutes + 30) / 60);
+      const endM = (totalMinutes + 30) % 60;
+
+      if (startH >= END_HOUR) return;
+
+      const overlay = getOrCreateOverlay();
+      if (overlay.parentElement !== col) col.appendChild(overlay);
+      overlay.style.top = `${snappedY}px`;
+      overlay.style.height = `${PX_PER_30}px`;
+      overlay.textContent = `${formatTime(startH, startM)} – ${formatTime(endH, endM)}`;
+      overlay.style.opacity = '1';
+    }
+
+    function handleLeave() {
+      const overlay = hoverRef.current;
+      if (overlay) overlay.style.opacity = '0';
+    }
+
+    // Attach after a short delay to let schedule-x render
+    const timer = setTimeout(() => {
+      const days = document.querySelectorAll('.sx__time-grid-day');
+      days.forEach(day => {
+        day.addEventListener('mousemove', handleMove);
+        day.addEventListener('mouseleave', handleLeave);
+      });
+    }, 800);
+
+    return () => {
+      clearTimeout(timer);
+      const days = document.querySelectorAll('.sx__time-grid-day');
+      days.forEach(day => {
+        day.removeEventListener('mousemove', handleMove);
+        day.removeEventListener('mouseleave', handleLeave);
+      });
+      if (hoverRef.current?.parentElement) {
+        hoverRef.current.parentElement.removeChild(hoverRef.current);
+      }
+      hoverRef.current = null;
+    };
+  }, [currentView]);
 
   return (
     <div className={styles.wrapper}>
@@ -143,11 +321,53 @@ export function CalendarView() {
           <ActionButton icon="solar:alt-arrow-right-linear" size="S" tooltip="Next" onClick={handleNext} />
         </div>
         <div className={styles.toolbarRight}>
-          {Object.values(FILTER_OPTIONS).map((opts, i) => (
-            <select key={i} className={styles.filterSelect}>
-              {opts.map(o => <option key={o} value={o}>{o}</option>)}
-            </select>
-          ))}
+          {/* Users — fetched from Supabase profiles, with search + avatars */}
+          <UserPickerDropdown users={users} value={filterUser} onChange={setFilterUser} />
+
+          {/* Locations */}
+          <Select value={filterLocation} onValueChange={setFilterLocation}>
+            <SelectTrigger className="h-7 text-xs min-w-[120px] max-w-[160px]">
+              <SelectValue placeholder="All Locations" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Locations</SelectItem>
+              {LOCATIONS.map(loc => (
+                <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Appointment Types — from ScheduleDrawer constant */}
+          <Select value={filterType} onValueChange={setFilterType}>
+            <SelectTrigger className="h-7 text-xs min-w-[140px] max-w-[180px]">
+              <SelectValue placeholder="All Appointment Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Appointment Types</SelectItem>
+              {APPOINTMENT_TYPES.map(t => (
+                <SelectItem key={t.name} value={t.name}>
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ background: t.color }} />
+                    {t.name}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Status */}
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="h-7 text-xs min-w-[100px] max-w-[140px]">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              {STATUSES.map(s => (
+                <SelectItem key={s} value={s}>{s}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           <label className={styles.availabilityToggle}>
             <input type="checkbox" />
             <span>Availability</span>
@@ -159,11 +379,11 @@ export function CalendarView() {
 
       {/* Calendar — schedule-x header hidden via CSS */}
       <div className={styles.calendarWrap}>
-        <CalendarContent onSlotClick={handleSlotClick} calendarRef={calendarRef} />
+        <CalendarContent onSlotClick={handleSlotClick} calendarRef={calendarRef} eventsPluginRef={eventsPluginRef} />
       </div>
 
       {/* Schedule drawer opens when clicking a time slot */}
-      {showSchedule && <ScheduleDrawer onClose={() => setShowSchedule(false)} />}
+      {showSchedule && <ScheduleDrawer selectedSlot={selectedSlot} onClose={handleCloseDrawer} />}
     </div>
   );
 }

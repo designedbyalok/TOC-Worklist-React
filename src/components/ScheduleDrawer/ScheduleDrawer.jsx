@@ -9,7 +9,7 @@ import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import styles from './ScheduleDrawer.module.css';
 
-const APPOINTMENT_TYPES = [
+export const APPOINTMENT_TYPES = [
   { name: 'Annual Wellness Visit', code: 'AWV', mode: 'In-person', duration: '60 min', color: '#D9A50B' },
   { name: 'Follow-up Appointment', code: 'Routine', mode: 'In-person/Virtual', duration: '15-30 min', color: '#8C5AE2' },
   { name: 'Specialty Consultation', code: 'Routine', mode: 'In-person', duration: '45 min', color: '#009B53' },
@@ -29,7 +29,18 @@ const PROVIDER_OPTIONS = [
   { name: 'Mrs. Andrew Mayer IV', gender: 'Male', dob: '11-25-1986', age: 30, slots: 'Not Available' },
   { name: 'Gayle Jacobs', gender: 'Male', dob: '12-02-1986', age: 31, slots: '4 Slots Available' },
 ];
-const TIME_SLOTS = ['11:00 am', '11:15 am', '11:30 am', '11:45 am', '12:00 pm', '12:15 pm', '12:30 pm', '1:00 pm', '1:30 pm', '2:00 pm'];
+// Generate 30-min time slots from 6:00 AM to 7:30 PM
+const TIME_SLOTS = (() => {
+  const slots = [];
+  for (let h = 6; h < 20; h++) {
+    for (const m of [0, 30]) {
+      const ampm = h >= 12 ? 'pm' : 'am';
+      const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      slots.push(`${h12}:${String(m).padStart(2, '0')} ${ampm}`);
+    }
+  }
+  return slots;
+})();
 
 function getInitials(name) {
   if (!name) return '??';
@@ -66,11 +77,12 @@ function PatientSearch({ patients, onSelect }) {
           value={query}
           onChange={e => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
+          onClick={() => setOpen(true)}
         />
       </div>
-      {open && filtered.length > 0 && (
+      {open && (
         <div className={styles.searchDropdown}>
-          {filtered.map(p => (
+          {filtered.length > 0 ? filtered.map(p => (
             <button key={p.id} className={styles.searchItem} onClick={() => { onSelect(p); setOpen(false); setQuery(''); }}>
               <Avatar variant="patient" initials={getInitials(p.name).toUpperCase()} />
               <div>
@@ -78,7 +90,9 @@ function PatientSearch({ patients, onSelect }) {
                 <div className={styles.searchItemMeta}>{p.gender?.[0] || 'M'} &bull; {p.dob || '03-29-1992'} ({p.age || '31'}Y)</div>
               </div>
             </button>
-          ))}
+          )) : (
+            <div style={{ padding: '12px 16px', fontSize: 13, color: 'var(--neutral-200)', textAlign: 'center' }}>No patients found</div>
+          )}
         </div>
       )}
     </div>
@@ -93,21 +107,19 @@ function AppointmentTypePicker({ value, onSelect }) {
 
   const filtered = APPOINTMENT_TYPES.filter(t => !search || t.name.toLowerCase().includes(search.toLowerCase()));
 
-  if (value) {
-    return (
-      <button className={styles.detailValue} onClick={() => onSelect(null)} style={{ cursor: 'pointer' }}>
-        <span className={styles.apptDot} style={{ background: value.color }} />
-        {value.name}
-      </button>
-    );
-  }
-
   return (
     <div style={{ position: 'relative' }}>
-      <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}>
-        <Icon name="solar:calendar-mark-linear" size={16} color="var(--neutral-200)" />
-        Select Appointment Type
-      </button>
+      {value ? (
+        <button ref={btnRef} className={styles.detailValue} onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
+          <span className={styles.apptDot} style={{ background: value.color }} />
+          {value.name}
+        </button>
+      ) : (
+        <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}>
+          <Icon name="solar:calendar-mark-linear" size={16} color="var(--neutral-200)" />
+          Select Appointment Type
+        </button>
+      )}
       {open && createPortal(
         <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setOpen(false)}>
           <div className={styles.apptDropdown} style={{ position: 'fixed', top: btnRef.current?.getBoundingClientRect().bottom + 4, left: btnRef.current?.getBoundingClientRect().left, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
@@ -141,8 +153,33 @@ function DetailDropdown({ value, placeholder, icon, options, onSelect, renderIte
   const [open, setOpen] = useState(false);
   const btnRef = useRef(null);
 
+  // Resolve the icon based on the selected value's option (for mode icons, etc.)
+  const resolvedIcon = (() => {
+    if (!value) return icon;
+    const match = options.find(o => o.label === value);
+    return match?.icon || icon;
+  })();
+
   if (value) {
-    return <button className={styles.detailValue} onClick={() => onSelect('')} style={{ cursor: 'pointer' }}><Icon name={icon} size={16} color="var(--neutral-300)" /> {value}</button>;
+    return (
+      <div style={{ position: 'relative' }}>
+        <button ref={btnRef} className={styles.detailValue} onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
+          <Icon name={resolvedIcon} size={16} color="var(--neutral-300)" /> {value}
+        </button>
+        {open && createPortal(
+          <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setOpen(false)}>
+            <div className={styles.simpleDropdown} style={{ position: 'fixed', top: btnRef.current?.getBoundingClientRect().bottom + 4, left: btnRef.current?.getBoundingClientRect().left, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+              {options.map(opt => (
+                <button key={opt.label} className={styles.simpleDropItem} onClick={() => { onSelect(opt.label); setOpen(false); }}>
+                  {renderItem ? renderItem(opt) : opt.label}
+                </button>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
+      </div>
+    );
   }
   return (
     <div style={{ position: 'relative' }}>
@@ -177,19 +214,18 @@ function ProviderPicker({ value, onSelect, profileUsers = [], onAddSecondary }) 
 
   const filtered = allProviders.filter(p => !search || p.name.toLowerCase().includes(search.toLowerCase()));
 
-  if (value) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1 }}>
-        <button className={styles.detailValue} onClick={() => onSelect('')} style={{ cursor: 'pointer', flex: 1 }}>
-          <Avatar variant="assignee" initials={getInitials(value).toUpperCase()} /> {value}
-        </button>
-        <button className={styles.addSecondaryBtn} onClick={onAddSecondary}><Icon name="solar:user-plus-linear" size={14} color="var(--primary-300)" /> Add Secondary</button>
-      </div>
-    );
-  }
   return (
-    <div style={{ position: 'relative' }}>
-      <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}><Icon name="solar:user-linear" size={16} color="var(--neutral-200)" /> Select Provider</button>
+    <div style={{ position: 'relative', flex: 1 }}>
+      {value ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1 }}>
+          <button ref={btnRef} className={styles.detailValue} onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer', flex: 1 }}>
+            <Avatar variant="assignee" initials={getInitials(value).toUpperCase()} /> {value}
+          </button>
+          <button className={styles.addSecondaryBtn} onClick={onAddSecondary}><Icon name="solar:user-plus-linear" size={14} color="var(--primary-300)" /> Add Secondary</button>
+        </div>
+      ) : (
+        <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}><Icon name="solar:user-linear" size={16} color="var(--neutral-200)" /> Select Provider</button>
+      )}
       {open && createPortal(
         <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setOpen(false)}>
           <div className={styles.providerDropdown} style={{ position: 'fixed', top: btnRef.current?.getBoundingClientRect().bottom + 4, left: btnRef.current?.getBoundingClientRect().left, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
@@ -305,9 +341,26 @@ function DatePicker({ value, onSelect }) {
 }
 
 /* ── Main Drawer ── */
-export function ScheduleDrawer({ onClose }) {
+export function ScheduleDrawer({ onClose, selectedSlot }) {
   const patients = useAppStore(s => s.patients);
   const showToast = useAppStore(s => s.showToast);
+
+  // Derive initial date/time from selectedSlot (Temporal.ZonedDateTime)
+  const initialDate = (() => {
+    if (!selectedSlot?.month) return '';
+    const m = String(selectedSlot.month).padStart(2, '0');
+    const d = String(selectedSlot.day).padStart(2, '0');
+    return `${m}-${d}-${selectedSlot.year}`;
+  })();
+
+  const initialTime = (() => {
+    if (!selectedSlot?.hour && selectedSlot?.hour !== 0) return '';
+    const h = selectedSlot.hour;
+    const min = String(selectedSlot.minute || 0).padStart(2, '0');
+    const ampm = h >= 12 ? 'pm' : 'am';
+    const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+    return `${h12}:${min} ${ampm}`;
+  })();
 
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [reasonForVisit, setReasonForVisit] = useState('');
@@ -315,8 +368,8 @@ export function ScheduleDrawer({ onClose }) {
   const [mode, setMode] = useState('');
   const [location, setLocation] = useState('');
   const [provider, setProvider] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
+  const [date, setDate] = useState(initialDate);
+  const [time, setTime] = useState(initialTime);
   const [recurring, setRecurring] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const timeBtnRef = useRef(null);
@@ -478,39 +531,30 @@ export function ScheduleDrawer({ onClose }) {
             {date && (
               <div className={styles.detailRow}>
                 <span className={styles.detailLabel}>Time</span>
-                {time && !showTimePicker ? (
-                  <button className={styles.detailValue} onClick={() => setShowTimePicker(true)} style={{ cursor: 'pointer' }}>
-                    <Icon name="solar:clock-circle-linear" size={16} color="var(--neutral-300)" />
-                    {time} - {(() => { const [h, m, p] = time.match(/(\d+):(\d+)\s*(am|pm)/i)?.slice(1) || []; const mins = (parseInt(m) || 0) + 15; return mins >= 60 ? `${(parseInt(h) || 0) + 1}:${String(mins - 60).padStart(2, '0')} ${p}` : `${h}:${String(mins).padStart(2, '0')} ${p}`; })()} (GMT-4)
+                <div style={{ flex: 1 }}>
+                  <button ref={timeBtnRef} className={time ? styles.detailValue : styles.detailValuePlaceholder} onClick={() => setShowTimePicker(v => !v)} style={{ cursor: 'pointer' }}>
+                    <Icon name="solar:clock-circle-linear" size={16} color={time ? 'var(--neutral-300)' : 'var(--neutral-200)'} />
+                    {time ? (
+                      <>{time} - {(() => { const [h, m, p] = time.match(/(\d+):(\d+)\s*(am|pm)/i)?.slice(1) || []; const mins = (parseInt(m) || 0) + 30; return mins >= 60 ? `${(parseInt(h) || 0) + 1}:${String(mins - 60).padStart(2, '0')} ${p}` : `${h}:${String(mins).padStart(2, '0')} ${p}`; })()} (GMT-4)</>
+                    ) : 'Select Time'}
                   </button>
-                ) : (
-                  <div style={{ position: 'relative', flex: 1 }}>
-                    {!time ? (
-                      <button className={styles.detailValuePlaceholder} onClick={() => setShowTimePicker(true)}>
-                        <Icon name="solar:clock-circle-linear" size={16} color="var(--neutral-200)" /> Select Time
-                      </button>
-                    ) : null}
-                    {(showTimePicker || !time) && createPortal(
-                      <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setShowTimePicker(false)}>
-                        <div className={styles.timeSlotDropdown} style={{ position: 'fixed', top: (timeBtnRef.current || document.querySelector('[class*="detailLabel"]'))?.getBoundingClientRect?.()?.bottom + 4 || 400, left: 300, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
-                          <div className={styles.timeSlotHeader}>
-                            <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>Available Slots (15 mins)</span>
-                            <button className={styles.pickTimeBtn}><Icon name="solar:clock-circle-linear" size={12} color="var(--primary-300)" /> Pick Time</button>
-                            <span style={{ fontSize: 11, color: 'var(--neutral-200)' }}>USA (GMT-4)</span>
-                          </div>
-                          <div className={styles.timeSlots}>
-                            {TIME_SLOTS.map(t => (
-                              <button key={t} className={`${styles.timeSlot} ${time === t ? styles.timeSlotActive : ''}`} onClick={() => { setTime(t); setShowTimePicker(false); }}>
-                                {t}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>,
-                      document.body
-                    )}
-                  </div>
-                )}
+                  {showTimePicker && (
+                    <div className={styles.timeSlotDropdown} style={{ position: 'relative', marginTop: 8, zIndex: 1 }}>
+                      <div className={styles.timeSlotHeader}>
+                        <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>Available Slots (30 mins)</span>
+                        <button className={styles.pickTimeBtn}><Icon name="solar:clock-circle-linear" size={12} color="var(--primary-300)" /> Pick Time</button>
+                        <span style={{ fontSize: 11, color: 'var(--neutral-200)' }}>USA (GMT-4)</span>
+                      </div>
+                      <div className={styles.timeSlots}>
+                        {TIME_SLOTS.map(t => (
+                          <button key={t} className={`${styles.timeSlot} ${time === t ? styles.timeSlotActive : ''}`} onClick={() => { setTime(t); setShowTimePicker(false); }}>
+                            {t}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

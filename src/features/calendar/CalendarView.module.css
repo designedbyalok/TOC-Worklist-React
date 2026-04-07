@@ -91,27 +91,6 @@
   background: var(--neutral-50);
 }
 
-.filterSelect {
-  height: 28px;
-  padding: 0 24px 0 8px;
-  border: 0.5px solid var(--neutral-150);
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  color: var(--neutral-400);
-  background: var(--neutral-0) url("data:image/svg+xml,%3csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M2 3.5L5 6.5L8 3.5' stroke='%236F7A90' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e") no-repeat right 6px center;
-  -webkit-appearance: none;
-  appearance: none;
-  cursor: pointer;
-  max-width: 160px;
-  transition: border-color .12s;
-}
-
-.filterSelect:focus {
-  border-color: var(--primary-300);
-  outline: none;
-}
 
 .availabilityToggle {
   display: flex;
@@ -132,6 +111,26 @@
   flex: 1;
   overflow: auto;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Ensure the React wrapper stretches to fill */
+.calendarWrap :global(.sx-react-calendar-wrapper) {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.calendarWrap :global(.sx__calendar-wrapper) {
+  flex: 1 !important;
+  display: flex !important;
+}
+
+.calendarWrap :global(.sx__view-container) {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 /* ── Hide schedule-x built-in header (we use our own toolbar) ── */
@@ -201,10 +200,21 @@
   height: 100% !important;
 }
 
-.calendarWrap :global(.sx__week-wrapper),
-.calendarWrap :global(.sx__month-grid-wrapper) {
+.calendarWrap :global(.sx__week-wrapper) {
   height: 100% !important;
   flex: 1;
+}
+
+/* Month grid — fill available height and distribute rows evenly */
+.calendarWrap :global(.sx__month-grid-wrapper) {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1;
+}
+
+.calendarWrap :global(.sx__month-grid-week) {
+  flex: 1 !important;
 }
 
 /* Day headers */
@@ -222,6 +232,17 @@
   font-size: 12px !important;
   padding: 4px 6px !important;
   cursor: pointer;
+}
+
+/* Selection highlight — dotted 30-min block */
+.calendarWrap :global(.sx__event.sx__event--selection) {
+  border: 1.5px dashed #8C5AE2 !important;
+  border-left: 1.5px dashed #8C5AE2 !important;
+  background: rgba(140, 90, 226, 0.06) !important;
+  color: #8C5AE2 !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  box-shadow: none !important;
 }
 
 /* Today highlight */
@@ -245,12 +266,114 @@
   background: rgba(140, 90, 226, 0.02);
 }
 
-/* Month grid cells clickable */
+/* Month grid cells clickable — stretch to fill row */
 .calendarWrap :global(.sx__date-grid-day) {
   cursor: pointer;
-  min-height: 100px;
+  flex: 1 !important;
+  min-height: 0;
 }
 
 .calendarWrap :global(.sx__date-grid-day:hover) {
   background: rgba(140, 90, 226, 0.02);
+}
+
+/* ── User Picker Dropdown (calendar toolbar) ── */
+.userPickerTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  border: 0.5px solid var(--neutral-100);
+  border-radius: 4px;
+  background: white;
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  color: var(--neutral-400);
+  cursor: pointer;
+  min-width: 120px;
+  max-width: 160px;
+  white-space: nowrap;
+}
+
+.userPickerTrigger:focus {
+  border-color: var(--primary-300);
+  outline: none;
+}
+
+.userPickerDropdown {
+  min-width: 260px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: white;
+  border: 0.5px solid var(--neutral-100);
+  border-radius: 6px;
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 6px;
+}
+
+.userPickerSearch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-bottom: 0.5px solid var(--neutral-100);
+  margin-bottom: 4px;
+}
+
+.userPickerSearch input {
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  color: var(--neutral-400);
+  flex: 1;
+  background: transparent;
+}
+
+.userPickerItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  color: var(--neutral-400);
+  cursor: pointer;
+  text-align: left;
+}
+
+.userPickerItem:hover {
+  background: var(--neutral-50);
+}
+
+.userPickerItemActive {
+  color: var(--primary-300);
+  background: var(--primary-25, #F8F5FF);
+}
+
+/* Hover preview — 30-min slot ghost */
+.hoverPreview {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  border: 1.5px dashed #8C5AE2;
+  border-radius: 4px;
+  background: rgba(140, 90, 226, 0.06);
+  color: #8C5AE2;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s;
+  z-index: 5;
 }
