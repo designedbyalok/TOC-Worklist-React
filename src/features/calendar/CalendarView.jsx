@@ -1,22 +1,16 @@
-import { useState, useMemo, useCallback } from 'react';
-import { useCalendarApp, ScheduleXCalendar } from '@schedule-x/react';
-import { createViewWeek, createViewDay, createViewMonthGrid } from '@schedule-x/calendar';
-import { createEventsServicePlugin } from '@schedule-x/events-service';
-import '@schedule-x/theme-default/dist/index.css';
+import { useState, useEffect } from 'react';
 import { Icon } from '../../components/Icon/Icon';
 import { ActionButton } from '../../components/ActionButton/ActionButton';
 import styles from './CalendarView.module.css';
 
-/* ── Sample events ── */
-const SAMPLE_EVENTS = [
-  { id: '1', title: 'Richard Wilson', start: '2026-04-07 01:00', end: '2026-04-07 02:30', description: 'Back Pain\nCCM First Visit (G0506)', calendarId: 'scheduled' },
-  { id: '2', title: 'Elaine Beatty', start: '2026-04-08 03:00', end: '2026-04-08 04:30', description: 'Chief complaint/reason for visit\nF/U • Scheduled', calendarId: 'scheduled' },
-  { id: '3', title: 'Ms. Jonathan Rosenba...', start: '2026-04-09 05:00', end: '2026-04-09 06:30', description: 'Chief complaint/reason for visit\nF/U • Scheduled', calendarId: 'scheduled' },
-  { id: '4', title: 'Carlos Hernandez', start: '2026-04-07 09:00', end: '2026-04-07 10:00', description: 'Annual Wellness Visit\nAWV • Confirmed', calendarId: 'confirmed' },
-  { id: '5', title: 'William Davis', start: '2026-04-08 10:00', end: '2026-04-08 10:30', description: 'Follow-up\nRoutine • Scheduled', calendarId: 'scheduled' },
-  { id: '6', title: 'James Rivera', start: '2026-04-09 14:00', end: '2026-04-09 15:00', description: 'Specialty Consultation\nRoutine • Scheduled', calendarId: 'scheduled' },
-  { id: '7', title: 'Ralph Halvorson', start: '2026-04-10 11:00', end: '2026-04-10 12:00', description: 'Telehealth\nVirtual • Confirmed', calendarId: 'confirmed' },
-  { id: '8', title: 'Elena Garcia', start: '2026-04-11 08:00', end: '2026-04-11 09:00', description: 'Lab Results\nRoutine • Scheduled', calendarId: 'scheduled' },
+// Raw event data — will be converted to Temporal objects at runtime
+const RAW_EVENTS = [
+  { id: '1', title: 'Richard Wilson', start: '2026-04-07 09:00', end: '2026-04-07 10:30', description: 'Back Pain • CCM First Visit', calendarId: 'scheduled' },
+  { id: '2', title: 'Elaine Beatty', start: '2026-04-08 11:00', end: '2026-04-08 12:00', description: 'Follow-up • Scheduled', calendarId: 'scheduled' },
+  { id: '3', title: 'Carlos Hernandez', start: '2026-04-07 14:00', end: '2026-04-07 15:00', description: 'Annual Wellness Visit • Confirmed', calendarId: 'confirmed' },
+  { id: '4', title: 'William Davis', start: '2026-04-09 10:00', end: '2026-04-09 10:30', description: 'Telehealth • Scheduled', calendarId: 'scheduled' },
+  { id: '5', title: 'Ralph Halvorson', start: '2026-04-10 11:00', end: '2026-04-10 12:00', description: 'Specialty Consultation • Confirmed', calendarId: 'confirmed' },
+  { id: '6', title: 'Elena Garcia', start: '2026-04-11 08:30', end: '2026-04-11 09:30', description: 'Lab Results • Scheduled', calendarId: 'scheduled' },
 ];
 
 const FILTER_OPTIONS = {
@@ -26,30 +20,70 @@ const FILTER_OPTIONS = {
   status: ['All Status', 'Scheduled', 'Confirmed', 'Completed', 'Cancelled'],
 };
 
-function FilterDropdown({ label, options }) {
-  return (
-    <select className={styles.filterSelect}>
-      {options.map(o => <option key={o} value={o}>{o}</option>)}
-    </select>
-  );
+function CalendarContent() {
+  const [calendarApp, setCalendarApp] = useState(null);
+  const [SXCalendar, setSXCalendar] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        // 1. Load temporal polyfill and set it globally FIRST
+        const temporalMod = await import('temporal-polyfill');
+        if (typeof globalThis.Temporal === 'undefined') {
+          globalThis.Temporal = temporalMod.Temporal;
+        }
+        const T = globalThis.Temporal;
+
+        // 2. Helper to convert "YYYY-MM-DD HH:MM" to ZonedDateTime
+        function toZDT(str) {
+          const [date, time] = str.split(' ');
+          return T.PlainDateTime.from(`${date}T${time}`).toZonedDateTime('America/New_York');
+        }
+
+        // 3. Convert raw events
+        const events = RAW_EVENTS.map(e => ({
+          ...e,
+          start: toZDT(e.start),
+          end: toZDT(e.end),
+        }));
+
+        // 4. Now load schedule-x (after Temporal is global)
+        const calMod = await import('@schedule-x/calendar');
+        const reactMod = await import('@schedule-x/react');
+        const eventsMod = await import('@schedule-x/events-service');
+        await import('@schedule-x/theme-default/dist/index.css');
+
+        const eventsPlugin = eventsMod.createEventsServicePlugin();
+        const app = calMod.createCalendar({
+          views: [calMod.createViewWeek(), calMod.createViewDay(), calMod.createViewMonthGrid()],
+          defaultView: 'week',
+          events,
+          calendars: {
+            scheduled: { colorName: 'scheduled', lightColors: { main: '#8C5AE2', container: '#F5F0FF', onContainer: '#3A485F' }, darkColors: { main: '#8C5AE2', container: '#2D1B69', onContainer: '#E8D5FF' } },
+            confirmed: { colorName: 'confirmed', lightColors: { main: '#009B53', container: '#F0FDF4', onContainer: '#3A485F' }, darkColors: { main: '#009B53', container: '#1B4332', onContainer: '#D1FAE5' } },
+          },
+          dayBoundaries: { start: '06:00', end: '20:00' },
+          weekOptions: { gridHeight: 800, nDays: 7 },
+          locale: 'en-US',
+        }, [eventsPlugin]);
+
+        setSXCalendar(() => reactMod.ScheduleXCalendar);
+        setCalendarApp(app);
+      } catch (err) {
+        console.error('Schedule-X init error:', err);
+        setError(err.message);
+      }
+    })();
+  }, []);
+
+  if (error) return <div style={{ padding: 32, color: 'var(--status-error)', fontFamily: 'Inter' }}>Calendar error: {error}</div>;
+  if (!calendarApp || !SXCalendar) return <div style={{ padding: 32, color: 'var(--neutral-300)', textAlign: 'center', fontFamily: 'Inter' }}>Loading calendar...</div>;
+
+  return <SXCalendar calendarApp={calendarApp} />;
 }
 
 export function CalendarView() {
-  const eventsService = useState(() => createEventsServicePlugin())[0];
-
-  const calendar = useCalendarApp({
-    views: [createViewWeek(), createViewDay(), createViewMonthGrid()],
-    defaultView: 'week',
-    events: SAMPLE_EVENTS,
-    calendars: {
-      scheduled: { colorName: 'scheduled', lightColors: { main: '#8C5AE2', container: '#F5F0FF', onContainer: '#3A485F' }, darkColors: { main: '#8C5AE2', container: '#2D1B69', onContainer: '#E8D5FF' } },
-      confirmed: { colorName: 'confirmed', lightColors: { main: '#009B53', container: '#F0FDF4', onContainer: '#3A485F' }, darkColors: { main: '#009B53', container: '#1B4332', onContainer: '#D1FAE5' } },
-    },
-    dayBoundaries: { start: '00:00', end: '23:59' },
-    weekOptions: { gridHeight: 1200, nDays: 7 },
-    locale: 'en-US',
-  }, [eventsService]);
-
   return (
     <div className={styles.wrapper}>
       {/* Toolbar */}
@@ -66,10 +100,11 @@ export function CalendarView() {
           <ActionButton icon="solar:alt-arrow-right-linear" size="S" tooltip="Next" />
         </div>
         <div className={styles.toolbarRight}>
-          <FilterDropdown options={FILTER_OPTIONS.users} />
-          <FilterDropdown options={FILTER_OPTIONS.locations} />
-          <FilterDropdown options={FILTER_OPTIONS.types} />
-          <FilterDropdown options={FILTER_OPTIONS.status} />
+          {Object.values(FILTER_OPTIONS).map((opts, i) => (
+            <select key={i} className={styles.filterSelect}>
+              {opts.map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          ))}
           <label className={styles.availabilityToggle}>
             <input type="checkbox" />
             <span>Availability</span>
@@ -81,7 +116,7 @@ export function CalendarView() {
 
       {/* Calendar */}
       <div className={styles.calendarWrap}>
-        {calendar && <ScheduleXCalendar calendarApp={calendar} />}
+        <CalendarContent />
       </div>
     </div>
   );
