@@ -119,6 +119,10 @@
 
 .detailRow:last-child { border-bottom: none; }
 
+.detailRow:hover {
+  background: var(--neutral-50);
+}
+
 .detailLabel {
   font-size: 14px; font-weight: 500; color: var(--neutral-400);
   min-width: 150px; flex-shrink: 0;
@@ -208,6 +212,26 @@
 }
 
 .instructionTextarea::placeholder { color: var(--neutral-200); }
+
+.instructionEditable {
+  min-height: 60px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: var(--neutral-400);
+  outline: none;
+  line-height: 1.5;
+}
+
+.instructionEditable:empty::before {
+  content: attr(data-placeholder);
+  color: var(--neutral-200);
+}
+
+.instructionEditable h3 { font-size: 16px; font-weight: 600; margin: 4px 0; }
+.instructionEditable ul { margin: 4px 0; padding-left: 20px; }
+.instructionEditable b, .instructionEditable strong { font-weight: 600; }
+.instructionEditable i, .instructionEditable em { font-style: italic; }
 
 .instructionToolbar {
   display: flex; align-items: center; gap: 4px;

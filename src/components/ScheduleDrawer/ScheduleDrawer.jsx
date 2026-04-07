@@ -89,14 +89,7 @@ function PatientSearch({ patients, onSelect }) {
 function AppointmentTypePicker({ value, onSelect }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const ref = useRef(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const close = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
-    document.addEventListener('click', close);
-    return () => document.removeEventListener('click', close);
-  }, [open]);
+  const btnRef = useRef(null);
 
   const filtered = APPOINTMENT_TYPES.filter(t => !search || t.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -110,31 +103,34 @@ function AppointmentTypePicker({ value, onSelect }) {
   }
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}>
+    <div style={{ position: 'relative' }}>
+      <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}>
         <Icon name="solar:calendar-mark-linear" size={16} color="var(--neutral-200)" />
         Select Appointment Type
       </button>
-      {open && (
-        <div className={styles.apptDropdown}>
-          <div className={styles.apptSearchWrap}>
-            <Icon name="solar:magnifer-linear" size={14} color="var(--neutral-200)" />
-            <input className={styles.apptSearchInput} placeholder="Search" value={search} onChange={e => setSearch(e.target.value)} autoFocus />
+      {open && createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setOpen(false)}>
+          <div className={styles.apptDropdown} style={{ position: 'fixed', top: btnRef.current?.getBoundingClientRect().bottom + 4, left: btnRef.current?.getBoundingClientRect().left, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+            <div className={styles.apptSearchWrap}>
+              <Icon name="solar:magnifer-linear" size={14} color="var(--neutral-200)" />
+              <input className={styles.apptSearchInput} placeholder="Search" value={search} onChange={e => setSearch(e.target.value)} autoFocus />
+            </div>
+            {filtered.map(t => (
+              <button key={t.name} className={styles.apptItem} onClick={() => { onSelect(t); setOpen(false); }}>
+                <span className={styles.apptDot} style={{ background: t.color }} />
+                <div style={{ flex: 1 }}>
+                  <div className={styles.apptItemName}>{t.name}</div>
+                  <div className={styles.apptItemMeta}>{t.code} &bull; {t.mode}</div>
+                </div>
+                <div className={styles.apptItemDuration}>
+                  <Icon name="solar:clock-circle-linear" size={12} color="var(--neutral-200)" />
+                  {t.duration}
+                </div>
+              </button>
+            ))}
           </div>
-          {filtered.map(t => (
-            <button key={t.name} className={styles.apptItem} onClick={() => { onSelect(t); setOpen(false); }}>
-              <span className={styles.apptDot} style={{ background: t.color }} />
-              <div style={{ flex: 1 }}>
-                <div className={styles.apptItemName}>{t.name}</div>
-                <div className={styles.apptItemMeta}>{t.code} &bull; {t.mode}</div>
-              </div>
-              <div className={styles.apptItemDuration}>
-                <Icon name="solar:clock-circle-linear" size={12} color="var(--neutral-200)" />
-                {t.duration}
-              </div>
-            </button>
-          ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -269,8 +265,7 @@ function SecondaryUserPicker({ selected, onChange, profileUsers, primary }) {
 function DatePicker({ value, onSelect }) {
   const [open, setOpen] = useState(false);
   const [viewDate, setViewDate] = useState(new Date());
-  const ref = useRef(null);
-  useEffect(() => { if (!open) return; const c = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); }; document.addEventListener('click', c); return () => document.removeEventListener('click', c); }, [open]);
+  const btnRef = useRef(null);
 
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
@@ -285,22 +280,25 @@ function DatePicker({ value, onSelect }) {
     return <button className={styles.detailValue} onClick={() => setOpen(true)} style={{ cursor: 'pointer' }}><Icon name="solar:calendar-linear" size={16} color="var(--neutral-300)" /> {value}</button>;
   }
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}><Icon name="solar:calendar-linear" size={16} color="var(--neutral-200)" /> Select Date</button>
-      {open && (
-        <div className={styles.calendarDropdown}>
-          <div className={styles.calendarHeader}>
-            <ActionButton icon="solar:alt-arrow-left-linear" size="S" onClick={() => setViewDate(new Date(year, month - 1, 1))} />
-            <span className={styles.calendarTitle}>{monthNames[month]} {year}</span>
-            <ActionButton icon="solar:alt-arrow-right-linear" size="S" onClick={() => setViewDate(new Date(year, month + 1, 1))} />
+    <div style={{ position: 'relative' }}>
+      <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}><Icon name="solar:calendar-linear" size={16} color="var(--neutral-200)" /> Select Date</button>
+      {open && createPortal(
+        <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setOpen(false)}>
+          <div className={styles.calendarDropdown} style={{ position: 'fixed', top: btnRef.current?.getBoundingClientRect().bottom + 4, left: btnRef.current?.getBoundingClientRect().left, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
+            <div className={styles.calendarHeader}>
+              <ActionButton icon="solar:alt-arrow-left-linear" size="S" onClick={() => setViewDate(new Date(year, month - 1, 1))} />
+              <span className={styles.calendarTitle}>{monthNames[month]} {year}</span>
+              <ActionButton icon="solar:alt-arrow-right-linear" size="S" onClick={() => setViewDate(new Date(year, month + 1, 1))} />
+            </div>
+            <div className={styles.calendarGrid}>
+              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <div key={i} className={styles.calendarDayLabel}>{d}</div>)}
+              {days.map((d, i) => d ? (
+                <button key={i} className={styles.calendarDay} onClick={() => { onSelect(`${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}-${year}`); setOpen(false); }}>{d}</button>
+              ) : <div key={i} />)}
+            </div>
           </div>
-          <div className={styles.calendarGrid}>
-            {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <div key={i} className={styles.calendarDayLabel}>{d}</div>)}
-            {days.map((d, i) => d ? (
-              <button key={i} className={styles.calendarDay} onClick={() => { onSelect(`${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}-${year}`); setOpen(false); }}>{d}</button>
-            ) : <div key={i} />)}
-          </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -508,22 +506,22 @@ export function ScheduleDrawer({ onClose }) {
         <div className={styles.section}>
           <label className={styles.sectionLabel}>Member Instruction</label>
           <div className={styles.instructionEditor}>
-            <textarea
-              className={styles.instructionTextarea}
-              placeholder="Add Instructions for Member"
-              value={memberInstruction}
-              onChange={e => setMemberInstruction(e.target.value)}
-              rows={3}
+            <div
+              className={styles.instructionEditable}
+              contentEditable
+              suppressContentEditableWarning
+              data-placeholder="Add Instructions for Member"
+              onInput={e => setMemberInstruction(e.currentTarget.innerHTML)}
             />
             <div className={styles.instructionToolbar}>
               <ActionButton icon="solar:paperclip-linear" size="S" tooltip="Attach" />
               <span className={styles.toolbarDivider} />
-              <ActionButton icon="solar:text-bold-linear" size="S" tooltip="Bold" />
-              <ActionButton icon="solar:text-italic-linear" size="S" tooltip="Italic" />
-              <ActionButton icon="solar:text-underline-linear" size="S" tooltip="Underline" />
+              <ActionButton icon="solar:text-bold-linear" size="S" tooltip="Bold" onClick={() => document.execCommand('bold')} />
+              <ActionButton icon="solar:text-italic-linear" size="S" tooltip="Italic" onClick={() => document.execCommand('italic')} />
+              <ActionButton icon="solar:text-underline-linear" size="S" tooltip="Underline" onClick={() => document.execCommand('underline')} />
               <span className={styles.toolbarDivider} />
-              <ActionButton icon="solar:text-field-linear" size="S" tooltip="Heading" />
-              <ActionButton icon="solar:list-linear" size="S" tooltip="List" />
+              <ActionButton icon="solar:text-field-linear" size="S" tooltip="Heading" onClick={() => document.execCommand('formatBlock', false, 'h3')} />
+              <ActionButton icon="solar:list-linear" size="S" tooltip="List" onClick={() => document.execCommand('insertUnorderedList')} />
             </div>
           </div>
         </div>
@@ -538,20 +536,22 @@ export function ScheduleDrawer({ onClose }) {
           <div className={styles.section}>
             <label className={styles.sectionLabel}>Staff Instructions</label>
             <div className={styles.instructionEditor}>
-              <textarea
-                className={styles.instructionTextarea}
-                placeholder="Add Instructions for Staff"
-                value={staffInstruction}
-                onChange={e => setStaffInstruction(e.target.value)}
-                rows={3}
-                autoFocus
+              <div
+                className={styles.instructionEditable}
+                contentEditable
+                suppressContentEditableWarning
+                data-placeholder="Add Instructions for Staff"
+                onInput={e => setStaffInstruction(e.currentTarget.innerHTML)}
               />
               <div className={styles.instructionToolbar}>
                 <ActionButton icon="solar:paperclip-linear" size="S" tooltip="Attach" />
                 <span className={styles.toolbarDivider} />
-                <ActionButton icon="solar:text-bold-linear" size="S" tooltip="Bold" />
-                <ActionButton icon="solar:text-italic-linear" size="S" tooltip="Italic" />
-                <ActionButton icon="solar:text-underline-linear" size="S" tooltip="Underline" />
+                <ActionButton icon="solar:text-bold-linear" size="S" tooltip="Bold" onClick={() => document.execCommand('bold')} />
+                <ActionButton icon="solar:text-italic-linear" size="S" tooltip="Italic" onClick={() => document.execCommand('italic')} />
+                <ActionButton icon="solar:text-underline-linear" size="S" tooltip="Underline" onClick={() => document.execCommand('underline')} />
+                <span className={styles.toolbarDivider} />
+                <ActionButton icon="solar:text-field-linear" size="S" tooltip="Heading" onClick={() => document.execCommand('formatBlock', false, 'h3')} />
+                <ActionButton icon="solar:list-linear" size="S" tooltip="List" onClick={() => document.execCommand('insertUnorderedList')} />
                 <div style={{ flex: 1 }} />
                 <ActionButton icon="solar:trash-bin-minimalistic-linear" size="S" tooltip="Remove" state="error" onClick={() => { setShowStaffInstructions(false); setStaffInstruction(''); }} />
               </div>
