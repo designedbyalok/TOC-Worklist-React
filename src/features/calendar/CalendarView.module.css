@@ -311,7 +311,7 @@
   border-radius: 50%;
 }
 
-/* Past day overlay — semi-transparent so grid lines stay visible */
+/* Past day overlay — semi-transparent so grid lines stay visible, events clickable above */
 .pastDayOverlay {
   position: absolute;
   top: 0;
@@ -319,8 +319,8 @@
   right: 0;
   bottom: 0;
   background: rgba(246, 247, 248, 0.6);
-  cursor: not-allowed;
-  z-index: 1;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* Cancelled events — disabled look with strikethrough */

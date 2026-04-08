@@ -412,6 +412,9 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
   const [apptStatus, setApptStatus] = useState(rawStatus === 'Scheduled' ? 'Booked' : (rawStatus || 'Booked'));
   const [editingInstruction, setEditingInstruction] = useState(false);
   const [instructionDraft, setInstructionDraft] = useState(existingAppointment?.member_instruction || '');
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const moreMenuRef = useRef(null);
+  const deleteAppointment = useAppStore(s => s.deleteAppointment);
   const [showViewStaffInstructions, setShowViewStaffInstructions] = useState(!!existingAppointment?.staff_instruction);
   const [editingStaffInstruction, setEditingStaffInstruction] = useState(false);
   const [staffInstructionDraft, setStaffInstructionDraft] = useState(existingAppointment?.staff_instruction || '');
@@ -508,6 +511,24 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
     setEditingStaffInstruction(false);
   };
 
+  const handleDeleteAppointment = async () => {
+    if (existingAppointment?.id) {
+      await deleteAppointment(existingAppointment.id);
+      if (onSave) onSave();
+      showToast('Appointment deleted');
+      onClose();
+    }
+  };
+
+  // Determine if appointment is in the past (read-only)
+  const isPastAppointment = (() => {
+    if (!existingAppointment?.date) return false;
+    const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+    const [mo, dd, yyyy] = existingAppointment.date.split('-');
+    const apptDate = `${yyyy}-${mo}-${dd}`;
+    return apptDate < today;
+  })();
+
   // Inline SVG for the Add Staff Instruction icon
   const StaffInstructionIcon = () => (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -529,7 +550,7 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
           {/* Status bar */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--neutral-50)', borderRadius: 8, padding: 8 }}>
             <div style={{ flex: 1 }}>
-              <Select value={apptStatus} onValueChange={handleStatusChange}>
+              <Select value={apptStatus} onValueChange={handleStatusChange} disabled={isPastAppointment}>
                 <SelectTrigger className="h-8 text-sm w-[120px]" style={{ background: 'white' }}>
                   <SelectValue />
                 </SelectTrigger>
@@ -546,7 +567,22 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
               </ActionButton>
             )}
             {!showViewStaffInstructions && <span style={{ width: 0.5, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />}
-            <ActionButton icon="solar:menu-dots-bold" size="L" tooltip="More" />
+            <div style={{ position: 'relative' }} ref={moreMenuRef}>
+              <ActionButton icon="solar:menu-dots-bold" size="L" tooltip="More" onClick={() => setShowMoreMenu(v => !v)} />
+              {showMoreMenu && (
+                <>
+                  <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setShowMoreMenu(false)} />
+                  <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 9999, background: 'white', border: '0.5px solid var(--neutral-100)', borderRadius: 8, boxShadow: '0 4px 24px -4px rgba(0,0,0,0.12)', padding: 8, minWidth: 180, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <button onClick={() => { showToast('Booking link copied!'); setShowMoreMenu(false); }} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--neutral-400)', fontFamily: 'Inter, sans-serif', width: '100%', textAlign: 'left' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--neutral-50)'} onMouseLeave={e => e.currentTarget.style.background = 'none'}>
+                      <Icon name="solar:link-linear" size={16} color="var(--neutral-300)" /> Send Booking Link
+                    </button>
+                    <button onClick={() => { setShowMoreMenu(false); handleDeleteAppointment(); }} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--status-error, #D72825)', fontFamily: 'Inter, sans-serif', width: '100%', textAlign: 'left' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--neutral-50)'} onMouseLeave={e => e.currentTarget.style.background = 'none'}>
+                      <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="var(--status-error, #D72825)" /> Delete Appointment
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Patient Details */}
@@ -589,9 +625,9 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
             </div>
           </div>
 
-          {/* Appointment Details — editable pickers (except patient) */}
-          <div className={styles.section}>
-            <label className={styles.sectionLabel}>Appointment Details</label>
+          {/* Appointment Details — editable pickers (except patient); read-only for past */}
+          <div className={styles.section} style={isPastAppointment ? { pointerEvents: 'none', opacity: 0.7 } : undefined}>
+            <label className={styles.sectionLabel}>Appointment Details {isPastAppointment && <span style={{ fontSize: 11, color: 'var(--neutral-200)', fontWeight: 400 }}>(Past — read only)</span>}</label>
             <div className={styles.detailsCard}>
               <div className={styles.detailRow}>
                 <span className={styles.detailLabel}>Appointment Type</span>
