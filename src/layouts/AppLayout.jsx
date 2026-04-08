@@ -37,7 +37,7 @@ function Toast() {
     <div style={{
       position: 'fixed', bottom: 88, left: '50%', transform: 'translateX(-50%)',
       background: 'var(--neutral-500)', color: '#fff', padding: '12px 20px', borderRadius: 8,
-      fontSize: 14, fontWeight: 500, boxShadow: '0 4px 12px rgba(0,0,0,.2)', zIndex: 400,
+      fontSize: 14, fontWeight: 500, boxShadow: '0 4px 12px rgba(0,0,0,.2)', zIndex: 10001,
       whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 12
     }}>
       {toast}

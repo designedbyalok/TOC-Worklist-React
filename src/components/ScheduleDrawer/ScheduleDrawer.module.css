@@ -117,11 +117,17 @@
   padding: 10px 12px; border-bottom: 0.5px solid var(--neutral-100);
 }
 
+.detailRowTop {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-bottom: 0.5px solid var(--neutral-100);
+}
+
 .detailRow:last-child { border-bottom: none; }
 
 .detailLabel {
   font-size: 14px; font-weight: 500; color: var(--neutral-400);
   min-width: 150px; flex-shrink: 0;
+  min-height: 24px; display: flex; align-items: center;
 }
 
 .detailValue {
@@ -338,11 +344,11 @@
 }
 .timeSlots { display: flex; flex-wrap: wrap; gap: 6px; }
 .timeSlot {
-  padding: 6px 12px; border: 0.5px solid var(--neutral-150); border-radius: 4px;
-  font-size: 13px; color: var(--neutral-400); background: var(--neutral-0);
-  cursor: pointer; font-family: 'Inter', sans-serif; transition: all .1s;
+  padding: 2px 6px; height: 22px; min-width: 85px; border: none; border-radius: 4px;
+  font-size: 14px; color: var(--neutral-300); background: var(--neutral-50);
+  cursor: pointer; font-family: 'Inter', sans-serif; transition: all .1s; text-align: center;
 }
-.timeSlot:hover { border-color: var(--primary-200); background: var(--primary-50); }
+.timeSlot:hover { background: var(--primary-50); color: var(--primary-300); }
 .timeSlotActive {
   border-color: var(--primary-300) !important; background: var(--primary-50) !important;
   color: var(--primary-300) !important; font-weight: 500;

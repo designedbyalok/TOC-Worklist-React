@@ -187,14 +187,18 @@ function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginR
       try { ep.add(e); } catch {}
     }
 
-    // Mark cancelled events in the DOM with a CSS class
-    setTimeout(() => {
-      const cancelledIds = (dbAppointments || []).filter(a => a.status === 'Cancelled').map(a => a.id);
+    // Mark cancelled events in the DOM with a CSS class (retry to catch late renders)
+    const cancelledIds = (dbAppointments || []).filter(a => a.status === 'Cancelled').map(a => a.id);
+    const applyCancelledClass = () => {
       cancelledIds.forEach(id => {
         const el = document.querySelector(`[data-event-id="${id}"]`);
-        if (el) el.classList.add('is-cancelled');
+        if (el && !el.classList.contains('is-cancelled')) el.classList.add('is-cancelled');
       });
-    }, 100);
+    };
+    const t1 = setTimeout(applyCancelledClass, 100);
+    const t2 = setTimeout(applyCancelledClass, 300);
+    const t3 = setTimeout(applyCancelledClass, 600);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [dbAppointments, appointmentTypes]);
 
   if (error) return <div style={{ padding: 32, color: 'var(--status-error)', fontFamily: 'Inter' }}>Calendar error: {error}</div>;
@@ -439,6 +443,17 @@ export function CalendarView() {
     setShowSchedule(false);
     setClickedAppointment(null);
     clearSelection();
+    // Re-apply cancelled styles after drawer closes (data may have changed via fetchAppointments)
+    const applyCancelled = () => {
+      const store = useAppStore.getState();
+      (store.appointments || []).filter(a => a.status === 'Cancelled').forEach(a => {
+        const el = document.querySelector(`[data-event-id="${a.id}"]`);
+        if (el && !el.classList.contains('is-cancelled')) el.classList.add('is-cancelled');
+      });
+    };
+    setTimeout(applyCancelled, 300);
+    setTimeout(applyCancelled, 800);
+    setTimeout(applyCancelled, 1500);
   }, [clearSelection]);
 
   // Reusable functions for past-day overlays and time indicator

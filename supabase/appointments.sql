@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS appointments (
   staff_instruction TEXT,
   require_rsvp BOOLEAN DEFAULT false,
   recurring BOOLEAN DEFAULT false,
+  recurring_config JSONB,
   status TEXT DEFAULT 'Scheduled',
   calendar_id TEXT,
   created_at TIMESTAMPTZ DEFAULT now(),
@@ -64,3 +65,11 @@ CREATE TRIGGER appointments_updated_at
   BEFORE UPDATE ON appointments
   FOR EACH ROW
   EXECUTE FUNCTION update_appointments_updated_at();
+
+-- ── Migration: add recurring_config column if missing ──
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'appointments' AND column_name = 'recurring_config') THEN
+    ALTER TABLE appointments ADD COLUMN recurring_config JSONB;
+  END IF;
+END $$;

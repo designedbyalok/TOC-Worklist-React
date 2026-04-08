@@ -313,12 +313,13 @@ function DatePicker({ value, onSelect }) {
   for (let d = 1; d <= daysInMonth; d++) days.push(d);
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-  if (value) {
-    return <button className={styles.detailValue} onClick={() => setOpen(true)} style={{ cursor: 'pointer' }}><Icon name="solar:calendar-linear" size={16} color="var(--neutral-300)" /> {value}</button>;
-  }
   return (
     <div style={{ position: 'relative' }}>
-      <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}><Icon name="solar:calendar-linear" size={16} color="var(--neutral-200)" /> Select Date</button>
+      {value ? (
+        <button ref={btnRef} className={styles.detailValue} onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}><Icon name="solar:calendar-linear" size={16} color="var(--neutral-300)" /> {value}</button>
+      ) : (
+        <button ref={btnRef} className={styles.detailValuePlaceholder} onClick={() => setOpen(v => !v)}><Icon name="solar:calendar-linear" size={16} color="var(--neutral-200)" /> Select Date</button>
+      )}
       {open && createPortal(
         <div style={{ position: 'fixed', inset: 0, zIndex: 9998 }} onClick={() => setOpen(false)}>
           <div className={styles.calendarDropdown} style={{ position: 'fixed', top: btnRef.current?.getBoundingClientRect().bottom + 4, left: btnRef.current?.getBoundingClientRect().left, zIndex: 9999 }} onClick={e => e.stopPropagation()}>
@@ -395,6 +396,8 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
   const [recurEndDate, setRecurEndDate] = useState('');
   const [recurConfirmed, setRecurConfirmed] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showPickTime, setShowPickTime] = useState(false);
+  const [customTime, setCustomTime] = useState('');
   const timeBtnRef = useRef(null);
   const [requireRsvp, setRequireRsvp] = useState(false);
   const [showSecondary, setShowSecondary] = useState(false);
@@ -451,7 +454,7 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
     const row = {
       patient_id: selectedPatient?.id || null,
       patient_name: selectedPatient?.name || '',
-      appointment_type_id: appointmentType?.id || null,
+      appointment_type_id: appointmentType?.id ?? null,
       appointment_type_name: appointmentType?.name || '',
       mode,
       location,
@@ -465,7 +468,6 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
       staff_instruction: staffInstruction,
       require_rsvp: requireRsvp,
       recurring,
-      recurring_config: recurring ? JSON.stringify({ frequency: recurFrequency, unit: recurUnit, days: recurDays, endDate: recurEndDate }) : null,
       status: 'Scheduled',
       calendar_id: calId,
     };
@@ -817,61 +819,62 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
             )}
 
             {/* Date — calendar picker */}
-            <div className={styles.detailRow}>
+            <div className={styles.detailRowTop}>
               <span className={styles.detailLabel}>Date</span>
-              <DatePicker value={date} onSelect={setDate} />
-              {date && (
-                <div className={styles.recurringToggle}>
-                  <label className={styles.switchLabel}>
-                    <input type="checkbox" checked={recurring} onChange={() => { setRecurring(v => !v); setRecurConfirmed(false); }} className={styles.switchInput} />
-                    <span className={styles.switchTrack}><span className={styles.switchThumb} /></span>
-                  </label>
-                  <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>Set Recurring</span>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <DatePicker value={date} onSelect={setDate} />
+                  {date && (
+                    <div className={styles.recurringToggle}>
+                      <label className={styles.switchLabel}>
+                        <input type="checkbox" checked={recurring} onChange={() => { setRecurring(v => !v); setRecurConfirmed(false); }} className={styles.switchInput} />
+                        <span className={styles.switchTrack}><span className={styles.switchThumb} /></span>
+                      </label>
+                      <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>Set Recurring</span>
+                    </div>
+                  )}
                 </div>
-              )}
-              {/* Recurring configuration */}
-              {date && recurring && !recurConfirmed && (
-                <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: 8, padding: '8px 0' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 13, color: 'var(--neutral-300)' }}>Repeats every</span>
-                    <input type="number" min={1} max={30} value={recurFrequency} onChange={e => setRecurFrequency(parseInt(e.target.value) || 1)} style={{ width: 48, height: 28, border: '0.5px solid var(--neutral-150)', borderRadius: 4, textAlign: 'center', fontSize: 13, fontFamily: 'Inter, sans-serif', color: 'var(--neutral-400)' }} />
-                    <select value={recurUnit} onChange={e => { setRecurUnit(e.target.value); if (e.target.value === 'Day(s)') setRecurDays([]); }} style={{ height: 28, border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, fontFamily: 'Inter, sans-serif', color: 'var(--neutral-400)', padding: '0 8px', background: 'white' }}>
-                      <option value="Day(s)">Day(s)</option>
-                      <option value="Week(s)">Week(s)</option>
-                    </select>
-                    {recurUnit === 'Week(s)' && <span style={{ fontSize: 13, color: 'var(--neutral-300)' }}>on</span>}
-                    {recurUnit === 'Week(s)' && (
-                      <div style={{ display: 'flex', gap: 4 }}>
-                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
-                          <button key={d} onClick={() => setRecurDays(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d])} style={{ width: 32, height: 28, border: recurDays.includes(d) ? '1px solid var(--primary-300)' : '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 11, fontFamily: 'Inter, sans-serif', color: recurDays.includes(d) ? 'var(--primary-300)' : 'var(--neutral-300)', background: recurDays.includes(d) ? 'var(--primary-50)' : 'white', cursor: 'pointer', fontWeight: 500 }}>
-                            {d[0]}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                {/* Recurring configuration */}
+                {date && recurring && !recurConfirmed && (
+                  <div style={{ border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 14, color: 'var(--neutral-300)' }}>Repeats every</span>
+                      <input type="number" min={1} max={30} value={recurFrequency} onChange={e => setRecurFrequency(parseInt(e.target.value) || 1)} style={{ width: 50, height: 28, border: '0.5px solid var(--neutral-200)', borderRadius: 4, textAlign: 'center', fontSize: 14, fontFamily: 'Inter, sans-serif', color: 'var(--neutral-400)', padding: '0 8px' }} />
+                      <select value={recurUnit} onChange={e => { setRecurUnit(e.target.value); if (e.target.value === 'Day(s)') setRecurDays([]); }} style={{ height: 28, border: '0.5px solid var(--neutral-200)', borderRadius: 4, fontSize: 14, fontFamily: 'Inter, sans-serif', color: 'var(--neutral-400)', padding: '0 8px', background: 'white' }}>
+                        <option value="Day(s)">Day/s</option>
+                        <option value="Week(s)">Week/s</option>
+                      </select>
+                      {recurUnit === 'Week(s)' && <span style={{ fontSize: 14, color: 'var(--neutral-300)' }}>on</span>}
+                      {recurUnit === 'Week(s)' && (
+                        <div style={{ display: 'flex', gap: 4 }}>
+                          {[{ key: 'Sun', label: 'S' }, { key: 'Mon', label: 'M' }, { key: 'Tue', label: 'T' }, { key: 'Wed', label: 'W' }, { key: 'Thu', label: 'T' }, { key: 'Fri', label: 'F' }, { key: 'Sat', label: 'S' }].map(d => (
+                            <button key={d.key} onClick={() => setRecurDays(prev => prev.includes(d.key) ? prev.filter(x => x !== d.key) : [...prev, d.key])} style={{ width: 24, height: 24, border: 'none', borderRadius: 4, fontSize: 12, fontFamily: 'Inter, sans-serif', color: recurDays.includes(d.key) ? '#fff' : 'var(--neutral-300)', background: recurDays.includes(d.key) ? 'var(--primary-300)' : 'white', cursor: 'pointer', fontWeight: 500, boxShadow: recurDays.includes(d.key) ? 'none' : 'inset 0 0 0 0.5px var(--neutral-200)' }}>
+                              {d.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      <span style={{ fontSize: 14, color: 'var(--neutral-300)' }}>Until</span>
+                      <input type="date" value={recurEndDate} onChange={e => setRecurEndDate(e.target.value)} style={{ height: 28, border: '0.5px solid var(--neutral-200)', borderRadius: 4, fontSize: 14, fontFamily: 'Inter, sans-serif', color: 'var(--neutral-400)', padding: '0 8px', width: 120 }} />
+                    </div>
+                    <button onClick={() => setRecurConfirmed(true)} style={{ alignSelf: 'flex-start', fontSize: 12, color: 'var(--primary-300)', background: 'var(--primary-50)', border: '0.5px solid var(--primary-200)', borderRadius: 4, padding: '4px 12px', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Confirm</button>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 13, color: 'var(--neutral-300)' }}>Until</span>
-                    <input type="date" value={recurEndDate} onChange={e => setRecurEndDate(e.target.value)} style={{ height: 28, border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, fontFamily: 'Inter, sans-serif', color: 'var(--neutral-400)', padding: '0 8px' }} />
-                    <div style={{ flex: 1 }} />
-                    <button onClick={() => setRecurConfirmed(true)} style={{ fontSize: 12, color: 'var(--primary-300)', background: 'var(--primary-50)', border: '0.5px solid var(--primary-200)', borderRadius: 4, padding: '4px 12px', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Confirm</button>
+                )}
+                {/* Recurring confirmed summary */}
+                {date && recurring && recurConfirmed && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: 13, color: 'var(--neutral-300)', fontFamily: 'Inter, sans-serif' }}>
+                      Repeats every {recurFrequency} {recurUnit.toLowerCase()}{recurUnit === 'Week(s)' && recurDays.length > 0 ? ` on ${recurDays.join(' and ')}` : ''}{recurEndDate ? ` until ${recurEndDate}` : ''}
+                    </span>
+                    <button onClick={() => setRecurConfirmed(false)} style={{ fontSize: 11, color: 'var(--primary-300)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif', textDecoration: 'underline' }}>Edit</button>
                   </div>
-                </div>
-              )}
-              {/* Recurring confirmed summary */}
-              {date && recurring && recurConfirmed && (
-                <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0' }}>
-                  <span style={{ fontSize: 13, color: 'var(--neutral-300)', fontFamily: 'Inter, sans-serif' }}>
-                    Repeats every {recurFrequency} {recurUnit.toLowerCase()}{recurUnit === 'Week(s)' && recurDays.length > 0 ? ` on ${recurDays.join(' and ')}` : ''}{recurEndDate ? ` until ${recurEndDate}` : ''}
-                  </span>
-                  <button onClick={() => setRecurConfirmed(false)} style={{ fontSize: 11, color: 'var(--primary-300)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif', textDecoration: 'underline' }}>Edit</button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Time — inline after selection, slot picker when choosing */}
             {date && (
-              <div className={styles.detailRow}>
+              <div className={styles.detailRowTop}>
                 <span className={styles.detailLabel}>Time</span>
                 <div style={{ flex: 1 }}>
                   <button ref={timeBtnRef} className={time ? styles.detailValue : styles.detailValuePlaceholder} onClick={() => setShowTimePicker(v => !v)} style={{ cursor: 'pointer' }}>
@@ -883,17 +886,32 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
                   {showTimePicker && (
                     <div className={styles.timeSlotDropdown} style={{ position: 'relative', marginTop: 8 }}>
                       <div className={styles.timeSlotHeader}>
-                        <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>Available Slots (30 mins)</span>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--neutral-200)' }}>Available Slots (30 mins)</span>
                         <div style={{ flex: 1 }} />
-                        <span style={{ fontSize: 11, color: 'var(--neutral-200)', background: 'var(--neutral-50)', padding: '2px 8px', borderRadius: 4, border: '0.5px solid var(--neutral-100)' }}>{timezoneLabel}</span>
+                        <button onClick={() => setShowPickTime(v => !v)} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--primary-300)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+                          <Icon name="solar:clock-circle-linear" size={12} color="var(--primary-300)" /> Pick Time
+                        </button>
+                        <span style={{ width: 0.5, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                        <span style={{ fontSize: 11, color: 'var(--neutral-300)', background: 'var(--neutral-50)', padding: '2px 8px', borderRadius: 4, border: '0.5px solid var(--neutral-100)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                          <Icon name="solar:global-linear" size={10} color="var(--neutral-300)" />
+                          {timezoneLabel}
+                        </span>
                       </div>
-                      <div className={styles.timeSlots}>
-                        {TIME_SLOTS.map(t => (
-                          <button key={t} className={`${styles.timeSlot} ${time === t ? styles.timeSlotActive : ''}`} onClick={() => { setTime(t); setShowTimePicker(false); }}>
-                            {t}
-                          </button>
-                        ))}
-                      </div>
+                      {showPickTime ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <input type="time" value={customTime} onChange={e => setCustomTime(e.target.value)} style={{ height: 32, border: '0.5px solid var(--neutral-200)', borderRadius: 4, fontSize: 14, fontFamily: 'Inter, sans-serif', color: 'var(--neutral-400)', padding: '0 8px' }} autoFocus />
+                          <button onClick={() => { if (customTime) { const [hh, mm] = customTime.split(':').map(Number); const ampm = hh >= 12 ? 'pm' : 'am'; const h12 = hh === 0 ? 12 : hh > 12 ? hh - 12 : hh; setTime(`${h12}:${String(mm).padStart(2, '0')} ${ampm}`); setShowTimePicker(false); setShowPickTime(false); } }} style={{ fontSize: 12, color: 'var(--primary-300)', background: 'var(--primary-50)', border: '0.5px solid var(--primary-200)', borderRadius: 4, padding: '4px 12px', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontWeight: 500 }}>Set</button>
+                          <button onClick={() => setShowPickTime(false)} style={{ fontSize: 12, color: 'var(--neutral-300)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>Cancel</button>
+                        </div>
+                      ) : (
+                        <div className={styles.timeSlots}>
+                          {TIME_SLOTS.map(t => (
+                            <button key={t} className={`${styles.timeSlot} ${time === t ? styles.timeSlotActive : ''}`} onClick={() => { setTime(t); setShowTimePicker(false); }}>
+                              {t}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
