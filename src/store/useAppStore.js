@@ -40,6 +40,21 @@ export const useAppStore = create((set, get) => ({
   subnavCollapsed: false,
   viewBy: 'window',
 
+  // Patient detail view
+  selectedPatientId: null,
+  patientProfileTab: 'Care Management',
+  navigateToPatient: (patientId) => {
+    set({ selectedPatientId: patientId });
+    const state = get();
+    if (state.activePage !== 'population') set({ activePage: 'population' });
+    import('../lib/router').then(m => m.updateHash?.(get()));
+  },
+  navigateBackToWorklist: () => {
+    set({ selectedPatientId: null });
+    import('../lib/router').then(m => m.updateHash?.(get()));
+  },
+  setPatientProfileTab: (tab) => set({ patientProfileTab: tab }),
+
   // Table
   patients: [],
   patientsLoading: true,

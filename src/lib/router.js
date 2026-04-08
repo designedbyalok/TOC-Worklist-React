@@ -57,6 +57,11 @@ export function stateToHash(state) {
     return buildHash('settings', 'agents');
   }
 
+  // Patient detail view
+  if (state.selectedPatientId) {
+    return buildHash('population', 'patient', state.selectedPatientId);
+  }
+
   return buildHash('population', activeTab || 'worklist');
 }
 
@@ -127,8 +132,13 @@ export function hashToState(route) {
     return updates;
   }
 
-  // Population
+  // Population — patient detail or worklist/queue
   updates.activePage = 'population';
+  if (route.section === 'patient' && route.tab) {
+    updates.selectedPatientId = route.tab;
+    return updates;
+  }
+  updates.selectedPatientId = null;
   updates.activeTab = route.section === 'queue' ? 'queue' : 'worklist';
   return updates;
 }

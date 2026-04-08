@@ -1,4 +1,5 @@
 import { Sidebar } from '../components/Sidebar/Sidebar';
+import { PatientDetailView } from '../features/patient/PatientDetailView';
 import { CalendarView as CalendarPageView } from '../features/calendar/CalendarView';
 import { SubNav } from '../components/SubNav/SubNav';
 import { TopBar } from '../components/TopBar/TopBar';
@@ -73,6 +74,20 @@ function PopulationView() {
   const subnavCollapsed = useAppStore(s => s.subnavCollapsed);
   const activeTab = useAppStore(s => s.activeTab);
   const showFilterBar = useAppStore(s => s.showFilterBar);
+
+  const selectedPatientId = useAppStore(s => s.selectedPatientId);
+
+  // Patient detail view — full-page, no subnav
+  if (selectedPatientId) {
+    return (
+      <div className={styles.main}>
+        <TopBar />
+        <div className={styles.content}>
+          <PatientDetailView />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

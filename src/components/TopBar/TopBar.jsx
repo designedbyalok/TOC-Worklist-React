@@ -169,12 +169,17 @@ export function TopBar() {
   const isSettings = activePage === 'settings';
   const isAnalytics = activePage === 'analytics';
   const isCalendar = activePage === 'calendar';
+  const selectedPatientId = useAppStore(s => s.selectedPatientId);
+  const navigateBackToWorklist = useAppStore(s => s.navigateBackToWorklist);
+  const patients = useAppStore(s => s.patients);
+  const isPatientView = activePage === 'population' && !!selectedPatientId;
+  const patientName = isPatientView ? (patients.find(p => p.id === selectedPatientId)?.name || 'Patient') : '';
 
   return (
     <>
     <header className={styles.topbar}>
       <div className={styles.left}>
-        {!isSettings && !isAnalytics && !isCalendar && (
+        {!isSettings && !isAnalytics && !isCalendar && !isPatientView && (
           <ActionButton
             icon={subnavCollapsed ? 'solar:alt-arrow-right-linear' : 'solar:sidebar-minimalistic-linear'}
             size="L"
@@ -183,7 +188,15 @@ export function TopBar() {
           />
         )}
         <nav className={styles.breadcrumb}>
-          {isCalendar ? (
+          {isPatientView ? (
+            <>
+              <a className={styles.breadcrumbLink} href="#" onClick={e => { e.preventDefault(); navigateBackToWorklist(); }}>Population</a>
+              <span className={styles.sep}>/</span>
+              <a className={styles.breadcrumbLink} href="#" onClick={e => { e.preventDefault(); navigateBackToWorklist(); }}>Worklists</a>
+              <span className={styles.sep}>/</span>
+              <span className={styles.breadcrumbCurrent}>{patientName}</span>
+            </>
+          ) : isCalendar ? (
             <span className={styles.breadcrumbCurrent}>Calendar</span>
           ) : isAnalytics ? (
             <>

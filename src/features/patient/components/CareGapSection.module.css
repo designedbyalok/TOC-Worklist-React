@@ -1,0 +1,7 @@
+.section { border-bottom: 0.5px solid var(--neutral-100); }
+.section:last-child { border-bottom: none; }
+.header { display: flex; align-items: center; gap: 6px; padding: 10px 12px; width: 100%; background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; }
+.header:hover { background: var(--neutral-50); }
+.title { font-size: 13px; font-weight: 500; color: var(--neutral-400); flex: 1; text-align: left; }
+.count { font-size: 11px; color: var(--neutral-200); background: var(--neutral-50); padding: 1px 6px; border-radius: 10px; }
+.items { /* care gap items render here */ }

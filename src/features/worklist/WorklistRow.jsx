@@ -225,7 +225,7 @@ export function WorklistRow({ patient, isSelected, onSelect }) {
           <div className={styles.patientCell}>
             <Avatar variant="patient" initials={p.initials} />
             <div>
-              <div className={styles.patientName}>{p.name} <span className={styles.patientDemo}>({p.gender}•{p.age})</span></div>
+              <div className={styles.patientName}><button className={styles.patientNameLink} onClick={e => { e.stopPropagation(); const navigateToPatient = useAppStore.getState().navigateToPatient; navigateToPatient(p.id); }}>{p.name}</button> <span className={styles.patientDemo}>({p.gender}•{p.age})</span></div>
               <div className={styles.patientMeta}>
                 {p.memberId} •{' '}
                 <span className={styles.langBadge}>

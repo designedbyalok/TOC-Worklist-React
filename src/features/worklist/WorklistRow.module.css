@@ -44,6 +44,8 @@
 
 .patientCell { display: flex; align-items: center; gap: 12px; }
 .patientName { font-size: 14px; font-weight: 500; color: var(--neutral-400); white-space: nowrap; }
+.patientNameLink { background: none; border: none; padding: 0; font: inherit; color: inherit; cursor: pointer; font-weight: 500; }
+.patientNameLink:hover { color: var(--primary-300); text-decoration: underline; }
 .patientDemo { font-size: 13px; font-weight: 400; color: var(--neutral-300); }
 .patientMeta { font-size: 13px; color: var(--neutral-200); margin-top: 3px; }
 

@@ -1,0 +1,4 @@
+.tabBar { display: flex; border-bottom: 0.5px solid var(--neutral-100); padding: 0 16px; overflow-x: auto; flex-shrink: 0; gap: 0; }
+.tab { padding: 10px 14px; font-size: 13px; font-weight: 400; color: var(--neutral-300); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; transition: all 0.12s; }
+.tabActive { color: var(--primary-300); font-weight: 500; border-bottom-color: var(--primary-300); }
+.tab:hover:not(.tabActive) { color: var(--neutral-400); }
