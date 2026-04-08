@@ -468,6 +468,7 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
       staff_instruction: staffInstruction,
       require_rsvp: requireRsvp,
       recurring,
+      recurring_config: recurring ? JSON.stringify({ frequency: recurFrequency, unit: recurUnit, days: recurDays, endDate: recurEndDate }) : null,
       status: 'Scheduled',
       calendar_id: calId,
     };
