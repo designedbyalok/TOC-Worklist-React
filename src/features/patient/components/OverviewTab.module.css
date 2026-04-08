@@ -1,0 +1,44 @@
+.overview { display: flex; flex-direction: column; gap: 24px; padding: 12px; overflow-y: auto; flex: 1; }
+
+/* Cards */
+.card { border: 0.5px solid var(--neutral-100); border-radius: 8px; background: var(--neutral-0); overflow: hidden; }
+
+/* Section header */
+.sectionHeader { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; }
+.sectionTitle { font-size: 14px; font-weight: 500; color: var(--neutral-500); font-family: 'Inter', sans-serif; }
+.sectionActions { display: flex; align-items: center; gap: 6px; }
+.actionDivider { width: 0.5px; height: 16px; background: var(--neutral-150); }
+.viewAllLink { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; color: var(--primary-300); font-family: 'Inter', sans-serif; background: none; border: none; cursor: pointer; }
+
+/* Synopsis */
+.synopsisHeader { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 0.5px solid var(--neutral-100); }
+.synopsisLabel { font-size: 14px; font-weight: 500; color: var(--neutral-500); font-family: 'Inter', sans-serif; }
+.synopsisBody { display: flex; gap: 16px; padding: 12px; }
+.synopsisLeft { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.synopsisRight { width: 280px; flex-shrink: 0; }
+.templateRow { display: flex; align-items: center; justify-content: space-between; }
+.templateDropdown { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--neutral-400); font-family: 'Inter', sans-serif; background: none; border: 0.5px solid var(--neutral-150); border-radius: 4px; padding: 4px 8px; cursor: pointer; }
+.synopsisActions { display: flex; align-items: center; gap: 2px; }
+.synopsisText { font-size: 13px; color: var(--neutral-400); font-family: 'Inter', sans-serif; line-height: 1.5; }
+.synopsisFooter { font-size: 11px; color: var(--neutral-200); font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 8px; }
+.internalBadge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--neutral-200); background: var(--neutral-50); padding: 1px 6px; border-radius: 3px; }
+.feedbackRow { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--neutral-200); font-family: 'Inter', sans-serif; padding-top: 8px; border-top: 0.5px solid var(--neutral-100); }
+.healthMapPlaceholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 200px; background: var(--neutral-50); border-radius: 8px; color: var(--neutral-200); font-size: 12px; font-family: 'Inter', sans-serif; }
+
+/* Tables */
+.tableWrap { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; }
+.table th { text-align: left; font-size: 14px; font-weight: 500; color: var(--neutral-300); padding: 6px 8px; border-bottom: 0.5px solid var(--neutral-150); white-space: nowrap; }
+.table td { font-size: 14px; color: var(--neutral-300); padding: 8px 8px; border-bottom: 0.5px solid var(--neutral-100); vertical-align: top; }
+.table tbody tr:last-child td { border-bottom: none; }
+.checkbox { accent-color: var(--primary-300); width: 15px; height: 15px; }
+.noteTitle { font-size: 14px; color: var(--neutral-500); font-weight: 400; }
+.noteSub { font-size: 12px; color: var(--neutral-300); }
+.dateText { font-size: 12px; color: var(--neutral-300); }
+.programName { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--neutral-400); }
+.statusLink { color: var(--primary-300); cursor: pointer; font-size: 14px; }
+.statusLink:hover { text-decoration: underline; }
+.statusBadge { font-size: 12px; font-weight: 500; color: var(--status-success); background: var(--status-success-light); padding: 2px 8px; border-radius: 4px; }
+
+/* Placeholder */
+.placeholderContent { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 40px; color: var(--neutral-200); font-size: 13px; font-family: 'Inter', sans-serif; }

@@ -1,14 +1,32 @@
-.header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 0.5px solid var(--neutral-100); background: var(--neutral-0); flex-shrink: 0; }
-.info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.nameRow { display: flex; align-items: center; gap: 8px; }
+.header { display: flex; flex-direction: column; border-bottom: 0.5px solid var(--neutral-100); background: var(--neutral-0); flex-shrink: 0; }
+
+/* Row 1: Core info + metrics + actions */
+.row1 { display: flex; align-items: center; gap: 12px; padding: 8px 16px; }
+.nameBlock { display: flex; flex-direction: column; gap: 1px; }
+.nameRow { display: flex; align-items: center; gap: 6px; }
 .name { font-size: 16px; font-weight: 500; color: var(--neutral-400); font-family: 'Inter', sans-serif; }
-.memberId { font-size: 12px; color: var(--neutral-200); font-family: 'Inter', sans-serif; }
-.meta { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--neutral-200); font-family: 'Inter', sans-serif; flex-wrap: wrap; }
-.langBadge { font-size: 10px; font-weight: 500; color: var(--primary-300); background: var(--primary-50); padding: 1px 6px; border-radius: 3px; border: 0.5px solid var(--primary-200); }
-.sep { color: var(--neutral-150); }
-.laceBadge { font-size: 10px; font-weight: 500; padding: 1px 6px; border-radius: 3px; }
-.laceBadge[data-lace="high"] { color: var(--status-error); background: var(--status-error-light); }
-.laceBadge[data-lace="medium"] { color: var(--status-warning); background: var(--status-warning-light); }
-.laceBadge[data-lace="low"] { color: var(--status-success); background: var(--status-success-light); }
+.meta { font-size: 12px; color: var(--neutral-200); font-family: 'Inter', sans-serif; }
+
+/* Clinical metrics strip */
+.metrics { display: flex; align-items: center; gap: 16px; flex: 1; }
+.metric { display: flex; flex-direction: column; gap: 1px; }
+.metricLabel { font-size: 11px; color: var(--neutral-200); font-family: 'Inter', sans-serif; }
+.metricValue { font-size: 13px; font-weight: 500; color: var(--neutral-400); font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 4px; }
+.metricBadge { font-size: 11px; font-weight: 500; padding: 1px 6px; border-radius: 4px; display: inline-block; }
+.badgeError { color: var(--status-error); background: var(--status-error-light); }
+.rafChange { font-size: 11px; color: var(--status-success); display: inline-flex; align-items: center; gap: 2px; }
+
+.programBadges { display: flex; align-items: center; gap: 4px; }
+.programBadge { font-size: 10px; font-weight: 500; color: var(--primary-300); background: var(--primary-50); padding: 1px 6px; border-radius: 3px; border: 0.5px solid var(--primary-200); }
+.programMore { font-size: 10px; color: var(--neutral-200); background: var(--neutral-50); padding: 1px 6px; border-radius: 3px; border: 0.5px solid var(--neutral-100); }
+
+/* Actions */
 .actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .divider { width: 0.5px; height: 16px; background: var(--neutral-150); flex-shrink: 0; }
+
+/* Row 2: Condition tags */
+.row2 { display: flex; align-items: center; gap: 6px; padding: 6px 16px; border-top: 0.5px solid var(--neutral-100); flex-wrap: wrap; }
+.patientType { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: var(--neutral-300); background: var(--neutral-50); border: 0.5px solid var(--neutral-100); border-radius: 4px; padding: 2px 8px; cursor: pointer; font-family: 'Inter', sans-serif; }
+.tag { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--primary-300); background: var(--primary-50); border: 0.5px solid var(--primary-200); border-radius: 4px; padding: 2px 8px; font-family: 'Inter', sans-serif; }
+.tagClose { background: none; border: none; padding: 0; cursor: pointer; display: flex; align-items: center; }
+.addTag { background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 2px; }

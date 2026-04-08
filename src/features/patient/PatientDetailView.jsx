@@ -5,6 +5,7 @@ import { PatientHeader } from './components/PatientHeader';
 import { CareGapsPanel } from './components/CareGapsPanel';
 import { ProfileTabBar } from './components/ProfileTabBar';
 import { CareManagementView } from './components/CareManagementView';
+import { OverviewTab } from './components/OverviewTab';
 import styles from './PatientDetailView.module.css';
 
 function TabPlaceholder({ tabName }) {
@@ -20,7 +21,7 @@ function TabPlaceholder({ tabName }) {
 export function PatientDetailView() {
   const selectedPatientId = useAppStore(s => s.selectedPatientId);
   const patients = useAppStore(s => s.patients);
-  const [activeTab, setActiveTab] = useState('Care Management');
+  const [activeTab, setActiveTab] = useState('Overview');
 
   const patient = patients.find(p => p.id === selectedPatientId);
 
@@ -43,7 +44,9 @@ export function PatientDetailView() {
         <div className={styles.rightPanel}>
           <ProfileTabBar activeTab={activeTab} onTabChange={setActiveTab} />
           <div className={styles.tabContent}>
-            {activeTab === 'Care Management' ? (
+            {activeTab === 'Overview' ? (
+              <OverviewTab />
+            ) : activeTab === 'Care Management' ? (
               <CareManagementView />
             ) : (
               <TabPlaceholder tabName={activeTab} />
