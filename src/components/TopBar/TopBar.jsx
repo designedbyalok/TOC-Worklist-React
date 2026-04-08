@@ -168,12 +168,13 @@ export function TopBar() {
   const initials = getUserInitials(user);
   const isSettings = activePage === 'settings';
   const isAnalytics = activePage === 'analytics';
+  const isCalendar = activePage === 'calendar';
 
   return (
     <>
     <header className={styles.topbar}>
       <div className={styles.left}>
-        {!isSettings && !isAnalytics && (
+        {!isSettings && !isAnalytics && !isCalendar && (
           <ActionButton
             icon={subnavCollapsed ? 'solar:alt-arrow-right-linear' : 'solar:sidebar-minimalistic-linear'}
             size="L"
@@ -182,7 +183,9 @@ export function TopBar() {
           />
         )}
         <nav className={styles.breadcrumb}>
-          {isAnalytics ? (
+          {isCalendar ? (
+            <span className={styles.breadcrumbCurrent}>Calendar</span>
+          ) : isAnalytics ? (
             <>
               <a className={styles.breadcrumbLink} href="#" onClick={e => e.preventDefault()}>Analytics</a>
               <span className={styles.sep}>/</span>

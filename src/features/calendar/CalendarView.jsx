@@ -170,10 +170,10 @@ function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginR
     const T = globalThis.Temporal;
     if (!ep || !T) return;
 
-    // Use BROWSER_TIMEZONE (not user-selected) for event positioning
-    // Times are stored as wall-clock strings — they should always appear at the literal time
+    // Use UTC for event positioning — times are stored as wall-clock strings
+    // and should always appear at the literal time position on the calendar
     const newEvents = (dbAppointments || [])
-      .map(a => apptToEvent(a, appointmentTypes, T, BROWSER_TIMEZONE))
+      .map(a => apptToEvent(a, appointmentTypes, T, 'UTC'))
       .filter(Boolean);
 
     // Replace all events (except __selection__) with fresh DB events
@@ -258,7 +258,7 @@ function UserPickerDropdown({ users, value, onChange }) {
   );
 }
 
-const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export function CalendarView() {
   const [currentView, setCurrentView] = useState('week');
@@ -582,6 +582,15 @@ export function CalendarView() {
       // Apply past-day overlays and time indicator
       applyPastOverlays();
       applyTimeIndicator();
+
+      // Auto-scroll to current time on initial load
+      const { hours: nowH, minutes: nowM } = getNowInTimezone(timezone);
+      const totalMin = (nowH - START_HOUR) * 60 + nowM;
+      if (totalMin > 0) {
+        const scrollTarget = (totalMin / ((END_HOUR - START_HOUR) * 60)) * GRID_HEIGHT - 200; // 200px above current time
+        const wrap = document.querySelector('[class*="calendarWrap"]');
+        if (wrap) wrap.scrollTop = Math.max(0, scrollTarget);
+      }
     }, 800);
 
     return () => {

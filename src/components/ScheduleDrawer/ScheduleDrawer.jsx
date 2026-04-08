@@ -5,6 +5,7 @@ import { Button } from '../Button/Button';
 import { Drawer } from '../Drawer/Drawer';
 import { Avatar } from '../Avatar/Avatar';
 import { ActionButton } from '../ActionButton/ActionButton';
+import { Switch } from '../Switch/Switch';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../ui/select';
 import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
@@ -827,11 +828,7 @@ export function ScheduleDrawer({ onClose, selectedSlot, onSave, existingAppointm
                   <DatePicker value={date} onSelect={setDate} />
                   {date && (
                     <div className={styles.recurringToggle}>
-                      <label className={styles.switchLabel}>
-                        <input type="checkbox" checked={recurring} onChange={() => { setRecurring(v => !v); setRecurConfirmed(false); }} className={styles.switchInput} />
-                        <span className={styles.switchTrack}><span className={styles.switchThumb} /></span>
-                      </label>
-                      <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>Set Recurring</span>
+                      <Switch checked={recurring} onChange={v => { setRecurring(v); setRecurConfirmed(false); }} label="Set Recurring" />
                     </div>
                   )}
                 </div>
