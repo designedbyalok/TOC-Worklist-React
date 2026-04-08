@@ -196,7 +196,7 @@ export function LoginPage({ onBypass }) {
               </div>
             )}
 
-            <Button variant="primary" size="L" fullWidth disabled={loading} onClick={handleSubmit}>
+            <Button variant="primary" size="L" fullWidth disabled={loading} type="submit">
               {loading ? (isSignUp ? 'Creating account...' : 'Signing in...') : (isSignUp ? 'Create Account' : 'Login')}
             </Button>
           </form>

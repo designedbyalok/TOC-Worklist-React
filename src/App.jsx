@@ -64,7 +64,13 @@ function App() {
 
   // Not authenticated — show login
   if (!isAuthenticated) {
-    return <LoginPage onBypass={() => { sessionStorage.setItem('__auth_bypass', 'true'); setBypassed(true); }} />;
+    if (window.location.hash !== '#/login') window.location.hash = '#/login';
+    return <LoginPage onBypass={() => { sessionStorage.setItem('__auth_bypass', 'true'); setBypassed(true); window.location.hash = '#/population/worklist'; }} />;
+  }
+
+  // Authenticated — clear login hash if present
+  if (window.location.hash === '#/login' || window.location.hash === '') {
+    window.location.hash = '#/population/worklist';
   }
 
   // Authenticated — show app

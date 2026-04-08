@@ -54,6 +54,7 @@ function ProfilePopover({ user, onClose, onPreferences }) {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     sessionStorage.removeItem('__auth_bypass');
+    window.location.hash = '#/login';
     onClose();
   };
 

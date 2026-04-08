@@ -170,8 +170,10 @@ function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginR
     const T = globalThis.Temporal;
     if (!ep || !T) return;
 
+    // Use BROWSER_TIMEZONE (not user-selected) for event positioning
+    // Times are stored as wall-clock strings — they should always appear at the literal time
     const newEvents = (dbAppointments || [])
-      .map(a => apptToEvent(a, appointmentTypes, T, timezone))
+      .map(a => apptToEvent(a, appointmentTypes, T, BROWSER_TIMEZONE))
       .filter(Boolean);
 
     // Replace all events (except __selection__) with fresh DB events
@@ -193,7 +195,7 @@ function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginR
         if (el) el.classList.add('is-cancelled');
       });
     }, 100);
-  }, [dbAppointments, appointmentTypes, timezone]);
+  }, [dbAppointments, appointmentTypes]);
 
   if (error) return <div style={{ padding: 32, color: 'var(--status-error)', fontFamily: 'Inter' }}>Calendar error: {error}</div>;
   if (!calendarApp || !SXCalendar) return <div style={{ padding: 32, color: 'var(--neutral-300)', textAlign: 'center', fontFamily: 'Inter' }}>Loading calendar...</div>;

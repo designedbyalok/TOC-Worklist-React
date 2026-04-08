@@ -320,8 +320,8 @@
 /* ── Time Slots ── */
 .timeSlotDropdown {
   background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
-  border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  padding: 10px 12px; min-width: 360px;
+  border-radius: 8px;
+  padding: 10px 12px;
   display: flex; flex-direction: column; gap: 8px;
 }
 
