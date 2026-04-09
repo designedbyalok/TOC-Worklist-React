@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
+import { CheckIcon } from '../../../components/Icon/CheckIcon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Button } from '../../../components/Button/Button';
+import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { useAppStore } from '../../../store/useAppStore';
 import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
-// No local fallback — data loaded from DB via store
 import s from './GoalsPanel.module.css';
 
 export function GoalDetailDrawer() {
@@ -19,17 +20,19 @@ export function GoalDetailDrawer() {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   const goal = goalsData.find(g => g.id === goalDetailId);
   if (!goal) return null;
 
-  const mc = goal.steps.filter(st => st.type === 'mandatory').length;
-  const cc = goal.steps.filter(st => st.type === 'conditional').length;
+  const requiredSteps = goal.steps.filter(st => st.type === 'mandatory');
+  const optionalSteps = goal.steps.filter(st => st.type === 'conditional');
   const totalScore = goal.steps.reduce((a, st) => a + (st.score || 0), 0);
 
   const handleEdit = () => {
-    setGoalDetailId(null);
-    setTimeout(() => setGoalWizard(true, goal.id), 200);
+    const id = goal.id;
+    // Close detail + open wizard in one store batch to avoid hash conflicts
+    useAppStore.setState({ goalDetailId: null, goalWizardOpen: true, goalWizardEditId: id });
   };
 
   const handleDuplicate = () => {
@@ -47,10 +50,6 @@ export function GoalDetailDrawer() {
     showToast('Goal duplicated as draft');
   };
 
-  const handleDeleteClick = () => {
-    setShowDeleteConfirm(true);
-  };
-
   const handleConfirmDelete = async () => {
     setDeleting(true);
     await deleteGoal(goal.id);
@@ -60,11 +59,25 @@ export function GoalDetailDrawer() {
     showToast('Goal deleted');
   };
 
+  // Simplified header: Edit button + more menu (instead of 3 buttons)
   const headerRight = (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <Button variant="danger" size="S" leadingIcon="solar:trash-bin-minimalistic-linear" onClick={handleDeleteClick}>Delete</Button>
-      <Button variant="ghost" size="S" leadingIcon="solar:copy-linear" onClick={handleDuplicate}>Duplicate</Button>
-      <Button variant="ghost" size="S" leadingIcon="solar:pen-linear" onClick={handleEdit}>Edit</Button>
+    <div className={s.detailHeaderActions}>
+      <Button variant="secondary" size="S" leadingIcon="solar:pen-linear" onClick={handleEdit}>Edit</Button>
+      <div className={s.moreMenuWrap}>
+        <ActionButton icon="solar:menu-dots-bold" size="L" tooltip="More" onClick={() => setShowMore(!showMore)} />
+        {showMore && (
+          <div className={s.moreMenu}>
+            <button className={s.moreMenuItem} onClick={() => { handleDuplicate(); setShowMore(false); }}>
+              <Icon name="solar:copy-linear" size={14} color="var(--neutral-300)" />
+              Duplicate as Draft
+            </button>
+            <button className={`${s.moreMenuItem} ${s.moreMenuDanger}`} onClick={() => { setShowDeleteConfirm(true); setShowMore(false); }}>
+              <Icon name="solar:trash-bin-minimalistic-linear" size={14} />
+              Delete Goal
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 
@@ -75,64 +88,62 @@ export function GoalDetailDrawer() {
         onClose={() => setGoalDetailId(null)}
         headerRight={headerRight}
       >
-        {/* Weighted Scoring Banner */}
-        {goal.weightedScoring && (
-          <div className={s.warnBox}>
-            <Icon name="solar:chart-linear" size={14} />
-            <div>
-              <strong>Weighted Scoring</strong> — Pass threshold: <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{goal.passingScore}/{totalScore}pt</strong> ({Math.round((goal.passingScore / totalScore) * 100)}%)
-            </div>
-          </div>
-        )}
-
-        {/* Info */}
-        <div className={s.infoBox}>
-          <Icon name="solar:info-circle-linear" size={14} />
-          <span>Requires <strong style={{ color: 'var(--status-success)' }}>{mc} mandatory</strong> step{mc !== 1 ? 's' : ''}{cc ? ` + ${cc} conditional` : ''}</span>
+        {/* Program + Status bar */}
+        <div className={s.detailTopBar}>
+          <Badge variant={goal.programColor === 'purple' ? 'ai-care' : goal.programColor === 'blue' ? 'outreach-appointment' : 'outreach-care-gap'} label={goal.program} />
+          <Badge variant={goal.status === 'active' ? 'status-completed' : 'status-queued'} label={goal.status === 'active' ? 'Active' : 'Draft'} />
+          {goal.weightedScoring && (
+            <span className={s.detailScoreInfo}>
+              <Icon name="solar:chart-linear" size={12} color="var(--primary-300)" />
+              Weighted &middot; Pass: {goal.passingScore}/{totalScore}pt
+            </span>
+          )}
         </div>
 
-        {/* Stats */}
+        {/* Description */}
+        {goal.description && (
+          <p className={s.detailDescription}>{goal.description}</p>
+        )}
+
+        {/* Stats row */}
         <div className={s.detailStats}>
           <div className={s.detailStat}>
             <div className={s.detailStatVal}>{goal.completionRate}%</div>
             <div className={s.detailStatLabel}>Completion</div>
           </div>
           <div className={s.detailStat}>
-            <div className={s.detailStatVal} style={{ color: 'var(--neutral-500)' }}>{goal.totalRuns.toLocaleString()}</div>
-            <div className={s.detailStatLabel}>Runs</div>
+            <div className={s.detailStatVal}>{goal.totalRuns.toLocaleString()}</div>
+            <div className={s.detailStatLabel}>Total Runs</div>
           </div>
           <div className={s.detailStat}>
-            <div className={s.detailStatVal} style={{ color: 'var(--neutral-500)' }}>{goal.agents.length}</div>
-            <div className={s.detailStatLabel}>Agents</div>
+            <div className={s.detailStatVal}>{goal.agents.length}</div>
+            <div className={s.detailStatLabel}>Linked Agents</div>
           </div>
         </div>
 
-        {/* Steps Timeline */}
-        <div className={s.sectionTitle}>
-          <Icon name="solar:clipboard-list-linear" size={14} color="var(--primary-300)" />
-          Steps
+        {/* Steps — Required */}
+        <div className={s.detailSectionHeader}>
+          <Icon name="solar:clipboard-list-linear" size={14} color="var(--neutral-300)" />
+          <span>Required Steps ({requiredSteps.length})</span>
         </div>
         <div className={s.stepTimeline}>
-          {goal.steps.map((step, i) => (
+          {requiredSteps.map((step, i) => (
             <div key={step.id} className={s.stepTimelineItem}>
-              <div className={`${s.stepIcon} ${step.type === 'mandatory' ? s.stepIconMandatory : s.stepIconConditional}`}>
-                {step.type === 'mandatory' ? <Icon name="solar:check-circle-linear" size={14} /> : <Icon name="solar:alt-arrow-right-linear" size={14} />}
+              <div className={`${s.stepIcon} ${s.stepIconRequired}`}>
+                <CheckIcon size={14} color="#009B53" />
               </div>
-              <div className={`${s.stepBody} ${step.type === 'mandatory' ? s.stepBodyMandatory : ''}`}>
+              <div className={`${s.stepBody} ${s.stepBodyRequired}`}>
                 <div className={s.stepName}>
                   <span>{i + 1}. {step.name}</span>
-                  <div style={{ display: 'flex', gap: 4 }}>
+                  <div className={s.stepNameRight}>
                     {goal.weightedScoring && <span className={s.scoreChip}>{step.score}pt</span>}
-                    <Badge
-                      variant={step.type === 'mandatory' ? 'compliance-pass' : 'compliance-warn'}
-                      label={step.type === 'mandatory' ? 'Mandatory' : 'Conditional'}
-                    />
+                    <Badge variant="compliance-pass" label="Required" />
                   </div>
                 </div>
                 <div className={s.stepNote}>{step.desc}</div>
                 {step.condition && (
-                  <div className={s.stepCondition}>
-                    <Icon name="solar:bolt-linear" size={10} /> {step.condition}
+                  <div className={s.stepDependency}>
+                    <Icon name="solar:link-linear" size={10} /> {step.condition}
                   </div>
                 )}
               </div>
@@ -140,28 +151,68 @@ export function GoalDetailDrawer() {
           ))}
         </div>
 
+        {/* Steps — Optional */}
+        {optionalSteps.length > 0 && (
+          <>
+            <div className={s.detailSectionHeader}>
+              <Icon name="solar:star-linear" size={14} color="var(--neutral-300)" />
+              <span>Optional Steps ({optionalSteps.length})</span>
+            </div>
+            <div className={s.stepTimeline}>
+              {optionalSteps.map((step, i) => (
+                <div key={step.id} className={s.stepTimelineItem}>
+                  <div className={`${s.stepIcon} ${s.stepIconOptional}`}>
+                    <Icon name="solar:alt-arrow-right-linear" size={14} />
+                  </div>
+                  <div className={s.stepBody}>
+                    <div className={s.stepName}>
+                      <span>{requiredSteps.length + i + 1}. {step.name}</span>
+                      <div className={s.stepNameRight}>
+                        {goal.weightedScoring && <span className={s.scoreChip}>{step.score}pt</span>}
+                        <Badge variant="status-queued" label="Optional" />
+                      </div>
+                    </div>
+                    <div className={s.stepNote}>{step.desc}</div>
+                    {step.condition && (
+                      <div className={s.stepDependency}>
+                        <Icon name="solar:link-linear" size={10} /> {step.condition}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
         <hr className={s.divider} />
 
         {/* Success Criteria */}
-        <div className={s.sectionTitle}>
-          <Icon name="solar:check-circle-linear" size={14} color="var(--status-success)" />
-          Success Criteria
-        </div>
-        {goal.successMetrics.map((m, i) => (
-          <div key={i} className={s.successItem}>
-            <Icon name="solar:check-circle-linear" size={14} color="var(--status-success)" /> {m}
-          </div>
-        ))}
+        {goal.successMetrics.length > 0 && (
+          <>
+            <div className={s.detailSectionHeader}>
+              <CheckIcon size={14} color="#009B53" />
+              <span>Success Criteria</span>
+            </div>
+            <div className={s.successContainer}>
+              {goal.successMetrics.map((m, i) => (
+                <div key={i} className={s.successItem}>
+                  <CheckIcon size={14} color="#009B53" /> {m}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Linked Agents */}
         {goal.agents.length > 0 && (
           <>
             <hr className={s.divider} />
-            <div className={s.sectionTitle}>
-              <Icon name="solar:bot-linear" size={14} color="var(--primary-300)" />
-              Linked Agents
+            <div className={s.detailSectionHeader}>
+              <Icon name="solar:bot-linear" size={14} color="var(--neutral-300)" />
+              <span>Linked Agents ({goal.agents.length})</span>
             </div>
-            <div>
+            <div className={s.agentChipRow}>
               {goal.agents.map(a => (
                 <span key={a} className={s.agentChip}>
                   <Icon name="solar:bot-linear" size={12} /> {a}

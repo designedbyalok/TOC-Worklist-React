@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
+import { CheckIcon } from '../../../components/Icon/CheckIcon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { Button } from '../../../components/Button/Button';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
+import { Input } from '../../../components/Input/Input';
 import { useAppStore } from '../../../store/useAppStore';
 import { Switch } from '../../../components/Switch/Switch';
+import { ConfirmDialog } from '../../../components/Modal/ConfirmDialog';
 import { GOAL_TEMPLATES } from '../../../data/goals'; // Templates are config, not DB data
 import s from './GoalsPanel.module.css';
 
@@ -26,7 +29,7 @@ export function GoalWizardDrawer() {
   const showToast = useAppStore(st => st.showToast);
   const goalsData = useAppStore(st => st.goalsData) || [];
 
-  const editGoal = goalWizardEditId ? goalsData.find(g => g.id === goalWizardEditId) : null;
+  const editGoal = goalWizardEditId ? goalsData.find(g => String(g.id) === String(goalWizardEditId)) : null;
 
   const [step, setStep] = useState(editGoal ? 1 : 0);
   const [name, setName] = useState(editGoal?.name || '');
@@ -44,14 +47,26 @@ export function GoalWizardDrawer() {
   const [nameError, setNameError] = useState(false);
   const [stepsError, setStepsError] = useState(false);
   const [aiGenerating, setAiGenerating] = useState(false);
-  const [editingStepIdx, setEditingStepIdx] = useState(null); // index of step being inline-edited
+  const [editingStepIdx, setEditingStepIdx] = useState(null);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
 
   if (!goalWizardOpen) return null;
 
   const isEdit = !!goalWizardEditId;
   const totalScore = steps.reduce((a, st) => a + (st.score || 0), 0);
 
+  // Check if form has unsaved changes
+  const isDirty = name.trim() || desc.trim() || steps.length > 0 || nlInput.trim();
+
   const close = () => { setGoalWizard(false, null); resetForm(); };
+
+  const handleClose = () => {
+    if (isDirty && step > 0) {
+      setShowDiscardConfirm(true);
+    } else {
+      close();
+    }
+  };
 
   const resetForm = () => {
     setStep(0); setName(''); setProgram('TCM'); setMode('all-mandatory');
@@ -147,16 +162,17 @@ export function GoalWizardDrawer() {
 
   const removeMetric = (idx) => setMetrics(metrics.filter((_, i) => i !== idx));
 
-  // ── Stepper (Figma: square bordered number + label with line connector) ──
+  // ── Stepper — clickable on any visited step ──
   const renderStepper = () => (
     <div className={s.stepper}>
       {WIZARD_LABELS.map((label, i) => (
         <div key={label} style={{ display: 'contents' }}>
           <div
             className={`${s.wizStep} ${i === step ? s.wizStepActive : i < step ? s.wizStepDone : ''}`}
-            onClick={() => i <= step && setStep(i)}
+            onClick={() => setStep(i)}
+            style={{ cursor: 'pointer' }}
           >
-            <div className={s.wizStepNum}>{i < step ? <Icon name="solar:check-read-linear" size={12} /> : i + 1}</div>
+            <div className={s.wizStepNum}>{i < step ? <CheckIcon size={12} color="var(--primary-300)" /> : i + 1}</div>
             <span className={s.wizStepLabel}>{label}</span>
           </div>
           {i < WIZARD_LABELS.length - 1 && (
@@ -225,10 +241,11 @@ export function GoalWizardDrawer() {
         <div className={s.warnBox}><Icon name="solar:pen-linear" size={14} /><span>Editing a published goal. Changes apply to new runs.</span></div>
       )}
       <div className={s.formGroup}>
-        <div className={s.formLabel}>Goal Name <span className={s.formReq}>●</span></div>
-        <input className={`${s.formInput} ${nameError ? s.formInputError : ''}`} value={name}
+        <div className={s.formLabel}>Goal Name <span className={s.formReq} /></div>
+        <Input type="text" value={name}
           onChange={e => { setName(e.target.value); setNameError(false); }}
-          placeholder="e.g. TCM Full Program Completion" />
+          placeholder="e.g. TCM Full Program Completion"
+          style={nameError ? { borderColor: 'var(--status-error)' } : undefined} />
         {nameError && <div className={`${s.formError} ${s.formErrorVisible}`}>Goal name is required</div>}
       </div>
       <div style={{ display: 'flex', gap: 12 }}>
@@ -256,39 +273,39 @@ export function GoalWizardDrawer() {
   // ── Page 2: Steps ──
   const renderSteps = () => (
     <div className={step === 2 ? s.wizPageActive : s.wizPage}>
-      {/* Weighted Scoring Toggle */}
-      <div className={`${s.scoringToggle} ${weighted ? s.scoringToggleEnabled : ''}`} onClick={() => setWeighted(!weighted)}>
-        <div className={s.scoringToggleLabel}>
-          <Icon name="solar:chart-linear" size={16} color="var(--primary-300)" />
-          <div>
-            <div className={s.scoringTitle}>Weighted Scoring</div>
-            <div className={s.scoringSub}>Assign point values to steps and set a pass threshold</div>
+      {/* Weighted Scoring — single expandable container */}
+      <div className={`${s.scoringContainer} ${weighted ? s.scoringContainerOpen : ''}`}>
+        <div className={s.scoringToggle} onClick={() => setWeighted(!weighted)}>
+          <div className={s.scoringToggleLabel}>
+            <Icon name="solar:chart-linear" size={16} color="var(--primary-300)" />
+            <div>
+              <div className={s.scoringTitle}>Weighted Scoring</div>
+              <div className={s.scoringSub}>Assign point values to steps and set a pass threshold</div>
+            </div>
           </div>
+          <Switch checked={weighted} onChange={() => setWeighted(!weighted)} />
         </div>
-        <Switch checked={weighted} onChange={() => setWeighted(!weighted)} />
+        {weighted && (
+          <div className={s.thresholdRow}>
+            <span className={s.thresholdLabel}>Pass Threshold</span>
+            <input className={s.thresholdInput} type="number" min={1} max={1000} value={passingScore}
+              onChange={e => { e.stopPropagation(); setPassingScore(parseInt(e.target.value) || 0); }} />
+            <span className={s.thresholdUnit}>pts</span>
+            <span className={s.thresholdTotal}>
+              Total: {totalScore}pt
+            </span>
+          </div>
+        )}
       </div>
-      {weighted && (
-        <div className={s.thresholdRow}>
-          <label>Pass Threshold</label>
-          <input className={s.thresholdInput} type="number" min={1} max={1000} value={passingScore}
-            onChange={e => setPassingScore(parseInt(e.target.value) || 0)} />
-          <span style={{ fontSize: 11, color: 'var(--neutral-300)' }}>pts</span>
-          <span style={{ marginLeft: 'auto', fontSize: 11, color: totalScore > 0 ? 'var(--primary-300)' : 'var(--neutral-200)', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
-            Total: {totalScore}pt
-          </span>
-        </div>
-      )}
 
       {/* Steps Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <div>
-          <div className={s.sectionTitle} style={{ marginBottom: 2 }}>
-            <Icon name="solar:clipboard-list-linear" size={14} color="var(--primary-300)" />
-            Goal Steps
-          </div>
-          <div style={{ fontSize: 11, color: 'var(--neutral-200)' }}>
-            <span style={{ color: 'var(--status-success)' }}>●</span> Mandatory <span style={{ color: 'var(--status-warning)' }}>●</span> Conditional
-          </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, marginTop: 16 }}>
+        <div className={s.sectionTitle} style={{ marginBottom: 0 }}>
+          <Icon name="solar:clipboard-list-linear" size={14} color="var(--neutral-300)" />
+          Goal Steps
+          <span style={{ fontSize: 12, color: 'var(--neutral-200)', fontWeight: 400, marginLeft: 8 }}>
+            <span style={{ color: 'var(--status-success)' }}>●</span> Required <span style={{ color: 'var(--status-warning)' }}>●</span> Optional
+          </span>
         </div>
         <Button variant="secondary" size="S" onClick={() => setShowAddStep(true)}>
           + Add Step
@@ -299,15 +316,15 @@ export function GoalWizardDrawer() {
       {steps.map((st, i) => (
         editingStepIdx === i ? (
           /* Inline Edit Form */
-          <div key={st.id || i} style={{ background: 'var(--neutral-50)', border: '0.5px solid var(--primary-200)', borderRadius: 8, padding: 12, marginBottom: 6 }}>
-            <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--primary-300)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '.04em' }}>Edit Step {i + 1}</div>
+          <div key={st.id || i} style={{ background: 'var(--neutral-50)', border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 12, marginBottom: 6 }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--primary-300)', marginBottom: 8 }}>Edit Step {i + 1}</div>
             <div className={s.addStepRow}>
-              <input className={s.formInput} value={st.name} style={{ flex: 2 }}
-                onChange={e => updateStep(i, { name: e.target.value })} />
+              <Input type="text" value={st.name} style={{ flex: 2 }}
+                onChange={e => updateStep(i, { name: e.target.value })} placeholder="Step name" />
               <select className={s.formSelect} value={st.type} style={{ flex: 1 }}
                 onChange={e => updateStep(i, { type: e.target.value })}>
-                <option value="mandatory">Mandatory</option>
-                <option value="conditional">Conditional</option>
+                <option value="mandatory">Required</option>
+                <option value="conditional">Optional</option>
               </select>
               {weighted && (
                 <input className={s.thresholdInput} type="number" min={1} max={999} value={st.score} style={{ width: 50 }}
@@ -316,7 +333,7 @@ export function GoalWizardDrawer() {
             </div>
             <textarea className={s.formTextarea} style={{ minHeight: 52, marginBottom: 8 }} value={st.desc || ''}
               onChange={e => updateStep(i, { desc: e.target.value })} placeholder="Step description" />
-            <input className={s.formInput} style={{ marginBottom: 8 }} value={st.condition || ''}
+            <Input type="text" style={{ marginBottom: 8 }} value={st.condition || ''}
               onChange={e => updateStep(i, { condition: e.target.value })} placeholder="Dependency condition (optional)" />
             <div style={{ display: 'flex', gap: 6 }}>
               <Button variant="primary" size="S" onClick={() => setEditingStepIdx(null)}>Save</Button>
@@ -329,14 +346,14 @@ export function GoalWizardDrawer() {
             <div className={s.stepNum}>{i + 1}</div>
             <div className={s.stepContent}>
               <div className={s.stepNameRow}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--neutral-500)' }}>{st.name}</span>
-                <Badge variant={st.type === 'mandatory' ? 'compliance-pass' : 'compliance-warn'} label={st.type === 'mandatory' ? 'Mandatory' : 'Conditional'} />
+                <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)' }}>{st.name}</span>
+                <Badge variant={st.type === 'mandatory' ? 'compliance-pass' : 'status-queued'} label={st.type === 'mandatory' ? 'Required' : 'Optional'} />
                 {weighted && <span className={s.scoreChip}>{st.score}pt</span>}
               </div>
               {st.desc && <div className={s.stepDesc}>{st.desc}</div>}
               {st.condition && (
                 <div className={s.stepCondition}>
-                  <Icon name="solar:bolt-linear" size={10} /> {st.condition}
+                  <Icon name="solar:link-linear" size={10} /> {st.condition}
                 </div>
               )}
             </div>
@@ -353,15 +370,15 @@ export function GoalWizardDrawer() {
 
       {/* Add Step Form */}
       {showAddStep && (
-        <div style={{ background: 'var(--neutral-50)', border: '0.5px dashed var(--neutral-200)', borderRadius: 8, padding: 12, marginBottom: 6 }}>
-          <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--neutral-300)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '.04em' }}>New Step</div>
+        <div style={{ background: 'var(--neutral-50)', border: '0.5px dashed var(--neutral-150)', borderRadius: 8, padding: 12, marginBottom: 6 }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)', marginBottom: 8 }}>New Step</div>
           <div className={s.addStepRow}>
-            <input className={s.formInput} placeholder="Step name" style={{ flex: 2 }} value={newStep.name}
+            <Input type="text" placeholder="Step name" style={{ flex: 2 }} value={newStep.name}
               onChange={e => setNewStep({ ...newStep, name: e.target.value })} />
             <select className={s.formSelect} style={{ flex: 1 }} value={newStep.type}
               onChange={e => setNewStep({ ...newStep, type: e.target.value })}>
-              <option value="mandatory">Mandatory</option>
-              <option value="conditional">Conditional</option>
+              <option value="mandatory">Required</option>
+              <option value="conditional">Optional</option>
             </select>
             {weighted && (
               <input className={s.thresholdInput} type="number" min={1} max={999} value={newStep.score} style={{ width: 50 }}
@@ -370,7 +387,7 @@ export function GoalWizardDrawer() {
           </div>
           <textarea className={s.formTextarea} style={{ minHeight: 52, marginBottom: 8 }} placeholder="What does this step require?"
             value={newStep.desc} onChange={e => setNewStep({ ...newStep, desc: e.target.value })} />
-          <input className={s.formInput} style={{ marginBottom: 8 }} placeholder="Dependency condition (optional)"
+          <Input type="text" style={{ marginBottom: 8 }} placeholder="Dependency condition (optional)"
             value={newStep.condition} onChange={e => setNewStep({ ...newStep, condition: e.target.value })} />
           <div style={{ display: 'flex', gap: 6 }}>
             <Button variant="primary" size="S" onClick={addStepItem}>Add Step</Button>
@@ -387,59 +404,69 @@ export function GoalWizardDrawer() {
   const renderReview = () => (
     <div className={step === 3 ? s.wizPageActive : s.wizPage}>
       <div className={s.sectionTitle}>
-        <Icon name="solar:check-circle-linear" size={14} color="var(--status-success)" />
+        <CheckIcon size={14} color="#009B53" />
         Success Criteria
       </div>
-      <div style={{ fontSize: 12, color: 'var(--neutral-300)', marginBottom: 10, lineHeight: 1.5 }}>
+      <p className={s.detailDescription}>
         Define what constitutes a successful goal completion beyond just step completion.
-      </div>
-      {metrics.map((m, i) => (
-        <div key={i} className={s.metricItem}>
-          <Icon name="solar:check-circle-linear" size={13} color="var(--status-success)" />
-          <span style={{ flex: 1 }}>{m}</span>
-          <button className={s.metricRemove} onClick={() => removeMetric(i)}>✕</button>
+      </p>
+      {metrics.length > 0 && (
+        <div className={s.successContainer}>
+          {metrics.map((m, i) => (
+            <div key={i} className={s.successItem} style={{ fontSize: 14 }}>
+              <CheckIcon size={14} color="#009B53" />
+              <span style={{ flex: 1 }}>{m}</span>
+              <button className={s.metricRemove} onClick={() => removeMetric(i)}>
+                <Icon name="solar:close-circle-linear" size={14} color="var(--neutral-200)" />
+              </button>
+            </div>
+          ))}
         </div>
-      ))}
-      <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-        <input className={s.formInput} placeholder="e.g. No escalated safety events" value={newMetric}
-          onChange={e => setNewMetric(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && addMetricItem()} />
-        <Button variant="secondary" size="S" style={{ flexShrink: 0 }}
+      )}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 16 }}>
+        <div style={{ flex: 1 }}>
+          <Input type="text" placeholder="e.g. No escalated safety events" value={newMetric}
+            onChange={e => setNewMetric(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && addMetricItem()} />
+        </div>
+        <Button variant="secondary" size="L" style={{ flexShrink: 0 }}
           onClick={addMetricItem}>+ Add</Button>
       </div>
 
       <hr className={s.divider} />
       <div className={s.sectionTitle}>
-        <Icon name="solar:clipboard-list-linear" size={14} color="var(--primary-300)" />
+        <Icon name="solar:clipboard-list-linear" size={14} color="var(--neutral-300)" />
         Review Summary
       </div>
-      <div className={s.reviewCard}>
-        <div className={s.reviewLabel}>Goal Name</div>
-        <div className={s.reviewValue}>{name || '—'}</div>
+      <div className={s.successContainer}>
+        <div className={s.reviewRow}>
+          <div className={s.reviewLabel}>Goal Name</div>
+          <div className={s.reviewValue}>{name || '—'}</div>
+        </div>
+        <div className={s.reviewRow} style={{ display: 'flex', gap: 24 }}>
+          <div style={{ flex: 1 }}>
+            <div className={s.reviewLabel}>Program</div>
+            <div className={s.reviewValue}>{program}</div>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div className={s.reviewLabel}>Mode</div>
+            <div className={s.reviewValue}>{MODES.find(m => m.value === mode)?.label || mode}</div>
+          </div>
+        </div>
+        <div className={s.reviewRow}>
+          <div className={s.reviewLabel}>Steps</div>
+          <div className={s.reviewValue}>
+            {steps.filter(st => st.type === 'mandatory').length} required, {steps.filter(st => st.type === 'conditional').length} optional
+            {weighted && <span style={{ color: 'var(--neutral-300)', fontWeight: 400 }}> · Threshold: {passingScore}/{totalScore}pt</span>}
+          </div>
+        </div>
+        {desc && (
+          <div className={s.reviewRow}>
+            <div className={s.reviewLabel}>Description</div>
+            <div style={{ fontSize: 12, color: 'var(--neutral-400)', lineHeight: 1.5 }}>{desc}</div>
+          </div>
+        )}
       </div>
-      <div style={{ display: 'flex', gap: 10 }}>
-        <div className={s.reviewCard} style={{ flex: 1 }}>
-          <div className={s.reviewLabel}>Program</div>
-          <div className={s.reviewValue}>{program}</div>
-        </div>
-        <div className={s.reviewCard} style={{ flex: 1 }}>
-          <div className={s.reviewLabel}>Mode</div>
-          <div className={s.reviewValue}>{MODES.find(m => m.value === mode)?.label || mode}</div>
-        </div>
-      </div>
-      <div className={s.reviewCard}>
-        <div className={s.reviewLabel}>Steps</div>
-        <div className={s.reviewValue}>
-          {steps.filter(st => st.type === 'mandatory').length} mandatory, {steps.filter(st => st.type === 'conditional').length} conditional
-          {weighted && <span style={{ color: 'var(--neutral-300)', fontWeight: 400 }}> · Threshold: {passingScore}/{totalScore}pt</span>}
-        </div>
-      </div>
-      {desc && (
-        <div className={s.reviewCard}>
-          <div className={s.reviewLabel}>Description</div>
-          <div style={{ fontSize: 13, color: 'var(--neutral-400)', lineHeight: 1.5 }}>{desc}</div>
-        </div>
-      )}
     </div>
   );
 
@@ -454,23 +481,32 @@ export function GoalWizardDrawer() {
     </div>
   );
 
+  const discardDialog = showDiscardConfirm ? (
+    <ConfirmDialog
+      icon="solar:danger-triangle-linear"
+      iconColor="var(--status-error)"
+      title="Discard unsaved changes?"
+      description="You have unsaved changes in this goal. If you close now, all progress will be lost."
+      confirmLabel="Discard"
+      cancelLabel="Keep Editing"
+      variant="error"
+      onCancel={() => setShowDiscardConfirm(false)}
+      onConfirm={() => { setShowDiscardConfirm(false); close(); }}
+    />
+  ) : null;
+
   return (
     <Drawer
       title={isEdit ? 'Edit Goal' : 'Create New Goal'}
-      onClose={close}
+      onClose={handleClose}
       headerRight={headerRight}
     >
-      {/* Back link at top of body when not on first step */}
-      {step > 0 && (
-        <Button variant="ghost" size="S" leadingIcon="solar:alt-arrow-left-linear" onClick={goBack} style={{ marginBottom: 12 }}>
-          Back
-        </Button>
-      )}
       {renderStepper()}
       {renderDescribe()}
       {renderConfigure()}
       {renderSteps()}
       {renderReview()}
+      {discardDialog}
     </Drawer>
   );
 }

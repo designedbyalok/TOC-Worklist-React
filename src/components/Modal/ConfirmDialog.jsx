@@ -5,26 +5,25 @@ import {
   AlertDialogFooter,
   AlertDialogTitle,
   AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogCancel,
 } from '../ui/alert-dialog';
 import { Icon } from '../Icon/Icon';
+import { Button } from '../Button/Button';
 
 /**
  * Reusable confirmation dialog — matches Fold Health design system.
- * Backed by shadcn AlertDialog (Radix) in controlled mode.
+ * Uses Button component for consistent styling across the app.
  *
  * @param {object}   props
- * @param {string}   props.icon        – Iconify name for the top icon (default: warning)
- * @param {string}   props.iconColor   – Icon color (default: #D72825)
+ * @param {string}   props.icon        – Iconify name for the top icon
+ * @param {string}   props.iconColor   – Icon color
  * @param {string}   props.title       – Dialog heading
  * @param {string}   props.description – Supporting text
- * @param {string}   props.confirmLabel – Label for the primary action button (default: "Delete")
- * @param {string}   props.cancelLabel  – Label for the cancel button (default: "Cancel")
- * @param {'error'|'primary'} props.variant – Button variant (default: "error")
+ * @param {string}   props.confirmLabel – Label for the primary action button
+ * @param {string}   props.cancelLabel  – Label for the cancel button
+ * @param {'error'|'primary'} props.variant – Button variant
  * @param {function} props.onConfirm   – Called when user clicks the primary action
  * @param {function} props.onCancel    – Called when user clicks cancel or overlay
- * @param {boolean}  props.loading     – If true, disable buttons and show "..." on confirm
+ * @param {boolean}  props.loading     – If true, disable buttons and show loading text
  */
 export function ConfirmDialog({
   icon = 'solar:danger-triangle-linear',
@@ -40,7 +39,10 @@ export function ConfirmDialog({
 }) {
   return (
     <AlertDialog open onOpenChange={(open) => { if (!open) onCancel?.(); }}>
-      <AlertDialogContent className="flex flex-col items-center gap-4 p-5 max-w-[340px]">
+      <AlertDialogContent
+        className="flex flex-col items-center gap-4 p-5 max-w-[340px]"
+        style={{ zIndex: 500 }}
+      >
         {/* Icon */}
         <div className="flex items-center justify-center w-6 h-6 shrink-0">
           <Icon name={icon} size={24} color={iconColor} />
@@ -58,26 +60,26 @@ export function ConfirmDialog({
           )}
         </AlertDialogHeader>
 
-        {/* Actions */}
+        {/* Actions — using Button component */}
         <AlertDialogFooter className="flex-row justify-center w-full max-w-[320px] gap-2 mt-0">
-          <AlertDialogCancel
+          <Button
+            variant="secondary"
+            size="L"
+            fullWidth
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium font-['Inter'] bg-white border border-[var(--neutral-100)] text-[var(--neutral-400)] hover:bg-[var(--neutral-50)] hover:border-[var(--neutral-150)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {cancelLabel}
-          </AlertDialogCancel>
-          <AlertDialogAction
+          </Button>
+          <Button
+            variant={variant === 'error' ? 'danger' : 'primary'}
+            size="L"
+            fullWidth
             onClick={onConfirm}
             disabled={loading}
-            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium font-['Inter'] disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
-              variant === 'error'
-                ? 'bg-[var(--status-error-light)] border border-[var(--neutral-100)] text-[var(--status-error)] hover:bg-[#FFEDED] hover:border-[var(--status-error)]'
-                : 'bg-[var(--primary-300)] border border-[var(--primary-300)] text-white hover:bg-[#7B4BD4]'
-            }`}
           >
-            {loading ? 'Deleting\u2026' : confirmLabel}
-          </AlertDialogAction>
+            {loading ? 'Processing\u2026' : confirmLabel}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

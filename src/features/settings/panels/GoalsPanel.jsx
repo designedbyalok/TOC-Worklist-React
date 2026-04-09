@@ -30,7 +30,7 @@ function GoalCard({ goal, onOpen, onEdit }) {
         {goal.steps.map(st => (
           <Badge
             key={st.id}
-            variant={st.type === 'mandatory' ? 'compliance-pass' : 'compliance-warn'}
+            variant={st.type === 'mandatory' ? 'compliance-pass' : 'status-queued'}
             label={st.name}
           />
         ))}
@@ -120,7 +120,7 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
                 <td style={tdStyle}>
                   <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', maxWidth: 80 }}>
                     {g.steps.map(st => (
-                      <span key={st.id} style={{ width: 7, height: 7, borderRadius: '50%', display: 'inline-block', background: st.type === 'mandatory' ? 'var(--status-success)' : 'var(--status-warning)' }} />
+                      <span key={st.id} style={{ width: 7, height: 7, borderRadius: '50%', display: 'inline-block', background: st.type === 'mandatory' ? 'var(--status-success)' : 'var(--neutral-200)' }} />
                     ))}
                   </div>
                   <div style={{ fontSize: 10, color: 'var(--neutral-200)', marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{mc}M · {cc}C</div>
