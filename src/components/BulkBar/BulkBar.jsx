@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Icon } from '../Icon/Icon';
+import { CloseIcon } from '../Icon/CloseIcon';
 import { Button } from '../Button/Button';
 import { ActionButton } from '../ActionButton/ActionButton';
 import { useAppStore } from '../../store/useAppStore';
@@ -94,7 +95,7 @@ export function BulkBar() {
       </div>
       <div className={styles.divider} />
       <button className={styles.closeBtn} title="Close" onClick={handleDismiss}>
-        &#x2715;
+        <CloseIcon size={16} />
       </button>
     </div>
   );

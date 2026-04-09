@@ -1,0 +1,864 @@
+/* ── ConfigurePanel wrapper ── */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: #F6F7F8;
+}
+
+/* ── Secondary Tab Bar ── */
+.sectionTabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 0.5px solid var(--neutral-150, #E9ECF1);
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+
+.sectionTabsInner {
+  display: flex;
+  gap: 12px;
+}
+
+.sectionTab {
+  padding: 10px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6F7A90;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+  transition: color .12s;
+}
+
+.sectionTab:hover { color: #3D4A5C; }
+
+.sectionTabActive {
+  color: #8C5AE2;
+  border-bottom-color: #8C5AE2;
+}
+
+/* ── Scrollable content area ── */
+.scrollArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 0;
+}
+
+.scrollInner {
+  max-width: 1048px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 24px;
+}
+
+/* ── Card ── */
+.card {
+  background: #fff;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 41px;
+  padding: 0 12px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+}
+
+.cardHeader:hover { background: #FAFBFC; }
+
+.cardHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #16181D;
+  line-height: 1.2;
+}
+
+.completeBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  background: #009B53;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.completeBadgeIcon {
+  width: 8px;
+  height: 8px;
+}
+
+.chevron {
+  transition: transform .2s;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* ── Card body ── */
+.cardBody {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  border-top: 0.5px solid #E9ECF1;
+}
+
+/* ── Subsection ── */
+.subsection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.subsectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subsectionTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #16181D;
+  line-height: 1.2;
+  font-family: 'Inter', sans-serif;
+}
+
+.subsectionDesc {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6F7A90;
+  line-height: 1.3;
+  font-family: 'Inter', sans-serif;
+  margin-top: 4px;
+}
+
+/* ── Field ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #8A94A8;
+  line-height: 1.2;
+  font-family: 'Inter', sans-serif;
+}
+
+.fieldRequired {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #D72825;
+  flex-shrink: 0;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.fieldInput {
+  height: 32px;
+  border: 0.5px solid #8A94A8;
+  border-radius: 4px;
+  padding: 0 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #3A485F;
+  background: #fff;
+  outline: none;
+  transition: border-color .15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fieldInput:focus { border-color: #8C5AE2; }
+.fieldInput::placeholder { color: #8A94A8; }
+
+.fieldInputWrap {
+  position: relative;
+}
+
+.charCounter {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #8A94A8;
+  font-family: 'Inter', sans-serif;
+  pointer-events: none;
+}
+
+/* ── Select ── */
+.selectWrap {
+  position: relative;
+}
+
+.selectBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  border: 0.5px solid #8A94A8;
+  border-radius: 4px;
+  background: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #3A485F;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+
+.selectBtn:hover { border-color: #8C5AE2; }
+
+.selectBtnText {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectBtnPlaceholder {
+  color: #8A94A8;
+}
+
+.selectDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  z-index: 20;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.selectOption {
+  padding: 8px 10px;
+  font-size: 13px;
+  color: #3A485F;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+}
+
+.selectOption:hover { background: #F5F0FF; color: #8C5AE2; }
+.selectOptionActive { background: #F5F0FF; color: #8C5AE2; font-weight: 500; }
+
+/* ── Textarea ── */
+.textarea {
+  width: 100%;
+  min-height: 72px;
+  border: 0.5px solid #8A94A8;
+  border-radius: 4px;
+  padding: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #3A485F;
+  line-height: 1.4;
+  resize: vertical;
+  outline: none;
+  background: #fff;
+  transition: border-color .15s;
+  box-sizing: border-box;
+}
+
+.textarea:focus { border-color: #8C5AE2; }
+.textarea::placeholder { color: #8A94A8; }
+
+.textareaLarge {
+  min-height: 300px;
+}
+
+/* ── Tag input ── */
+.tagContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 6px 6px;
+  border: 0.5px solid #8A94A8;
+  border-radius: 4px;
+  background: #fff;
+  cursor: text;
+  transition: border-color .15s;
+}
+
+.tagContainer:focus-within { border-color: #8C5AE2; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: #F6F7F8;
+  border: 0.5px solid rgba(111, 122, 144, 0.1);
+  border-radius: 4px;
+  font-size: 14px;
+  color: #6F7A90;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+  height: 20px;
+}
+
+.tagRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #6F7A90;
+  line-height: 1;
+}
+
+.tagRemove:hover { color: #D72825; }
+
+.tagInput {
+  flex: 1;
+  min-width: 80px;
+  border: none;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #3A485F;
+  background: transparent;
+  padding: 0 2px;
+  height: 20px;
+}
+
+.tagInput::placeholder { color: #8A94A8; }
+
+/* ── Radio cards ── */
+.radioCardGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.radioCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fff;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  font-family: 'Inter', sans-serif;
+  min-width: 170px;
+}
+
+.radioCard:hover { border-color: #8C5AE2; }
+
+.radioCardSelected {
+  background: #FCFAFF;
+  border-color: #8C5AE2;
+  border-width: 1px;
+}
+
+.radioCardFlex {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.radioDot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid #6F7A90;
+  background: #fff;
+  flex-shrink: 0;
+  position: relative;
+  transition: all .15s;
+}
+
+.radioDotSelected {
+  border-color: #8C5AE2;
+  background: #8C5AE2;
+}
+
+.radioDotSelected::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.radioCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.radioCardTitle {
+  font-size: 14px;
+  font-weight: 400;
+  color: #3A485F;
+  line-height: 1.2;
+}
+
+.radioCardDesc {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6F7A90;
+  line-height: 1.2;
+}
+
+/* ── Sliders ── */
+.sliderRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sliderHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sliderLabel {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #16181D;
+  font-family: 'Inter', sans-serif;
+}
+
+.sliderBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 4px;
+  min-width: 18px;
+  background: #F5FFFA;
+  border: 0.5px solid rgba(0, 155, 83, 0.2);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #009B53;
+  font-family: 'Inter', sans-serif;
+}
+
+.sliderWrap {
+  position: relative;
+  padding: 16px 10px;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 8px;
+}
+
+.sliderTrack {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background: #F6F7F8;
+  border-radius: 100px;
+  cursor: pointer;
+}
+
+.sliderFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 8px;
+  border-radius: 100px;
+  background: #009B53;
+  pointer-events: none;
+}
+
+.sliderThumb {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #009B53;
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  box-shadow: 0 0 4px rgba(0,0,0,.1);
+  z-index: 2;
+}
+
+.sliderThumb:active { cursor: grabbing; }
+
+.sliderTooltip {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(0,0,0,.1), 0 12px 24px rgba(0,0,0,.1);
+  font-size: 10px;
+  font-weight: 400;
+  color: #3A485F;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.sliderInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+/* ── Checkboxes ── */
+.checkboxGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+}
+
+.checkboxItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+.checkboxBox {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #6F7A90;
+  border-radius: 4px;
+  background: #fff;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+}
+
+.checkboxBoxChecked {
+  background: #8C5AE2;
+  border-color: #8C5AE2;
+}
+
+.checkboxLabel {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6F7A90;
+  line-height: 1.2;
+}
+
+.checkboxLabelChecked {
+  color: #3A485F;
+}
+
+/* ── Policy cards ── */
+.policyCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fff;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+
+.policyCard:hover { border-color: #8C5AE2; }
+
+.policyContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.policyName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #3A485F;
+  line-height: 1.2;
+  font-family: 'Inter', sans-serif;
+}
+
+.policyDesc {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6F7A90;
+  line-height: 1.2;
+  font-family: 'Inter', sans-serif;
+}
+
+.recommendedBadge {
+  position: absolute;
+  top: -9px;
+  left: 272px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 4px;
+  min-width: 18px;
+  background: #F4F8FE;
+  border: 0.5px solid rgba(20, 94, 204, 0.2);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #145ECC;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+}
+
+.policyActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.linkBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #8C5AE2;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  padding: 4px 0;
+}
+
+.linkBtn:hover { text-decoration: underline; }
+
+/* ── Link row (Required Compliance) ── */
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+
+.linkRow:hover .linkRowText { color: #8C5AE2; }
+
+.linkRowText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #16181D;
+  line-height: 1.2;
+  transition: color .15s;
+}
+
+/* ── Expand btn for instructions ── */
+.expandBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: background .12s;
+}
+
+.expandBtn:hover { background: #F6F7F8; }
+
+/* ── Goal selector ── */
+.goalSelector {
+  position: relative;
+}
+
+.goalDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  z-index: 20;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.goalOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  transition: background .1s;
+}
+
+.goalOption:hover { background: #F5F0FF; }
+
+.goalOptionCheck {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #6F7A90;
+  border-radius: 4px;
+  background: #fff;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.goalOptionCheckSelected {
+  background: #8C5AE2;
+  border-color: #8C5AE2;
+}
+
+.goalOptionInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.goalOptionName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #3A485F;
+  line-height: 1.2;
+}
+
+.goalOptionMeta {
+  font-size: 11px;
+  font-weight: 400;
+  color: #8A94A8;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.programBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.programBadgePurple { background: #F5F0FF; color: #8C5AE2; }
+.programBadgeBlue { background: #F4F8FE; color: #145ECC; }
+.programBadgeAmber { background: #FFF8F0; color: #C77D1A; }
+
+/* Goal tags (selected goals) */
+.goalTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.goalTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: #F6F7F8;
+  border: 0.5px solid rgba(111, 122, 144, 0.1);
+  border-radius: 4px;
+  font-size: 13px;
+  color: #3A485F;
+  font-family: 'Inter', sans-serif;
+}
+
+.goalTagPreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #8C5AE2;
+  line-height: 1;
+}
+
+.goalTagPreview:hover { color: #7B4AD1; }
+
+.goalTagRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: #6F7A90;
+  line-height: 1;
+}
+
+.goalTagRemove:hover { color: #D72825; }
+
+.goalEmpty {
+  padding: 16px;
+  text-align: center;
+  font-size: 13px;
+  color: #8A94A8;
+  font-family: 'Inter', sans-serif;
+}

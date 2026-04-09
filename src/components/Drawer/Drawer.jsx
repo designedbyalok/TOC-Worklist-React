@@ -1,4 +1,5 @@
 import { Icon } from '../Icon/Icon';
+import { CloseIcon } from '../Icon/CloseIcon';
 import styles from './Drawer.module.css';
 
 /**
@@ -32,7 +33,7 @@ export function Drawer({ title, onClose, headerRight, footer, children, classNam
           <div className={styles.headerRight}>
             {headerRight}
             <button className={styles.closeBtn} onClick={onClose}>
-              <Icon name="solar:close-square-linear" size={20} />
+              <CloseIcon size={20} />
             </button>
           </div>
         </div>

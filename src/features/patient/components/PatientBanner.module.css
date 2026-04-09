@@ -1,0 +1,144 @@
+/* ── Patient P360 Banner ── */
+.banner { display: flex; flex-direction: column; border-bottom: 0.5px solid var(--neutral-150); background: var(--neutral-0); flex-shrink: 0; }
+
+/* ── Row 1: Profile strip with gradient ── */
+.row1 {
+  display: flex; align-items: center; gap: 16px;
+  padding: 8px 12px;
+  background: linear-gradient(to right, rgba(255,218,246,0.2) 17%, rgba(255,255,255,0.2));
+  border-bottom: 0.5px solid var(--neutral-150);
+}
+
+/* User info block */
+.userInfo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.nameBlock { display: flex; flex-direction: column; gap: 2px; }
+.nameRow { display: flex; align-items: center; gap: 4px; }
+.name { font-size: 16px; font-weight: 600; color: var(--neutral-500); font-family: 'Inter', sans-serif; white-space: nowrap; }
+.meta { font-size: 14px; color: var(--neutral-300); font-family: 'Inter', sans-serif; white-space: nowrap; }
+
+/* Vertical divider */
+.vDivider { width: 0.5px; align-self: stretch; background: var(--neutral-150); flex-shrink: 0; }
+
+/* Main info area — metrics strip */
+.mainInfo { display: flex; flex: 1; align-items: center; gap: 24px; min-width: 0; }
+
+/* Profile card (Central Profile + JADE Health) */
+.profileCard {
+  display: flex; flex-direction: column; gap: 4px; padding: 4px 8px;
+  border: 0.5px solid rgba(16,156,174,0.25); border-radius: 4px;
+  background: radial-gradient(ellipse at center, #fff 53%, #e5fcf4);
+  width: 225px; flex-shrink: 0; overflow: hidden;
+}
+.profileCardTop { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+.profileLink { display: flex; align-items: center; gap: 4px; font-size: 14px; color: var(--neutral-400); font-family: 'Inter', sans-serif; background: none; border: none; cursor: pointer; padding: 0; white-space: nowrap; }
+.profileCardBottom { display: flex; align-items: center; gap: 4px; font-size: 12px; font-family: 'Inter', sans-serif; white-space: nowrap; }
+.profileCardBottom strong { font-weight: 500; color: var(--neutral-500); }
+.profileCardBottom span { color: var(--neutral-500); }
+
+/* Profile dropdown */
+.profileDropdown {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 9999;
+  width: 340px; background: white; border: 0.5px solid var(--neutral-100);
+  border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  padding: 12px; display: flex; flex-direction: column; gap: 8px;
+}
+.profileDropdownTitle { font-size: 14px; font-weight: 500; color: var(--neutral-500); font-family: 'Inter', sans-serif; padding: 0 4px 4px; }
+.profileOption {
+  border: 0.5px solid var(--neutral-100); border-radius: 8px; padding: 10px 12px;
+  cursor: pointer; display: flex; flex-direction: column; gap: 6px; transition: all 0.1s;
+}
+.profileOption:hover { border-color: var(--neutral-200); }
+.profileOptionSelected { border-color: var(--primary-300); background: var(--primary-50); }
+.profileOptionHeader { display: flex; align-items: flex-start; justify-content: space-between; }
+.profileOptionName { font-size: 14px; font-weight: 500; color: var(--neutral-500); font-family: 'Inter', sans-serif; }
+.profileOptionSub { font-size: 12px; color: var(--neutral-300); font-family: 'Inter', sans-serif; }
+.profileOptionRadio { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--neutral-150); flex-shrink: 0; }
+.profileOptionDetails { display: flex; gap: 16px; }
+.profileOptionDetail { display: flex; flex-direction: column; gap: 1px; }
+.profileOptionDetailLabel { font-size: 11px; color: var(--neutral-200); font-family: 'Inter', sans-serif; }
+.profileOptionDetailValue { font-size: 13px; font-weight: 500; color: var(--neutral-400); font-family: 'Inter', sans-serif; }
+.profileOptionDesc { display: flex; flex-direction: column; gap: 1px; }
+
+/* Metric column */
+.metricCol { display: flex; flex-direction: column; gap: 4px; align-self: stretch; flex-shrink: 0; }
+.metricLabel { font-size: 14px; font-weight: 500; color: var(--neutral-500); font-family: 'Inter', sans-serif; white-space: nowrap; line-height: 1.2; }
+.metricValueRow { display: flex; align-items: center; gap: 2px; overflow: hidden; }
+
+/* Badge (generic) */
+.badge { display: inline-flex; align-items: center; gap: 4px; height: 22px; min-width: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; font-family: 'Inter', sans-serif; white-space: nowrap; }
+.badgeWarning { color: var(--status-warning); background: var(--status-warning-light); border: 0.5px solid rgba(217,165,11,0.2); }
+.badgeError { color: var(--status-error); background: var(--status-error-light); border: 0.5px solid rgba(215,40,37,0.1); }
+.badgeInfo { color: var(--status-info); background: var(--status-info-light); border: 0.5px solid rgba(20,94,204,0.2); }
+.badgeGrey { color: var(--neutral-300); background: white; border: 0.5px solid rgba(111,122,144,0.1); }
+
+/* RAF */
+.rafValue { font-size: 14px; color: var(--status-error); font-family: 'Inter', sans-serif; }
+.rafChangeBadge { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--status-error); background: var(--status-error-light); border: 0.5px solid rgba(215,40,37,0.1); }
+
+/* Last Contact */
+.lastContactBtn { display: flex; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 0 4px 0 0; }
+.lastContactText { font-size: 14px; color: var(--status-error); font-family: 'Inter', sans-serif; }
+
+/* Next appt value */
+.nextApptValue { font-size: 14px; color: var(--neutral-300); font-family: 'Inter', sans-serif; white-space: nowrap; }
+
+/* Programs badges */
+.programBadges { display: flex; align-items: center; gap: 4px; }
+
+/* Expand arrow */
+.expandArrow { background: none; border: none; cursor: pointer; display: flex; align-items: center; flex-shrink: 0; }
+
+/* Action buttons with labels */
+.actionsGroup { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.actionCol { display: flex; flex-direction: column; align-items: center; gap: 0; width: 40px; cursor: pointer; background: none; border: none; }
+.actionLabel { font-size: 12px; color: var(--neutral-200); font-family: 'Inter', sans-serif; }
+.hDivider { width: 0.5px; height: 16px; background: var(--neutral-150); flex-shrink: 0; }
+
+/* ── Row 2: Tags strip ── */
+.row2 {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 12px;
+  border-bottom: 0.5px solid var(--neutral-150);
+}
+
+/* Tags */
+.tagCyan { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: #109CAE; background: #E5F8FB; border: 0.5px solid rgba(140,90,226,0.2); font-family: 'Inter', sans-serif; }
+.tagBlue { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--status-info); background: var(--status-info-light); border: 0.5px solid rgba(20,94,204,0.2); font-family: 'Inter', sans-serif; }
+.tagClose { background: none; border: none; padding: 0; cursor: pointer; display: flex; align-items: center; }
+.patientTypeBadge { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--neutral-300); background: var(--neutral-50); border: 0.5px solid rgba(111,122,144,0.1); font-family: 'Inter', sans-serif; cursor: pointer; }
+.addTagBtn { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 22px; background: var(--neutral-50); border: 0.5px solid rgba(111,122,144,0.1); border-radius: 4px; cursor: pointer; }
+.tagDivider { width: 0.5px; height: 16px; background: var(--neutral-150); flex-shrink: 0; }
+
+/* ── Expanded: 4-column grid ── */
+.expandedGrid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0; border-bottom: 0.5px solid var(--neutral-150); }
+.expandCol { padding: 12px 16px; border-right: 0.5px solid var(--neutral-100); display: flex; flex-direction: column; gap: 8px; }
+.expandCol:last-child { border-right: none; }
+.expandTitle { font-size: 13px; font-weight: 500; color: var(--neutral-500); font-family: 'Inter', sans-serif; margin: 0; }
+.expandRows { display: flex; flex-direction: column; gap: 6px; }
+.expandRow { display: flex; align-items: flex-start; gap: 6px; font-size: 13px; color: var(--neutral-400); font-family: 'Inter', sans-serif; }
+.expandItem { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--neutral-400); font-family: 'Inter', sans-serif; }
+.expandLabel { font-size: 12px; color: var(--neutral-200); font-family: 'Inter', sans-serif; }
+.moreCount { font-size: 12px; color: var(--neutral-300); }
+
+/* Health expanded */
+.conditionBadges { display: flex; gap: 4px; flex-wrap: wrap; }
+.conditionBadge { font-size: 12px; color: #109CAE; background: #E5F8FB; border: 0.5px solid rgba(140,90,226,0.2); border-radius: 4px; padding: 1px 6px; }
+.vitalsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px; font-size: 12px; color: var(--neutral-300); }
+
+/* Appointments expanded */
+.apptRow { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; }
+.apptInfo { display: flex; flex-direction: column; gap: 1px; }
+.apptType { font-size: 13px; font-weight: 500; color: var(--neutral-400); font-family: 'Inter', sans-serif; }
+.apptMeta { font-size: 12px; color: var(--neutral-200); font-family: 'Inter', sans-serif; }
+
+/* Family expanded */
+.familyNotice { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--status-success); font-family: 'Inter', sans-serif; background: var(--status-success-light); padding: 4px 8px; border-radius: 4px; }
+.personRow { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+.personName { font-size: 13px; font-weight: 500; color: var(--neutral-400); font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 4px; }
+.personRole { font-size: 12px; color: var(--neutral-200); font-family: 'Inter', sans-serif; display: block; }
+.roleTag { font-size: 10px; font-weight: 500; color: var(--primary-300); background: var(--primary-50); padding: 0 4px; border-radius: 3px; }
+.viewAllBtn { font-size: 12px; color: var(--primary-300); font-family: 'Inter', sans-serif; background: none; border: none; cursor: pointer; padding: 2px 0; text-align: left; }
+.viewAllBtn:hover { text-decoration: underline; }
+.careTeamSection { margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--neutral-100); display: flex; flex-direction: column; gap: 6px; }
+.careTeamHeader { display: flex; align-items: center; gap: 6px; }
+.profileTypeLabel { font-size: 11px; color: var(--neutral-200); display: inline-flex; align-items: center; gap: 3px; }

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Icon } from '../Icon/Icon';
+import { CloseIcon } from '../Icon/CloseIcon';
 import { Avatar } from '../Avatar/Avatar';
 import { TcpaIndicator } from '../ComplianceBadges/ComplianceBadges';
 import { useAppStore } from '../../store/useAppStore';
@@ -55,7 +56,7 @@ export function CallPopover() {
           <div className={styles.sub}>Speaks: {LANG_MAP[p.language] || 'English'}</div>
         </div>
         <button className={styles.closeBtn} onClick={closeCallPopover}>
-          <Icon name="solar:close-linear" size={18} />
+          <CloseIcon size={18} />
         </button>
       </div>
 

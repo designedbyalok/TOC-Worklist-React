@@ -506,7 +506,7 @@ function UserActions({ user, onResetPassword, onToggleStatus, onEdit, onDelete }
 
 const VIEW_TABS = ['User Details', 'Business Hours', 'Assigned Patients', 'Audit Log'];
 
-function ViewUserDrawer({ user, onClose, onEdit }) {
+export function ViewUserDrawer({ user, onClose, onEdit }) {
   const raw = user._raw || {};
   const [viewTab, setViewTab] = useState('User Details');
 

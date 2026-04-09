@@ -40,6 +40,87 @@ export const useAppStore = create((set, get) => ({
   subnavCollapsed: false,
   viewBy: 'window',
 
+  // Sticky Notes
+  stickyNotes: [],
+  stickyNoteHistory: [],
+  fetchStickyNotes: async (patientId) => {
+    const { data } = await supabase.from('sticky_notes').select('*').eq('patient_id', patientId).order('created_at', { ascending: true });
+    if (data) set({ stickyNotes: data });
+  },
+  fetchStickyNoteHistory: async (patientId) => {
+    const { data } = await supabase.from('sticky_note_history').select('*').eq('patient_id', patientId).order('created_at', { ascending: false });
+    if (data) set({ stickyNoteHistory: data });
+  },
+  createStickyNote: async (note) => {
+    const { data, error } = await supabase.from('sticky_notes').insert(note).select().single();
+    if (!error && data) {
+      await supabase.from('sticky_note_history').insert({ sticky_note_id: data.id, patient_id: note.patient_id, author_name: note.author_name || 'You', action: 'added a Note', note_text: note.text, ehr_instance: note.ehr_profile || 'Central Profile' });
+      get().fetchStickyNotes(note.patient_id);
+      get().fetchStickyNoteHistory(note.patient_id);
+    }
+    return data;
+  },
+  updateStickyNote: async (id, updates, patientId) => {
+    await supabase.from('sticky_notes').update(updates).eq('id', id);
+    if (patientId) {
+      await supabase.from('sticky_note_history').insert({ sticky_note_id: id, patient_id: patientId, author_name: updates.author_name || 'You', action: 'Updated a Note', note_text: updates.text, ehr_instance: updates.ehr_profile || 'Central Profile' });
+      get().fetchStickyNotes(patientId);
+      get().fetchStickyNoteHistory(patientId);
+    }
+  },
+  deleteStickyNote: async (id, patientId) => {
+    // Log the deletion as an audit activity before removing the note
+    const { data: noteData } = await supabase.from('sticky_notes').select('*').eq('id', id).maybeSingle();
+    if (noteData) {
+      await supabase.from('sticky_note_history').insert({
+        sticky_note_id: id,
+        patient_id: patientId || noteData.patient_id,
+        author_name: 'You',
+        action: 'deleted a Note',
+        note_text: noteData.text,
+        ehr_instance: noteData.ehr_profile || 'Central Profile',
+      });
+    }
+    await supabase.from('sticky_notes').delete().eq('id', id);
+    if (patientId) {
+      get().fetchStickyNotes(patientId);
+      get().fetchStickyNoteHistory(patientId);
+    }
+  },
+
+  // P360 Profile data
+  p360Profile: null,
+  p360Loading: false,
+  fetchP360Profile: async (patientId) => {
+    set({ p360Loading: true });
+    try {
+      const { data, error } = await supabase
+        .from('p360_profiles')
+        .select('*')
+        .eq('patient_id', patientId)
+        .maybeSingle();
+      if (!error && data) {
+        set({ p360Profile: data });
+      } else {
+        set({ p360Profile: null });
+      }
+    } catch {
+      set({ p360Profile: null });
+    }
+    set({ p360Loading: false });
+  },
+  updateP360Profile: async (patientId, updates) => {
+    const { error } = await supabase
+      .from('p360_profiles')
+      .update(updates)
+      .eq('patient_id', patientId);
+    if (!error) {
+      // Refresh
+      get().fetchP360Profile(patientId);
+    }
+    return !error;
+  },
+
   // Patient detail view
   selectedPatientId: null,
   patientProfileTab: 'Care Management',
@@ -114,6 +195,8 @@ export const useAppStore = create((set, get) => ({
   builderSelectedNode: null, // id of currently selected node
   builderVersions: [],      // list of saved versions
   builderPrompt: '',        // original creation prompt
+  builderConfig: null,      // agent_config row for current agent
+  builderConfigLoading: false,
 
   // UI state
   workflowPatient: null,
@@ -618,8 +701,7 @@ export const useAppStore = create((set, get) => ({
 
     if (error) {
       console.warn('goals fetch failed, using fallback:', error.message);
-      console.warn('Supabase goals fetch failed:', error.message);
-      set({ goalsData: [], goalsLoading: false });
+      set({ goalsData: fallbackGoalsData, goalsLoading: false });
     } else {
       // Map DB snake_case → JS camelCase
       const mapped = data.map(row => ({
@@ -758,10 +840,70 @@ export const useAppStore = create((set, get) => ({
 
   closeBuilder: () => {
     sessionStorage.setItem('activePage', 'settings');
-    set({ builderAgent: null, builderFlow: null, builderSelectedNode: null, builderVersions: [], builderPrompt: '', activePage: 'settings' });
+    set({ builderAgent: null, builderFlow: null, builderSelectedNode: null, builderVersions: [], builderPrompt: '', builderConfig: null, activePage: 'settings' });
   },
 
   setBuilderSelectedNode: (nodeId) => set({ builderSelectedNode: nodeId }),
+
+  fetchAgentConfig: async (agentId) => {
+    set({ builderConfigLoading: true });
+    const { data, error } = await supabase
+      .from('agent_config')
+      .select('*')
+      .eq('agent_id', agentId)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('agent_config fetch failed:', error.message);
+      set({ builderConfig: null, builderConfigLoading: false });
+    } else {
+      set({ builderConfig: data, builderConfigLoading: false });
+    }
+  },
+
+  saveAgentConfig: async (agentId, configData) => {
+    const row = {
+      agent_id: agentId,
+      agent_role: configData.agentRole,
+      use_case_name: configData.useCaseName,
+      description: configData.description,
+      system_prompt: configData.systemPrompt,
+      tone_of_voice: configData.toneOfVoice,
+      voice: configData.voice,
+      empathy_level: configData.empathyLevel,
+      speaking_pace: configData.speakingPace,
+      languages: configData.languages,
+      adaptations: configData.adaptations,
+      selected_policies: configData.selectedPolicies,
+      population_type: configData.populationType,
+      selected_worklist: configData.selectedWorklist || null,
+      modality: configData.modality,
+      phone: configData.phone,
+      email: configData.email,
+      office_hours: configData.officeHours,
+      goal_ids: configData.goalIds,
+    };
+
+    const { data, error } = await supabase
+      .from('agent_config')
+      .upsert({ ...row }, { onConflict: 'agent_id' })
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.warn('agent_config save failed:', error.message);
+    } else {
+      set({ builderConfig: data });
+    }
+    // Also update agent name on the agents table if changed
+    if (configData.agentName) {
+      const agent = get().builderAgent;
+      if (agent && agent.name !== configData.agentName) {
+        await get().updateAgent(agentId, { name: configData.agentName, use_case: configData.useCaseName });
+      }
+    }
+    return !error;
+  },
 
   fetchFlow: async (agentId, prompt) => {
     set({ builderFlowLoading: true });

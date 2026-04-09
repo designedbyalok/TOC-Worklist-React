@@ -138,7 +138,7 @@ function SearchBar({ value, onChange, onClose }) {
 
 /* ── Goal Detail Panel ── */
 
-function GoalDetailPanel({ call }) {
+export function GoalDetailPanel({ call }) {
   if (!call) return null;
   const { goals } = call;
   const goalsMet = goals && goals.mandatoryMet;
@@ -424,7 +424,7 @@ function DateGroupStats({ calls }) {
   );
 }
 
-function CallLogTab({ onSelectCall, selectedCallId, searchQuery }) {
+export function CallLogTab({ onSelectCall, selectedCallId, searchQuery }) {
   // Only the first (most recent) date is expanded by default
   const [collapsedGroups, setCollapsedGroups] = useState(() => {
     const initial = {};
@@ -580,7 +580,7 @@ function CallLogTab({ onSelectCall, selectedCallId, searchQuery }) {
 
 /* ── Resizable Dragger ── */
 
-function ResizeDragger({ onDrag }) {
+export function ResizeDragger({ onDrag }) {
   const [dragging, setDragging] = useState(false);
   const startXRef = useRef(0);
 

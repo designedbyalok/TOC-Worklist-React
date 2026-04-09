@@ -65,6 +65,60 @@ export const goals = [
     successMetrics: ['All vitals collected', 'Medication compliance confirmed', 'Alerts sent if indicated'],
     agents: [], completionRate: 0, totalRuns: 0, created: '2024-12-01',
   },
+  {
+    id: 6, name: 'MILU Health Consent Enrollment', program: 'Outreach', programColor: 'blue',
+    description: 'Guide patients through the MILU Health Consent Form to authorize secure sharing of medical records for care coordination.',
+    status: 'active', weightedScoring: true, passingScore: 80, mode: 'sequential',
+    steps: [
+      { id: 's1', name: 'Greeting & Reason for Call', type: 'mandatory', score: 15, desc: 'Agent clearly introduces themselves as AI from Avergent, explains purpose of call, asks if now is a good time.', condition: null },
+      { id: 's2', name: 'Identity Verification (2-factor)', type: 'mandatory', score: 20, desc: 'Verify patient identity with name + DOB. Allow one retry. If still incorrect, provide callback number and end call.', condition: 'Requires: Greeting complete' },
+      { id: 's3', name: 'MILU Consent Explanation', type: 'mandatory', score: 25, desc: 'Explain MILU Health in patient-friendly terms: what it is, what it does, that it is free and optional.', condition: 'Requires: Identity verified' },
+      { id: 's4', name: 'Consent Link Delivery', type: 'mandatory', score: 25, desc: 'Obtain verbal permission, confirm preferred contact method, send MILU consent form link via correct automation.', condition: 'Requires: Patient agrees' },
+      { id: 's5', name: 'Confirmation & Close', type: 'conditional', score: 15, desc: 'Confirm link was sent, remind patient to check for it, offer human follow-up if needed.', condition: 'Requires: Link sent' },
+    ],
+    successMetrics: ['Consent form link sent', 'Patient verbally consented', 'Identity verified', 'HIPAA compliance maintained'],
+    agents: ['Anna'], completionRate: 78, totalRuns: 1856, created: '2025-01-15',
+  },
+  {
+    id: 7, name: 'FoldCare App Download & Setup', program: 'Onboarding', programColor: 'amber',
+    description: 'Assist patients in downloading the FoldCare mobile app and completing initial registration for secure care team communication.',
+    status: 'active', weightedScoring: false, passingScore: 100, mode: 'sequential',
+    steps: [
+      { id: 's1', name: 'App Status Check', type: 'mandatory', score: 20, desc: 'Check if patient already has app installed. Skip if already set up.', condition: null },
+      { id: 's2', name: 'App Explanation', type: 'mandatory', score: 20, desc: 'Explain FoldCare in simple terms: free, helps manage care, message care team.', condition: 'Requires: Patient does not have app' },
+      { id: 's3', name: 'App Link Delivery', type: 'mandatory', score: 30, desc: 'Obtain permission, confirm channel, send secure download link.', condition: 'Requires: Patient interested' },
+      { id: 's4', name: 'Non-Tech Alternative Offered', type: 'conditional', score: 15, desc: 'If patient declines or lacks smartphone, offer phone-based support.', condition: 'If patient declines' },
+      { id: 's5', name: 'Setup Assistance', type: 'conditional', score: 15, desc: 'Walk patient through download and registration if requested.', condition: 'If help requested' },
+    ],
+    successMetrics: ['App link sent', 'Patient confirmed download', 'Alternative offered if declined'],
+    agents: ['Anna'], completionRate: 63, totalRuns: 1856, created: '2025-01-15',
+  },
+  {
+    id: 8, name: 'Caller Legitimacy Verification', program: 'Outreach', programColor: 'blue',
+    description: 'Handle patient concerns about call legitimacy with approved responses. Validate concerns, offer verification, maintain trust.',
+    status: 'active', weightedScoring: false, passingScore: 100, mode: 'all-mandatory',
+    steps: [
+      { id: 's1', name: 'Acknowledge Concern', type: 'mandatory', score: 30, desc: 'Positively acknowledge patient caution. Never get defensive.', condition: null },
+      { id: 's2', name: 'Clear Identification', type: 'mandatory', score: 30, desc: 'State calling from Avergent on behalf of health plan. Clarify what will NOT be asked.', condition: 'Requires: Concern acknowledged' },
+      { id: 's3', name: 'Offer Verification', type: 'mandatory', score: 25, desc: 'Provide callback number, suggest verifying via member ID card.', condition: 'Requires: Identity stated' },
+      { id: 's4', name: 'Patient Control', type: 'conditional', score: 15, desc: 'Let patient choose: continue, call back, or receive written info.', condition: 'If patient still hesitant' },
+    ],
+    successMetrics: ['Concern addressed', 'Verification offered', 'Patient continued or opted for callback'],
+    agents: ['Anna'], completionRate: 92, totalRuns: 412, created: '2025-02-01',
+  },
+  {
+    id: 9, name: 'Elderly Patient Accommodation', program: 'Outreach', programColor: 'blue',
+    description: 'Adapt communication for elderly or technology-challenged patients. Offer alternatives, involve family, use simple language.',
+    status: 'active', weightedScoring: false, passingScore: 100, mode: 'all-mandatory',
+    steps: [
+      { id: 's1', name: 'Pace Adjustment', type: 'mandatory', score: 25, desc: 'Slow down speech, pause more, use everyday language. No jargon.', condition: null },
+      { id: 's2', name: 'Alternative Offered', type: 'mandatory', score: 30, desc: 'Offer paper/mail alternatives and phone support when tech barriers detected.', condition: 'Requires: Tech barrier detected' },
+      { id: 's3', name: 'Family/Caregiver Inclusion', type: 'conditional', score: 25, desc: 'Offer to include family member or send info to caregiver.', condition: 'If patient mentions family' },
+      { id: 's4', name: 'Comprehension Confirmation', type: 'mandatory', score: 20, desc: 'Repeat key info and confirm understanding before proceeding.', condition: 'After each explanation' },
+    ],
+    successMetrics: ['Alternative offered', 'Patient confirmed understanding', 'Communication adapted'],
+    agents: ['Anna'], completionRate: 88, totalRuns: 634, created: '2025-02-01',
+  },
 ];
 
 export const GOAL_TEMPLATES = {

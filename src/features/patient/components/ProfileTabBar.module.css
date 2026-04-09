@@ -1,6 +1,6 @@
-.tabBar { display: flex; align-items: center; border-bottom: 0.5px solid var(--neutral-100); padding: 0 8px; overflow-x: auto; flex-shrink: 0; gap: 0; }
+.tabBar { display: flex; align-items: center; border-bottom: 0.5px solid var(--neutral-100); padding: 0 4px 0 8px; flex-shrink: 0; gap: 0; height: 40px; }
 .divider { width: 0.5px; height: 16px; background: var(--neutral-150); flex-shrink: 0; margin: 0 4px; }
-.tabs { display: flex; flex: 1; overflow-x: auto; }
-.tab { padding: 10px 14px; font-size: 13px; font-weight: 400; color: var(--neutral-300); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; transition: all 0.12s; }
+.tabs { display: flex; flex: 1; overflow-x: auto; height: 100%; }
+.tab { padding: 0 10px; font-size: 14px; font-weight: 400; color: var(--neutral-300); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; transition: all 0.12s; display: flex; align-items: center; }
 .tabActive { color: var(--primary-300); font-weight: 500; border-bottom-color: var(--primary-300); }
 .tab:hover:not(.tabActive) { color: var(--neutral-400); }

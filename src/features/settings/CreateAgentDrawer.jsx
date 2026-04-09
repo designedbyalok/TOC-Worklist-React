@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Drawer } from '../../components/Drawer/Drawer';
 import { Icon } from '../../components/Icon/Icon';
+import { CloseIcon } from '../../components/Icon/CloseIcon';
 import { Button } from '../../components/Button/Button';
 import { Input } from '../../components/Input/Input';
 import { useAppStore } from '../../store/useAppStore';
@@ -93,7 +94,7 @@ function StepTemplateSelect({ agentName, setAgentName, selectedTemplate, setSele
           <div className={styles.bannerTitle}>Create From Templates</div>
           <div className={styles.bannerDesc}>Start from a pre-built agent for your care use case</div>
         </div>
-        <button className={styles.bannerClose} onClick={onBack}><Icon name="solar:close-circle-linear" size={18} color="var(--neutral-300)" /></button>
+        <button className={styles.bannerClose} onClick={onBack}><CloseIcon size={18} color="var(--neutral-300)" /></button>
       </div>
       <div className={styles.templateSection}>
         <div className={styles.sectionTitle}>Select from Agent Templates</div>
@@ -299,7 +300,7 @@ function StepPrompt({ agentName, setAgentName, onBack, prompt, setPrompt }) {
           <div className={styles.bannerTitle}>Create From Prompt</div>
           <div className={styles.bannerDesc}>Describe your agent in plain language and AI builds the workflow</div>
         </div>
-        <button className={styles.bannerClose} onClick={onBack}><Icon name="solar:close-circle-linear" size={18} color="var(--neutral-300)" /></button>
+        <button className={styles.bannerClose} onClick={onBack}><CloseIcon size={18} color="var(--neutral-300)" /></button>
       </div>
 
       {/* Utility Configuration */}

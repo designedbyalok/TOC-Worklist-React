@@ -218,6 +218,17 @@
   transform: translateX(16px);
 }
 
+/* User link in Last Updated By */
+.userLink {
+  color: #3A485F;
+  cursor: pointer;
+  transition: color .12s;
+}
+.userLink:hover {
+  color: #8C5AE2;
+  text-decoration: underline;
+}
+
 /* Actions */
 .actions {
   display: flex;

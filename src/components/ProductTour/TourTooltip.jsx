@@ -1,4 +1,5 @@
 import { Icon } from '../Icon/Icon';
+import { CloseIcon } from '../Icon/CloseIcon';
 import { Button } from '../Button/Button';
 import styles from './ProductTour.module.css';
 
@@ -27,7 +28,7 @@ export function TourTooltip({
     <div className={styles.tooltip} {...tooltipProps}>
       {/* Close button */}
       <button className={styles.closeBtn} {...closeProps}>
-        <Icon name="solar:close-linear" size={16} color="var(--neutral-300)" />
+        <CloseIcon size={16} color="var(--neutral-300)" />
       </button>
 
       {/* Step icon + content */}

@@ -18,29 +18,14 @@
   background: #fff;
   border-bottom: 0.5px solid #E9ECF1;
   flex-shrink: 0;
+  position: relative;
 }
 .toolbarLeft {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
-}
-.backBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  border: 0.5px solid #E9ECF1;
-  background: #fff;
-  cursor: pointer;
-  transition: background .12s, border-color .12s;
-  flex-shrink: 0;
-}
-.backBtn:hover {
-  background: #F5F0FF;
-  border-color: #D7C0FF;
+  z-index: 1;
 }
 .agentName {
   font-size: 15px;
@@ -51,7 +36,13 @@
   text-overflow: ellipsis;
 }
 
-/* Toolbar tabs (pill style) */
+/* Toolbar tabs (pill style) — absolutely centered */
+.toolbarCenter {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
 .toolbarTabs {
   display: flex;
   gap: 2px;
@@ -86,6 +77,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  z-index: 1;
 }
 .toolbarSaveBtn {
   padding: 6px 18px;

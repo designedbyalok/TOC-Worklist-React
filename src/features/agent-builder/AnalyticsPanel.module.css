@@ -1,0 +1,656 @@
+/* ── AnalyticsPanel wrapper ── */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: #F6F7F8;
+}
+
+/* ── Secondary Tab Bar (matches ConfigurePanel) ── */
+.tabBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 0.5px solid var(--neutral-150, #E9ECF1);
+  flex-shrink: 0;
+}
+
+.tabBarInner {
+  display: flex;
+  gap: 12px;
+}
+
+.tab {
+  padding: 10px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6F7A90;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+  transition: color .12s;
+}
+
+.tab:hover { color: #3D4A5C; }
+
+.tabActive {
+  color: #8C5AE2;
+  border-bottom-color: #8C5AE2;
+}
+
+/* ── Scrollable Content ── */
+.scrollArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 0;
+}
+
+.scrollInner {
+  max-width: 1048px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 24px;
+}
+
+.scrollInnerWide {
+  max-width: 100%;
+  margin: 0;
+  padding: 0 16px;
+}
+
+/* ── Success Banner ── */
+.banner {
+  position: relative;
+  background: linear-gradient(135deg, #6B3FA0 0%, #8C5AE2 40%, #7B4AD1 100%);
+  border-radius: 12px;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.bannerClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255,255,255,.2);
+  border: none;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .15s;
+}
+
+.bannerClose:hover { background: rgba(255,255,255,.35); }
+
+.bannerIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 4px;
+}
+
+.bannerEmoji {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.bannerTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bannerSub {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255,255,255,.8);
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Section Card ── */
+.section {
+  background: #fff;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid #E9ECF1;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: #3A485F;
+  font-family: 'Inter', sans-serif;
+}
+
+.sectionBody {
+  padding: 16px;
+}
+
+/* ── Status Overview ── */
+.statusGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+}
+
+.statusItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 16px;
+  border-right: 0.5px solid #E9ECF1;
+}
+
+.statusItem:first-child { padding-left: 0; }
+.statusItem:last-child { border-right: none; }
+
+.statusLabel {
+  font-size: 12px;
+  font-weight: 400;
+  color: #009B53;
+  font-family: 'Inter', sans-serif;
+}
+
+.statusLabelNeutral {
+  color: #6F7A90;
+}
+
+.statusValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: #16181D;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Active Channels ── */
+.channelGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.channelCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #3A485F;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── System Prompt Preview ── */
+.promptPreview {
+  font-size: 14px;
+  font-weight: 400;
+  color: #3A485F;
+  line-height: 1.5;
+  font-family: 'Inter', sans-serif;
+  white-space: pre-wrap;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* ── KPI Row ── */
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.kpiRow3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* ── Stat Card ── */
+.statCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  background: #fff;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 8px;
+}
+
+.statLabel {
+  font-size: 12px;
+  font-weight: 400;
+  color: #8A94A8;
+  font-family: 'Inter', sans-serif;
+}
+
+.statValue {
+  font-size: 24px;
+  font-weight: 500;
+  color: #16181D;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.2;
+}
+
+.statDelta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+}
+
+.deltaPos { color: #009B53; }
+.deltaNeg { color: #D72825; }
+.deltaNeu { color: #6F7A90; }
+
+.statSub {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6F7A90;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Uptime Heatmap Bar ── */
+.uptimeHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.uptimeTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #16181D;
+  font-family: 'Inter', sans-serif;
+}
+
+.uptimeStarted {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6F7A90;
+  font-family: 'Inter', sans-serif;
+}
+
+.uptimeBar {
+  display: flex;
+  gap: 2px;
+  height: 28px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.uptimeSegment {
+  flex: 1;
+  border-radius: 3px;
+  min-width: 4px;
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.uptimeSegmentHover {
+  transform: scaleY(1.4);
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  z-index: 2;
+  border-radius: 3px;
+}
+
+/* Uptime tooltip */
+.uptimeTooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 1px solid #E9ECF1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  white-space: nowrap;
+  z-index: 20;
+  pointer-events: none;
+  min-width: 140px;
+}
+
+.uptimeTooltipTime {
+  font-size: 12px;
+  font-weight: 600;
+  color: #16181D;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 4px;
+}
+
+.uptimeTooltipRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #3A485F;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 2px;
+}
+
+.uptimeTooltipDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.uptimeTooltipPatients {
+  font-size: 11px;
+  font-weight: 400;
+  color: #6F7A90;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Uptime legend */
+.uptimeLegend {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 400;
+  color: #6F7A90;
+  font-family: 'Inter', sans-serif;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Chart Card ── */
+.chartCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: #fff;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 8px;
+}
+
+.chartLabel {
+  font-size: 12px;
+  font-weight: 400;
+  color: #8A94A8;
+  font-family: 'Inter', sans-serif;
+}
+
+.chartValue {
+  font-size: 24px;
+  font-weight: 500;
+  color: #16181D;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.2;
+}
+
+.chartSub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6F7A90;
+  font-family: 'Inter', sans-serif;
+}
+
+.chartArea {
+  height: 80px;
+  margin-top: 8px;
+}
+
+/* ── Placeholder ── */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 80px 0;
+  color: #8A94A8;
+  font-family: 'Inter', sans-serif;
+}
+
+.placeholderTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: #6F7A90;
+}
+
+.placeholderDesc {
+  font-size: 13px;
+  font-weight: 400;
+  color: #8A94A8;
+}
+
+/* ── Snapshot: read-only config overview ── */
+.snapGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.snapField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.snapLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: #8A94A8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-family: 'Inter', sans-serif;
+}
+
+.snapValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: #16181D;
+  font-family: 'Inter', sans-serif;
+}
+
+.snapDesc {
+  font-size: 13px;
+  font-weight: 400;
+  color: #3A485F;
+  line-height: 1.5;
+  font-family: 'Inter', sans-serif;
+}
+
+.snapPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: #FCFAFF;
+  border: 0.5px solid #8C5AE2;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #8C5AE2;
+  font-family: 'Inter', sans-serif;
+  width: fit-content;
+}
+
+.snapMeter {
+  height: 6px;
+  background: #F6F7F8;
+  border-radius: 100px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.snapMeterFill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width .3s;
+}
+
+.snapMeterLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: #3A485F;
+  font-family: 'Inter', sans-serif;
+}
+
+.snapGoalRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 0.5px solid #E9ECF1;
+  border-radius: 8px;
+  background: #FAFBFC;
+}
+
+.snapGoalInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.snapGoalName {
+  font-size: 13px;
+  font-weight: 500;
+  color: #16181D;
+  font-family: 'Inter', sans-serif;
+}
+
+.snapGoalMeta {
+  font-size: 11px;
+  font-weight: 400;
+  color: #8A94A8;
+  font-family: 'Inter', sans-serif;
+}
+
+.snapGoalBadge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.badgePurple { background: #F5F0FF; color: #8C5AE2; }
+.badgeBlue { background: #F4F8FE; color: #145ECC; }
+.badgeAmber { background: #FFF8F0; color: #C77D1A; }
+
+.snapGoalRate {
+  font-size: 13px;
+  font-weight: 600;
+  color: #009B53;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ── Call Log Container with split panel ── */
+.callLogContainer {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.callLogSplit {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.callLogLeft {
+  flex: 1;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.callLogRight {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  min-width: 320px;
+}
+
+.callLogRightHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid #E9ECF1;
+  flex-shrink: 0;
+}
+
+.callLogRightTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #16181D;
+  font-family: 'Inter', sans-serif;
+}
+
+.callLogRightClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background .12s;
+}
+
+.callLogRightClose:hover { background: #F6F7F8; }
+
+.callLogRightBody {
+  flex: 1;
+  overflow-y: auto;
+}

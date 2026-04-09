@@ -1,6 +1,21 @@
 .wrapper { display: flex; flex-direction: column; height: 100%; background: var(--neutral-0); overflow: hidden; }
 .body { display: flex; flex: 1; min-height: 0; overflow: hidden; }
 .rightPanel { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
+
+/* Drag handle between panels */
+.dragHandle {
+  width: 4px; flex-shrink: 0; cursor: col-resize;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; position: relative; z-index: 2;
+}
+.dragHandle:hover { background: var(--primary-50); }
+.dragHandle:hover .dragHandleLine { background: var(--primary-200); }
+.dragHandle:active { background: var(--primary-100); }
+.dragHandle:active .dragHandleLine { background: var(--primary-300); }
+.dragHandleLine {
+  width: 2px; height: 32px; border-radius: 1px;
+  background: var(--neutral-150); transition: background 0.12s;
+}
 .tabContent { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; flex: 1; padding: 48px; }
 .placeholderTitle { font-size: 16px; font-weight: 500; color: var(--neutral-300); font-family: 'Inter', sans-serif; }

@@ -16,6 +16,7 @@ import { KnowledgeBasePanel } from './panels/KnowledgeBasePanel';
 import { GoalsPanel } from './panels/GoalsPanel';
 import { AuditLogDrawer } from './panels/AuditLogDrawer';
 import { CallQueueDrawer } from '../../components/CallQueueDrawer/CallQueueDrawer';
+import { ViewUserDrawer } from './AccountPanel';
 import { ProductTour } from '../../components/ProductTour/ProductTour';
 import { useTableSort } from '../../components/Table/useTableSort';
 import { SortableHeader } from '../../components/Table/SortableHeader';
@@ -101,6 +102,7 @@ function AgentRow({ agent, isFirst }) {
   const [auditDrawerEntity, setAuditDrawerEntity] = useState(null);
   const [showCallQueue, setShowCallQueue] = useState(false);
   const [callQueueInitTab, setCallQueueInitTab] = useState(null);
+  const [viewingUser, setViewingUser] = useState(null);
   const moreBtnRef = useRef(null);
 
   const handleMoreClick = (e) => {
@@ -135,7 +137,27 @@ function AgentRow({ agent, isFirst }) {
       <td className={styles.versionCell}>v{agent.version}</td>
       <td><VoiceBadge voice={agent.voice} /></td>
       <td className={styles.dateCell}>{agent.last_updated}</td>
-      <td>{agent.last_updated_by}</td>
+      <td>
+        <span
+          className={styles.userLink}
+          onClick={(e) => {
+            e.stopPropagation();
+            const name = agent.last_updated_by || 'Unknown';
+            const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+            setViewingUser({
+              id: `user-${name}`,
+              name,
+              initials,
+              email: name.toLowerCase().replace(/\s+/g, '.') + '@fold.health',
+              status: 'Active',
+              role: 'Care Team Member',
+              _raw: {},
+            });
+          }}
+        >
+          {agent.last_updated_by}
+        </span>
+      </td>
       <td>
         <Switch checked={agent.enabled} onChange={() => updateAgent(agent.id, { enabled: !agent.enabled })} />
       </td>
@@ -187,6 +209,7 @@ function AgentRow({ agent, isFirst }) {
         )}
         {auditDrawerEntity && <AuditLogDrawer entity={auditDrawerEntity} onClose={() => setAuditDrawerEntity(null)} />}
         {showCallQueue && <CallQueueDrawer agent={agent} initialTab={callQueueInitTab} onClose={() => { setShowCallQueue(false); setCallQueueInitTab(null); }} />}
+        {viewingUser && <ViewUserDrawer user={viewingUser} onClose={() => setViewingUser(null)} onEdit={() => setViewingUser(null)} />}
       </td>
     </tr>
   );
@@ -224,7 +247,7 @@ export function AgentsTable() {
     );
   }, [agents, searchVal]);
 
-  const { sorted: sortedAgents, sortKey, sortDir, requestSort } = useTableSort(filteredAgents, 'name');
+  const { sorted: sortedAgents, sortKey, sortDir, requestSort } = useTableSort(filteredAgents, 'last_updated', 'desc');
   const startIdx = (currentPage - 1) * perPage;
   const paginatedAgents = sortedAgents.slice(startIdx, startIdx + perPage);
 

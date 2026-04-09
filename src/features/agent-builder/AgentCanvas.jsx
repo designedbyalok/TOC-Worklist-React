@@ -12,10 +12,14 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import { Icon } from '../../components/Icon/Icon';
+import { CloseIcon } from '../../components/Icon/CloseIcon';
+import { Button } from '../../components/Button/Button';
 import { useAppStore } from '../../store/useAppStore';
 import { NodePanel } from './NodePanel';
 import { NodeSettings } from './NodeSettings';
 import { ChatPanel } from './ChatPanel';
+import { ConfigurePanel } from './ConfigurePanel';
+import { AnalyticsPanel } from './AnalyticsPanel';
 import { ConversationNode, StartNode, EndNode } from './nodes/ConversationNode';
 import styles from './AgentCanvas.module.css';
 
@@ -214,6 +218,70 @@ export function AgentCanvas() {
     setShowVersions(false);
   };
 
+  // ─── Auto-arrange nodes in execution order ───
+  const handleAutoArrange = useCallback(() => {
+    if (!nodes.length) return;
+
+    // Build adjacency list from edges
+    const adj = {};
+    const inDegree = {};
+    nodes.forEach(n => { adj[n.id] = []; inDegree[n.id] = 0; });
+    edges.forEach(e => {
+      if (adj[e.source]) adj[e.source].push(e.target);
+      if (inDegree[e.target] !== undefined) inDegree[e.target]++;
+    });
+
+    // Topological sort (BFS / Kahn's algorithm)
+    const queue = Object.keys(inDegree).filter(id => inDegree[id] === 0);
+    const layers = [];
+    const visited = new Set();
+    while (queue.length) {
+      const layerSize = queue.length;
+      const layer = [];
+      for (let i = 0; i < layerSize; i++) {
+        const id = queue.shift();
+        if (visited.has(id)) continue;
+        visited.add(id);
+        layer.push(id);
+        for (const next of (adj[id] || [])) {
+          inDegree[next]--;
+          if (inDegree[next] <= 0 && !visited.has(next)) queue.push(next);
+        }
+      }
+      if (layer.length) layers.push(layer);
+    }
+    // Add any unvisited nodes to last layer
+    const unvisited = nodes.filter(n => !visited.has(n.id)).map(n => n.id);
+    if (unvisited.length) layers.push(unvisited);
+
+    // Position: horizontal layers, vertical spread within each layer
+    const NODE_W = 260;
+    const NODE_H = 180;
+    const LAYER_GAP = 320;
+    const NODE_GAP = 200;
+
+    const newNodes = nodes.map(n => {
+      let layerIdx = layers.findIndex(l => l.includes(n.id));
+      if (layerIdx === -1) layerIdx = layers.length;
+      const layerNodes = layers[layerIdx] || [n.id];
+      const posInLayer = layerNodes.indexOf(n.id);
+      const layerHeight = layerNodes.length * NODE_GAP;
+      const startY = -(layerHeight / 2) + 300;
+
+      return {
+        ...n,
+        position: {
+          x: layerIdx * LAYER_GAP + 50,
+          y: startY + posInLayer * NODE_GAP,
+        },
+      };
+    });
+
+    setNodes(newNodes);
+    setTimeout(() => reactFlowInstance.current?.fitView({ padding: 0.3 }), 100);
+    showToast('Nodes arranged in execution order');
+  }, [nodes, edges, setNodes, showToast]);
+
   // Apply chat modification to nodes/edges
   const applyFlowUpdate = useCallback((newNodes, newEdges) => {
     if (newNodes) setNodes(newNodes);
@@ -236,175 +304,185 @@ export function AgentCanvas() {
       {/* Top toolbar */}
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft}>
-          <button className={styles.backBtn} onClick={closeBuilder} title="Back to Agents">
-            <Icon name="solar:arrow-left-linear" size={16} color="var(--neutral-400)" />
-          </button>
+          <Button variant="ghost" size="S" iconOnly leadingIcon="solar:arrow-left-linear" onClick={closeBuilder} title="Back to Agents" />
           <span className={styles.agentName}>{builderAgent.name}</span>
         </div>
 
-        <div className={styles.toolbarTabs}>
-          {BUILDER_TABS.map(tab => (
-            <button
-              key={tab}
-              className={`${styles.toolbarTab} ${activeTab === tab ? styles.toolbarTabActive : ''}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab === 'Configure' && <Icon name="solar:settings-linear" size={14} />}
-              {tab === 'Analytics' && <Icon name="solar:chart-2-linear" size={14} />}
-              {tab}
-            </button>
-          ))}
+        <div className={styles.toolbarCenter}>
+          <div className={styles.toolbarTabs}>
+            {BUILDER_TABS.map(tab => (
+              <button
+                key={tab}
+                className={`${styles.toolbarTab} ${activeTab === tab ? styles.toolbarTabActive : ''}`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab === 'Configure' && <Icon name="solar:settings-linear" size={14} />}
+                {tab === 'Analytics' && <Icon name="solar:chart-2-linear" size={14} />}
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className={styles.toolbarRight}>
-          <button className={styles.toolbarSaveBtn} onClick={handleSave} disabled={saving}>
+          <Button variant="secondary" size="L" onClick={handleSave} disabled={saving}>
             {saving ? 'Saving…' : 'Save'}
-          </button>
+          </Button>
           <span className={styles.toolbarDivider} />
-          <button className={styles.toolbarSecondaryBtn} disabled>
-            <Icon name="solar:play-linear" size={14} />
+          <Button variant="ghost" size="L" leadingIcon="solar:play-linear" disabled>
             Run Test
-          </button>
-          <button className={styles.toolbarSecondaryBtn} disabled>
+          </Button>
+          <Button variant="ghost" size="L" disabled>
             Deploy Agent Now
-          </button>
+          </Button>
           <button className={styles.toolbarCloseBtn} onClick={closeBuilder} title="Close">
-            <Icon name="solar:close-cross-linear" size={18} color="var(--neutral-300)" />
+            <CloseIcon size={18} />
           </button>
         </div>
       </div>
 
       {/* Main content */}
-      <div className={styles.body}>
-        <NodePanel />
+      {activeTab === 'Configure' ? (
+        <ConfigurePanel agent={builderAgent} onSave={handleSave} />
+      ) : activeTab === 'Analytics' ? (
+        <AnalyticsPanel agent={builderAgent} />
+      ) : (
+        <div className={styles.body}>
+          <NodePanel />
 
-        <div className={styles.flowArea} ref={reactFlowWrapper}>
-          {builderFlowLoading ? (
-            <div className={styles.loading}>
-              <div className={styles.spinner} />
-              <span>Loading workflow…</span>
-            </div>
-          ) : (
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
-              onNodeClick={onNodeClick}
-              onPaneClick={onPaneClick}
-              onInit={onInit}
-              onMoveEnd={onMoveEnd}
-              onDragOver={onDragOver}
-              onDrop={onDrop}
-              nodeTypes={nodeTypes}
-              deleteKeyCode={null}
-              defaultEdgeOptions={{
-                type: 'smoothstep',
-                style: { stroke: 'var(--neutral-150)', strokeWidth: 1.5 },
-              }}
-              fitView
-              fitViewOptions={{ padding: 0.3 }}
-              minZoom={0.2}
-              maxZoom={2}
-              proOptions={{ hideAttribution: true }}
-            >
-              <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="var(--neutral-100)" />
-              <MiniMap
-                className={styles.minimap}
-                maskColor="rgba(26,6,71,.08)"
-                nodeColor={(n) => {
-                  if (n.type === 'startNode') return 'var(--status-success)';
-                  if (n.type === 'endNode') return 'var(--status-error)';
-                  return 'var(--primary-300)';
+          <div className={styles.flowArea} ref={reactFlowWrapper}>
+            {builderFlowLoading ? (
+              <div className={styles.loading}>
+                <div className={styles.spinner} />
+                <span>Loading workflow…</span>
+              </div>
+            ) : (
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                onNodeClick={onNodeClick}
+                onPaneClick={onPaneClick}
+                onInit={onInit}
+                onMoveEnd={onMoveEnd}
+                onDragOver={onDragOver}
+                onDrop={onDrop}
+                nodeTypes={nodeTypes}
+                deleteKeyCode={null}
+                defaultEdgeOptions={{
+                  type: 'smoothstep',
+                  style: { stroke: 'var(--neutral-150)', strokeWidth: 1.5 },
                 }}
-                nodeStrokeWidth={3}
-                pannable
-                zoomable
-                position="bottom-left"
-                style={{ width: 160, height: 100, marginBottom: 44, marginLeft: 12 }}
-              />
+                fitView
+                fitViewOptions={{ padding: 0.3 }}
+                minZoom={0.2}
+                maxZoom={2}
+                proOptions={{ hideAttribution: true }}
+              >
+                <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="var(--neutral-100)" />
+                <MiniMap
+                  className={styles.minimap}
+                  maskColor="rgba(26,6,71,.08)"
+                  nodeColor={(n) => {
+                    if (n.type === 'startNode') return 'var(--status-success)';
+                    if (n.type === 'endNode') return 'var(--status-error)';
+                    return 'var(--primary-300)';
+                  }}
+                  nodeStrokeWidth={3}
+                  pannable
+                  zoomable
+                  position="bottom-left"
+                  style={{ width: 160, height: 100, marginBottom: 44, marginLeft: 12 }}
+                />
 
-              {/* Zoom controls — bottom left, below minimap */}
-              <Panel position="bottom-left" className={styles.zoomPanel}>
-                <button className={styles.zoomBtn} onClick={() => reactFlowInstance.current?.fitView({ padding: 0.3 })}>
-                  <Icon name="solar:full-screen-linear" size={14} />
-                  Actual Size
-                </button>
-                <span className={styles.zoomDivider} />
-                <button className={styles.zoomBtn} onClick={() => reactFlowInstance.current?.zoomOut()}>
-                  <Icon name="solar:minus-circle-linear" size={14} />
-                </button>
-                <span className={styles.zoomLevel}>{zoomLevel}%</span>
-                <button className={styles.zoomBtn} onClick={() => reactFlowInstance.current?.zoomIn()}>
-                  <Icon name="solar:add-circle-linear" size={14} />
-                </button>
-              </Panel>
-
-              <Panel position="bottom-right" className={styles.versionPanel}>
-                <div className={styles.versionWrap}>
-                  <button className={styles.versionBtn} onClick={() => setShowVersions(!showVersions)}>
-                    <Icon name="solar:history-linear" size={14} />
-                    v{builderFlow?.version || '1.0'}
+                {/* Zoom controls — bottom left, below minimap */}
+                <Panel position="bottom-left" className={styles.zoomPanel}>
+                  <button className={styles.zoomBtn} onClick={handleAutoArrange} title="Auto-arrange nodes">
+                    <Icon name="solar:sort-horizontal-linear" size={14} />
+                    Auto-arrange
                   </button>
-                  {showVersions && (
-                    <div className={styles.versionDropdown}>
-                      <div className={styles.versionDropdownHeader}>
-                        <span>Versions</span>
-                        <button className={styles.newVersionBtn} onClick={handleSaveVersion}>
-                          + New Version
-                        </button>
-                      </div>
-                      {builderVersions.map(v => (
-                        <div
-                          key={v.id}
-                          className={`${styles.versionItem} ${v.is_current ? styles.versionItemActive : ''}`}
-                          onClick={() => {
-                            if (!v.is_current) {
-                              useAppStore.getState().switchFlowVersion(v.id);
-                              setShowVersions(false);
-                            }
-                          }}
-                        >
-                          <span>v{v.version}</span>
-                          <span className={styles.versionDate}>
-                            {new Date(v.created_at).toLocaleDateString()}
-                          </span>
-                          {v.is_current && <span className={styles.currentBadge}>Current</span>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </Panel>
-            </ReactFlow>
-          )}
-        </div>
+                  <span className={styles.zoomDivider} />
+                  <button className={styles.zoomBtn} onClick={() => reactFlowInstance.current?.fitView({ padding: 0.3 })}>
+                    <Icon name="solar:full-screen-linear" size={14} />
+                    Fit View
+                  </button>
+                  <span className={styles.zoomDivider} />
+                  <button className={styles.zoomBtn} onClick={() => reactFlowInstance.current?.zoomOut()}>
+                    <Icon name="solar:minus-circle-linear" size={14} />
+                  </button>
+                  <span className={styles.zoomLevel}>{zoomLevel}%</span>
+                  <button className={styles.zoomBtn} onClick={() => reactFlowInstance.current?.zoomIn()}>
+                    <Icon name="solar:add-circle-linear" size={14} />
+                  </button>
+                </Panel>
 
-        {/* Right panel: resize handle + settings or chat */}
-        <div className={styles.rightPanelWrap} style={{ width: panelWidth }}>
-          <div
-            className={`${styles.resizeHandle} ${isResizing ? styles.resizeHandleActive : ''}`}
-            onMouseDown={handleResizeStart}
-          />
-          {showNodeSettings ? (
-            <NodeSettings
-              node={selectedNode}
-              allNodes={nodes}
-              onSave={handleSave}
-              onClose={() => setBuilderSelectedNode(null)}
-              onDelete={() => handleDeleteNode(selectedNode.id)}
+                <Panel position="bottom-right" className={styles.versionPanel}>
+                  <div className={styles.versionWrap}>
+                    <button className={styles.versionBtn} onClick={() => setShowVersions(!showVersions)}>
+                      <Icon name="solar:history-linear" size={14} />
+                      v{builderFlow?.version || '1.0'}
+                    </button>
+                    {showVersions && (
+                      <div className={styles.versionDropdown}>
+                        <div className={styles.versionDropdownHeader}>
+                          <span>Versions</span>
+                          <button className={styles.newVersionBtn} onClick={handleSaveVersion}>
+                            + New Version
+                          </button>
+                        </div>
+                        {builderVersions.map(v => (
+                          <div
+                            key={v.id}
+                            className={`${styles.versionItem} ${v.is_current ? styles.versionItemActive : ''}`}
+                            onClick={() => {
+                              if (!v.is_current) {
+                                useAppStore.getState().switchFlowVersion(v.id);
+                                setShowVersions(false);
+                              }
+                            }}
+                          >
+                            <span>v{v.version}</span>
+                            <span className={styles.versionDate}>
+                              {new Date(v.created_at).toLocaleDateString()}
+                            </span>
+                            {v.is_current && <span className={styles.currentBadge}>Current</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Panel>
+              </ReactFlow>
+            )}
+          </div>
+
+          {/* Right panel: resize handle + settings or chat */}
+          <div className={styles.rightPanelWrap} style={{ width: panelWidth }}>
+            <div
+              className={`${styles.resizeHandle} ${isResizing ? styles.resizeHandleActive : ''}`}
+              onMouseDown={handleResizeStart}
             />
-          ) : (
-            <ChatPanel
-              nodes={nodes}
-              edges={edges}
-              onApplyFlow={applyFlowUpdate}
-              agentName={builderAgent.name}
-            />
-          )}
+            {showNodeSettings ? (
+              <NodeSettings
+                node={selectedNode}
+                allNodes={nodes}
+                onSave={handleSave}
+                onClose={() => setBuilderSelectedNode(null)}
+                onDelete={() => handleDeleteNode(selectedNode.id)}
+              />
+            ) : (
+              <ChatPanel
+                nodes={nodes}
+                edges={edges}
+                onApplyFlow={applyFlowUpdate}
+                agentName={builderAgent.name}
+              />
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
