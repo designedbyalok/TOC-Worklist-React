@@ -61,22 +61,22 @@ export function ConfirmDialog({
         </AlertDialogHeader>
 
         {/* Actions — using Button component */}
-        <AlertDialogFooter className="flex-row justify-center w-full max-w-[320px] gap-2 mt-0">
+        <AlertDialogFooter className="flex-row justify-center w-full gap-2 mt-0">
           <Button
             variant="secondary"
             size="L"
-            fullWidth
             onClick={onCancel}
             disabled={loading}
+            className="flex-1"
           >
             {cancelLabel}
           </Button>
           <Button
             variant={variant === 'error' ? 'danger' : 'primary'}
             size="L"
-            fullWidth
             onClick={onConfirm}
             disabled={loading}
+            className="flex-1"
           >
             {loading ? 'Processing\u2026' : confirmLabel}
           </Button>
