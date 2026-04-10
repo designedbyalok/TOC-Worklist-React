@@ -135,17 +135,31 @@ function MiniChart({ data, color = '#8C5AE2' }) {
 /* ── UptimeBlock with tooltip ── */
 function UptimeBlock({ hour }) {
   const [showTip, setShowTip] = useState(false);
+  const [tipPos, setTipPos] = useState({ top: 0, left: 0 });
+  const segRef = useRef(null);
   const color = STATUS_COLORS[hour.status] || '#D0D6E1';
+
+  const handleEnter = () => {
+    setShowTip(true);
+    if (segRef.current) {
+      const rect = segRef.current.getBoundingClientRect();
+      setTipPos({
+        top: rect.top - 8,
+        left: rect.left + rect.width / 2,
+      });
+    }
+  };
 
   return (
     <div
+      ref={segRef}
       className={`${styles.uptimeSegment} ${showTip ? styles.uptimeSegmentHover : ''}`}
       style={{ background: color }}
-      onMouseEnter={() => setShowTip(true)}
+      onMouseEnter={handleEnter}
       onMouseLeave={() => setShowTip(false)}
     >
       {showTip && (
-        <div className={styles.uptimeTooltip}>
+        <div className={styles.uptimeTooltip} style={{ top: tipPos.top, left: tipPos.left, transform: 'translate(-50%, -100%)' }}>
           <div className={styles.uptimeTooltipTime}>{hour.hour}</div>
           <div className={styles.uptimeTooltipRow}>
             <span className={styles.uptimeTooltipDot} style={{ background: color }} />

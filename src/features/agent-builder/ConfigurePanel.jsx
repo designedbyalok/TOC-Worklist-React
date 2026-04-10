@@ -312,15 +312,20 @@ export function ConfigurePanel({ agent, onSave }) {
   // Form state
   const [form, setForm] = useState({ ...DEFAULT_FORM, agentName: agent?.name || '' });
   const [formLoaded, setFormLoaded] = useState(false);
+  const [fetchTriggered, setFetchTriggered] = useState(false);
 
   // Fetch config on mount
   useEffect(() => {
-    if (agent?.id) fetchAgentConfig(agent.id);
+    if (agent?.id) {
+      setFetchTriggered(true);
+      setFormLoaded(false);
+      fetchAgentConfig(agent.id);
+    }
   }, [agent?.id]);
 
   // Populate form from DB config once loaded
   useEffect(() => {
-    if (builderConfigLoading || formLoaded) return;
+    if (!fetchTriggered || builderConfigLoading || formLoaded) return;
     if (builderConfig) {
       setForm({
         agentName: agent?.name || '',
