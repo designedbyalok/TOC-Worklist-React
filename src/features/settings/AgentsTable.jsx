@@ -284,7 +284,7 @@ export function AgentsTable() {
           <span className={styles.tabDivider} />
           <Button variant="secondary" size="L" leadingIcon="solar:add-circle-linear" onClick={() => {
             if (settingsTab === 'goals') {
-              setGoalWizard(true, null);
+              useAppStore.setState({ goalWizardOpen: true, goalWizardEditId: null });
             } else if (settingsTab === 'knowledge base') {
               useAppStore.getState().setKbAddTrigger(true);
             } else {
@@ -296,49 +296,30 @@ export function AgentsTable() {
         </div>
       </div>
 
-      {/* Goals filter bar (toggled by filter button, like worklist FilterBar) */}
+      {/* Goals filter bar */}
       {settingsTab === 'goals' && goalsFilterOpen && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderBottom: '0.5px solid var(--neutral-150)', flexShrink: 0 }}>
+        <div className={styles.filterBar}>
           {['all', 'active', 'draft', 'TCM', 'Outreach'].map(f => (
             <button
               key={f}
+              className={`${styles.filterChip} ${goalsFilter === f ? styles.filterChipActive : ''}`}
               onClick={() => setGoalsFilter(f)}
-              style={{
-                padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 500,
-                cursor: 'pointer', border: '0.5px solid', fontFamily: "'Inter', sans-serif",
-                transition: 'all .15s', userSelect: 'none',
-                borderColor: goalsFilter === f ? 'var(--primary-200)' : 'var(--neutral-150)',
-                background: goalsFilter === f ? 'var(--primary-50)' : '#fff',
-                color: goalsFilter === f ? 'var(--primary-300)' : 'var(--neutral-300)',
-              }}
             >
-              {f === 'all' ? 'All' : f}
+              {f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
           ))}
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 2, background: 'var(--neutral-50)', border: '0.5px solid var(--neutral-150)', borderRadius: 6, padding: 2 }}>
+          <div className={styles.viewToggle}>
             <button
+              className={`${styles.viewBtn} ${goalsViewMode === 'grid' ? styles.viewBtnActive : ''}`}
               onClick={() => setGoalsViewMode('grid')}
               title="Grid view"
-              style={{
-                width: 28, height: 26, borderRadius: 4, border: 'none', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: goalsViewMode === 'grid' ? '#fff' : 'transparent',
-                boxShadow: goalsViewMode === 'grid' ? '0 1px 2px rgba(0,0,0,.06)' : 'none',
-                color: goalsViewMode === 'grid' ? 'var(--neutral-400)' : 'var(--neutral-200)',
-              }}
             >
               <Icon name="solar:widget-linear" size={14} />
             </button>
             <button
+              className={`${styles.viewBtn} ${goalsViewMode === 'table' ? styles.viewBtnActive : ''}`}
               onClick={() => setGoalsViewMode('table')}
               title="Table view"
-              style={{
-                width: 28, height: 26, borderRadius: 4, border: 'none', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: goalsViewMode === 'table' ? '#fff' : 'transparent',
-                boxShadow: goalsViewMode === 'table' ? '0 1px 2px rgba(0,0,0,.06)' : 'none',
-                color: goalsViewMode === 'table' ? 'var(--neutral-400)' : 'var(--neutral-200)',
-              }}
             >
               <Icon name="solar:list-linear" size={14} />
             </button>

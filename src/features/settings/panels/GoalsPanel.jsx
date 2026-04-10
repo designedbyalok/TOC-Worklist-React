@@ -95,9 +95,10 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
             <th style={thStyle}>Name</th>
             <th style={thStyle}>Program</th>
             <th style={thStyle}>Steps</th>
-            <th style={thStyle}>Status</th>
             <th style={thStyle}>Completion</th>
             <th style={thStyle}>Runs</th>
+            <th style={thStyle}>Agents</th>
+            <th style={thStyle}>Last Updated</th>
             <th style={thStyle}>Actions</th>
           </tr>
         </thead>
@@ -108,13 +109,16 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
             const pct = g.completionRate;
             return (
               <tr key={g.id} onClick={() => onOpen(g.id)}
-                style={{ borderBottom: '1px solid #EAECF0', cursor: 'pointer', transition: 'background .1s' }}
+                style={{ borderBottom: '0.5px solid var(--neutral-150)', cursor: 'pointer', transition: 'background .1s' }}
                 onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25)'}
                 onMouseOut={e => e.currentTarget.style.background = ''}
               >
                 <td style={tdStyle}>
-                  <div style={{ fontWeight: 500, fontSize: 14, color: 'var(--neutral-500)', marginBottom: 2 }}>{g.name}</div>
-                  <div style={{ fontSize: 12, color: 'var(--neutral-200)', maxWidth: 260, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.description}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                    <span style={{ fontWeight: 500, fontSize: 14, color: 'var(--neutral-400)' }}>{g.name}</span>
+                    {g.status === 'draft' && <Badge variant="status-queued" label="Draft" />}
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--neutral-200)', maxWidth: 280, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.description}</div>
                 </td>
                 <td style={tdStyle}><Badge variant={PROGRAM_VARIANT[g.programColor] || 'ai-care'} label={g.program} /></td>
                 <td style={tdStyle}>
@@ -123,10 +127,7 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
                       <span key={st.id} style={{ width: 7, height: 7, borderRadius: '50%', display: 'inline-block', background: st.type === 'mandatory' ? 'var(--status-success)' : 'var(--neutral-200)' }} />
                     ))}
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--neutral-200)', marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{mc}M · {cc}C</div>
-                </td>
-                <td style={tdStyle}>
-                  <Badge variant={STATUS_VARIANT[g.status] || 'status-completed'} label={g.status === 'active' ? 'Active' : 'Draft'} />
+                  <div style={{ fontSize: 12, color: 'var(--neutral-200)', marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{mc}R · {cc}O</div>
                 </td>
                 <td style={tdStyle}>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -136,8 +137,14 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
                     <span style={{ fontSize: 12, fontWeight: 500, fontVariantNumeric: 'tabular-nums', color: pct < 50 ? 'var(--status-warning)' : 'var(--status-success)' }}>{pct}%</span>
                   </div>
                 </td>
-                <td style={{ ...tdStyle, fontVariantNumeric: 'tabular-nums', fontSize: 13, color: 'var(--neutral-300)' }}>
+                <td style={{ ...tdStyle, fontVariantNumeric: 'tabular-nums', fontSize: 14, color: 'var(--neutral-300)' }}>
                   {g.totalRuns > 0 ? g.totalRuns.toLocaleString() : '—'}
+                </td>
+                <td style={{ ...tdStyle, fontSize: 14, color: 'var(--neutral-300)' }}>
+                  {g.agents.length > 0 ? g.agents.length : '—'}
+                </td>
+                <td style={{ ...tdStyle, fontSize: 12, color: 'var(--neutral-200)', whiteSpace: 'nowrap' }}>
+                  {g.created || '—'}
                 </td>
                 <td style={tdStyle} onClick={e => e.stopPropagation()}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -179,9 +186,12 @@ export function GoalsPanel({ searchQuery = '', filter = 'all', viewMode = 'grid'
   const goalsData = useAppStore(st => st.goalsData);
   const goalsLoading = useAppStore(st => st.goalsLoading);
   const setGoalDetailId = useAppStore(st => st.setGoalDetailId);
-  const setGoalWizard = useAppStore(st => st.setGoalWizard);
   const deleteGoal = useAppStore(st => st.deleteGoal);
   const showToast = useAppStore(st => st.showToast);
+
+  const openWizard = (id) => {
+    useAppStore.setState({ goalDetailId: null, goalWizardOpen: true, goalWizardEditId: id });
+  };
 
   const handleDelete = async (id) => {
     await deleteGoal(id);
@@ -215,13 +225,13 @@ export function GoalsPanel({ searchQuery = '', filter = 'all', viewMode = 'grid'
   }
 
   if (viewMode === 'table') {
-    return <GoalsTable goals={filtered} onOpen={setGoalDetailId} onEdit={(id) => setGoalWizard(true, id)} onDelete={handleDelete} />;
+    return <GoalsTable goals={filtered} onOpen={setGoalDetailId} onEdit={(id) => openWizard(id)} onDelete={handleDelete} />;
   }
 
   return (
     <div className={s.grid}>
       {filtered.map(g => (
-        <GoalCard key={g.id} goal={g} onOpen={setGoalDetailId} onEdit={(id) => setGoalWizard(true, id)} />
+        <GoalCard key={g.id} goal={g} onOpen={setGoalDetailId} onEdit={(id) => openWizard(id)} />
       ))}
     </div>
   );
