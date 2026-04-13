@@ -42,7 +42,7 @@ function getComponentStats(domainId, components) {
 function FormField({ label, hint, children }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <label style={{ fontSize: 12, fontWeight: 500, color: '#6F7A90' }}>{label}</label>
+      <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)' }}>{label}</label>
       {children}
       {hint && <span style={{ fontSize: 11, color: hint.color || 'var(--neutral-200)' }}>{hint.text || hint}</span>}
     </div>
@@ -99,7 +99,7 @@ function AddDomainDrawer({ onClose, onSave }) {
         {/* Warning */}
         <div style={{
           display: 'flex', gap: 8, padding: '10px 12px', borderRadius: 8,
-          background: 'var(--status-warning-light)', border: '0.5px solid rgba(217,165,11,.2)',
+          background: 'var(--status-warning-light)', border: '0.5px solid color-mix(in srgb, var(--status-warning) 20%, transparent)',
         }}>
           <Icon name="solar:shield-warning-linear" size={16} color="var(--status-warning)" style={{ flexShrink: 0, marginTop: 1 }} />
           <div style={{ fontSize: 12, color: 'var(--status-warning)', lineHeight: 1.5 }}>
@@ -152,7 +152,7 @@ function EditDomainDrawer({ domain, onClose, onSave }) {
 
         <div style={{
           display: 'flex', gap: 8, padding: '10px 12px', borderRadius: 8,
-          background: 'var(--status-warning-light)', border: '0.5px solid rgba(217,165,11,.2)',
+          background: 'var(--status-warning-light)', border: '0.5px solid color-mix(in srgb, var(--status-warning) 20%, transparent)',
         }}>
           <Icon name="solar:info-circle-linear" size={16} color="var(--status-warning)" style={{ flexShrink: 0, marginTop: 1 }} />
           <div style={{ fontSize: 12, color: 'var(--status-warning)', lineHeight: 1.5 }}>
@@ -237,14 +237,14 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
       {!infoDismissed && (
         <div style={{
           display: 'flex', gap: 8, padding: '10px 16px', alignItems: 'center',
-          background: '#EFF6FF', borderBottom: '0.5px solid #BFDBFE',
+          background: 'var(--status-info-light)', borderBottom: '0.5px solid color-mix(in srgb, var(--status-info) 30%, transparent)',
         }}>
-          <Icon name="solar:info-circle-linear" size={16} color="#3B82F6" style={{ flexShrink: 0 }} />
-          <div style={{ fontSize: 12, color: '#1E40AF', lineHeight: 1.5, flex: 1 }}>
+          <Icon name="solar:info-circle-linear" size={16} color="var(--status-info)" style={{ flexShrink: 0 }} />
+          <div style={{ fontSize: 12, color: 'var(--status-info)', lineHeight: 1.5, flex: 1 }}>
             Domains are account-scoped. Only URLs from registered domains can be used when configuring components.
           </div>
           <button onClick={() => setInfoDismissed(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, flexShrink: 0, lineHeight: 1 }}>
-            <Icon name="solar:close-circle-linear" size={16} color="#93C5FD" />
+            <Icon name="solar:close-circle-linear" size={16} color="var(--status-info)" />
           </button>
         </div>
       )}
@@ -266,10 +266,10 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
           {filtered.length === 0 && (
             <tr>
               <td colSpan={7} style={{ padding: 48 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: '#6F7A90' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: 'var(--neutral-300)' }}>
                   <Icon name="solar:global-linear" size={32} color="var(--neutral-150)" />
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: '#3D4A5C' }}>No domains found</div>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)' }}>No domains found</div>
                     <div style={{ fontSize: 13, marginTop: 4 }}>
                       {searchQuery.trim() ? 'Try adjusting your search.' : 'Register your first domain to start configuring embedded components.'}
                     </div>
@@ -284,7 +284,7 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
             const isFirst = idx === 0;
             return (
               <tr key={d.id}
-                style={{ borderBottom: '0.5px solid #EAECF0', transition: 'background .1s', ...(isDisabled ? { opacity: 0.55 } : {}) }}
+                style={{ borderBottom: '0.5px solid var(--neutral-100)', transition: 'background .1s', ...(isDisabled ? { opacity: 0.55 } : {}) }}
                 onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25)'}
                 onMouseOut={e => e.currentTarget.style.background = ''}
               >

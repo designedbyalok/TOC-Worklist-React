@@ -38,7 +38,7 @@ function ComponentActionMenu({ comp, onClose, onEdit, onAuditLog, onDuplicate, o
   return (
     <div style={{
       background: 'var(--neutral-0)', border: '0.5px solid var(--neutral-150)',
-      borderRadius: 8, minWidth: 180, boxShadow: '0 12px 32px rgba(0,0,0,.15)',
+      borderRadius: 8, minWidth: 180, boxShadow: 'var(--shadow-popover)',
       overflow: 'hidden',
     }} onClick={e => e.stopPropagation()}>
       <button style={menuItemStyle} onClick={() => { onEdit(comp.id); onClose(); }}>
@@ -54,8 +54,8 @@ function ComponentActionMenu({ comp, onClose, onEdit, onAuditLog, onDuplicate, o
         Duplicate
       </button>
       <div style={{ height: 1, background: 'var(--neutral-100)', margin: '2px 0' }} />
-      <button style={{ ...menuItemStyle, color: '#D72825' }} onClick={() => { onClose(); onRequestDelete(comp); }}
-        onMouseOver={e => e.currentTarget.style.background = '#FEF2F2'}
+      <button style={{ ...menuItemStyle, color: 'var(--status-error)' }} onClick={() => { onClose(); onRequestDelete(comp); }}
+        onMouseOver={e => e.currentTarget.style.background = 'var(--status-error-light)'}
         onMouseOut={e => e.currentTarget.style.background = ''}
       >
         <Icon name="solar:trash-bin-minimalistic-linear" size={16} color="var(--status-error)" />
@@ -105,7 +105,7 @@ function ComponentRow({ comp, onToggle, onEdit, onPreview, onAuditLog, onDuplica
   return (
     <tr
       style={{
-        borderBottom: '0.5px solid #EAECF0',
+        borderBottom: '0.5px solid var(--neutral-100)',
         transition: 'background .1s',
         ...(!comp.enabled ? { opacity: 0.55 } : {}),
       }}
@@ -116,7 +116,7 @@ function ComponentRow({ comp, onToggle, onEdit, onPreview, onAuditLog, onDuplica
       <td style={{ ...tdStyle, fontWeight: 500, color: 'var(--neutral-400)' }}>
         <div>
           <div>{comp.name}</div>
-          <div style={{ fontSize: 12, color: '#6F7A90', fontWeight: 400, marginTop: 1 }}>
+          <div style={{ fontSize: 12, color: 'var(--neutral-300)', fontWeight: 400, marginTop: 1 }}>
             {comp.category || 'Uncategorized'}
           </div>
         </div>
@@ -160,7 +160,7 @@ function ComponentRow({ comp, onToggle, onEdit, onPreview, onAuditLog, onDuplica
             {comp.errors24h}
           </span>
         ) : (
-          <span style={{ color: '#6F7A90' }}>0</span>
+          <span style={{ color: 'var(--neutral-300)' }}>0</span>
         )}
       </td>
 
@@ -215,12 +215,12 @@ function PreviewDrawer({ comp, onClose }) {
           style={{
             display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px',
             borderBottom: collapsed ? 'none' : '0.5px solid var(--neutral-100)',
-            background: '#fff', cursor: 'pointer', userSelect: 'none',
+            background: 'var(--neutral-0)', cursor: 'pointer', userSelect: 'none',
           }}
         >
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#3A485F', flex: 1 }}>{comp.name}</span>
+          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--neutral-400)', flex: 1 }}>{comp.name}</span>
           <Badge variant="compliance-warn" label="External" />
-          <Icon name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'} size={12} color="#8A94A8" />
+          <Icon name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'} size={12} color="var(--neutral-200)" />
         </div>
 
         {!collapsed && (
@@ -234,7 +234,7 @@ function PreviewDrawer({ comp, onClose }) {
                 sandbox="allow-scripts allow-same-origin"
               />
             ) : (
-              <div style={{ height: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, color: '#8A94A8' }}>
+              <div style={{ height: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--neutral-200)' }}>
                 <Icon name="solar:widget-5-linear" size={32} color="var(--neutral-150)" />
                 <div style={{ fontSize: 13 }}>No URL configured for this component</div>
               </div>
@@ -242,10 +242,10 @@ function PreviewDrawer({ comp, onClose }) {
             {/* Footer with refresh */}
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '6px 12px', borderTop: '0.5px solid var(--neutral-100)', fontSize: 11, color: '#D9A50B',
+              padding: '6px 12px', borderTop: '0.5px solid var(--neutral-100)', fontSize: 11, color: 'var(--status-warning)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Icon name="solar:link-round-linear" size={12} color="#D9A50B" />
+                <Icon name="solar:link-round-linear" size={12} color="var(--status-warning)" />
                 External Content Provided by Your Org
               </div>
               <ActionButton icon="solar:refresh-linear" size="S" tooltip="Refresh preview" onClick={() => setIframeKey(k => k + 1)} />
@@ -253,7 +253,7 @@ function PreviewDrawer({ comp, onClose }) {
           </>
         )}
       </div>
-      <div style={{ marginTop: 12, fontSize: 12, color: '#6F7A90' }}>
+      <div style={{ marginTop: 12, fontSize: 12, color: 'var(--neutral-300)' }}>
         Domain: <code style={{ background: 'var(--neutral-50)', padding: '1px 4px', borderRadius: 3, fontSize: 11 }}>{comp.domain}</code>
         {' · '}Path: <code style={{ background: 'var(--neutral-50)', padding: '1px 4px', borderRadius: 3, fontSize: 11 }}>{comp.url}</code>
       </div>
@@ -324,15 +324,15 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
       {/* Domain removed banner */}
       {affectedComponents.length > 0 && !warningDismissed && (
         <div style={{
-          background: 'var(--status-warning-light)', borderBottom: '0.5px solid rgba(217,165,11,.2)',
+          background: 'var(--status-warning-light)', borderBottom: '0.5px solid color-mix(in srgb, var(--status-warning) 20%, transparent)',
           padding: '10px 16px', display: 'flex', gap: 10, alignItems: 'center',
-          fontSize: 12, lineHeight: 1.6, color: '#92400E',
+          fontSize: 12, lineHeight: 1.6, color: 'var(--status-warning)',
         }}>
           <Icon name="solar:danger-triangle-bold" size={16} color="var(--status-warning)" style={{ flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
             <strong>{removedDomains.length} domain{removedDomains.length !== 1 ? 's were' : ' was'} removed.</strong>{' '}
             {affectedComponents.length} component{affectedComponents.length !== 1 ? 's have' : ' has'} been disabled.{' '}
-            <a style={{ color: '#B45309', textDecoration: 'underline', cursor: 'pointer', fontWeight: 500 }}
+            <a style={{ color: 'var(--status-warning)', textDecoration: 'underline', cursor: 'pointer', fontWeight: 500 }}
               onClick={() => showToast('Navigate to Domain Registry to re-register')}>
               Re-register domain
             </a>
@@ -341,7 +341,7 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
             background: 'none', border: 'none', cursor: 'pointer', padding: 4,
             flexShrink: 0, lineHeight: 1,
           }}>
-            <Icon name="solar:close-circle-linear" size={16} color="#D9A50B" />
+            <Icon name="solar:close-circle-linear" size={16} color="var(--status-warning)" />
           </button>
         </div>
       )}
@@ -362,10 +362,10 @@ export function ComponentLibraryPanel({ searchQuery = '' }) {
           {filtered.length === 0 && (
             <tr>
               <td colSpan={6} style={{ padding: 48 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: '#6F7A90' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, color: 'var(--neutral-300)' }}>
                   <Icon name={searchQuery.trim() ? 'solar:magnifer-linear' : 'solar:widget-5-linear'} size={32} color="var(--neutral-150)" />
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: '#3D4A5C' }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)' }}>
                       {searchQuery.trim() ? 'No results found' : 'No components configured yet'}
                     </div>
                     <div style={{ fontSize: 13, marginTop: 4 }}>
