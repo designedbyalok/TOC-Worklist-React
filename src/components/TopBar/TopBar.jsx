@@ -7,6 +7,7 @@ import { Button } from '../Button/Button';
 import { CreateNewPopover } from '../CreateNewPopover/CreateNewPopover';
 import { PreferencesDrawer } from '../PreferencesDrawer/PreferencesDrawer';
 import { ScheduleDrawer } from '../ScheduleDrawer/ScheduleDrawer';
+import { ThemePicker } from '../ThemePicker/ThemePicker';
 import { useAppStore } from '../../store/useAppStore';
 import { supabase } from '../../lib/supabase';
 import styles from './TopBar.module.css';
@@ -71,41 +72,42 @@ function ProfilePopover({ user, onClose, onPreferences }) {
   return (
     <div ref={popoverRef} style={{
       position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 9999,
-      background: '#fff', border: '0.5px solid #D0D6E1', borderRadius: 12,
-      padding: 12, width: 300,
-      boxShadow: '0 12px 60px rgba(0,0,0,.06)',
+      background: 'var(--neutral-0)', border: '0.5px solid var(--neutral-150)',
+      borderRadius: 12, padding: 12, width: 300,
+      boxShadow: 'var(--shadow-popover)',
       fontFamily: "'Inter', sans-serif",
     }}>
       {/* User info */}
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 16 }}>
         <div style={{
-          width: 48, height: 48, borderRadius: 8, background: '#FEEEE7',
-          border: '0.5px solid #FBCEB7', display: 'flex', alignItems: 'center',
-          justifyContent: 'center', fontSize: 20, color: '#F47A3E',
+          width: 48, height: 48, borderRadius: 8, background: 'var(--secondary-100)',
+          border: '0.5px solid var(--secondary-200)', display: 'flex', alignItems: 'center',
+          justifyContent: 'center', fontSize: 20, color: 'var(--secondary-300)',
           fontFamily: "'Inter', sans-serif", flexShrink: 0, position: 'relative',
         }}>
           {initials}
           <div style={{
             position: 'absolute', top: -1, right: -3, width: 10, height: 10,
-            borderRadius: '50%', background: '#12B76A', border: '2px solid #fff',
+            borderRadius: '50%', background: 'var(--status-success-bright)',
+            border: '2px solid var(--neutral-0)',
           }} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 16, fontWeight: 500, color: '#000', lineHeight: 1.2 }}>{displayName}</div>
-          <div style={{ fontSize: 13, color: '#6F7A90', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</div>
+          <div style={{ fontSize: 16, fontWeight: 500, color: 'var(--neutral-500)', lineHeight: 1.2 }}>{displayName}</div>
+          <div style={{ fontSize: 13, color: 'var(--neutral-300)', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{email}</div>
         </div>
       </div>
 
       {/* Editable name section */}
       {editing ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12, padding: '8px 0', borderTop: '0.5px solid #E9ECF1', borderBottom: '0.5px solid #E9ECF1' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12, padding: '8px 0', borderTop: '0.5px solid var(--neutral-100)', borderBottom: '0.5px solid var(--neutral-100)' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <div>
-              <label style={{ fontSize: 11, fontWeight: 500, color: '#6F7A90', marginBottom: 2, display: 'block' }}>First Name</label>
+              <label style={{ fontSize: 11, fontWeight: 500, color: 'var(--neutral-300)', marginBottom: 2, display: 'block' }}>First Name</label>
               <Input value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="First" autoFocus />
             </div>
             <div>
-              <label style={{ fontSize: 11, fontWeight: 500, color: '#6F7A90', marginBottom: 2, display: 'block' }}>Last Name</label>
+              <label style={{ fontSize: 11, fontWeight: 500, color: 'var(--neutral-300)', marginBottom: 2, display: 'block' }}>Last Name</label>
               <Input value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Last" />
             </div>
           </div>
@@ -120,19 +122,27 @@ function ProfilePopover({ user, onClose, onPreferences }) {
 
       {/* Menu items */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <button onClick={() => { onClose(); onPreferences?.(); }} style={menuItemStyle} onMouseOver={e => e.currentTarget.style.background = '#F6F7F8'} onMouseOut={e => e.currentTarget.style.background = ''}>
-          <Icon name="solar:settings-linear" size={20} color="#3A485F" />
+        <button onClick={() => { onClose(); onPreferences?.(); }} style={menuItemStyle} onMouseOver={e => e.currentTarget.style.background = 'var(--neutral-50)'} onMouseOut={e => e.currentTarget.style.background = ''}>
+          <Icon name="solar:settings-linear" size={20} color="var(--neutral-400)" />
           <span>Preferences</span>
         </button>
-        <button onClick={onClose} style={menuItemStyle} onMouseOver={e => e.currentTarget.style.background = '#F6F7F8'} onMouseOut={e => e.currentTarget.style.background = ''}>
-          <Icon name="solar:users-group-rounded-linear" size={20} color="#3A485F" />
+        <button onClick={onClose} style={menuItemStyle} onMouseOver={e => e.currentTarget.style.background = 'var(--neutral-50)'} onMouseOut={e => e.currentTarget.style.background = ''}>
+          <Icon name="solar:users-group-rounded-linear" size={20} color="var(--neutral-400)" />
           <span style={{ flex: 1 }}>Switch Account</span>
-          <Icon name="solar:alt-arrow-right-linear" size={12} color="#8A94A8" />
+          <Icon name="solar:alt-arrow-right-linear" size={12} color="var(--neutral-200)" />
         </button>
-        <button onClick={handleLogout} style={{ ...menuItemStyle, color: '#D92D20' }} onMouseOver={e => e.currentTarget.style.background = '#FEF2F2'} onMouseOut={e => e.currentTarget.style.background = ''}>
-          <Icon name="solar:logout-2-linear" size={20} color="#D92D20" />
-          <span>Log Out</span>
-        </button>
+
+        {/* Theme picker — separated by thin divider above and below */}
+        <div style={{ marginTop: 4, paddingTop: 8, borderTop: '0.5px solid var(--neutral-100)' }}>
+          <ThemePicker />
+        </div>
+
+        <div style={{ marginTop: 4, paddingTop: 4, borderTop: '0.5px solid var(--neutral-100)' }}>
+          <button onClick={handleLogout} style={{ ...menuItemStyle, color: 'var(--status-error)' }} onMouseOver={e => e.currentTarget.style.background = 'var(--status-error-light)'} onMouseOut={e => e.currentTarget.style.background = ''}>
+            <Icon name="solar:logout-2-linear" size={20} color="var(--status-error)" />
+            <span>Log Out</span>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -142,7 +152,7 @@ const menuItemStyle = {
   display: 'flex', alignItems: 'center', gap: 8, padding: 8,
   borderRadius: 8, border: 'none', background: 'none', cursor: 'pointer',
   width: '100%', textAlign: 'left', fontFamily: "'Inter', sans-serif",
-  fontSize: 14, fontWeight: 500, color: '#3A485F', transition: 'background .1s',
+  fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)', transition: 'background .1s',
 };
 
 export function TopBar() {

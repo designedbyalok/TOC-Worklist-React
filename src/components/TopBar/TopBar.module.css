@@ -115,7 +115,7 @@
   height: 9px;
   background: var(--secondary-300);
   border-radius: 50%;
-  border: 2px solid white;
+  border: 2px solid var(--neutral-0);
   z-index: 1;
 }
 
@@ -125,7 +125,7 @@
   gap: 8px;
   padding: 8px 16px;
   background: var(--primary-300);
-  color: #fff;
+  color: var(--neutral-0);
   border: none;
   border-radius: 6px;
   font-family: 'Inter', sans-serif;
