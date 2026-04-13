@@ -26,7 +26,7 @@ const COLORS = {
   neutral150: 'var(--neutral-150)',    // --grey-150
   neutral100: 'var(--neutral-100)',    // --grey-100
   neutral50: 'var(--neutral-50)',     // --grey-50
-  white: '#FFFFFF',         // --monochrome-white
+  white: 'var(--neutral-0)',         // page surface — flips for dark mode
 };
 
 const FONT = { fontFamily: "'Inter', sans-serif" };
@@ -37,7 +37,7 @@ function FoldTooltip({ active, payload, label, prefix = '$', suffix = '' }) {
   return (
     <div style={{
       background: COLORS.white, borderRadius: 8, padding: '10px 14px',
-      boxShadow: '0 4px 16px rgba(0,0,0,.1)', border: `1px solid ${COLORS.neutral100}`,
+      boxShadow: 'var(--shadow-card)', border: `1px solid ${COLORS.neutral100}`,
       minWidth: 120,
     }}>
       <div style={{ fontSize: 12, color: COLORS.neutral200, fontWeight: 500, marginBottom: 6, ...FONT }}>

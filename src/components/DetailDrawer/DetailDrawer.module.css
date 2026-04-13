@@ -6,7 +6,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px;
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 10px;
   margin-bottom: 16px;
@@ -24,8 +24,8 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: #fff8f5;
-  border: 0.5px solid #fbceb7;
+  background: var(--secondary-100);
+  border: 0.5px solid var(--secondary-200);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -86,7 +86,7 @@
   color: var(--neutral-200);
   transition: background .15s, color .15s;
 }
-.callCardBtn:hover { background: #f0f2f5; color: var(--primary-300); }
+.callCardBtn:hover { background: var(--neutral-100); color: var(--primary-300); }
 
 /* ── Quality Score Card ── */
 .qualityCard {
@@ -94,7 +94,7 @@
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 12px;
-  background: #fff;
+  background: var(--neutral-0);
 }
 .qualityHeader {
   display: flex;
@@ -123,7 +123,7 @@
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   margin-bottom: 12px;
-  background: #fff;
+  background: var(--neutral-0);
 }
 .sentimentLabel { font-size: 13px; color: var(--neutral-300); flex: 1; }
 .sentimentValue { font-size: 13px; font-weight: 500; }
@@ -133,7 +133,7 @@
 
 /* ── Escalation Card ── */
 .escalationCard {
-  border: 0.5px solid rgba(215,40,37,0.3);
+  border: 0.5px solid color-mix(in srgb, var(--status-error) 30%, transparent);
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 12px;
@@ -170,9 +170,9 @@
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
-  background: #ede5fb;
+  background: var(--primary-100);
   color: var(--primary-300);
-  border: 0.5px solid rgba(140,90,226,0.2);
+  border: 0.5px solid color-mix(in srgb, var(--primary-300) 20%, transparent);
 }
 .intentTag {
   display: inline-flex;
@@ -182,7 +182,7 @@
   font-weight: 500;
   background: var(--status-info-light);
   color: var(--status-info);
-  border: 0.5px solid rgba(20,94,204,0.2);
+  border: 0.5px solid color-mix(in srgb, var(--status-info) 20%, transparent);
 }
 
 /* ── Security Row ── */
@@ -200,13 +200,13 @@
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
-  background: #f5f6f8;
+  background: var(--neutral-50);
   color: var(--neutral-300);
-  border: 0.5px solid rgba(111,122,144,0.15);
+  border: 0.5px solid color-mix(in srgb, var(--neutral-300) 15%, transparent);
 }
-.secPass { background: var(--status-success-light); color: var(--status-success); border-color: rgba(0,155,83,0.2); }
-.secFail { background: var(--status-error-light); color: var(--status-error); border-color: rgba(215,40,37,0.2); }
-.secAlert { background: var(--status-error-light); color: var(--status-error); border-color: rgba(215,40,37,0.25); font-weight: 500; }
+.secPass { background: var(--status-success-light); color: var(--status-success); border-color: color-mix(in srgb, var(--status-success) 20%, transparent); }
+.secFail { background: var(--status-error-light); color: var(--status-error); border-color: color-mix(in srgb, var(--status-error) 20%, transparent); }
+.secAlert { background: var(--status-error-light); color: var(--status-error); border-color: color-mix(in srgb, var(--status-error) 25%, transparent); font-weight: 500; }
 
 /* ── Section Headers ── */
 .sectionHeader {
@@ -280,14 +280,14 @@
   margin-top: 2px;
   line-height: 1.4;
 }
-.goalBadge.pass { background: #e6f9f0; color: var(--status-success); }
+.goalBadge.pass { background: var(--status-success-light); color: var(--status-success); }
 .goalBadge.fail { background: var(--status-error-light); color: var(--status-error); }
 
 /* ── Summary Container ── */
 .summaryContainer {
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
-  background: #fff;
+  background: var(--neutral-0);
   overflow: hidden;
   margin-bottom: 12px;
 }
@@ -347,7 +347,7 @@
   color: var(--neutral-200);
   transition: background .15s, color .15s;
 }
-.summaryBtn:hover { background: #f0f2f5; color: var(--primary-300); }
+.summaryBtn:hover { background: var(--neutral-100); color: var(--primary-300); }
 
 /* ── Call Recording & Transcript Container ── */
 .recordingContainer {
@@ -372,7 +372,7 @@
 .audioTime {
   font-size: 14px;
   font-weight: 500;
-  color: #1e1e1e;
+  color: var(--neutral-500);
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
@@ -381,7 +381,7 @@
 
 .waveformContainer {
   flex: 1;
-  background: #fafbff;
+  background: var(--primary-25);
   border-radius: 39px;
   padding: 6px 16px;
   display: flex;
@@ -443,7 +443,7 @@
   gap: 4px;
   padding: 8px 12px;
   background: var(--primary-300);
-  color: #fff;
+  color: var(--neutral-0);
   border: none;
   border-radius: 24px;
   font-size: 14px;
@@ -455,15 +455,15 @@
   line-height: 1.2;
   transition: background .15s;
 }
-.playBtn:hover { background: #7a49d0; }
+.playBtn:hover { background: var(--primary-400); }
 
 .pauseBtn {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 8px 12px;
-  background: #d9dde9;
-  color: #1e1e1e;
+  background: var(--neutral-150);
+  color: var(--neutral-500);
   border: none;
   border-radius: 24px;
   font-size: 14px;
@@ -475,7 +475,7 @@
   line-height: 1.2;
   transition: background .15s;
 }
-.pauseBtn:hover { background: #cdd2de; }
+.pauseBtn:hover { background: var(--neutral-200); }
 
 .stopBtn {
   display: inline-flex;
@@ -483,7 +483,7 @@
   gap: 4px;
   padding: 8px 12px;
   background: var(--status-error);
-  color: #fff;
+  color: var(--neutral-0);
   border: none;
   border-radius: 24px;
   font-size: 14px;
@@ -495,7 +495,7 @@
   line-height: 1.2;
   transition: background .15s;
 }
-.stopBtn:hover { background: #c02220; }
+.stopBtn:hover { background: var(--button-danger-bg); }
 
 /* Transcript Sub-section */
 .transcriptSubHeader {
@@ -537,7 +537,7 @@
 }
 .transcriptDivider span {
   position: relative;
-  background: #fff;
+  background: var(--neutral-0);
   padding: 0 12px;
   font-size: 12px;
   color: var(--neutral-200);
@@ -568,7 +568,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #ede5fb;
+  background: var(--primary-100);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -604,11 +604,11 @@
   line-height: 1.5;
   padding: 10px 14px;
   border-radius: 12px;
-  background: #f0f2f5;
+  background: var(--neutral-100);
 }
 .message.patient .msgBubble {
   background: var(--primary-300);
-  color: #fff;
+  color: var(--neutral-0);
 }
 
 .msgTime { font-size: 11px; color: var(--neutral-200); }

@@ -73,15 +73,15 @@
 /* ── Type: Primary ── */
 .primary {
   background: var(--primary-300);
-  color: #fff;
+  color: var(--neutral-0);
 }
 .primary:hover:not(:disabled) {
-  background: #5020A0;
+  background: var(--primary-400);
 }
 
 /* ── Type: Secondary ── */
 .secondary {
-  background: #fff;
+  background: var(--neutral-0);
   color: var(--neutral-300);
   border: 0.5px solid var(--neutral-200);
 }
@@ -93,11 +93,11 @@
 .tertiary {
   background: var(--primary-100);
   color: var(--primary-300);
-  border: 0.5px solid #D7C0FF;
+  border: 0.5px solid var(--primary-200);
 }
 .tertiary:hover:not(:disabled) {
   background: var(--primary-300);
-  color: #fff;
+  color: var(--neutral-0);
 }
 
 /* ── Type: Ghost ── */
@@ -123,40 +123,40 @@
 .success {
   background: var(--status-success-light);
   color: var(--status-success);
-  border: 0.5px solid rgba(18, 183, 106, 0.5);
+  border: 0.5px solid color-mix(in srgb, var(--status-success) 50%, transparent);
 }
 .success:hover:not(:disabled) {
   background: var(--status-success);
-  color: #fff;
+  color: var(--neutral-0);
 }
 
 /* ── Type: Error / Danger ── */
 .danger {
   background: var(--status-error-light);
   color: var(--status-error);
-  border: 0.5px solid rgba(217, 45, 32, 0.5);
+  border: 0.5px solid color-mix(in srgb, var(--status-error) 50%, transparent);
 }
 .danger:hover:not(:disabled) {
   background: var(--status-error);
-  color: #fff;
+  color: var(--neutral-0);
 }
 
 /* Solid danger variant (for destructive primary actions) */
 .dangerFilled {
   background: var(--status-error);
-  color: #fff;
+  color: var(--neutral-0);
 }
 .dangerFilled:hover:not(:disabled) {
-  background: #B91C1C;
+  background: var(--button-danger-bg);
 }
 
 /* ── Type: Info ── */
 .info {
   background: var(--status-info);
-  color: #fff;
+  color: var(--neutral-0);
 }
 .info:hover:not(:disabled) {
-  background: #0E4BAA;
+  background: var(--button-info-bg);
 }
 
 /* ── Disabled (all types) ── */
