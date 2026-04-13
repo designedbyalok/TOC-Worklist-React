@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ResponsiveContainer, AreaChart, Area,
   XAxis, YAxis, Tooltip,
@@ -132,7 +133,7 @@ function MiniChart({ data, color = '#8C5AE2' }) {
   );
 }
 
-/* ── UptimeBlock with tooltip ── */
+/* ── UptimeBlock with tooltip (portal-rendered to avoid layout stretch) ── */
 function UptimeBlock({ hour }) {
   const [showTip, setShowTip] = useState(false);
   const [tipPos, setTipPos] = useState({ top: 0, left: 0 });
@@ -140,7 +141,6 @@ function UptimeBlock({ hour }) {
   const color = STATUS_COLORS[hour.status] || '#D0D6E1';
 
   const handleEnter = () => {
-    setShowTip(true);
     if (segRef.current) {
       const rect = segRef.current.getBoundingClientRect();
       setTipPos({
@@ -148,6 +148,7 @@ function UptimeBlock({ hour }) {
         left: rect.left + rect.width / 2,
       });
     }
+    setShowTip(true);
   };
 
   return (
@@ -158,7 +159,7 @@ function UptimeBlock({ hour }) {
       onMouseEnter={handleEnter}
       onMouseLeave={() => setShowTip(false)}
     >
-      {showTip && (
+      {showTip && createPortal(
         <div className={styles.uptimeTooltip} style={{ top: tipPos.top, left: tipPos.left, transform: 'translate(-50%, -100%)' }}>
           <div className={styles.uptimeTooltipTime}>{hour.hour}</div>
           <div className={styles.uptimeTooltipRow}>
@@ -168,7 +169,8 @@ function UptimeBlock({ hour }) {
           <div className={styles.uptimeTooltipPatients}>
             {hour.patients} patient{hour.patients !== 1 ? 's' : ''} addressed
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
