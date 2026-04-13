@@ -136,3 +136,73 @@
   /* Native form / scrollbar coloring */
   color-scheme: dark;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   BLUE THEME
+   Light-surface theme with a blue primary palette anchored at
+   #007BFF (primary-300). Overrides the primary scale only —
+   neutral, secondary (orange), and status inherit from :root.
+   Sidebar chrome is retinted to dark navy so the brand feels
+   cohesive with blue-primary UI.
+   ═══════════════════════════════════════════════════════════ */
+
+[data-theme="blue"] {
+  /* Primary — parallel palette anchored at #007BFF */
+  --primary-500: #002D6F;   /* deep navy — darkest for chrome */
+  --primary-400: #0057B3;   /* hover/active for primary buttons */
+  --primary-300: #007BFF;   /* MAIN brand blue */
+  --primary-200: #99CAFF;   /* soft accent */
+  --primary-100: #E6F2FF;   /* pale surface */
+  --primary-50:  #F5FAFF;   /* barely-tinted surface */
+  --primary-25:  #FAFCFF;   /* almost white, subtle hover tint */
+
+  /* Sidebar chrome — dark navy so it reads as cohesively blue */
+  --sidebar-bg:            #002D6F;
+  --sidebar-fg:            rgba(255, 255, 255, 0.85);
+  --sidebar-fg-muted:      rgba(255, 255, 255, 0.60);
+  --sidebar-hover-bg:      rgba(0, 87, 179, 0.50);
+  --sidebar-active-bg:     #0057B3;
+  --sidebar-active-border: #3399FF;
+  --sidebar-active-overlay: rgba(0, 0, 0, 0.25);
+  --sidebar-active-overlay-border: rgba(255, 255, 255, 0.25);
+
+  /* Secondary (orange), Neutral, and Status tokens intentionally NOT
+     overridden — they inherit the :root (light) values. */
+
+  color-scheme: light;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ASTRANA PLUM THEME
+   Light-surface theme with a plum/burgundy primary palette
+   anchored at #6C0C46 (primary-300). Same structural approach
+   as the blue theme: override the primary scale + retint the
+   sidebar chrome; neutral, secondary (orange), and status
+   inherit from :root.
+   ═══════════════════════════════════════════════════════════ */
+
+[data-theme="plum"] {
+  /* Primary — parallel palette anchored at #6C0C46 */
+  --primary-500: #2A0519;   /* deepest plum — chrome */
+  --primary-400: #4A0A30;   /* hover/active for primary buttons */
+  --primary-300: #6C0C46;   /* MAIN Astrana plum */
+  --primary-200: #C48FA9;   /* soft pink-plum accent */
+  --primary-100: #F5E8EF;   /* pale plum surface */
+  --primary-50:  #FBF5F8;   /* barely-tinted surface */
+  --primary-25:  #FDFAFB;   /* almost white, subtle hover tint */
+
+  /* Sidebar chrome — deep plum so it reads as cohesively regal */
+  --sidebar-bg:            #2A0519;
+  --sidebar-fg:            rgba(255, 255, 255, 0.85);
+  --sidebar-fg-muted:      rgba(255, 255, 255, 0.60);
+  --sidebar-hover-bg:      rgba(74, 10, 48, 0.50);
+  --sidebar-active-bg:     #4A0A30;
+  --sidebar-active-border: #9B3A6C;
+  --sidebar-active-overlay: rgba(0, 0, 0, 0.25);
+  --sidebar-active-overlay-border: rgba(255, 255, 255, 0.25);
+
+  /* Secondary (orange), Neutral, and Status tokens intentionally NOT
+     overridden — they inherit the :root (light) values. */
+
+  color-scheme: light;
+}

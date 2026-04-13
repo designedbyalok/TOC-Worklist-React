@@ -126,6 +126,10 @@
   flex-shrink: 0;
 }
 
+[data-theme="dark"] .editHeader {
+  background: var(--neutral-0);
+}
+
 .editHeaderInfo {
   flex: 1;
   min-width: 0;
@@ -183,7 +187,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border: 2px solid #fff;
+  border: 2px solid var(--neutral-0);
 }
 
 .profileName {

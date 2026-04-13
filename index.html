@@ -13,8 +13,13 @@
       // Default is 'light' — system preference is honored only if the user
       // has explicitly chosen 'system' in the in-app theme picker.
       (function () {
+        // Keep this list in sync with THEME_VALUES in src/lib/theme.js.
+        // 'system' is resolved to 'light' or 'dark' at startup; every other
+        // value is passed through as-is (e.g. 'blue' → data-theme="blue").
+        var VALID = ['light', 'dark', 'blue', 'plum', 'system'];
         try {
           var stored = localStorage.getItem('theme') || 'light';
+          if (VALID.indexOf(stored) === -1) stored = 'light';
           var resolved = stored;
           if (stored === 'system') {
             resolved = window.matchMedia('(prefers-color-scheme: dark)').matches

@@ -185,7 +185,7 @@ export function PreferencesDrawer({ onClose }) {
                   <div className={styles.editHeaderInfo}>
                     <div className={styles.editHeaderName}>
                       {userName || 'User'}
-                      {profile?.status === 'Active' && <Icon name="solar:verified-check-bold" size={16} color="#009B53" />}
+                      {profile?.status === 'Active' && <Icon name="solar:verified-check-bold" size={16} color="var(--status-success)" />}
                     </div>
                     <span className={styles.editHeaderEmail}>{form.email}</span>
                   </div>

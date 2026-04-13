@@ -698,12 +698,12 @@ function StepConfigure({ data, onChange, embedDomains }) {
           style={{
             display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '10px 12px',
             background: 'var(--neutral-50)', border: 'none', cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 500, color: '#3A485F',
+            fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 500, color: 'var(--neutral-400)',
           }}
         >
           <Icon name={advancedOpen ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'} size={14} color="#6F7A90" />
           Additional Settings
-          <span style={{ fontSize: 11, fontWeight: 400, color: '#8A94A8', marginLeft: 'auto' }}>
+          <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--neutral-200)', marginLeft: 'auto' }}>
             {advancedOpen ? 'Collapse' : 'Expand'}
           </span>
         </button>
@@ -793,10 +793,10 @@ function StepPreview({ data, onChange, embedDomains }) {
           style={{
             display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px',
             borderBottom: collapsed ? 'none' : '0.5px solid var(--neutral-100)',
-            background: '#fff', cursor: 'pointer', userSelect: 'none',
+            background: 'var(--neutral-0)', cursor: 'pointer', userSelect: 'none',
           }}
         >
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#3A485F', flex: 1 }}>{data.name || 'Widget'}</span>
+          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--neutral-400)', flex: 1 }}>{data.name || 'Widget'}</span>
           <Icon name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'} size={12} color="#8A94A8" />
         </div>
 
@@ -810,10 +810,10 @@ function StepPreview({ data, onChange, embedDomains }) {
                   <div style={{
                     position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
                     alignItems: 'center', justifyContent: 'center', gap: 8,
-                    background: '#fff', zIndex: 1,
+                    background: 'var(--neutral-0)', zIndex: 1,
                   }}>
                     <div style={{ width: 24, height: 24, border: '2px solid var(--neutral-100)', borderTopColor: 'var(--primary-300)', borderRadius: '50%', animation: 'spin .8s linear infinite' }} />
-                    <span style={{ fontSize: 12, color: '#8A94A8' }}>Loading preview...</span>
+                    <span style={{ fontSize: 12, color: 'var(--neutral-200)' }}>Loading preview...</span>
                   </div>
                 )}
                 <iframe
@@ -840,11 +840,11 @@ function StepPreview({ data, onChange, embedDomains }) {
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '6px 12px', borderTop: '0.5px solid var(--neutral-100)',
-              background: '#fff', fontSize: 11, color: '#8A94A8',
+              background: 'var(--neutral-0)', fontSize: 11, color: 'var(--neutral-200)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <Icon name="solar:link-round-linear" size={12} color="#D9A50B" />
-                <span style={{ color: '#D9A50B' }}>External Content Provided by Your Org</span>
+                <span style={{ color: 'var(--status-warning)' }}>External Content Provided by Your Org</span>
               </div>
               <ActionButton icon="solar:refresh-linear" size="S" tooltip="Refresh preview" onClick={refreshIframe} />
             </div>
@@ -860,7 +860,7 @@ function StepPreview({ data, onChange, embedDomains }) {
           onChange={e => onChange({ previewHeight: Number(e.target.value) })}
           style={{ width: '100%', height: 8, accentColor: 'var(--primary-300)', cursor: 'pointer', background: 'var(--neutral-100)', borderRadius: 4, border: 'none', outline: 'none', WebkitAppearance: 'none', MozAppearance: 'none' }}
         />
-        <span style={{ fontSize: 12, fontWeight: 500, color: '#3A485F', minWidth: 40, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{previewHeight}px</span>
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--neutral-400)', minWidth: 40, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{previewHeight}px</span>
       </div>
 
       {/* ── Save Summary ── */}

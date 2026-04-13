@@ -17,7 +17,7 @@
   font-size: 14px;
   font-weight: 400;
   color: var(--neutral-400);
-  background: #fff;
+  background: var(--neutral-0);
   outline: none;
   transition: border-color .15s, box-shadow .15s;
   line-height: 1.2;

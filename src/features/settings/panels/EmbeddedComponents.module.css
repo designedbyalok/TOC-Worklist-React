@@ -11,24 +11,24 @@
 .infoBlue {
   composes: infoBox;
   background: var(--status-info-light);
-  color: #1E40AF;
+  color: var(--status-info);
   border: 0.5px solid rgba(20,94,204,.15);
 }
 .infoAmber {
   composes: infoBox;
   background: var(--status-warning-light);
-  color: #92400E;
+  color: var(--status-warning);
   border: 0.5px solid rgba(217,165,11,.2);
 }
 .infoGreen {
   composes: infoBox;
   background: var(--status-success-light);
-  color: #065F46;
+  color: var(--status-success);
   border: 0.5px solid rgba(0,155,83,.15);
 }
 
 .tableCard {
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 10px;
   overflow: hidden;
@@ -83,7 +83,7 @@
   background: rgba(0,0,0,.4);
 }
 .modal {
-  background: #fff;
+  background: var(--neutral-0);
   border-radius: 12px;
   padding: 24px;
   max-width: 520px;
@@ -134,7 +134,7 @@
   font-family: 'Inter', sans-serif;
   width: 100%;
   outline: none;
-  background: #fff;
+  background: var(--neutral-0);
   color: var(--neutral-500);
   transition: border-color .15s;
 }
@@ -175,11 +175,11 @@
   align-items: flex-start;
   font-size: 12px;
   line-height: 1.6;
-  color: #92400E;
+  color: var(--status-warning);
   border-bottom: 0.5px solid rgba(217,165,11,.2);
 }
 .warningLink {
-  color: #B45309;
+  color: var(--status-warning);
   text-decoration: underline;
   cursor: pointer;
   font-weight: 500;
@@ -202,7 +202,7 @@
 }
 
 .compCard {
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 12px;
   padding: 16px;
@@ -313,7 +313,7 @@
   gap: 0;
   padding: 12px 24px;
   border-bottom: 0.5px solid var(--neutral-150);
-  background: #fff;
+  background: var(--neutral-0);
 }
 .step {
   display: flex;
@@ -424,7 +424,7 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  background: #fff;
+  background: var(--neutral-0);
   text-align: center;
   transition: all .15s;
 }
@@ -439,7 +439,7 @@
 
 /* ── Config Section ── */
 .configSection {
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   margin-bottom: 12px;
@@ -523,7 +523,7 @@
   cursor: pointer;
   font-size: 11px;
   color: var(--neutral-300);
-  background: #fff;
+  background: var(--neutral-0);
   transition: all .15s;
   user-select: none;
 }
@@ -573,7 +573,7 @@
 
 /* ── Save Summary ── */
 .summaryCard {
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   padding: 14px;
@@ -602,7 +602,7 @@
   gap: 6px;
   padding: 8px 22px;
   border-bottom: 0.5px solid var(--neutral-150);
-  background: #fff;
+  background: var(--neutral-0);
   align-items: center;
   overflow-x: auto;
   flex-shrink: 0;
@@ -612,7 +612,7 @@
   border: 0.5px solid var(--neutral-150);
   border-radius: 6px;
   font-size: 12px;
-  background: #fff;
+  background: var(--neutral-0);
   color: var(--neutral-300);
   cursor: pointer;
   white-space: nowrap;
@@ -640,7 +640,7 @@
   line-height: 1.6;
 }
 .previewFrame {
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 10px;
   overflow: hidden;
@@ -653,11 +653,11 @@
   align-items: center;
   justify-content: space-between;
   font-size: 11px;
-  color: #92400E;
+  color: var(--status-warning);
 }
 .externalBannerLink {
   font-size: 10px;
-  color: #B45309;
+  color: var(--status-warning);
   text-decoration: underline;
   cursor: pointer;
 }

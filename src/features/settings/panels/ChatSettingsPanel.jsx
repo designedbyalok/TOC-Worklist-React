@@ -19,7 +19,7 @@ const tdStyle = { padding: '10px 16px', fontSize: 13, color: 'var(--neutral-400)
 function RowActionMenu({ group, onClose, onEdit, onRequestDelete }) {
   return (
     <div style={{
-      background: '#fff', borderRadius: 8, border: '0.5px solid var(--neutral-150)',
+      background: 'var(--neutral-0)', borderRadius: 8, border: '0.5px solid var(--neutral-150)',
       boxShadow: '0 4px 16px rgba(0,0,0,.10)', minWidth: 160, padding: '4px 0',
       fontFamily: "'Inter', sans-serif",
     }} onClick={e => e.stopPropagation()}>
@@ -33,7 +33,7 @@ function RowActionMenu({ group, onClose, onEdit, onRequestDelete }) {
         <Icon name="solar:pen-linear" size={16} color="var(--neutral-300)" />
         Edit Group
       </button>
-      <div style={{ height: 1, background: '#EAECF0', margin: '4px 0' }} />
+      <div style={{ height: 1, background: 'var(--neutral-100)', margin: '4px 0' }} />
       <button style={{
         width: '100%', padding: '8px 14px', border: 'none', background: 'none',
         cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
@@ -86,9 +86,9 @@ function ChatGroupRow({ g, onOpen }) {
 
   return (
     <tr
-      style={{ borderBottom: '1px solid #EAECF0', cursor: 'pointer', transition: 'background .1s' }}
+      style={{ borderBottom: '1px solid var(--neutral-100)', cursor: 'pointer', transition: 'background .1s' }}
       onClick={() => onOpen(g.id)}
-      onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25, #faf8ff)'}
+      onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25)'}
       onMouseOut={e => e.currentTarget.style.background = ''}
     >
       <td style={{ ...tdStyle, fontWeight: 500, color: 'var(--neutral-500)' }}>
@@ -118,8 +118,8 @@ function ChatGroupRow({ g, onOpen }) {
           )}
         </div>
       </td>
-      <td style={{ ...tdStyle, fontSize: 13, color: 'var(--neutral-300)' }}>{g.location}</td>
-      <td style={{ ...tdStyle, fontSize: 12, color: 'var(--neutral-200)' }}>
+      <td style={{ ...tdStyle, fontSize: 13, color: 'var(--neutral-400)' }}>{g.location}</td>
+      <td style={{ ...tdStyle, fontSize: 13, color: 'var(--neutral-400)' }}>
         {g.updated} by {g.updatedBy}
       </td>
       <td style={tdStyle} onClick={e => e.stopPropagation()}>

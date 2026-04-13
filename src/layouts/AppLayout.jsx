@@ -37,13 +37,13 @@ function Toast() {
   return (
     <div style={{
       position: 'fixed', bottom: 88, left: '50%', transform: 'translateX(-50%)',
-      background: 'var(--neutral-500)', color: '#fff', padding: '12px 20px', borderRadius: 8,
+      background: 'var(--neutral-500)', color: 'var(--neutral-0)', padding: '12px 20px', borderRadius: 8,
       fontSize: 14, fontWeight: 500, boxShadow: '0 4px 12px rgba(0,0,0,.2)', zIndex: 10001,
       whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 12
     }}>
       {toast}
       <button onClick={closeToast} style={{
-        background: 'none', border: 'none', color: '#fff', cursor: 'pointer',
+        background: 'none', border: 'none', color: 'var(--neutral-0)', cursor: 'pointer',
         fontSize: 16, padding: 0, display: 'flex', opacity: 0.8, lineHeight: 1,
       }}>✕</button>
     </div>
@@ -57,7 +57,7 @@ function ToastSuccess() {
   return (
     <div style={{
       position: 'fixed', top: 24, left: '50%', transform: 'translateX(-50%)',
-      background: '#059669', color: '#fff', padding: '12px 20px', borderRadius: 8,
+      background: 'var(--status-success)', color: '#fff', padding: '12px 20px', borderRadius: 8,
       fontSize: 14, fontWeight: 500, boxShadow: '0 4px 12px rgba(0,0,0,.2)', zIndex: 600,
       display: 'flex', alignItems: 'center', gap: 12, whiteSpace: 'nowrap'
     }}>

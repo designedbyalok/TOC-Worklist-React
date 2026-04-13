@@ -1,6 +1,7 @@
-/* ── ThemePicker — segmented 3-button control ────────────── */
+/* ── ThemePicker — dropdown selector ────────────── */
 
 .wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -15,54 +16,88 @@
   padding: 0 4px;
 }
 
-.segmented {
-  display: flex;
-  gap: 2px;
-  padding: 3px;
-  background: var(--neutral-50);
-  border: 0.5px solid var(--neutral-150);
-  border-radius: 8px;
-}
-
-.option {
-  flex: 1;
-  display: flex;
+.trigger {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 6px 4px;
-  border: none;
-  background: transparent;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-150);
   border-radius: 6px;
   cursor: pointer;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
-  color: var(--neutral-300);
-  /* transitions inherited from global *, so theme flips + active swaps are smooth */
-}
-
-.option:hover:not(.active) {
-  background: var(--neutral-0);
   color: var(--neutral-400);
+  width: 100%;
+  text-align: left;
 }
 
-.option.active {
-  background: var(--neutral-0);
-  color: var(--primary-300);
-  box-shadow: var(--shadow-card);
+.trigger:hover {
+  border-color: var(--neutral-200);
 }
 
-.option:focus-visible {
+.trigger:focus-visible {
   outline: 2px solid var(--primary-200);
   outline-offset: 1px;
 }
 
-.iconWrap {
+.triggerLeft {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 6px;
+  box-shadow: var(--shadow-popover);
+}
+
+.item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 8px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--neutral-400);
+  text-align: left;
+}
+
+.item:hover {
+  background: var(--neutral-50);
+  color: var(--neutral-500);
+}
+
+.itemActive {
+  color: var(--primary-300);
+  background: var(--primary-50);
+}
+
+.itemActive:hover {
+  background: var(--primary-50);
+  color: var(--primary-300);
+}
+
+.check {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
 }

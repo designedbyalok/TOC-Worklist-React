@@ -114,6 +114,7 @@ function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginR
   const [SXCalendar, setSXCalendar] = useState(null);
   const [error, setError] = useState(null);
   const internalPluginRef = useRef(null);
+  const resolvedTheme = useAppStore(s => s.resolvedTheme);
 
   // Use refs for callbacks so the calendar always calls the latest handlers
   const slotClickRef = useRef(onSlotClick);
@@ -139,11 +140,16 @@ function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginR
         internalPluginRef.current = eventsPlugin;
         if (eventsPluginRef) eventsPluginRef.current = eventsPlugin;
 
+        // Read current theme from the html data-theme attribute so init matches
+        // whatever the rest of the app is showing right now.
+        const initialDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
         const app = calMod.createCalendar({
           views: [calMod.createViewWeek(), calMod.createViewDay(), calMod.createViewMonthGrid()],
           defaultView: 'week',
           events: [],
           calendars: DEFAULT_CALENDARS,
+          isDark: initialDark,
           dayBoundaries: { start: '00:00', end: '23:00' },
           weekOptions: { gridHeight: 2000, nDays: 7 },
           locale: 'en-US',
@@ -163,6 +169,19 @@ function CalendarContent({ onSlotClick, onEventClick, calendarRef, eventsPluginR
       }
     })();
   }, []);
+
+  // Sync schedule-x theme when the app theme flips (light/dark/system).
+  useEffect(() => {
+    if (!calendarApp) return;
+    try {
+      // schedule-x exposes a `setTheme('light' | 'dark')` on the calendar instance.
+      if (typeof calendarApp.setTheme === 'function') {
+        calendarApp.setTheme(resolvedTheme === 'dark' ? 'dark' : 'light');
+      }
+    } catch (err) {
+      console.warn('Failed to set schedule-x theme:', err);
+    }
+  }, [resolvedTheme, calendarApp]);
 
   // Sync events dynamically when DB data changes (without recreating calendar)
   useEffect(() => {

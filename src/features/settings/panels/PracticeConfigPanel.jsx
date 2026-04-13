@@ -18,11 +18,11 @@ const VM_OPTIONS = ['Leave voicemail', 'Hang up silently', 'Leave callback numbe
 const s = {
   section: { marginBottom: 24 },
   sectionTitle: { fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 },
-  card: { background: '#fff', border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 16, marginBottom: 12 },
+  card: { background: 'var(--neutral-0)', border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 16, marginBottom: 12 },
   row: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--neutral-100)', fontSize: 14 },
   dayLabel: { width: 40, fontWeight: 500, color: 'var(--neutral-400)' },
   timeInput: { padding: '4px 8px', border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, color: 'var(--neutral-400)', width: 100 },
-  select: { padding: '6px 10px', border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, color: 'var(--neutral-400)', background: '#fff' },
+  select: { padding: '6px 10px', border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, color: 'var(--neutral-400)', background: 'var(--neutral-0)' },
   holidayRow: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '0.5px solid var(--neutral-100)', fontSize: 13, color: 'var(--neutral-400)' },
   holidayDate: { color: 'var(--neutral-300)', width: 100 },
 };

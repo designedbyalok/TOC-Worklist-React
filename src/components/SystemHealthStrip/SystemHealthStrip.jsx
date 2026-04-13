@@ -32,7 +32,7 @@ export function SystemHealthStrip() {
       alignItems: 'center',
       gap: 16,
       padding: '6px 16px',
-      background: '#fafbff',
+      background: 'var(--neutral-50)',
       borderBottom: '0.5px solid var(--neutral-150)',
       fontSize: 12,
       color: 'var(--neutral-300)',

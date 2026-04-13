@@ -139,6 +139,31 @@ The platform follows the **Fold Health design system** with strict adherence to:
 
 ## Recent Changes
 
+### Astrana Plum Theme (April 2026)
+- New `[data-theme="plum"]` block in `src/tokens/tokens.css`. Primary palette anchored at `#6C0C46` (primary-300) with deep-plum chrome for the sidebar (`#2A0519` / `#4A0A30`). Neutral, secondary (orange), and status tokens inherit from `:root`.
+- Registered as `'plum'` in `THEME_VALUES`, the `index.html` inline-script allowlist, and `ThemePicker` OPTIONS (label "Astrana Plum", crown-star icon).
+
+### Blue Theme + Chat Settings Table Polish (April 2026)
+- **Blue theme** — new `[data-theme="blue"]` block in `src/tokens/tokens.css` with a full parallel primary palette anchored at `#007BFF` (primary-300). Sidebar chrome retinted to dark navy for cohesion; secondary (orange), neutral, and status tokens inherit from `:root`.
+- **ThemePicker** gains a "Blue" option (palette icon). `THEME_VALUES` in `src/lib/theme.js` extended, inline script in `index.html` updated to pass new theme values through, and `getResolvedTheme` returns any named palette as-is. Adding future palettes is append-only: new entry in `THEME_VALUES` + `OPTIONS` + a matching `[data-theme="<name>"]` block.
+- **ChatSettingsPanel table** — row `borderBottom` and action-menu divider moved from literal `#EAECF0` to `var(--neutral-100)`; Location and Last Updated columns now use `var(--neutral-400)` + `13px` so they match the other columns (previously faint gray at `var(--neutral-200)`/`12px`).
+
+### Theme Picker → Dropdown + Calendar Theme Sync + Stray-Hex Fixes (April 2026)
+- **ThemePicker is now a dropdown** (`src/components/ThemePicker`) instead of a segmented Light/Dark/System row. Designed for future themes — append to `OPTIONS` and add a matching `[data-theme="<name>"]` block in `tokens.css`.
+- **schedule-x calendar follows app theme** — `CalendarView.jsx` reads `resolvedTheme` from `useAppStore`, passes `isDark` at init, and calls `calendarApp.setTheme()` on theme flips.
+- **Primary button text** (TopBar `.btnPrimary`) reverted from `var(--neutral-0)` (which inverts) to literal `#fff`. Text on `var(--primary-300)` purple should be white in BOTH themes.
+- **`var(--neutral-900, #16181d)` regressions fixed** (`AccountPanel.module.css` ×3 + `CallQueueDrawer.module.css` ×1) — `--neutral-900` doesn't exist; fallback `#16181d` was making titles ("Administrative Role", "Roles", agent name, etc.) invisible on dark surfaces. Replaced with `var(--neutral-500)`.
+- **SystemHealthStrip** background tokenized: `#fafbff` → `var(--neutral-50)`.
+
+### Dark-Mode Tokenization Sweep — Forms, Bars, Toasts, Calendar, Drawers & Goals (April 2026)
+- **Shared form primitives** (`Input`, `Select`, `Checkbox`) — replaced hardcoded `bg-white` / `background: #fff` with `var(--neutral-0)` so triggers, dropdowns, and unchecked checkboxes flip with the theme everywhere they're consumed.
+- **BulkBar** (`BulkBar.module.css`) — surface and inner buttons now use `var(--neutral-0)`; no more white slab on a dark page.
+- **Toasts** (`AppLayout.jsx`) — default toast text moved to `var(--neutral-0)` (inverts cleanly with `var(--neutral-500)` background); success toast switched from literal `#059669` to `var(--status-success)` (theme-aware brighter green in dark).
+- **Calendar** (`CalendarView.module.css`) — schedule-x `--sx-color-surface` now points at `var(--neutral-0)`; user-picker trigger and dropdown tokenized; past-day overlay gets a dark-tinted variant under `[data-theme="dark"]`.
+- **Preferences (User Profile) Drawer** — warm-cream gradient on the `editHeader` is overridden to a solid dark surface in dark mode (titles read clearly); avatar-upload border tokenized; verified-check icon swapped to `var(--status-success)`.
+- **GoalsPanel** — every `background: #fff` (cards, stat boxes, drawer steps, wizard, form inputs) replaced with `var(--neutral-0)`, fixing the white-on-white "Passed / Failed" stats in dark mode.
+- **Settings panels sweep** — `AgentsTable`, `CreateAgentDrawer`, `EmbeddedComponents`, `AccountPanel`, `BusinessHoursDrawer`, `ChatSettingsPanel`, `ComponentWizardDrawer`, `EscalationPolicyPanel`, `FeatureTogglesPanel`, `GroupDetailDrawer`, `KnowledgeBasePanel`, `PracticeConfigPanel`, `AgentRulesDrawer` — all literal `#fff` backgrounds and stray neutral/status hexes converted to design tokens; info-box copy colors (`#1E40AF`/`#92400E`/`#B45309`/`#065F46`) mapped to their `var(--status-*)` counterparts.
+
 ### Dark Theme + Extensible Color Theming System (April 2026)
 - **Dark mode**: full dark palette added as a `[data-theme="dark"]` override in `src/tokens/tokens.css`. Redefines every neutral, primary, secondary, and status token for dark surfaces; inverts text colors; keeps the Sidebar as theme-invariant dark chrome.
 - **Theme picker in profile popover**: new `ThemePicker` segmented control (Light / Dark / System) between Switch Account and Log Out. System mode live-follows OS `prefers-color-scheme`.

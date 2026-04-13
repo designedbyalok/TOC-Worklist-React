@@ -10,7 +10,7 @@ const SelectTrigger = React.forwardRef(({ className, children, ...props }, ref) 
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'inline-flex h-8 items-center justify-between gap-2 rounded-[4px] border-[0.5px] border-[var(--neutral-100)] bg-white px-3 py-1 text-[14px] font-normal text-[var(--neutral-400)] leading-[1.2] whitespace-nowrap cursor-pointer focus:outline-none focus:border-[var(--primary-300)] focus:ring-1 focus:ring-[var(--primary-200)] disabled:cursor-not-allowed disabled:opacity-50 [&>span]:truncate',
+      'inline-flex h-8 items-center justify-between gap-2 rounded-[4px] border-[0.5px] border-[var(--neutral-100)] bg-[var(--neutral-0)] px-3 py-1 text-[14px] font-normal text-[var(--neutral-400)] leading-[1.2] whitespace-nowrap cursor-pointer focus:outline-none focus:border-[var(--primary-300)] focus:ring-1 focus:ring-[var(--primary-200)] disabled:cursor-not-allowed disabled:opacity-50 [&>span]:truncate',
       className
     )}
     style={{ fontFamily: "'Inter', sans-serif" }}
@@ -57,7 +57,7 @@ const SelectContent = React.forwardRef(({ className, children, position = 'poppe
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        'relative max-h-96 min-w-[8rem] overflow-hidden rounded-[4px] border-[0.5px] border-[var(--neutral-100)] bg-white p-[8px] shadow-[0_4px_24px_-4px_rgba(0,0,0,0.12),0_1px_4px_rgba(0,0,0,0.06)]',
+        'relative max-h-96 min-w-[8rem] overflow-hidden rounded-[4px] border-[0.5px] border-[var(--neutral-100)] bg-[var(--neutral-0)] p-[8px] shadow-[0_4px_24px_-4px_rgba(0,0,0,0.12),0_1px_4px_rgba(0,0,0,0.06)]',
         'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2',
         position === 'popper' && 'data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1',
         className

@@ -104,7 +104,7 @@ export function AgentRulesDrawer() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 12, color: 'var(--neutral-300)' }}>{s.label}</span>
                 {s.isDefault && (
-                  <span style={{ fontSize: 10, color: 'var(--neutral-200)', background: '#fff', padding: '1px 6px', borderRadius: 3, border: '0.5px solid var(--neutral-150)' }}>
+                  <span style={{ fontSize: 10, color: 'var(--neutral-200)', background: 'var(--neutral-0)', padding: '1px 6px', borderRadius: 3, border: '0.5px solid var(--neutral-150)' }}>
                     Default
                   </span>
                 )}
@@ -148,7 +148,7 @@ export function AgentRulesDrawer() {
                 <select value={newRuleCondition} onChange={e => setNewRuleCondition(e.target.value)} style={{
                   width: '100%', marginTop: 4, padding: '8px 12px', borderRadius: 4,
                   border: '0.5px solid var(--neutral-150)', fontSize: 13, fontFamily: "'Inter', sans-serif",
-                  outline: 'none', background: '#fff', cursor: 'pointer',
+                  outline: 'none', background: 'var(--neutral-0)', cursor: 'pointer',
                 }}>
                   <option>Message contains [keyword]</option>
                   <option>Patient membership status is [active/inactive]</option>
@@ -161,7 +161,7 @@ export function AgentRulesDrawer() {
                 <select value={newRuleAction} onChange={e => setNewRuleAction(e.target.value)} style={{
                   width: '100%', marginTop: 4, padding: '8px 12px', borderRadius: 4,
                   border: '0.5px solid var(--neutral-150)', fontSize: 13, fontFamily: "'Inter', sans-serif",
-                  outline: 'none', background: '#fff', cursor: 'pointer',
+                  outline: 'none', background: 'var(--neutral-0)', cursor: 'pointer',
                 }}>
                   <option>Send message [text]</option>
                   <option>Hold (agent does not respond)</option>

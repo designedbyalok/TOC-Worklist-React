@@ -3,7 +3,7 @@
 /* (filters moved to tab level in AgentsTable) */
 .filterChip {
   padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
-  cursor: pointer; border: 0.5px solid var(--neutral-150); background: #fff;
+  cursor: pointer; border: 0.5px solid var(--neutral-150); background: var(--neutral-0);
   color: var(--neutral-300); transition: all .15s; user-select: none;
 }
 .filterChip:hover { background: var(--neutral-50); color: var(--neutral-400); }
@@ -17,7 +17,7 @@
 
 /* Card */
 .card {
-  background: #fff; border: 0.5px solid var(--neutral-150); border-radius: 12px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 12px;
   padding: 16px; cursor: pointer; transition: all .2s; position: relative; overflow: hidden;
 }
 .card::before {
@@ -74,7 +74,7 @@
 .cardStatLabel { font-size: 12px; color: var(--neutral-200); margin-top: 1px; }
 .cardEditBtn {
   padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
-  border: 0.5px solid var(--neutral-150); background: #fff; color: var(--neutral-300);
+  border: 0.5px solid var(--neutral-150); background: var(--neutral-0); color: var(--neutral-300);
   cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif;
 }
 .cardEditBtn:hover { border-color: var(--primary-200); background: var(--primary-50); color: var(--primary-300); }
@@ -84,7 +84,7 @@
 .moreMenuWrap { position: relative; }
 .moreMenu {
   position: absolute; top: calc(100% + 4px); right: 0; min-width: 180px; z-index: 10;
-  background: #fff; border: 0.5px solid var(--neutral-150); border-radius: 8px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,.1); padding: 4px;
 }
 .moreMenuItem {
@@ -113,7 +113,7 @@
 
 .detailStats { display: flex; gap: 10px; margin-bottom: 16px; }
 .detailStat {
-  flex: 1; background: #fff; border: 0.5px solid var(--neutral-150);
+  flex: 1; background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   border-radius: 8px; padding: 12px; text-align: center;
 }
 .detailStatVal { font-size: 24px; font-weight: 500; color: var(--neutral-500); font-variant-numeric: tabular-nums; }
@@ -135,7 +135,7 @@
 .stepIcon {
   width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center; font-size: 13px;
-  border: 0.5px solid var(--neutral-150); background: #fff; margin-top: 6px; z-index: 1;
+  border: 0.5px solid var(--neutral-150); background: var(--neutral-0); margin-top: 6px; z-index: 1;
 }
 .stepIconRequired { border-color: var(--status-success); background: var(--status-success-light); color: var(--status-success); }
 .stepIconOptional { border-color: var(--neutral-200); background: var(--neutral-50); color: var(--neutral-300); }
@@ -143,7 +143,7 @@
 .stepIconMandatory { border-color: var(--status-success); background: var(--status-success-light); color: var(--status-success); }
 .stepIconConditional { border-color: var(--neutral-200); background: var(--neutral-50); color: var(--neutral-300); }
 .stepBody {
-  flex: 1; background: #fff; border: 0.5px solid var(--neutral-150);
+  flex: 1; background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   border-radius: 8px; padding: 10px 14px; margin-bottom: 6px;
 }
 .stepBodyRequired { border-color: var(--neutral-150); }
@@ -177,7 +177,7 @@
 .successContainer {
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
-  background: #fff;
+  background: var(--neutral-0);
   overflow: hidden;
   margin-bottom: 4px;
 }
@@ -202,10 +202,10 @@
 .wizStepDone { color: var(--neutral-400); }
 .wizStepNum {
   width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 500; background: #fff; border: 0.5px solid var(--neutral-150);
+  font-size: 11px; font-weight: 500; background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   color: var(--neutral-300); transition: all .2s; flex-shrink: 0; font-variant-numeric: tabular-nums;
 }
-.wizStepActive .wizStepNum { background: #fff; color: var(--primary-300); border-color: var(--primary-200); }
+.wizStepActive .wizStepNum { background: var(--neutral-0); color: var(--primary-300); border-color: var(--primary-200); }
 .wizStepDone .wizStepNum { background: var(--primary-50); color: var(--primary-300); border-color: rgba(140,90,226,.3); }
 .wizStepLabel { font-weight: 500; white-space: nowrap; }
 .wizConnector { flex: 1; height: 1px; background: var(--neutral-150); margin: 0 10px; min-width: 16px; }
@@ -216,7 +216,7 @@
 @keyframes wizFadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
 /* NL Input */
-.nlBox { background: #fff; border: 0.5px solid var(--neutral-150); border-radius: 12px; overflow: hidden; margin-bottom: 16px; transition: border-color .2s; }
+.nlBox { background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 12px; overflow: hidden; margin-bottom: 16px; transition: border-color .2s; }
 .nlBox:focus-within { border-color: var(--primary-200); }
 .nlBoxHeader { background: var(--neutral-25, #fafbff); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid var(--neutral-150); }
 .nlBadge {
@@ -236,7 +236,7 @@
 /* Templates */
 .templateGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
 .templateCard {
-  background: #fff; border: 0.5px solid var(--neutral-150); border-radius: 8px; padding: 12px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 8px; padding: 12px;
   cursor: pointer; transition: all .15s;
 }
 .templateCard:hover { border-color: var(--primary-200); background: var(--primary-50); }
@@ -251,7 +251,7 @@
 }
 .formReq { color: var(--primary-300); font-size: 8px; }
 .formInput, .formSelect, .formTextarea {
-  width: 100%; background: #fff; border: 0.5px solid var(--neutral-150);
+  width: 100%; background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   border-radius: 8px; padding: 8px 12px; color: var(--neutral-400);
   font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
   transition: border-color .15s, box-shadow .15s;
@@ -293,13 +293,13 @@
 .toggleOn { background: var(--primary-300); }
 .toggle::after {
   content: ''; position: absolute; width: 14px; height: 14px; border-radius: 3px;
-  background: #fff; top: 2px; left: 2px; transition: all .2s;
+  background: var(--neutral-0); top: 2px; left: 2px; transition: all .2s;
 }
 .toggleOn::after { transform: translateX(16px); }
 
 /* Step Builder */
 .stepItem {
-  background: #fff; border: 0.5px solid var(--neutral-150); border-radius: 8px;
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150); border-radius: 8px;
   padding: 10px 12px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 8px;
   transition: border-color .15s;
 }
@@ -322,7 +322,7 @@
 .stepControls { display: flex; gap: 4px; flex-shrink: 0; }
 .iconBtn {
   width: 24px; height: 24px; border-radius: 6px; border: 0.5px solid var(--neutral-150);
-  background: #fff; color: var(--neutral-300); cursor: pointer;
+  background: var(--neutral-0); color: var(--neutral-300); cursor: pointer;
   display: flex; align-items: center; justify-content: center; font-size: 12px;
   transition: all .15s;
 }
@@ -347,7 +347,7 @@
 .thresholdUnit { font-size: 12px; color: var(--neutral-300); }
 .thresholdTotal { margin-left: auto; font-size: 12px; color: var(--primary-300); font-weight: 500; font-variant-numeric: tabular-nums; }
 .thresholdInput {
-  width: 60px; background: #fff; border: 0.5px solid var(--neutral-200);
+  width: 60px; background: var(--neutral-0); border: 0.5px solid var(--neutral-200);
   border-radius: 6px; padding: 4px 8px; color: var(--neutral-500);
   font-size: 13px; font-weight: 500; outline: none; text-align: center;
   font-variant-numeric: tabular-nums;
@@ -357,7 +357,7 @@
 /* Success Metrics */
 .metricItem {
   display: flex; align-items: center; gap: 8px; padding: 6px 10px;
-  background: #fff; border: 0.5px solid var(--neutral-150);
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   border-radius: 8px; margin-bottom: 4px; font-size: 12px; color: var(--neutral-400);
 }
 .metricRemove { cursor: pointer; color: var(--neutral-200); transition: color .15s; background: none; border: none; display: flex; align-items: center; padding: 0; }
@@ -372,7 +372,7 @@
 .reviewLabel { font-size: 12px; font-weight: 500; color: var(--neutral-200); margin-bottom: 4px; }
 .reviewValue { font-size: 14px; color: var(--neutral-400); font-weight: 500; }
 .reviewCard {
-  background: #fff; border: 0.5px solid var(--neutral-150);
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   border-radius: 8px; padding: 14px; margin-bottom: 10px;
 }
 
@@ -411,7 +411,7 @@
 
 /* ── Table View ── */
 .tableWrap {
-  background: #fff; border: 0.5px solid var(--neutral-150);
+  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
   border-radius: 12px; overflow: hidden; margin: 0 0 16px;
 }
 .table { width: 100%; border-collapse: collapse; }
@@ -442,7 +442,7 @@
   border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer;
   font-family: 'Inter', sans-serif; transition: all .15s; white-space: nowrap; border: none;
 }
-.footerBtnGhost { background: #fff; border: 0.5px solid var(--neutral-150); color: var(--neutral-300); }
+.footerBtnGhost { background: var(--neutral-0); border: 0.5px solid var(--neutral-150); color: var(--neutral-300); }
 .footerBtnGhost:hover { background: var(--neutral-50); color: var(--neutral-400); }
 .footerBtnSecondary { background: var(--neutral-50); border: 0.5px solid var(--neutral-150); color: var(--neutral-400); }
 .footerBtnSecondary:hover { background: var(--neutral-100); }

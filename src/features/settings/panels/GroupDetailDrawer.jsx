@@ -224,7 +224,7 @@ export function GroupDetailDrawer() {
                 <div style={{ position: 'fixed', inset: 0, zIndex: 5 }} onClick={() => setSearchOpen(false)} />
                 <div style={{
                   position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 10,
-                  background: '#fff', border: '0.5px solid var(--neutral-150)', borderRadius: 8,
+                  background: 'var(--neutral-0)', border: '0.5px solid var(--neutral-150)', borderRadius: 8,
                   boxShadow: '0 8px 24px rgba(0,0,0,.1)', maxHeight: 280, overflow: 'hidden',
                   marginTop: 4,
                 }}>

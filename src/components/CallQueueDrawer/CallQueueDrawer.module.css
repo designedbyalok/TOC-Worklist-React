@@ -77,7 +77,7 @@
 .agentName {
   font-size: 16px;
   font-weight: 600;
-  color: var(--neutral-900, #16181d);
+  color: var(--neutral-500);
   line-height: 1.2;
 }
 

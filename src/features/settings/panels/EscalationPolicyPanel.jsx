@@ -5,14 +5,14 @@ import { Button } from '../../../components/Button/Button';
 const s = {
   section: { marginBottom: 24 },
   sectionTitle: { fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 },
-  card: { background: '#fff', border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 16, marginBottom: 12 },
+  card: { background: 'var(--neutral-0)', border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 16, marginBottom: 12 },
   row: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '0.5px solid var(--neutral-100)', fontSize: 14, color: 'var(--neutral-400)' },
   input: { padding: '4px 8px', border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, color: 'var(--neutral-400)', width: 80, textAlign: 'center' },
   label: { flex: 1 },
   desc: { fontSize: 12, color: 'var(--neutral-300)', marginTop: 2 },
   keywordsList: { display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 },
   keyword: { padding: '3px 10px', borderRadius: 4, fontSize: 12, fontWeight: 500, background: 'var(--status-error-light)', color: 'var(--status-error)', border: '0.5px solid rgba(215,40,37,0.2)', display: 'flex', alignItems: 'center', gap: 4 },
-  select: { padding: '6px 10px', border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, color: 'var(--neutral-400)', background: '#fff' },
+  select: { padding: '6px 10px', border: '0.5px solid var(--neutral-150)', borderRadius: 4, fontSize: 13, color: 'var(--neutral-400)', background: 'var(--neutral-0)' },
 };
 
 const EMERGENCY_KEYWORDS = ['suicide', 'kill', 'hurt myself', 'emergency', '911', 'chest pain', 'can\'t breathe', 'overdose', 'bleeding', 'unconscious'];

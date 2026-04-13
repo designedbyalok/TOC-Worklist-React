@@ -1,14 +1,21 @@
 /**
  * Theme system
  * ────────────
- * Three theme settings the user can choose:
- *   - 'light'   → always render the light palette
- *   - 'dark'    → always render the dark palette
+ * Theme settings the user can choose:
+ *   - 'light'   → always render the light palette (purple primary)
+ *   - 'dark'    → always render the dark palette (purple primary)
+ *   - 'blue'    → light-surface variant with a blue primary palette
+ *                 (see `[data-theme="blue"]` block in tokens.css)
  *   - 'system'  → follow OS prefers-color-scheme, live-updating on change
  *
+ * Adding more palettes: append to THEME_VALUES + ensure getResolvedTheme
+ * returns the value as-is, then add a `[data-theme="<name>"]` block in
+ * tokens.css. Also append the option to ThemePicker's OPTIONS list.
+ *
  * Token cascade is driven entirely by `<html data-theme="...">` in tokens.css.
- * The `.dark` class is also applied so Tailwind's `dark:` variant works for
- * the few hand-written utility classes that need explicit overrides.
+ * The `.dark` class is also applied (only for resolved === 'dark') so
+ * Tailwind's `dark:` variant works for the few hand-written utility classes
+ * that need explicit overrides.
  *
  * The blocking script in index.html performs the initial paint application
  * BEFORE React mounts, so this module's initTheme() reconciles the store
@@ -16,7 +23,7 @@
  */
 
 export const THEME_STORAGE_KEY = 'theme';
-export const THEME_VALUES = ['light', 'dark', 'system'];
+export const THEME_VALUES = ['light', 'dark', 'blue', 'plum', 'system'];
 
 /** Resolve a setting ('system') down to an actual rendered theme. */
 export function getResolvedTheme(setting) {
@@ -24,7 +31,8 @@ export function getResolvedTheme(setting) {
     if (typeof window === 'undefined' || !window.matchMedia) return 'light';
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
-  return setting === 'dark' ? 'dark' : 'light';
+  // 'light' | 'dark' | 'blue' (or any future named palette) passes through.
+  return THEME_VALUES.includes(setting) && setting !== 'system' ? setting : 'light';
 }
 
 /** Read the persisted theme setting; defaults to 'light'. */

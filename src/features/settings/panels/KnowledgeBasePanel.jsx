@@ -35,7 +35,7 @@ const fieldTextarea = {
   ...fieldInput, minHeight: 100, resize: 'vertical', lineHeight: 1.5,
 };
 const fieldSelect = {
-  ...fieldInput, background: '#fff', cursor: 'pointer', appearance: 'none',
+  ...fieldInput, background: 'var(--neutral-0)', cursor: 'pointer', appearance: 'none',
   backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236F7A90' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E")`,
   backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center',
   paddingRight: 32,

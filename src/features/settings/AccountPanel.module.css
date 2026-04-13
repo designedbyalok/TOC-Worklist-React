@@ -484,7 +484,7 @@
 .stickyLeft {
   position: sticky;
   left: 0;
-  background: #fff;
+  background: var(--neutral-0);
   z-index: 2;
   min-width: 180;
   border-right: 0.5px solid var(--neutral-150);
@@ -493,7 +493,7 @@
 .stickyRight {
   position: sticky;
   right: 0;
-  background: #fff;
+  background: var(--neutral-0);
   z-index: 2;
   min-width: 70px;
   border-left: 0.5px solid var(--neutral-150);
@@ -779,7 +779,7 @@
 .formSectionTitle {
   font-size: 14px;
   font-weight: 600;
-  color: var(--neutral-900, #16181d);
+  color: var(--neutral-500);
   margin: 4px 0 12px;
   padding-top: 12px;
   border-top: 0.5px solid var(--neutral-100);
@@ -831,14 +831,14 @@
 .viewSectionLabel {
   font-size: 14px;
   font-weight: 600;
-  color: var(--neutral-900, #16181d);
+  color: var(--neutral-500);
   margin-bottom: 6px;
 }
 
 .viewSectionTitle {
   font-size: 14px;
   font-weight: 600;
-  color: var(--neutral-900, #16181d);
+  color: var(--neutral-500);
   margin-bottom: 12px;
   padding-top: 4px;
   border-top: 0.5px solid var(--neutral-100);

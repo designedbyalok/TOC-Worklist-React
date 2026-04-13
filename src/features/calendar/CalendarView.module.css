@@ -205,7 +205,7 @@
   --sx-color-primary: var(--primary-300);
   --sx-color-primary-container: var(--primary-100);
   --sx-color-on-primary-container: var(--neutral-400);
-  --sx-color-surface: #FFFFFF;
+  --sx-color-surface: var(--neutral-0);
   --sx-color-on-surface: var(--neutral-400);
   --sx-color-surface-variant: var(--neutral-50);
   --sx-color-on-surface-variant: var(--neutral-300);
@@ -323,6 +323,10 @@
   z-index: 0;
 }
 
+[data-theme="dark"] .pastDayOverlay {
+  background: rgba(0, 0, 0, 0.35);
+}
+
 /* Cancelled events — disabled look with strikethrough */
 .calendarWrap :global(.sx__event.is-cancelled) {
   opacity: 0.5 !important;
@@ -379,7 +383,7 @@
   padding: 0 10px;
   border: 0.5px solid var(--neutral-100);
   border-radius: 4px;
-  background: white;
+  background: var(--neutral-0);
   font-size: 12px;
   font-family: 'Inter', sans-serif;
   color: var(--neutral-400);
@@ -398,7 +402,7 @@
   min-width: 260px;
   max-height: 320px;
   overflow-y: auto;
-  background: white;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-100);
   border-radius: 6px;
   box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.06);

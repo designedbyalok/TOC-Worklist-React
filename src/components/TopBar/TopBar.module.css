@@ -125,7 +125,7 @@
   gap: 8px;
   padding: 8px 16px;
   background: var(--primary-300);
-  color: var(--neutral-0);
+  color: #fff;
   border: none;
   border-radius: 6px;
   font-family: 'Inter', sans-serif;

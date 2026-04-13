@@ -17,7 +17,7 @@ const FEATURES = [
 
 const s = {
   grid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, padding: 16 },
-  card: { background: '#fff', border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 14, display: 'flex', alignItems: 'flex-start', gap: 12 },
+  card: { background: 'var(--neutral-0)', border: '0.5px solid var(--neutral-150)', borderRadius: 8, padding: 14, display: 'flex', alignItems: 'flex-start', gap: 12 },
   iconWrap: (color) => ({ width: 36, height: 36, borderRadius: 8, background: `${color}12`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }),
   info: { flex: 1 },
   label: { fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)', marginBottom: 2 },

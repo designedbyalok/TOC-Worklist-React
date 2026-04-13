@@ -63,7 +63,7 @@ export function BusinessHoursDrawer() {
         <select value={timezone} onChange={e => setTimezone(e.target.value)} style={{
           width: '100%', padding: '8px 12px', borderRadius: 4, border: '0.5px solid var(--neutral-150)',
           fontSize: 14, fontFamily: "'Inter', sans-serif", outline: 'none', color: 'var(--neutral-400)',
-          appearance: 'none', cursor: 'pointer', paddingRight: 32, background: '#fff',
+          appearance: 'none', cursor: 'pointer', paddingRight: 32, background: 'var(--neutral-0)',
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238a94a8' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
           backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center',
         }}>
