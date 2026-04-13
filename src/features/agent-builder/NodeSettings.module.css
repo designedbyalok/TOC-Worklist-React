@@ -4,7 +4,7 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background: #fff;
+  background: var(--neutral-0);
   overflow-y: auto;
 }
 
@@ -144,11 +144,11 @@
   resize: vertical;
   outline: none;
   transition: border-color .15s, box-shadow .15s;
-  background: #fff;
+  background: var(--neutral-0);
 }
 .textarea:focus {
   border-color: var(--primary-300);
-  box-shadow: 0 0 0 3px rgba(140,90,226,.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-300) 8%, transparent);
 }
 
 /* Transition blocks */
@@ -182,12 +182,12 @@
   font-family: 'Inter', sans-serif;
   color: var(--neutral-500);
   outline: none;
-  background: #fff;
+  background: var(--neutral-0);
   transition: border-color .15s, box-shadow .15s;
 }
 .fieldInput:focus {
   border-color: var(--primary-300);
-  box-shadow: 0 0 0 3px rgba(140,90,226,.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-300) 8%, transparent);
 }
 
 /* ── Custom Select Dropdown ── */
@@ -206,7 +206,7 @@
   font-size: 12px;
   font-family: 'Inter', sans-serif;
   color: var(--neutral-500);
-  background: #fff;
+  background: var(--neutral-0);
   cursor: pointer;
   transition: border-color .15s, box-shadow .15s;
   text-align: left;
@@ -216,7 +216,7 @@
 }
 .customSelectTriggerOpen {
   border-color: var(--primary-300);
-  box-shadow: 0 0 0 3px rgba(140,90,226,.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-300) 8%, transparent);
 }
 .customSelectValue {
   color: var(--neutral-500);
@@ -230,10 +230,10 @@
   left: 0;
   right: 0;
   margin-top: 4px;
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-100);
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  box-shadow: var(--shadow-popover);
   max-height: 180px;
   overflow-y: auto;
   z-index: 50;
@@ -275,7 +275,7 @@
 }
 .removeTransitionBtn:hover {
   opacity: 1;
-  background: rgba(215,40,37,.08);
+  background: color-mix(in srgb, var(--status-error) 8%, transparent);
 }
 
 .emptyTransitions {

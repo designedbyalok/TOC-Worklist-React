@@ -5,7 +5,8 @@
 .row1 {
   display: flex; align-items: center; gap: 16px;
   padding: 8px 12px;
-  background: linear-gradient(to right, rgba(255,218,246,0.2) 17%, rgba(255,255,255,0.2));
+  /* Decorative banner wash — pink tint is theme-invariant (becomes subtle on dark bg) */
+  background: linear-gradient(to right, rgba(255,218,246,0.2) 17%, color-mix(in srgb, var(--neutral-0) 20%, transparent));
   border-bottom: 0.5px solid var(--neutral-150);
 }
 
@@ -25,8 +26,8 @@
 /* Profile card (Central Profile + JADE Health) */
 .profileCard {
   display: flex; flex-direction: column; gap: 4px; padding: 4px 8px;
-  border: 0.5px solid rgba(16,156,174,0.25); border-radius: 4px;
-  background: radial-gradient(ellipse at center, #fff 53%, #e5fcf4);
+  border: 0.5px solid color-mix(in srgb, var(--status-info) 25%, transparent); border-radius: 4px;
+  background: radial-gradient(ellipse at center, var(--neutral-0) 53%, var(--status-success-light));
   width: 225px; flex-shrink: 0; overflow: hidden;
 }
 .profileCardTop { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
@@ -39,7 +40,7 @@
 .profileDropdown {
   position: absolute; top: calc(100% + 4px); left: 0; z-index: 9999;
   width: 340px; background: white; border: 0.5px solid var(--neutral-100);
-  border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  border-radius: 12px; box-shadow: var(--shadow-popover);
   padding: 12px; display: flex; flex-direction: column; gap: 8px;
 }
 .profileDropdownTitle { font-size: 14px; font-weight: 500; color: var(--neutral-500); font-family: 'Inter', sans-serif; padding: 0 4px 4px; }
@@ -66,14 +67,14 @@
 
 /* Badge (generic) */
 .badge { display: inline-flex; align-items: center; gap: 4px; height: 22px; min-width: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; font-family: 'Inter', sans-serif; white-space: nowrap; }
-.badgeWarning { color: var(--status-warning); background: var(--status-warning-light); border: 0.5px solid rgba(217,165,11,0.2); }
-.badgeError { color: var(--status-error); background: var(--status-error-light); border: 0.5px solid rgba(215,40,37,0.1); }
-.badgeInfo { color: var(--status-info); background: var(--status-info-light); border: 0.5px solid rgba(20,94,204,0.2); }
-.badgeGrey { color: var(--neutral-300); background: white; border: 0.5px solid rgba(111,122,144,0.1); }
+.badgeWarning { color: var(--status-warning); background: var(--status-warning-light); border: 0.5px solid color-mix(in srgb, var(--status-warning) 20%, transparent); }
+.badgeError { color: var(--status-error); background: var(--status-error-light); border: 0.5px solid color-mix(in srgb, var(--status-error) 10%, transparent); }
+.badgeInfo { color: var(--status-info); background: var(--status-info-light); border: 0.5px solid color-mix(in srgb, var(--status-info) 20%, transparent); }
+.badgeGrey { color: var(--neutral-300); background: var(--neutral-0); border: 0.5px solid color-mix(in srgb, var(--neutral-300) 10%, transparent); }
 
 /* RAF */
 .rafValue { font-size: 14px; color: var(--status-error); font-family: 'Inter', sans-serif; }
-.rafChangeBadge { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--status-error); background: var(--status-error-light); border: 0.5px solid rgba(215,40,37,0.1); }
+.rafChangeBadge { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--status-error); background: var(--status-error-light); border: 0.5px solid color-mix(in srgb, var(--status-error) 10%, transparent); }
 
 /* Last Contact */
 .lastContactBtn { display: flex; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 0 4px 0 0; }
@@ -102,11 +103,12 @@
 }
 
 /* Tags */
-.tagCyan { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: #109CAE; background: #E5F8FB; border: 0.5px solid rgba(140,90,226,0.2); font-family: 'Inter', sans-serif; }
-.tagBlue { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--status-info); background: var(--status-info-light); border: 0.5px solid rgba(20,94,204,0.2); font-family: 'Inter', sans-serif; }
+/* Teal is collapsed into info/blue for dark-mode compatibility; was #109CAE / #E5F8FB in light-only era */
+.tagCyan { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--status-info); background: var(--status-info-light); border: 0.5px solid color-mix(in srgb, var(--status-info) 20%, transparent); font-family: 'Inter', sans-serif; }
+.tagBlue { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--status-info); background: var(--status-info-light); border: 0.5px solid color-mix(in srgb, var(--status-info) 20%, transparent); font-family: 'Inter', sans-serif; }
 .tagClose { background: none; border: none; padding: 0; cursor: pointer; display: flex; align-items: center; }
-.patientTypeBadge { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--neutral-300); background: var(--neutral-50); border: 0.5px solid rgba(111,122,144,0.1); font-family: 'Inter', sans-serif; cursor: pointer; }
-.addTagBtn { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 22px; background: var(--neutral-50); border: 0.5px solid rgba(111,122,144,0.1); border-radius: 4px; cursor: pointer; }
+.patientTypeBadge { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--neutral-300); background: var(--neutral-50); border: 0.5px solid color-mix(in srgb, var(--neutral-300) 10%, transparent); font-family: 'Inter', sans-serif; cursor: pointer; }
+.addTagBtn { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 22px; background: var(--neutral-50); border: 0.5px solid color-mix(in srgb, var(--neutral-300) 10%, transparent); border-radius: 4px; cursor: pointer; }
 .tagDivider { width: 0.5px; height: 16px; background: var(--neutral-150); flex-shrink: 0; }
 
 /* ── Expanded: 4-column grid ── */
@@ -122,7 +124,7 @@
 
 /* Health expanded */
 .conditionBadges { display: flex; gap: 4px; flex-wrap: wrap; }
-.conditionBadge { font-size: 12px; color: #109CAE; background: #E5F8FB; border: 0.5px solid rgba(140,90,226,0.2); border-radius: 4px; padding: 1px 6px; }
+.conditionBadge { font-size: 12px; color: var(--status-info); background: var(--status-info-light); border: 0.5px solid color-mix(in srgb, var(--status-info) 20%, transparent); border-radius: 4px; padding: 1px 6px; }
 .vitalsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px; font-size: 12px; color: var(--neutral-300); }
 
 /* Appointments expanded */

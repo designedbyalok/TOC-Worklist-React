@@ -81,7 +81,7 @@
   padding: 8px 14px;
   background: var(--status-error-light);
   color: var(--status-error);
-  border: 0.5px solid #FECACA;
+  border: 0.5px solid color-mix(in srgb, var(--status-error) 30%, transparent);
   border-radius: 6px;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
@@ -89,7 +89,7 @@
   cursor: pointer;
 }
 
-.btnDanger:hover { background: #FEE2E2; }
+.btnDanger:hover { background: color-mix(in srgb, var(--status-error) 15%, var(--status-error-light)); }
 
 .iconBtn {
   width: 28px;

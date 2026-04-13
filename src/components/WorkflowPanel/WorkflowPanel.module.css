@@ -53,7 +53,7 @@
 }
 
 .stepNum.pending { background: var(--neutral-100); color: var(--neutral-300); }
-.stepNum.active { background: var(--primary-300); color: #fff; }
+.stepNum.active { background: var(--primary-300); color: var(--neutral-0); }
 .stepNum.done { background: var(--status-success-light); color: var(--status-success); }
 
 .stepTitle {
@@ -134,10 +134,10 @@
   transition: all .15s;
 }
 
-.optYes { background: var(--status-success-light); color: var(--status-success); border-color: #A7F3D0; }
-.optYes:hover { background: #D1FAE5; }
-.optNo { background: var(--status-error-light); color: var(--status-error); border-color: #FECACA; }
-.optNo:hover { background: #FEE2E2; }
+.optYes { background: var(--status-success-light); color: var(--status-success); border-color: color-mix(in srgb, var(--status-success) 30%, transparent); }
+.optYes:hover { background: color-mix(in srgb, var(--status-success) 15%, var(--status-success-light)); }
+.optNo { background: var(--status-error-light); color: var(--status-error); border-color: color-mix(in srgb, var(--status-error) 30%, transparent); }
+.optNo:hover { background: color-mix(in srgb, var(--status-error) 15%, var(--status-error-light)); }
 .optLater { background: var(--neutral-50); color: var(--neutral-400); border-color: var(--neutral-150); }
 .optLater:hover { background: var(--neutral-75); }
 
@@ -230,7 +230,7 @@
 
 .scheduleInput:focus {
   border-color: var(--primary-300);
-  box-shadow: 0 0 0 2px rgba(140,90,226,.12);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-300) 12%, transparent);
 }
 
 .scheduleRow2 {
@@ -262,7 +262,7 @@
   gap: 8px;
   padding: 8px 16px;
   background: var(--primary-300);
-  color: #fff;
+  color: var(--neutral-0);
   border: none;
   border-radius: 6px;
   font-family: 'Inter', sans-serif;

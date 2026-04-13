@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #fff;
+  background: var(--neutral-0);
   overflow: hidden;
 }
 
@@ -92,7 +92,7 @@
 }
 .messageUser .msgBubble {
   background: var(--primary-500);
-  color: #fff;
+  color: var(--neutral-0);
   border-radius: 12px 2px 12px 12px;
   padding: 10px 12px;
 }
@@ -106,7 +106,7 @@
   color: var(--neutral-400);
 }
 .messageUser .msgContent {
-  color: #fff;
+  color: var(--neutral-0);
 }
 .msgContent strong {
   font-weight: 500;
@@ -119,7 +119,7 @@
   text-align: right;
 }
 .messageUser .msgTime {
-  color: rgba(255,255,255,.5);
+  color: color-mix(in srgb, var(--neutral-0) 50%, transparent);
 }
 
 /* Typing indicator */
@@ -158,7 +158,7 @@
   border: 0.5px solid var(--neutral-150);
   border-radius: 10px;
   padding: 6px 8px;
-  background: #fff;
+  background: var(--neutral-0);
   transition: border-color .15s;
 }
 .inputWrap:focus-within {
@@ -213,5 +213,5 @@
   background: var(--primary-300);
 }
 .sendBtnActive:hover {
-  background: #7C4FD0;
+  background: var(--primary-400);
 }

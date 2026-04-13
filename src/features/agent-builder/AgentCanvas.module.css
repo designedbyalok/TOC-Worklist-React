@@ -15,7 +15,7 @@
   justify-content: space-between;
   padding: 0 16px;
   height: 48px;
-  background: #fff;
+  background: var(--neutral-0);
   border-bottom: 0.5px solid var(--neutral-100);
   flex-shrink: 0;
   position: relative;
@@ -67,9 +67,9 @@
 }
 .toolbarTab:hover { color: var(--neutral-400); }
 .toolbarTabActive {
-  background: #fff;
+  background: var(--neutral-0);
   color: var(--neutral-500);
-  box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  box-shadow: var(--shadow-card);
 }
 
 /* Toolbar actions */
@@ -84,7 +84,7 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--primary-300);
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--primary-300);
   border-radius: 8px;
   cursor: pointer;
@@ -108,7 +108,7 @@
   font-size: 13px;
   font-weight: 500;
   color: var(--neutral-300);
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   cursor: pointer;
@@ -179,7 +179,7 @@
   display: flex;
   flex-shrink: 0;
   overflow: hidden;
-  background: #fff;
+  background: var(--neutral-0);
 }
 
 /* Resize handle */
@@ -195,16 +195,16 @@
 }
 .resizeHandle:hover,
 .resizeHandleActive {
-  background: rgba(140,90,226,.15);
+  background: color-mix(in srgb, var(--primary-300) 15%, transparent);
 }
 
 /* ── React Flow overrides ── */
 .minimap {
   border-radius: 8px !important;
   border: 0.5px solid var(--neutral-100) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06) !important;
+  box-shadow: var(--shadow-card) !important;
   overflow: hidden !important;
-  background: #fff !important;
+  background: var(--neutral-0) !important;
 }
 
 /* ── Zoom panel (bottom-left, below minimap) ── */
@@ -212,11 +212,11 @@
   display: flex;
   align-items: center;
   gap: 0;
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-100);
   border-radius: 8px;
   padding: 3px 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  box-shadow: var(--shadow-card);
   margin-left: 12px !important;
   margin-bottom: 12px !important;
   white-space: nowrap;
@@ -264,12 +264,12 @@
   font-size: 11px;
   font-weight: 500;
   color: var(--neutral-300);
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-100);
   border-radius: 8px;
   padding: 6px 12px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  box-shadow: var(--shadow-card);
   transition: border-color .15s;
 }
 .versionBtn:hover { border-color: var(--primary-300); }
@@ -279,10 +279,10 @@
   bottom: 100%;
   right: 0;
   width: 220px;
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-100);
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  box-shadow: var(--shadow-popover);
   margin-bottom: 6px;
   overflow: hidden;
   z-index: 50;

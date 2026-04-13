@@ -13,7 +13,7 @@
 .searchInput { flex: 1; border: none; outline: none; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--neutral-400); background: transparent; padding: 8px 4px; }
 .searchInput::placeholder { color: var(--neutral-200); }
 .searchClose { background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; flex-shrink: 0; }
-.alertHeader { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #fdf7e5; font-size: 12px; color: var(--neutral-400); font-family: 'Inter', sans-serif; flex-shrink: 0; border-bottom: 0.5px solid var(--neutral-100); }
+.alertHeader { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--status-warning-light); font-size: 12px; color: var(--neutral-400); font-family: 'Inter', sans-serif; flex-shrink: 0; border-bottom: 0.5px solid var(--neutral-100); }
 .sectionHeader { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 0.5px solid var(--neutral-100); flex-shrink: 0; }
 .sectionTitle { font-size: 14px; font-weight: 500; color: var(--neutral-400); font-family: 'Inter', sans-serif; }
 .sectionActions { display: flex; align-items: center; gap: 6px; }

@@ -183,8 +183,8 @@ input[type="radio"]:disabled {
 }
 
 @keyframes oncallPulse {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(5,150,105,.5); }
-  50% { opacity: .6; box-shadow: 0 0 0 4px rgba(5,150,105,0); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-success) 50%, transparent); }
+  50% { opacity: .6; box-shadow: 0 0 0 4px color-mix(in srgb, var(--status-success) 0%, transparent); }
 }
 
 @keyframes callPulse {

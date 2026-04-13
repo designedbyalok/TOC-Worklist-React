@@ -19,7 +19,7 @@
   right: 0;
   background: var(--neutral-0);
   border-left: 1px solid var(--neutral-150);
-  box-shadow: -4px 0 8px rgba(0,0,0,.04);
+  box-shadow: var(--shadow-card);
   z-index: 3;
 }
 
@@ -60,7 +60,7 @@
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: .04em;
-  border: 0.5px solid rgba(140,90,226,0.2);
+  border: 0.5px solid color-mix(in srgb, var(--primary-300) 20%, transparent);
   position: relative;
   cursor: default;
 }
@@ -74,7 +74,7 @@
   white-space: nowrap;
   padding: 6px 10px;
   background: var(--neutral-500);
-  color: #fff;
+  color: var(--neutral-0);
   border-radius: 6px;
   font-size: 12px;
   font-weight: 400;
@@ -179,7 +179,7 @@
   height: 8px;
   background: var(--status-warning);
   border-radius: 50%;
-  border: 1.5px solid #fff;
+  border: 1.5px solid var(--neutral-0);
 }
 
 .callLiveDot {
@@ -190,7 +190,7 @@
   height: 8px;
   background: var(--status-success);
   border-radius: 50%;
-  border: 1.5px solid #fff;
+  border: 1.5px solid var(--neutral-0);
   animation: callPulse 1.2s infinite;
 }
 
@@ -201,7 +201,7 @@
   min-width: 240px;
   max-height: 420px;
   overflow-y: auto;
-  box-shadow: 0 12px 32px rgba(0,0,0,.15);
+  box-shadow: var(--shadow-popover);
 }
 
 .dropdownSection {
@@ -259,7 +259,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 0.5px solid rgba(140,90,226,0.2);
+  border: 0.5px solid color-mix(in srgb, var(--primary-300) 20%, transparent);
 }
 
 .attemptsWrapper { position: relative; display: inline-block; }
@@ -274,7 +274,7 @@
   padding: 3px 8px;
   border-radius: 4px;
   cursor: default;
-  border: 0.5px solid rgba(215,40,37,0.2);
+  border: 0.5px solid color-mix(in srgb, var(--status-error) 20%, transparent);
 }
 
 .attemptsTooltip {
@@ -288,7 +288,7 @@
   padding: 0;
   min-width: 340px;
   z-index: 50;
-  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  box-shadow: var(--shadow-popover);
   overflow: hidden;
 }
 
@@ -300,4 +300,4 @@
 .attemptDetail { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .attemptTime { font-size: 12px; color: var(--neutral-200); }
 .attemptOutcome { font-size: 14px; color: var(--neutral-400); font-weight: 400; }
-.attemptNumBadge { font-size: 12px; font-weight: 500; color: var(--status-error); background: var(--status-error-light); padding: 2px 8px; border-radius: 4px; border: 0.5px solid rgba(215,40,37,0.2); flex-shrink: 0; }
+.attemptNumBadge { font-size: 12px; font-weight: 500; color: var(--status-error); background: var(--status-error-light); padding: 2px 8px; border-radius: 4px; border: 0.5px solid color-mix(in srgb, var(--status-error) 20%, transparent); flex-shrink: 0; }

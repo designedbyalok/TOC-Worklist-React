@@ -13,7 +13,7 @@
   align-items: center;
   justify-content: center;
   padding: 0 16px;
-  background: #fff;
+  background: var(--neutral-0);
   border-bottom: 0.5px solid var(--neutral-150, var(--neutral-100));
   flex-shrink: 0;
 }
@@ -83,7 +83,7 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  background: rgba(255,255,255,.2);
+  background: color-mix(in srgb, var(--neutral-0) 20%, transparent);
   border: none;
   border-radius: 6px;
   width: 28px;
@@ -95,7 +95,7 @@
   transition: background .15s;
 }
 
-.bannerClose:hover { background: rgba(255,255,255,.35); }
+.bannerClose:hover { background: color-mix(in srgb, var(--neutral-0) 35%, transparent); }
 
 .bannerIcon {
   width: 48px;
@@ -111,7 +111,7 @@
 .bannerTitle {
   font-size: 20px;
   font-weight: 600;
-  color: #fff;
+  color: var(--neutral-0);
   font-family: 'Inter', sans-serif;
   display: flex;
   align-items: center;
@@ -121,13 +121,13 @@
 .bannerSub {
   font-size: 14px;
   font-weight: 400;
-  color: rgba(255,255,255,.8);
+  color: color-mix(in srgb, var(--neutral-0) 80%, transparent);
   font-family: 'Inter', sans-serif;
 }
 
 /* ── Section Card ── */
 .section {
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
 }
@@ -199,7 +199,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   font-size: 14px;
@@ -239,7 +239,7 @@
   flex-direction: column;
   gap: 4px;
   padding: 16px;
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
 }
@@ -321,7 +321,7 @@
 
 .uptimeSegmentHover {
   transform: scaleY(1.4);
-  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  box-shadow: var(--shadow-card);
   z-index: 2;
   border-radius: 3px;
 }
@@ -329,11 +329,11 @@
 /* Uptime tooltip — fixed position, rendered via portal-like placement */
 .uptimeTooltip {
   position: fixed;
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   padding: 8px 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  box-shadow: var(--shadow-popover);
   z-index: 100;
   pointer-events: none;
   width: max-content;
@@ -404,7 +404,7 @@
   flex-direction: column;
   gap: 8px;
   padding: 16px;
-  background: #fff;
+  background: var(--neutral-0);
   border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
 }
@@ -593,7 +593,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--neutral-0);
 }
 
 .callLogSplit {
@@ -605,7 +605,7 @@
 .callLogLeft {
   flex: 1;
   overflow-y: auto;
-  background: #fff;
+  background: var(--neutral-0);
 }
 
 .callLogRight {
@@ -613,7 +613,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #fff;
+  background: var(--neutral-0);
   min-width: 320px;
 }
 
