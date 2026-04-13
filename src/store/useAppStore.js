@@ -11,6 +11,7 @@ import { kpiRowToJs, tsRowToJs, tableRowToJs, barRowToJs, configRowToJs, groupTi
 import { domainDbToJs, domainJsToDb, componentDbToJs, componentJsToDb, auditLogDbToJs } from '../lib/embedMapper';
 import { FALLBACK_KPIS, FALLBACK_TIME_SERIES, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS, FALLBACK_CONFIGS } from '../data/analyticsFallbacks';
 import { updateHash } from '../lib/router';
+import { applyTheme, getResolvedTheme, getStoredTheme, subscribeToSystem } from '../lib/theme';
 
 function parseDuration(str) {
   const parts = (str || '00:00').split(':').map(Number);
@@ -32,7 +33,34 @@ const _savedPage = sessionStorage.getItem('activePage') || 'population';
 const _savedTab = sessionStorage.getItem('activeTab') || 'worklist';
 const _savedSettingsTab = sessionStorage.getItem('settingsTab');
 
+// Hydrate theme from localStorage so the store agrees with what the
+// index.html blocking script already applied to <html>.
+const _initialThemeSetting = getStoredTheme();
+const _initialResolvedTheme = getResolvedTheme(_initialThemeSetting);
+
 export const useAppStore = create((set, get) => ({
+  // ─── Theme ───────────────────────────────────────────────────────────
+  // `theme` is the user's chosen setting: 'light' | 'dark' | 'system'
+  // `resolvedTheme` is what's actually rendered: 'light' | 'dark'
+  // (these diverge when theme === 'system' and OS preference is dark)
+  theme: _initialThemeSetting,
+  resolvedTheme: _initialResolvedTheme,
+  setTheme: (next) => {
+    const resolved = applyTheme(next);
+    set({ theme: next, resolvedTheme: resolved });
+  },
+  // Called once from main.jsx — wires the OS preference listener
+  // so 'system' theme follows live OS dark-mode toggles.
+  _initThemeSubscriptions: () => {
+    if (get()._themeSubscribed) return;
+    set({ _themeSubscribed: true });
+    subscribeToSystem(
+      () => get().theme,
+      (resolved) => set({ resolvedTheme: resolved })
+    );
+  },
+  _themeSubscribed: false,
+
   // Top-level navigation (sidebar) — restored from sessionStorage
   activePage: _savedPage === 'builder' ? 'settings' : _savedPage,
   // Tab navigation within pages
