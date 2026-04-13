@@ -1,0 +1,68 @@
+/* ── ThemePicker — segmented 3-button control ────────────── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--neutral-300);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0 4px;
+}
+
+.segmented {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--neutral-50);
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 8px;
+}
+
+.option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 4px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--neutral-300);
+  /* transitions inherited from global *, so theme flips + active swaps are smooth */
+}
+
+.option:hover:not(.active) {
+  background: var(--neutral-0);
+  color: var(--neutral-400);
+}
+
+.option.active {
+  background: var(--neutral-0);
+  color: var(--primary-300);
+  box-shadow: var(--shadow-card);
+}
+
+.option:focus-visible {
+  outline: 2px solid var(--primary-200);
+  outline-offset: 1px;
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
