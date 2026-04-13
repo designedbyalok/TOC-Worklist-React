@@ -41,7 +41,6 @@ export function ConfirmDialog({
     <AlertDialog open onOpenChange={(open) => { if (!open) onCancel?.(); }}>
       <AlertDialogContent
         className="flex flex-col items-center gap-4 p-5 max-w-[340px]"
-        style={{ zIndex: 500 }}
       >
         {/* Icon */}
         <div className="flex items-center justify-center w-6 h-6 shrink-0">
