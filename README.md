@@ -139,6 +139,17 @@ The platform follows the **Fold Health design system** with strict adherence to:
 
 ## Recent Changes
 
+### Dark Theme + Extensible Color Theming System (April 2026)
+- **Dark mode**: full dark palette added as a `[data-theme="dark"]` override in `src/tokens/tokens.css`. Redefines every neutral, primary, secondary, and status token for dark surfaces; inverts text colors; keeps the Sidebar as theme-invariant dark chrome.
+- **Theme picker in profile popover**: new `ThemePicker` segmented control (Light / Dark / System) between Switch Account and Log Out. System mode live-follows OS `prefers-color-scheme`.
+- **Pure-module theme system** at `src/lib/theme.js`: `applyTheme()`, `getResolvedTheme()`, `getStoredTheme()`, `subscribeToSystem()`, `initTheme()`. Theme persisted to `localStorage['theme']`; first-visit default is Light.
+- **Zero-flash initial paint**: inline blocking script in `index.html` reads localStorage and sets `<html data-theme="...">` + `.dark` class BEFORE React mounts.
+- **Store integration**: `useAppStore` gains `theme`, `resolvedTheme`, `setTheme`, and a `matchMedia`-backed subscription for System mode.
+- **Smooth 200ms cross-fade** on theme flips (background/color/border/fill/stroke/box-shadow), scoped on body + `*`, with `prefers-reduced-motion` honored.
+- **Tailwind v4 `@custom-variant dark`** registered so `dark:` utility prefix works; shadcn primitives flip automatically because their semantic tokens map to design tokens.
+- **Deep color cleanup**: ~150 hardcoded hex, rgba, and brand-literal color values across `src/` replaced with design tokens (`var(--*)`) or `color-mix()` derivatives of existing tokens, so the entire platform transitions cohesively in both themes.
+- **New tokens** added to support theming: `--shadow-popover / drawer / card`, `--status-success-bright`, `--button-danger-bg`, `--button-info-bg`, `--surface-overlay`, `--sidebar-bg / fg / fg-muted / hover-bg / active-bg / active-border / active-overlay / active-overlay-border`.
+
 ### Agent Call Queue Drawer + Updated Agent Actions (April 2026)
 - Redesigned agent listing action buttons: **Call Queue**, **Call Analytics**, **Edit Agent** (pencil icon), **More Options**
 - All action buttons now show tooltips on hover
