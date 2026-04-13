@@ -56,8 +56,8 @@ export function Sidebar() {
           {item.badge && <span className={styles.badge}>{item.badge}</span>}
           <div className={styles.itemInner}>
             <Icon name={item.icon} size={22} />
+            <span>{item.label}</span>
           </div>
-          <span>{item.label}</span>
         </a>
       ))}
       <div className={styles.spacer} />
@@ -71,8 +71,8 @@ export function Sidebar() {
         >
           <div className={styles.itemInner}>
             <Icon name={item.icon} size={22} />
+            <span>{item.label}</span>
           </div>
-          <span>{item.label}</span>
         </a>
       ))}
     </nav>
