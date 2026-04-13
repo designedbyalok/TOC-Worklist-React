@@ -445,7 +445,7 @@ export function AgentCanvas() {
                           >
                             <span>v{v.version}</span>
                             <span className={styles.versionDate}>
-                              {new Date(v.created_at).toLocaleDateString()}
+                              {new Date(v.created_at).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}
                             </span>
                             {v.is_current && <span className={styles.currentBadge}>Current</span>}
                           </div>

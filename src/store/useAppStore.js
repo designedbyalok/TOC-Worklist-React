@@ -24,7 +24,7 @@ function formatDuration(secs) {
 function nextDate(lace) {
   const d = new Date();
   d.setDate(d.getDate() + (lace === 'High' ? 7 : lace === 'Medium' ? 14 : 30));
-  return d.toISOString().split('T')[0];
+  return d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
 }
 
 // Restore navigation state from sessionStorage on reload
@@ -607,13 +607,13 @@ export const useAppStore = create((set, get) => ({
     const { data, error } = await supabase.from('faqs').insert(row).select();
     if (!error && data && data[0]) {
       const r = data[0];
-      set(s => ({ faqsData: [...(s.faqsData || []), { id: r.id, question: r.question, answer: r.answer, category: r.category, updatedAt: (r.updated_at || r.created_at || '').slice(0, 10) }] }));
+      set(s => ({ faqsData: [...(s.faqsData || []), { id: r.id, question: r.question, answer: r.answer, category: r.category, updatedAt: new Date(r.updated_at || r.created_at).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) }] }));
     }
   },
   updateFaq: async (id, updates) => {
     const now = new Date().toISOString();
     await supabase.from('faqs').update({ ...updates, updated_at: now }).eq('id', id);
-    set(s => ({ faqsData: (s.faqsData || []).map(f => f.id === id ? { ...f, ...updates, updatedAt: now.slice(0, 10) } : f) }));
+    set(s => ({ faqsData: (s.faqsData || []).map(f => f.id === id ? { ...f, ...updates, updatedAt: new Date(now).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) } : f) }));
   },
   deleteFaq: async (id) => {
     await supabase.from('faqs').delete().eq('id', id);
@@ -719,7 +719,7 @@ export const useAppStore = create((set, get) => ({
         agents: row.agents || [],
         completionRate: row.completion_rate || 0,
         totalRuns: row.total_runs || 0,
-        created: row.created_at ? row.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10),
+        created: row.created_at ? new Date(row.created_at).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
       }));
       set({ goalsData: mapped, goalsLoading: false });
     }

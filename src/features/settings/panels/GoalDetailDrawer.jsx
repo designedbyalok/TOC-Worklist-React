@@ -43,7 +43,7 @@ export function GoalDetailDrawer() {
       status: 'draft',
       completionRate: 0,
       totalRuns: 0,
-      created: new Date().toISOString().slice(0, 10),
+      created: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
     };
     addGoal(newGoal);
     setGoalDetailId(null);

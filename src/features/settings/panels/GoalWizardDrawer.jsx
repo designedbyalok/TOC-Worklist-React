@@ -55,13 +55,26 @@ export function GoalWizardDrawer() {
   const isEdit = !!goalWizardEditId;
   const totalScore = steps.reduce((a, st) => a + (st.score || 0), 0);
 
-  // Check if form has unsaved changes
-  const isDirty = name.trim() || desc.trim() || steps.length > 0 || nlInput.trim();
+  // Check if form has meaningful unsaved changes
+  const isDirty = (() => {
+    if (isEdit && editGoal) {
+      // Compare current state against loaded goal
+      return name !== editGoal.name ||
+        desc !== (editGoal.description || '') ||
+        program !== editGoal.program ||
+        mode !== editGoal.mode ||
+        steps.length !== editGoal.steps.length ||
+        weighted !== (editGoal.weightedScoring || false) ||
+        passingScore !== (editGoal.passingScore || 100);
+    }
+    // New goal — dirty if any field has content beyond step 0
+    return step > 0 && (name.trim() || desc.trim() || steps.length > 0);
+  })();
 
   const close = () => { setGoalWizard(false, null); resetForm(); };
 
   const handleClose = () => {
-    if (isDirty && step > 0) {
+    if (isDirty) {
       setShowDiscardConfirm(true);
     } else {
       close();
@@ -107,7 +120,7 @@ export function GoalWizardDrawer() {
       agents: isEdit ? (editGoal?.agents || []) : [],
       completionRate: isEdit ? (editGoal?.completionRate || 0) : 0,
       totalRuns: isEdit ? (editGoal?.totalRuns || 0) : 0,
-      created: isEdit ? (editGoal?.created || new Date().toISOString().slice(0, 10)) : new Date().toISOString().slice(0, 10),
+      created: isEdit ? (editGoal?.created || new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })) : new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }),
     };
     if (isEdit) { updateGoal(goalObj); } else { addGoal(goalObj); }
     close();

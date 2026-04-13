@@ -10,7 +10,7 @@ export const goals = [
       { id: 's4', name: 'Billing & CPT Coding', type: 'conditional', score: 15, desc: 'Submit TCM billing (CPT 99495/99496) only after all clinical steps are confirmed complete.', condition: 'Requires: All 3 prior steps complete' },
     ],
     successMetrics: ['All mandatory steps completed', 'No escalated safety events', 'Billing submitted within 30 days'],
-    agents: ['Anna', 'Erica'], completionRate: 84, totalRuns: 1247, created: '2024-11-12',
+    agents: ['Anna', 'Erica'], completionRate: 84, totalRuns: 1247, created: '11/12/2024',
   },
   {
     id: 2, name: 'Annual Wellness Outreach', program: 'Outreach', programColor: 'blue',
@@ -23,7 +23,7 @@ export const goals = [
       { id: 's4', name: 'Appointment Confirmation SMS', type: 'conditional', score: 10, desc: 'Send confirmation SMS with appointment details and preparation instructions.', condition: 'Requires: Appointment booked' },
     ],
     successMetrics: ['Appointment successfully booked', 'Patient confirmed receipt', 'No opt-out triggered'],
-    agents: ['Anna'], completionRate: 71, totalRuns: 892, created: '2024-10-05',
+    agents: ['Anna'], completionRate: 71, totalRuns: 892, created: '10/05/2024',
   },
   {
     id: 3, name: 'Mobile App Onboarding', program: 'Onboarding', programColor: 'amber',
@@ -36,7 +36,7 @@ export const goals = [
       { id: 's4', name: 'First Action Completion', type: 'conditional', score: 15, desc: 'Verify patient completed at least one meaningful action.', condition: 'Requires: Registration confirmed' },
     ],
     successMetrics: ['Registration completed', 'At least one app action taken within 7 days'],
-    agents: ['Jia'], completionRate: 63, totalRuns: 2341, created: '2024-09-18',
+    agents: ['Jia'], completionRate: 63, totalRuns: 2341, created: '09/18/2024',
   },
   {
     id: 4, name: 'Post-Discharge Follow-Up', program: 'TCM', programColor: 'purple',
@@ -50,7 +50,7 @@ export const goals = [
       { id: 's5', name: 'Emergency Escalation', type: 'conditional', score: 10, desc: 'Page care team if symptom score >= 3 or patient expresses distress.', condition: 'Triggered if symptom score >= 3' },
     ],
     successMetrics: ['Patient contacted within 72hrs', 'Symptom assessment complete', 'Appropriate escalation if needed'],
-    agents: ['Anna', 'Erica'], completionRate: 91, totalRuns: 634, created: '2024-10-22',
+    agents: ['Anna', 'Erica'], completionRate: 91, totalRuns: 634, created: '10/22/2024',
   },
   {
     id: 5, name: 'Chronic Disease Monitoring', program: 'Outreach', programColor: 'blue',
@@ -63,7 +63,7 @@ export const goals = [
       { id: 's4', name: 'Clinical Alert (if needed)', type: 'conditional', score: 15, desc: 'If vitals outside range, alert care team with structured data.', condition: 'Triggered by out-of-range vitals' },
     ],
     successMetrics: ['All vitals collected', 'Medication compliance confirmed', 'Alerts sent if indicated'],
-    agents: [], completionRate: 0, totalRuns: 0, created: '2024-12-01',
+    agents: [], completionRate: 0, totalRuns: 0, created: '12/01/2024',
   },
   {
     id: 6, name: 'MILU Health Consent Enrollment', program: 'Outreach', programColor: 'blue',
@@ -77,7 +77,7 @@ export const goals = [
       { id: 's5', name: 'Confirmation & Close', type: 'conditional', score: 15, desc: 'Confirm link was sent, remind patient to check for it, offer human follow-up if needed.', condition: 'Requires: Link sent' },
     ],
     successMetrics: ['Consent form link sent', 'Patient verbally consented', 'Identity verified', 'HIPAA compliance maintained'],
-    agents: ['Anna'], completionRate: 78, totalRuns: 1856, created: '2025-01-15',
+    agents: ['Anna'], completionRate: 78, totalRuns: 1856, created: '01/15/2025',
   },
   {
     id: 7, name: 'FoldCare App Download & Setup', program: 'Onboarding', programColor: 'amber',
@@ -91,7 +91,7 @@ export const goals = [
       { id: 's5', name: 'Setup Assistance', type: 'conditional', score: 15, desc: 'Walk patient through download and registration if requested.', condition: 'If help requested' },
     ],
     successMetrics: ['App link sent', 'Patient confirmed download', 'Alternative offered if declined'],
-    agents: ['Anna'], completionRate: 63, totalRuns: 1856, created: '2025-01-15',
+    agents: ['Anna'], completionRate: 63, totalRuns: 1856, created: '01/15/2025',
   },
   {
     id: 8, name: 'Caller Legitimacy Verification', program: 'Outreach', programColor: 'blue',
@@ -104,7 +104,7 @@ export const goals = [
       { id: 's4', name: 'Patient Control', type: 'conditional', score: 15, desc: 'Let patient choose: continue, call back, or receive written info.', condition: 'If patient still hesitant' },
     ],
     successMetrics: ['Concern addressed', 'Verification offered', 'Patient continued or opted for callback'],
-    agents: ['Anna'], completionRate: 92, totalRuns: 412, created: '2025-02-01',
+    agents: ['Anna'], completionRate: 92, totalRuns: 412, created: '02/01/2025',
   },
   {
     id: 9, name: 'Elderly Patient Accommodation', program: 'Outreach', programColor: 'blue',
@@ -117,7 +117,7 @@ export const goals = [
       { id: 's4', name: 'Comprehension Confirmation', type: 'mandatory', score: 20, desc: 'Repeat key info and confirm understanding before proceeding.', condition: 'After each explanation' },
     ],
     successMetrics: ['Alternative offered', 'Patient confirmed understanding', 'Communication adapted'],
-    agents: ['Anna'], completionRate: 88, totalRuns: 634, created: '2025-02-01',
+    agents: ['Anna'], completionRate: 88, totalRuns: 634, created: '02/01/2025',
   },
 ];
 
