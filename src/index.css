@@ -13,6 +13,37 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   Theme transitions
+   Smoothly cross-fade colors when the user flips themes.
+   Initial paint is NOT animated — transitions only fire when
+   a token-driven property changes after first render.
+   `body` triggers the global cascade on theme switch.
+   `*` ensures every leaf surface (cards, badges, icons, borders)
+   participates in the same 200ms transition window.
+   ═══════════════════════════════════════════════════════════ */
+body {
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+*,
+*::before,
+*::after {
+  transition: background-color 200ms ease, color 200ms ease,
+              border-color 200ms ease, fill 200ms ease, stroke 200ms ease,
+              box-shadow 200ms ease;
+}
+
+/* Honor reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  body,
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+}
+
 #root {
   height: 100vh;
   display: flex;
@@ -27,7 +58,7 @@ input[type="checkbox"] {
   height: 16px;
   border: 1px solid var(--neutral-300);
   border-radius: 5px;
-  background: #fff;
+  background: var(--neutral-0);
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
@@ -50,7 +81,7 @@ input[type="checkbox"]:checked::after {
   left: 4.5px;
   width: 5px;
   height: 9px;
-  border: solid #fff;
+  border: solid var(--neutral-0);
   border-width: 0 1.5px 1.5px 0;
   transform: rotate(45deg);
 }
@@ -67,7 +98,7 @@ input[type="checkbox"]:indeterminate::after {
   left: 3.5px;
   width: 8px;
   height: 1.5px;
-  background: #fff;
+  background: var(--neutral-0);
   border-radius: 1px;
 }
 
@@ -83,7 +114,7 @@ input[type="checkbox"]:disabled:checked {
 }
 
 input[type="checkbox"]:disabled:checked::after {
-  border-color: #fff;
+  border-color: var(--neutral-0);
 }
 
 /* Custom Radio — Fold Pixel 1.0 */
@@ -94,7 +125,7 @@ input[type="radio"] {
   height: 20px;
   border: 1px solid var(--neutral-300);
   border-radius: 50%;
-  background: #fff;
+  background: var(--neutral-0);
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
@@ -107,7 +138,7 @@ input[type="radio"]:hover {
 
 input[type="radio"]:checked {
   border-color: var(--primary-300);
-  background: #fff;
+  background: var(--neutral-0);
 }
 
 input[type="radio"]:checked::after {

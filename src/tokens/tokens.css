@@ -1,3 +1,10 @@
+/* ═══════════════════════════════════════════════════════════
+   Fold Health Design Tokens
+   Light theme is the default (under :root).
+   Dark theme overrides under [data-theme="dark"].
+   Future themes: add a [data-theme="<name>"] block with overrides.
+   ═══════════════════════════════════════════════════════════ */
+
 :root {
   /* Primary */
   --primary-500: #1A0647;
@@ -34,6 +41,98 @@
   --status-info:          #145ECC;
   --status-info-light:    #F4F8FE;
 
+  /* Status — bright variant (presence indicators, badges over neutral surfaces) */
+  --status-success-bright: #12B76A;
+
   /* Agent column */
   --agent-col-bg: #F8F5FF;
+
+  /* Button-specific accent backgrounds (off the standard palette) */
+  --button-danger-bg: #B91C1C;
+  --button-info-bg:   #0E4BAA;
+
+  /* Elevation shadows (theme-aware so they stay readable on dark surfaces) */
+  --shadow-popover: 0 12px 60px rgba(0, 0, 0, 0.06);
+  --shadow-drawer:  -2px 0 24px rgba(0, 0, 0, 0.04);
+  --shadow-card:    0 1px 3px rgba(0, 0, 0, 0.04);
+
+  /* Modal / dialog backdrop tint */
+  --surface-overlay: rgba(0, 0, 0, 0.40);
+
+  /* Sidebar — theme-invariant chrome (always dark purple surface) */
+  --sidebar-bg:            #1A0647;
+  --sidebar-fg:            rgba(255, 255, 255, 0.85);
+  --sidebar-fg-muted:      rgba(255, 255, 255, 0.60);
+  --sidebar-hover-bg:      rgba(80, 32, 160, 0.50);
+  --sidebar-active-bg:     #5020A0;
+  --sidebar-active-border: #7747E2;
+  --sidebar-active-overlay: rgba(0, 0, 0, 0.25);
+  --sidebar-active-overlay-border: rgba(255, 255, 255, 0.25);
+
+  /* Native form / scrollbar coloring */
+  color-scheme: light;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DARK THEME
+   Overrides only — anything not redeclared inherits from :root.
+   Sidebar tokens intentionally NOT overridden (always-dark chrome).
+   ═══════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] {
+  /* Primary — brand purple stays close, slightly brightened for dark contrast */
+  --primary-500: #1A0647;   /* unchanged — sidebar bg */
+  --primary-400: #7B5AC4;
+  --primary-300: #A57BEC;   /* main brand purple — brightened ~15% for AAA on dark */
+  --primary-200: #9B7BD9;
+  --primary-100: #241B36;   /* soft purple-tinted dark surface */
+  --primary-50:  #1A1428;
+  --primary-25:  #15101F;
+
+  /* Secondary (orange) */
+  --secondary-300: #FF8B52;
+  --secondary-200: #7A3F22;
+  --secondary-100: #3A1E10;
+
+  /* Neutral — full inversion of the surface scale */
+  --neutral-500: #FFFFFF;   /* highest-contrast text */
+  --neutral-400: #D8DEE9;   /* primary text */
+  --neutral-300: #9BA5BC;   /* body muted text */
+  --neutral-200: #5A6478;   /* hint text / disabled */
+  --neutral-150: #2D3441;   /* default borders */
+  --neutral-100: #232936;   /* soft borders / dividers */
+  --neutral-75:  #1C2029;   /* elevated surface 2 (hovers) */
+  --neutral-50:  #171A22;   /* elevated surface 1 (cards) */
+  --neutral-0:   #0F1117;   /* page surface */
+
+  /* Status — adjusted for readability on dark surfaces */
+  --status-error:         #F15B58;
+  --status-error-light:   #2D1414;
+  --status-warning:       #F5C429;
+  --status-warning-light: #2A2310;
+  --status-success:       #12B76A;
+  --status-success-light: #0A2418;
+  --status-info:          #5B8DEF;
+  --status-info-light:    #0E1A2D;
+
+  /* Status — bright variant (slightly brighter on dark) */
+  --status-success-bright: #1FE08A;
+
+  /* Agent column */
+  --agent-col-bg: #1F1830;
+
+  /* Button accent backgrounds */
+  --button-danger-bg: #E03B3B;
+  --button-info-bg:   #5B8DEF;
+
+  /* Elevation shadows — deeper on dark for visual separation */
+  --shadow-popover: 0 12px 60px rgba(0, 0, 0, 0.50);
+  --shadow-drawer:  -2px 0 24px rgba(0, 0, 0, 0.40);
+  --shadow-card:    0 1px 3px rgba(0, 0, 0, 0.30);
+
+  /* Modal backdrop a touch denser on dark */
+  --surface-overlay: rgba(0, 0, 0, 0.60);
+
+  /* Native form / scrollbar coloring */
+  color-scheme: dark;
 }
