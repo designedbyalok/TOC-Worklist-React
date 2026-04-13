@@ -79,8 +79,8 @@
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  background: #FEF2F2;
-  color: #DC2626;
+  background: var(--status-error-light);
+  color: var(--status-error);
   border: 0.5px solid #FECACA;
   border-radius: 6px;
   font-family: 'Inter', sans-serif;

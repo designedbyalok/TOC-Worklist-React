@@ -4,7 +4,7 @@
   flex-direction: column;
   flex: 1;
   overflow: hidden;
-  background: #F6F7F8;
+  background: var(--neutral-50);
 }
 
 /* ── Secondary Tab Bar ── */
@@ -14,7 +14,7 @@
   justify-content: center;
   padding: 0 16px;
   background: #fff;
-  border-bottom: 0.5px solid var(--neutral-150, #E9ECF1);
+  border-bottom: 0.5px solid var(--neutral-150, var(--neutral-100));
   flex-shrink: 0;
   overflow-x: auto;
 }
@@ -28,7 +28,7 @@
   padding: 10px 4px;
   font-size: 14px;
   font-weight: 500;
-  color: #6F7A90;
+  color: var(--neutral-300);
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
@@ -38,11 +38,11 @@
   transition: color .12s;
 }
 
-.sectionTab:hover { color: #3D4A5C; }
+.sectionTab:hover { color: var(--neutral-400); }
 
 .sectionTabActive {
-  color: #8C5AE2;
-  border-bottom-color: #8C5AE2;
+  color: var(--primary-300);
+  border-bottom-color: var(--primary-300);
 }
 
 /* ── Scrollable content area ── */
@@ -64,7 +64,7 @@
 /* ── Card ── */
 .card {
   background: #fff;
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -82,7 +82,7 @@
   font-family: 'Inter', sans-serif;
 }
 
-.cardHeader:hover { background: #FAFBFC; }
+.cardHeader:hover { background: var(--neutral-50); }
 
 .cardHeaderLeft {
   display: flex;
@@ -93,7 +93,7 @@
 .cardTitle {
   font-size: 14px;
   font-weight: 500;
-  color: #16181D;
+  color: var(--neutral-500);
   line-height: 1.2;
 }
 
@@ -103,7 +103,7 @@
   justify-content: center;
   width: 12px;
   height: 12px;
-  background: #009B53;
+  background: var(--status-success);
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -127,7 +127,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  border-top: 0.5px solid #E9ECF1;
+  border-top: 0.5px solid var(--neutral-100);
 }
 
 /* ── Subsection ── */
@@ -146,7 +146,7 @@
 .subsectionTitle {
   font-size: 14px;
   font-weight: 500;
-  color: #16181D;
+  color: var(--neutral-500);
   line-height: 1.2;
   font-family: 'Inter', sans-serif;
 }
@@ -154,7 +154,7 @@
 .subsectionDesc {
   font-size: 14px;
   font-weight: 400;
-  color: #6F7A90;
+  color: var(--neutral-300);
   line-height: 1.3;
   font-family: 'Inter', sans-serif;
   margin-top: 4px;
@@ -173,7 +173,7 @@
   gap: 4px;
   font-size: 14px;
   font-weight: 400;
-  color: #8A94A8;
+  color: var(--neutral-200);
   line-height: 1.2;
   font-family: 'Inter', sans-serif;
 }
@@ -182,7 +182,7 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #D72825;
+  background: var(--status-error);
   flex-shrink: 0;
 }
 
@@ -194,13 +194,13 @@
 
 .fieldInput {
   height: 32px;
-  border: 0.5px solid #8A94A8;
+  border: 0.5px solid var(--neutral-200);
   border-radius: 4px;
   padding: 0 8px;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: #3A485F;
+  color: var(--neutral-400);
   background: #fff;
   outline: none;
   transition: border-color .15s;
@@ -208,8 +208,8 @@
   box-sizing: border-box;
 }
 
-.fieldInput:focus { border-color: #8C5AE2; }
-.fieldInput::placeholder { color: #8A94A8; }
+.fieldInput:focus { border-color: var(--primary-300); }
+.fieldInput::placeholder { color: var(--neutral-200); }
 
 .fieldInputWrap {
   position: relative;
@@ -221,7 +221,7 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 12px;
-  color: #8A94A8;
+  color: var(--neutral-200);
   font-family: 'Inter', sans-serif;
   pointer-events: none;
 }
@@ -238,17 +238,17 @@
   width: 100%;
   height: 32px;
   padding: 0 8px;
-  border: 0.5px solid #8A94A8;
+  border: 0.5px solid var(--neutral-200);
   border-radius: 4px;
   background: #fff;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
-  color: #3A485F;
+  color: var(--neutral-400);
   cursor: pointer;
   transition: border-color .15s;
 }
 
-.selectBtn:hover { border-color: #8C5AE2; }
+.selectBtn:hover { border-color: var(--primary-300); }
 
 .selectBtnText {
   flex: 1;
@@ -259,7 +259,7 @@
 }
 
 .selectBtnPlaceholder {
-  color: #8A94A8;
+  color: var(--neutral-200);
 }
 
 .selectDropdown {
@@ -268,7 +268,7 @@
   left: 0;
   right: 0;
   background: #fff;
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 6px;
   box-shadow: 0 8px 24px rgba(0,0,0,.1);
   z-index: 20;
@@ -280,26 +280,26 @@
 .selectOption {
   padding: 8px 10px;
   font-size: 13px;
-  color: #3A485F;
+  color: var(--neutral-400);
   cursor: pointer;
   border-radius: 4px;
   font-family: 'Inter', sans-serif;
 }
 
-.selectOption:hover { background: #F5F0FF; color: #8C5AE2; }
-.selectOptionActive { background: #F5F0FF; color: #8C5AE2; font-weight: 500; }
+.selectOption:hover { background: var(--primary-100); color: var(--primary-300); }
+.selectOptionActive { background: var(--primary-100); color: var(--primary-300); font-weight: 500; }
 
 /* ── Textarea ── */
 .textarea {
   width: 100%;
   min-height: 72px;
-  border: 0.5px solid #8A94A8;
+  border: 0.5px solid var(--neutral-200);
   border-radius: 4px;
   padding: 8px;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: #3A485F;
+  color: var(--neutral-400);
   line-height: 1.4;
   resize: vertical;
   outline: none;
@@ -308,8 +308,8 @@
   box-sizing: border-box;
 }
 
-.textarea:focus { border-color: #8C5AE2; }
-.textarea::placeholder { color: #8A94A8; }
+.textarea:focus { border-color: var(--primary-300); }
+.textarea::placeholder { color: var(--neutral-200); }
 
 .textareaLarge {
   min-height: 300px;
@@ -323,25 +323,25 @@
   gap: 4px;
   min-height: 36px;
   padding: 6px 6px;
-  border: 0.5px solid #8A94A8;
+  border: 0.5px solid var(--neutral-200);
   border-radius: 4px;
   background: #fff;
   cursor: text;
   transition: border-color .15s;
 }
 
-.tagContainer:focus-within { border-color: #8C5AE2; }
+.tagContainer:focus-within { border-color: var(--primary-300); }
 
 .tag {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 2px 6px;
-  background: #F6F7F8;
+  background: var(--neutral-50);
   border: 0.5px solid rgba(111, 122, 144, 0.1);
   border-radius: 4px;
   font-size: 14px;
-  color: #6F7A90;
+  color: var(--neutral-300);
   font-family: 'Inter', sans-serif;
   white-space: nowrap;
   height: 20px;
@@ -355,11 +355,11 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  color: #6F7A90;
+  color: var(--neutral-300);
   line-height: 1;
 }
 
-.tagRemove:hover { color: #D72825; }
+.tagRemove:hover { color: var(--status-error); }
 
 .tagInput {
   flex: 1;
@@ -368,13 +368,13 @@
   outline: none;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
-  color: #3A485F;
+  color: var(--neutral-400);
   background: transparent;
   padding: 0 2px;
   height: 20px;
 }
 
-.tagInput::placeholder { color: #8A94A8; }
+.tagInput::placeholder { color: var(--neutral-200); }
 
 /* ── Radio cards ── */
 .radioCardGrid {
@@ -389,7 +389,7 @@
   gap: 8px;
   padding: 8px 12px;
   background: #fff;
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   cursor: pointer;
   transition: border-color .15s, background .15s;
@@ -397,11 +397,11 @@
   min-width: 170px;
 }
 
-.radioCard:hover { border-color: #8C5AE2; }
+.radioCard:hover { border-color: var(--primary-300); }
 
 .radioCardSelected {
-  background: #FCFAFF;
-  border-color: #8C5AE2;
+  background: var(--primary-50);
+  border-color: var(--primary-300);
   border-width: 1px;
 }
 
@@ -414,7 +414,7 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  border: 1px solid #6F7A90;
+  border: 1px solid var(--neutral-300);
   background: #fff;
   flex-shrink: 0;
   position: relative;
@@ -422,8 +422,8 @@
 }
 
 .radioDotSelected {
-  border-color: #8C5AE2;
-  background: #8C5AE2;
+  border-color: var(--primary-300);
+  background: var(--primary-300);
 }
 
 .radioDotSelected::after {
@@ -446,14 +446,14 @@
 .radioCardTitle {
   font-size: 14px;
   font-weight: 400;
-  color: #3A485F;
+  color: var(--neutral-400);
   line-height: 1.2;
 }
 
 .radioCardDesc {
   font-size: 12px;
   font-weight: 400;
-  color: #6F7A90;
+  color: var(--neutral-300);
   line-height: 1.2;
 }
 
@@ -474,7 +474,7 @@
   flex: 1;
   font-size: 14px;
   font-weight: 500;
-  color: #16181D;
+  color: var(--neutral-500);
   font-family: 'Inter', sans-serif;
 }
 
@@ -484,19 +484,19 @@
   justify-content: center;
   padding: 2px 4px;
   min-width: 18px;
-  background: #F5FFFA;
+  background: var(--status-success-light);
   border: 0.5px solid rgba(0, 155, 83, 0.2);
   border-radius: 4px;
   font-size: 12px;
   font-weight: 400;
-  color: #009B53;
+  color: var(--status-success);
   font-family: 'Inter', sans-serif;
 }
 
 .sliderWrap {
   position: relative;
   padding: 16px 10px;
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
 }
 
@@ -504,7 +504,7 @@
   position: relative;
   width: 100%;
   height: 8px;
-  background: #F6F7F8;
+  background: var(--neutral-50);
   border-radius: 100px;
   cursor: pointer;
 }
@@ -515,7 +515,7 @@
   left: 0;
   height: 8px;
   border-radius: 100px;
-  background: #009B53;
+  background: var(--status-success);
   pointer-events: none;
 }
 
@@ -526,7 +526,7 @@
   height: 14px;
   border-radius: 50%;
   background: #fff;
-  border: 2px solid #009B53;
+  border: 2px solid var(--status-success);
   transform: translate(-50%, -50%);
   cursor: grab;
   box-shadow: 0 0 4px rgba(0,0,0,.1);
@@ -546,7 +546,7 @@
   box-shadow: 0 0 12px rgba(0,0,0,.1), 0 12px 24px rgba(0,0,0,.1);
   font-size: 10px;
   font-weight: 400;
-  color: #3A485F;
+  color: var(--neutral-400);
   white-space: nowrap;
   pointer-events: none;
 }
@@ -580,7 +580,7 @@
 .checkboxBox {
   width: 20px;
   height: 20px;
-  border: 1px solid #6F7A90;
+  border: 1px solid var(--neutral-300);
   border-radius: 4px;
   background: #fff;
   flex-shrink: 0;
@@ -591,19 +591,19 @@
 }
 
 .checkboxBoxChecked {
-  background: #8C5AE2;
-  border-color: #8C5AE2;
+  background: var(--primary-300);
+  border-color: var(--primary-300);
 }
 
 .checkboxLabel {
   font-size: 14px;
   font-weight: 400;
-  color: #6F7A90;
+  color: var(--neutral-300);
   line-height: 1.2;
 }
 
 .checkboxLabelChecked {
-  color: #3A485F;
+  color: var(--neutral-400);
 }
 
 /* ── Policy cards ── */
@@ -613,14 +613,14 @@
   gap: 8px;
   padding: 8px 12px;
   background: #fff;
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   position: relative;
   cursor: pointer;
   transition: border-color .15s;
 }
 
-.policyCard:hover { border-color: #8C5AE2; }
+.policyCard:hover { border-color: var(--primary-300); }
 
 .policyContent {
   flex: 1;
@@ -633,7 +633,7 @@
 .policyName {
   font-size: 14px;
   font-weight: 500;
-  color: #3A485F;
+  color: var(--neutral-400);
   line-height: 1.2;
   font-family: 'Inter', sans-serif;
 }
@@ -641,7 +641,7 @@
 .policyDesc {
   font-size: 12px;
   font-weight: 400;
-  color: #6F7A90;
+  color: var(--neutral-300);
   line-height: 1.2;
   font-family: 'Inter', sans-serif;
 }
@@ -655,12 +655,12 @@
   justify-content: center;
   padding: 2px 4px;
   min-width: 18px;
-  background: #F4F8FE;
+  background: var(--status-info-light);
   border: 0.5px solid rgba(20, 94, 204, 0.2);
   border-radius: 4px;
   font-size: 12px;
   font-weight: 400;
-  color: #145ECC;
+  color: var(--status-info);
   font-family: 'Inter', sans-serif;
   white-space: nowrap;
 }
@@ -679,7 +679,7 @@
   border: none;
   font-size: 13px;
   font-weight: 500;
-  color: #8C5AE2;
+  color: var(--primary-300);
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   padding: 4px 0;
@@ -696,12 +696,12 @@
   font-family: 'Inter', sans-serif;
 }
 
-.linkRow:hover .linkRowText { color: #8C5AE2; }
+.linkRow:hover .linkRowText { color: var(--primary-300); }
 
 .linkRowText {
   font-size: 14px;
   font-weight: 500;
-  color: #16181D;
+  color: var(--neutral-500);
   line-height: 1.2;
   transition: color .15s;
 }
@@ -720,7 +720,7 @@
   transition: background .12s;
 }
 
-.expandBtn:hover { background: #F6F7F8; }
+.expandBtn:hover { background: var(--neutral-50); }
 
 /* ── Goal selector ── */
 .goalSelector {
@@ -733,7 +733,7 @@
   left: 0;
   right: 0;
   background: #fff;
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,.1);
   z-index: 20;
@@ -753,12 +753,12 @@
   transition: background .1s;
 }
 
-.goalOption:hover { background: #F5F0FF; }
+.goalOption:hover { background: var(--primary-100); }
 
 .goalOptionCheck {
   width: 16px;
   height: 16px;
-  border: 1px solid #6F7A90;
+  border: 1px solid var(--neutral-300);
   border-radius: 4px;
   background: #fff;
   flex-shrink: 0;
@@ -768,8 +768,8 @@
 }
 
 .goalOptionCheckSelected {
-  background: #8C5AE2;
-  border-color: #8C5AE2;
+  background: var(--primary-300);
+  border-color: var(--primary-300);
 }
 
 .goalOptionInfo {
@@ -780,14 +780,14 @@
 .goalOptionName {
   font-size: 13px;
   font-weight: 500;
-  color: #3A485F;
+  color: var(--neutral-400);
   line-height: 1.2;
 }
 
 .goalOptionMeta {
   font-size: 11px;
   font-weight: 400;
-  color: #8A94A8;
+  color: var(--neutral-200);
   line-height: 1.2;
   margin-top: 2px;
 }
@@ -802,9 +802,9 @@
   white-space: nowrap;
 }
 
-.programBadgePurple { background: #F5F0FF; color: #8C5AE2; }
-.programBadgeBlue { background: #F4F8FE; color: #145ECC; }
-.programBadgeAmber { background: #FFF8F0; color: #C77D1A; }
+.programBadgePurple { background: var(--primary-100); color: var(--primary-300); }
+.programBadgeBlue { background: var(--status-info-light); color: var(--status-info); }
+.programBadgeAmber { background: var(--status-warning-light); color: var(--status-warning); }
 
 /* Goal tags (selected goals) */
 .goalTags {
@@ -819,11 +819,11 @@
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
-  background: #F6F7F8;
+  background: var(--neutral-50);
   border: 0.5px solid rgba(111, 122, 144, 0.1);
   border-radius: 4px;
   font-size: 13px;
-  color: #3A485F;
+  color: var(--neutral-400);
   font-family: 'Inter', sans-serif;
 }
 
@@ -835,11 +835,11 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  color: #8C5AE2;
+  color: var(--primary-300);
   line-height: 1;
 }
 
-.goalTagPreview:hover { color: #7B4AD1; }
+.goalTagPreview:hover { color: var(--primary-400); }
 
 .goalTagRemove {
   display: flex;
@@ -849,16 +849,16 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  color: #6F7A90;
+  color: var(--neutral-300);
   line-height: 1;
 }
 
-.goalTagRemove:hover { color: #D72825; }
+.goalTagRemove:hover { color: var(--status-error); }
 
 .goalEmpty {
   padding: 16px;
   text-align: center;
   font-size: 13px;
-  color: #8A94A8;
+  color: var(--neutral-200);
   font-family: 'Inter', sans-serif;
 }

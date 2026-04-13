@@ -172,19 +172,19 @@
   font-size: 11px !important;
   font-weight: 500 !important;
   text-transform: uppercase;
-  color: #6F7A90 !important;
+  color: var(--neutral-300) !important;
   letter-spacing: 0.04em;
 }
 
 .calendarWrap :global(.sx__week-grid__date-number) {
   font-size: 14px !important;
   font-weight: 500 !important;
-  color: #3A485F !important;
+  color: var(--neutral-400) !important;
 }
 
 /* Today date number with purple circle */
 .calendarWrap :global(.sx__week-grid__date--is-today .sx__week-grid__date-number) {
-  background: #8C5AE2 !important;
+  background: var(--primary-300) !important;
   color: #fff !important;
   border-radius: 50%;
   width: 26px;
@@ -195,22 +195,22 @@
 }
 
 .calendarWrap :global(.sx__week-grid__date--is-today .sx__week-grid__day-name) {
-  color: #8C5AE2 !important;
+  color: var(--primary-300) !important;
 }
 
 /* ── Schedule-x theme overrides to match Fold design ── */
 .calendarWrap :global(.sx__calendar) {
   font-family: 'Inter', sans-serif !important;
   height: 100% !important;
-  --sx-color-primary: #8C5AE2;
-  --sx-color-primary-container: #F5F0FF;
-  --sx-color-on-primary-container: #3A485F;
+  --sx-color-primary: var(--primary-300);
+  --sx-color-primary-container: var(--primary-100);
+  --sx-color-on-primary-container: var(--neutral-400);
   --sx-color-surface: #FFFFFF;
-  --sx-color-on-surface: #3A485F;
-  --sx-color-surface-variant: #F6F7F8;
-  --sx-color-on-surface-variant: #6F7A90;
-  --sx-color-outline: #D0D6E1;
-  --sx-color-outline-variant: #E9ECF1;
+  --sx-color-on-surface: var(--neutral-400);
+  --sx-color-surface-variant: var(--neutral-50);
+  --sx-color-on-surface-variant: var(--neutral-300);
+  --sx-color-outline: var(--neutral-150);
+  --sx-color-outline-variant: var(--neutral-100);
 }
 
 /* Make the calendar grid fill available height */
@@ -240,7 +240,7 @@
   font-family: 'Inter', sans-serif !important;
   font-size: 12px;
   font-weight: 500;
-  color: #6F7A90;
+  color: var(--neutral-300);
 }
 
 /* Events — let schedule-x handle the left border color per calendar type */
@@ -260,10 +260,10 @@
 
 /* Selection highlight — dotted 30-min block */
 .calendarWrap :global(.sx__event.sx__event--selection) {
-  border: 1.5px dashed #8C5AE2 !important;
-  border-left: 1.5px dashed #8C5AE2 !important;
+  border: 1.5px dashed var(--primary-300) !important;
+  border-left: 1.5px dashed var(--primary-300) !important;
   background: rgba(140, 90, 226, 0.06) !important;
-  color: #8C5AE2 !important;
+  color: var(--primary-300) !important;
   font-size: 11px !important;
   font-weight: 500 !important;
   box-shadow: none !important;
@@ -278,7 +278,7 @@
   font-size: 10px;
   font-weight: 500;
   font-family: 'Inter', sans-serif;
-  color: #8A94A8;
+  color: var(--neutral-200);
   letter-spacing: 0.02em;
   text-align: center;
   z-index: 1;
@@ -295,7 +295,7 @@
   left: 48px;
   right: 0;
   height: 2px;
-  background: #8C5AE2;
+  background: var(--primary-300);
   z-index: 10;
   pointer-events: none;
 }
@@ -307,7 +307,7 @@
   top: -4px;
   width: 10px;
   height: 10px;
-  background: #8C5AE2;
+  background: var(--primary-300);
   border-radius: 50%;
 }
 
@@ -339,7 +339,7 @@
 
 /* Today highlight */
 .calendarWrap :global(.sx__date-grid-day--is-today .sx__date-grid-day__header-day-number) {
-  background: #8C5AE2 !important;
+  background: var(--primary-300) !important;
   color: #fff !important;
   border-radius: 50%;
   width: 28px;
@@ -454,10 +454,10 @@
   position: absolute;
   left: 4px;
   right: 4px;
-  border: 1.5px dashed #8C5AE2;
+  border: 1.5px dashed var(--primary-300);
   border-radius: 4px;
   background: rgba(140, 90, 226, 0.06);
-  color: #8C5AE2;
+  color: var(--primary-300);
   font-size: 11px;
   font-weight: 500;
   font-family: 'Inter', sans-serif;

@@ -293,14 +293,14 @@
 .duration {
   font-size: 14px;
   font-weight: 400;
-  color: #009b53;
+  color: var(--status-success);
   font-variant-numeric: tabular-nums;
 }
 
 .durationFailed {
   font-size: 14px;
   font-weight: 400;
-  color: #D72825;
+  color: var(--status-error);
   font-variant-numeric: tabular-nums;
   display: inline-flex;
   align-items: center;
@@ -817,7 +817,7 @@
 }
 
 .goalFail {
-  background: #fef2f2;
+  background: var(--status-error-light);
   border-color: rgba(215, 40, 37, 0.12);
 }
 
@@ -856,11 +856,11 @@
 }
 
 .goalResultPass {
-  color: #009b53;
+  color: var(--status-success);
 }
 
 .goalResultFail {
-  color: #D72825;
+  color: var(--status-error);
 }
 
 /* ═══════════════════════════════════════

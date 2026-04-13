@@ -34,17 +34,17 @@
   padding: 2px 8px; border-radius: 4px; border: 0.5px solid transparent;
 }
 .programPurple { background: var(--primary-50); color: var(--primary-300); border-color: rgba(140,90,226,.15); }
-.programBlue { background: #F4F8FE; color: #145ECC; border-color: rgba(20,94,204,.15); }
-.programAmber { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,.15); }
+.programBlue { background: var(--status-info-light); color: var(--status-info); border-color: rgba(20,94,204,.15); }
+.programAmber { background: var(--status-warning-light); color: var(--status-warning); border-color: rgba(217,165,11,.15); }
 .scoredBadge {
   font-size: 9px; font-weight: 500; letter-spacing: .04em; text-transform: uppercase;
-  background: #FFFCF5; color: #D9A50B; border: 0.5px solid rgba(217,165,11,.15);
+  background: var(--status-warning-light); color: var(--status-warning); border: 0.5px solid rgba(217,165,11,.15);
   padding: 2px 7px; border-radius: 4px;
 }
 .statusMeta { display: flex; gap: 5px; align-items: center; }
 .statusDot { width: 6px; height: 6px; border-radius: 50%; }
-.statusDotActive { background: #009B53; box-shadow: 0 0 4px #009B53; }
-.statusDotDraft { background: #D9A50B; }
+.statusDotActive { background: var(--status-success); box-shadow: 0 0 4px var(--status-success); }
+.statusDotDraft { background: var(--status-warning); }
 .statusLabel { font-size: 12px; color: var(--neutral-300); text-transform: capitalize; }
 
 .cardTitle { font-size: 14px; font-weight: 500; color: var(--neutral-400); margin-bottom: 4px; line-height: 1.4; }
@@ -58,11 +58,11 @@
   display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 500;
   padding: 2px 8px; border-radius: 20px; border: 0.5px solid transparent;
 }
-.stepMust { background: #F5FFFA; border-color: rgba(0,155,83,.15); color: #009B53; }
-.stepCond { background: #FFFCF5; border-color: rgba(217,165,11,.15); color: #D9A50B; }
+.stepMust { background: var(--status-success-light); border-color: rgba(0,155,83,.15); color: var(--status-success); }
+.stepCond { background: var(--status-warning-light); border-color: rgba(217,165,11,.15); color: var(--status-warning); }
 .stepDot { width: 4px; height: 4px; border-radius: 50%; }
-.stepDotMust { background: #009B53; }
-.stepDotCond { background: #D9A50B; }
+.stepDotMust { background: var(--status-success); }
+.stepDotCond { background: var(--status-warning); }
 
 .cardFooter {
   display: flex; align-items: center; justify-content: space-between; padding-top: 10px;
@@ -70,7 +70,7 @@
 }
 .cardStat { text-align: center; }
 .cardStatVal { font-size: 16px; font-weight: 500; color: var(--neutral-500); font-variant-numeric: tabular-nums; }
-.cardStatValAmber { color: #D9A50B; }
+.cardStatValAmber { color: var(--status-warning); }
 .cardStatLabel { font-size: 12px; color: var(--neutral-200); margin-top: 1px; }
 .cardEditBtn {
   padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
@@ -95,7 +95,7 @@
 }
 .moreMenuItem:hover { background: var(--neutral-50); }
 .moreMenuDanger { color: var(--status-error); }
-.moreMenuDanger:hover { background: #FFF5F5; }
+.moreMenuDanger:hover { background: var(--status-error-light); }
 
 .detailTopBar {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px;
@@ -137,10 +137,10 @@
   display: flex; align-items: center; justify-content: center; font-size: 13px;
   border: 0.5px solid var(--neutral-150); background: #fff; margin-top: 6px; z-index: 1;
 }
-.stepIconRequired { border-color: var(--status-success); background: #F5FFFA; color: var(--status-success); }
+.stepIconRequired { border-color: var(--status-success); background: var(--status-success-light); color: var(--status-success); }
 .stepIconOptional { border-color: var(--neutral-200); background: var(--neutral-50); color: var(--neutral-300); }
 /* Legacy aliases */
-.stepIconMandatory { border-color: var(--status-success); background: #F5FFFA; color: var(--status-success); }
+.stepIconMandatory { border-color: var(--status-success); background: var(--status-success-light); color: var(--status-success); }
 .stepIconConditional { border-color: var(--neutral-200); background: var(--neutral-50); color: var(--neutral-300); }
 .stepBody {
   flex: 1; background: #fff; border: 0.5px solid var(--neutral-150);
@@ -166,8 +166,8 @@
 .resultChip {
   font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 4px; flex-shrink: 0;
 }
-.resultMandatory { background: #F5FFFA; color: #009B53; }
-.resultConditional { background: #FFFCF5; color: #D9A50B; }
+.resultMandatory { background: var(--status-success-light); color: var(--status-success); }
+.resultConditional { background: var(--status-warning-light); color: var(--status-warning); }
 .scoreChip {
   font-size: 12px; font-weight: 500; padding: 2px 6px; border-radius: 4px;
   background: var(--neutral-50); color: var(--neutral-300); font-variant-numeric: tabular-nums;
@@ -257,8 +257,8 @@
   transition: border-color .15s, box-shadow .15s;
 }
 .formInput:focus, .formSelect:focus, .formTextarea:focus { border-color: var(--primary-300); box-shadow: 0 0 0 3px rgba(140,90,226,.08); }
-.formInputError { border-color: #D72825; }
-.formError { font-size: 11px; color: #D72825; margin-top: 4px; display: none; }
+.formInputError { border-color: var(--status-error); }
+.formError { font-size: 11px; color: var(--status-error); margin-top: 4px; display: none; }
 .formErrorVisible { display: block; }
 .formTextarea { min-height: 72px; resize: vertical; line-height: 1.5; }
 .formSelect {
@@ -316,8 +316,8 @@
 .stepTypeBadge {
   font-size: 10px; font-weight: 500; padding: 1px 6px; border-radius: 4px;
 }
-.stepTypeMandatory { background: #F5FFFA; color: #009B53; border: 0.5px solid rgba(0,155,83,.15); }
-.stepTypeConditional { background: #FFFCF5; color: #D9A50B; border: 0.5px solid rgba(217,165,11,.15); }
+.stepTypeMandatory { background: var(--status-success-light); color: var(--status-success); border: 0.5px solid rgba(0,155,83,.15); }
+.stepTypeConditional { background: var(--status-warning-light); color: var(--status-warning); border: 0.5px solid rgba(217,165,11,.15); }
 .stepDesc { font-size: 12px; color: var(--neutral-300); line-height: 1.4; margin-bottom: 4px; }
 .stepControls { display: flex; gap: 4px; flex-shrink: 0; }
 .iconBtn {
@@ -327,7 +327,7 @@
   transition: all .15s;
 }
 .iconBtn:hover { background: var(--neutral-50); color: var(--neutral-400); }
-.iconBtnDelete:hover { background: #FFF5F5; color: #D72825; border-color: transparent; }
+.iconBtnDelete:hover { background: var(--status-error-light); color: var(--status-error); border-color: transparent; }
 
 /* Add Step Form */
 .addStepForm {
@@ -361,7 +361,7 @@
   border-radius: 8px; margin-bottom: 4px; font-size: 12px; color: var(--neutral-400);
 }
 .metricRemove { cursor: pointer; color: var(--neutral-200); transition: color .15s; background: none; border: none; display: flex; align-items: center; padding: 0; }
-.metricRemove:hover { color: #D72825; }
+.metricRemove:hover { color: var(--status-error); }
 
 /* Review Summary */
 .reviewRow {
@@ -384,14 +384,14 @@
 
 /* Info/Warn boxes */
 .infoBox {
-  background: #F4F8FE; border: 0.5px solid rgba(20,94,204,.15);
+  background: var(--status-info-light); border: 0.5px solid rgba(20,94,204,.15);
   border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
-  font-size: 12px; color: #145ECC; line-height: 1.5; display: flex; gap: 8px;
+  font-size: 12px; color: var(--status-info); line-height: 1.5; display: flex; gap: 8px;
 }
 .warnBox {
-  background: #FFFCF5; border: 0.5px solid rgba(217,165,11,.15);
+  background: var(--status-warning-light); border: 0.5px solid rgba(217,165,11,.15);
   border-radius: 8px; padding: 10px 14px; margin-bottom: 12px;
-  font-size: 12px; color: #D9A50B; line-height: 1.5; display: flex; gap: 8px;
+  font-size: 12px; color: var(--status-warning); line-height: 1.5; display: flex; gap: 8px;
 }
 
 /* Empty */
@@ -428,12 +428,12 @@
 .tblDesc { font-size: 11px; color: var(--neutral-200); max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tblStepDots { display: flex; gap: 2px; flex-wrap: wrap; max-width: 80px; }
 .tblDot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-.tblDotMand { background: #009B53; }
-.tblDotCond { background: #D9A50B; }
+.tblDotMand { background: var(--status-success); }
+.tblDotCond { background: var(--status-warning); }
 .tblStepCount { font-size: 10px; color: var(--neutral-200); margin-top: 2px; font-variant-numeric: tabular-nums; }
 .tblBarWrap { background: var(--neutral-50); border-radius: 20px; height: 4px; width: 64px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 6px; }
-.tblBar { height: 100%; border-radius: 20px; background: #009B53; }
-.tblBarLow { background: #D9A50B; }
+.tblBar { height: 100%; border-radius: 20px; background: var(--status-success); }
+.tblBarLow { background: var(--status-warning); }
 .tblPct { font-size: 12px; vertical-align: middle; font-variant-numeric: tabular-nums; font-weight: 500; }
 
 /* Footer buttons */

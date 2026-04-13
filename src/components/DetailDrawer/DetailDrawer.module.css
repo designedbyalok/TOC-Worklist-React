@@ -7,7 +7,7 @@
   gap: 8px;
   padding: 8px;
   background: #fff;
-  border: 0.5px solid #d0d6e1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 10px;
   margin-bottom: 16px;
 }
@@ -43,7 +43,7 @@
 .callLine1 {
   font-size: 14px;
   font-weight: 500;
-  color: #3a485f;
+  color: var(--neutral-400);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -53,14 +53,14 @@
 .callLine1Detail {
   font-size: 12px;
   font-weight: 400;
-  color: #6f7a90;
+  color: var(--neutral-300);
 }
 
-.dot { color: #6f7a90; font-size: 12px; font-weight: 500; }
+.dot { color: var(--neutral-300); font-size: 12px; font-weight: 500; }
 
 .callLine2 {
   font-size: 12px;
-  color: #6f7a90;
+  color: var(--neutral-300);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -83,14 +83,14 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  color: #8a94a8;
+  color: var(--neutral-200);
   transition: background .15s, color .15s;
 }
-.callCardBtn:hover { background: #f0f2f5; color: #8c5ae2; }
+.callCardBtn:hover { background: #f0f2f5; color: var(--primary-300); }
 
 /* ── Quality Score Card ── */
 .qualityCard {
-  border: 0.5px solid #d0d6e1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 12px;
@@ -102,17 +102,17 @@
   gap: 6px;
   margin-bottom: 10px;
 }
-.qualityLabel { font-size: 13px; font-weight: 500; color: #3a485f; flex: 1; }
+.qualityLabel { font-size: 13px; font-weight: 500; color: var(--neutral-400); flex: 1; }
 .qualityOverall { font-size: 14px; font-weight: 500; }
-.qualityGood { color: #009B53; }
-.qualityFair { color: #D9A50B; }
-.qualityPoor { color: #D72825; }
+.qualityGood { color: var(--status-success); }
+.qualityFair { color: var(--status-warning); }
+.qualityPoor { color: var(--status-error); }
 .qualityBars { display: flex; flex-direction: column; gap: 6px; }
 .qualityBarRow { display: flex; align-items: center; gap: 8px; }
-.qualityBarLabel { font-size: 11px; color: #6f7a90; width: 80px; flex-shrink: 0; }
-.qualityBarTrack { flex: 1; height: 6px; background: #e9ecf1; border-radius: 3px; overflow: hidden; }
+.qualityBarLabel { font-size: 11px; color: var(--neutral-300); width: 80px; flex-shrink: 0; }
+.qualityBarTrack { flex: 1; height: 6px; background: var(--neutral-100); border-radius: 3px; overflow: hidden; }
 .qualityBarFill { height: 100%; border-radius: 3px; transition: width .3s; }
-.qualityBarVal { font-size: 11px; font-weight: 500; color: #3a485f; width: 32px; text-align: right; }
+.qualityBarVal { font-size: 11px; font-weight: 500; color: var(--neutral-400); width: 32px; text-align: right; }
 
 /* ── Sentiment Row ── */
 .sentimentRow {
@@ -120,16 +120,16 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  border: 0.5px solid #d0d6e1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   margin-bottom: 12px;
   background: #fff;
 }
-.sentimentLabel { font-size: 13px; color: #6f7a90; flex: 1; }
+.sentimentLabel { font-size: 13px; color: var(--neutral-300); flex: 1; }
 .sentimentValue { font-size: 13px; font-weight: 500; }
-.sentiment_positive { color: #009B53; }
-.sentiment_neutral { color: #D9A50B; }
-.sentiment_negative { color: #D72825; }
+.sentiment_positive { color: var(--status-success); }
+.sentiment_neutral { color: var(--status-warning); }
+.sentiment_negative { color: var(--status-error); }
 
 /* ── Escalation Card ── */
 .escalationCard {
@@ -137,7 +137,7 @@
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 12px;
-  background: #FFF5F5;
+  background: var(--status-error-light);
 }
 .escalationHeader {
   display: flex;
@@ -145,13 +145,13 @@
   gap: 6px;
   font-size: 13px;
   font-weight: 500;
-  color: #D72825;
+  color: var(--status-error);
   margin-bottom: 6px;
 }
 .escalationDetail { display: flex; flex-direction: column; gap: 4px; }
-.escalationTrigger { font-size: 12px; font-weight: 500; color: #D72825; }
-.escalationDesc { font-size: 12px; color: #6f7a90; }
-.escalationMeta { font-size: 11px; color: #8a94a8; }
+.escalationTrigger { font-size: 12px; font-weight: 500; color: var(--status-error); }
+.escalationDesc { font-size: 12px; color: var(--neutral-300); }
+.escalationMeta { font-size: 11px; color: var(--neutral-200); }
 
 /* ── Sub-Agents & Intents ── */
 .subAgentsRow {
@@ -161,7 +161,7 @@
   gap: 6px;
   margin-bottom: 12px;
 }
-.subAgentsLabel { font-size: 12px; font-weight: 500; color: #6f7a90; }
+.subAgentsLabel { font-size: 12px; font-weight: 500; color: var(--neutral-300); }
 .subAgentTag {
   display: inline-flex;
   align-items: center;
@@ -171,7 +171,7 @@
   font-size: 11px;
   font-weight: 500;
   background: #ede5fb;
-  color: #8c5ae2;
+  color: var(--primary-300);
   border: 0.5px solid rgba(140,90,226,0.2);
 }
 .intentTag {
@@ -180,8 +180,8 @@
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
-  background: #F4F8FE;
-  color: #145ECC;
+  background: var(--status-info-light);
+  color: var(--status-info);
   border: 0.5px solid rgba(20,94,204,0.2);
 }
 
@@ -201,12 +201,12 @@
   font-size: 11px;
   font-weight: 500;
   background: #f5f6f8;
-  color: #6f7a90;
+  color: var(--neutral-300);
   border: 0.5px solid rgba(111,122,144,0.15);
 }
-.secPass { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
-.secFail { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
-.secAlert { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.25); font-weight: 500; }
+.secPass { background: var(--status-success-light); color: var(--status-success); border-color: rgba(0,155,83,0.2); }
+.secFail { background: var(--status-error-light); color: var(--status-error); border-color: rgba(215,40,37,0.2); }
+.secAlert { background: var(--status-error-light); color: var(--status-error); border-color: rgba(215,40,37,0.25); font-weight: 500; }
 
 /* ── Section Headers ── */
 .sectionHeader {
@@ -224,27 +224,27 @@
   gap: 6px;
   font-size: 14px;
   font-weight: 500;
-  color: #16181d;
+  color: var(--neutral-500);
   line-height: 1.2;
 }
 
-.sectionTitle.purple { color: #8c5ae2; }
+.sectionTitle.purple { color: var(--primary-300); }
 
 .chevron {
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform .2s ease;
-  color: #8a94a8;
+  color: var(--neutral-200);
   flex-shrink: 0;
 }
 .chevronOpen { transform: rotate(90deg); }
 
 /* ── Goals Container ── */
 .goalsContainer {
-  border: 0.5px solid #009b53;
+  border: 0.5px solid var(--status-success);
   border-radius: 8px;
-  background: #f5fffa;
+  background: var(--status-success-light);
   overflow: hidden;
   margin-bottom: 12px;
 }
@@ -254,7 +254,7 @@
   align-items: flex-start;
   gap: 8px;
   padding: 8px 12px;
-  border-bottom: 0.5px solid #009b53;
+  border-bottom: 0.5px solid var(--status-success);
 }
 .goalRow:last-child { border-bottom: none; }
 
@@ -268,8 +268,8 @@
   gap: 2px;
   line-height: 1.2;
 }
-.goalName { font-size: 14px; font-weight: 500; color: #3a485f; }
-.goalDesc { font-size: 12px; font-weight: 400; color: #6f7a90; line-height: 1.3; }
+.goalName { font-size: 14px; font-weight: 500; color: var(--neutral-400); }
+.goalDesc { font-size: 12px; font-weight: 400; color: var(--neutral-300); line-height: 1.3; }
 
 .goalBadge {
   font-size: 12px;
@@ -280,12 +280,12 @@
   margin-top: 2px;
   line-height: 1.4;
 }
-.goalBadge.pass { background: #e6f9f0; color: #009b53; }
-.goalBadge.fail { background: #fef2f2; color: #d72825; }
+.goalBadge.pass { background: #e6f9f0; color: var(--status-success); }
+.goalBadge.fail { background: var(--status-error-light); color: var(--status-error); }
 
 /* ── Summary Container ── */
 .summaryContainer {
-  border: 0.5px solid #d0d6e1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   background: #fff;
   overflow: hidden;
@@ -295,14 +295,14 @@
 .summaryInner {
   padding: 8px;
   font-size: 14px;
-  color: #3a485f;
+  color: var(--neutral-400);
   line-height: 1.2;
 }
 
 .summaryLabel {
   font-size: 14px;
   font-weight: 500;
-  color: #3a485f;
+  color: var(--neutral-400);
   margin-bottom: 8px;
   line-height: 1.2;
 }
@@ -310,7 +310,7 @@
 .summaryList {
   padding-left: 20px;
   font-size: 14px;
-  color: #3a485f;
+  color: var(--neutral-400);
   line-height: 1.5;
   margin: 0;
 }
@@ -323,12 +323,12 @@
   justify-content: space-between;
   margin-top: 12px;
   padding-top: 10px;
-  border-top: 0.5px solid #d0d6e1;
+  border-top: 0.5px solid var(--neutral-150);
 }
 
 .generatedText {
   font-size: 12px;
-  color: #8a94a8;
+  color: var(--neutral-200);
   line-height: 1.2;
 }
 
@@ -344,14 +344,14 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  color: #8a94a8;
+  color: var(--neutral-200);
   transition: background .15s, color .15s;
 }
-.summaryBtn:hover { background: #f0f2f5; color: #8c5ae2; }
+.summaryBtn:hover { background: #f0f2f5; color: var(--primary-300); }
 
 /* ── Call Recording & Transcript Container ── */
 .recordingContainer {
-  border: 0.5px solid #d0d6e1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 12px;
@@ -363,8 +363,8 @@
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  background: #e9ecf1;
-  border-bottom: 0.5px solid #d0d6e1;
+  background: var(--neutral-100);
+  border-bottom: 0.5px solid var(--neutral-150);
   height: 49px;
   box-sizing: border-box;
 }
@@ -408,13 +408,13 @@
   flex-shrink: 0;
   transition: background .15s;
 }
-.waveBarPlayed { background: #8c5ae2; }
-.waveBarUnplayed { background: #d0d6e1; }
+.waveBarPlayed { background: var(--primary-300); }
+.waveBarUnplayed { background: var(--neutral-150); }
 
 .waveProgress {
   width: 2px;
   height: 20px;
-  background: #8c5ae2;
+  background: var(--primary-300);
   border-radius: 1px;
   flex-shrink: 0;
   position: relative;
@@ -427,7 +427,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #8c5ae2;
+  background: var(--primary-300);
 }
 
 .audioButtons {
@@ -442,7 +442,7 @@
   align-items: center;
   gap: 4px;
   padding: 8px 12px;
-  background: #8c5ae2;
+  background: var(--primary-300);
   color: #fff;
   border: none;
   border-radius: 24px;
@@ -482,7 +482,7 @@
   align-items: center;
   gap: 4px;
   padding: 8px 12px;
-  background: #d72825;
+  background: var(--status-error);
   color: #fff;
   border: none;
   border-radius: 24px;
@@ -503,7 +503,7 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  border-bottom: 0.5px solid #d0d6e1;
+  border-bottom: 0.5px solid var(--neutral-150);
   cursor: pointer;
   user-select: none;
 }
@@ -511,7 +511,7 @@
 .transcriptSubTitle {
   font-size: 14px;
   font-weight: 500;
-  color: #6f7a90;
+  color: var(--neutral-300);
   line-height: 1.2;
 }
 
@@ -532,7 +532,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: #d0d6e1;
+  background: var(--neutral-150);
   opacity: .5;
 }
 .transcriptDivider span {
@@ -540,7 +540,7 @@
   background: #fff;
   padding: 0 12px;
   font-size: 12px;
-  color: #8a94a8;
+  color: var(--neutral-200);
 }
 
 /* Connection Line */
@@ -549,11 +549,11 @@
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #6f7a90;
+  color: var(--neutral-300);
   padding: 8px 0 12px;
-  border-top: 1px dashed #d0d6e1;
+  border-top: 1px dashed var(--neutral-150);
 }
-.connTime { color: #8a94a8; margin-left: auto; }
+.connTime { color: var(--neutral-200); margin-left: auto; }
 
 /* Chat Messages */
 .message {
@@ -584,13 +584,13 @@
   gap: 6px;
 }
 
-.msgSender { font-size: 12px; font-weight: 500; color: #6f7a90; }
+.msgSender { font-size: 12px; font-weight: 500; color: var(--neutral-300); }
 
 .msgMore {
   background: none;
   border: none;
   cursor: pointer;
-  color: #8a94a8;
+  color: var(--neutral-200);
   padding: 0;
   display: flex;
   opacity: 0;
@@ -600,17 +600,17 @@
 
 .msgBubble {
   font-size: 13px;
-  color: #3a485f;
+  color: var(--neutral-400);
   line-height: 1.5;
   padding: 10px 14px;
   border-radius: 12px;
   background: #f0f2f5;
 }
 .message.patient .msgBubble {
-  background: #8c5ae2;
+  background: var(--primary-300);
   color: #fff;
 }
 
-.msgTime { font-size: 11px; color: #8a94a8; }
-.readReceipt { color: #8c5ae2; }
+.msgTime { font-size: 11px; color: var(--neutral-200); }
+.readReceipt { color: var(--primary-300); }
 

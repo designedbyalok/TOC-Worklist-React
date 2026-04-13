@@ -105,7 +105,7 @@
 
 .outreachOncall {
   font-size: 12px;
-  color: #059669;
+  color: var(--status-success);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -125,12 +125,12 @@
 .outreachWl { display: flex; flex-direction: column; gap: 4px; }
 .outreachWlMain { display: flex; align-items: center; gap: 6px; }
 .outreachWlText { font-size: 13px; color: var(--neutral-400); }
-.outreachWlDate { font-size: 12px; color: #059669; font-weight: 500; }
+.outreachWlDate { font-size: 12px; color: var(--status-success); font-weight: 500; }
 .outreachWlNone { font-size: 13px; color: var(--neutral-200); }
-.outreachWlFailed { font-size: 13px; color: #DC2626; font-weight: 500; }
+.outreachWlFailed { font-size: 13px; color: var(--status-error); font-weight: 500; }
 .dotsRow { display: flex; align-items: center; gap: 4px; }
 .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.dot.success { background: #059669; }
+.dot.success { background: var(--status-success); }
 .dot.failed { background: var(--secondary-300); }
 .dot.pending { background: var(--neutral-150); }
 
@@ -169,7 +169,7 @@
 
 .actionBtn:hover { background: var(--neutral-50); color: var(--primary-300); }
 
-.actionBtn.oncall { color: #059669; background: #ECFDF5; }
+.actionBtn.oncall { color: var(--status-success); background: var(--status-success-light); }
 .actionBtn.queuedCall::after {
   content: '';
   position: absolute;
@@ -177,7 +177,7 @@
   right: 2px;
   width: 8px;
   height: 8px;
-  background: #D97706;
+  background: var(--status-warning);
   border-radius: 50%;
   border: 1.5px solid #fff;
 }
@@ -188,7 +188,7 @@
   right: 2px;
   width: 8px;
   height: 8px;
-  background: #059669;
+  background: var(--status-success);
   border-radius: 50%;
   border: 1.5px solid #fff;
   animation: callPulse 1.2s infinite;
@@ -230,7 +230,7 @@
 }
 
 .dropdownItem:hover { background: var(--neutral-50); }
-.dropdownItem.danger { color: #DC2626; }
+.dropdownItem.danger { color: var(--status-error); }
 
 .dropdownDivider { height: 1px; background: var(--neutral-100); margin: 2px 0; }
 
@@ -240,7 +240,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #059669;
+  background: var(--status-success);
   animation: oncallPulse 1.5s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -269,8 +269,8 @@
   gap: 4px;
   font-size: 12px;
   font-weight: 500;
-  color: #D72825;
-  background: #FFF5F5;
+  color: var(--status-error);
+  background: var(--status-error-light);
   padding: 3px 8px;
   border-radius: 4px;
   cursor: default;
@@ -296,8 +296,8 @@
 .attemptsTooltipHeader { padding: 12px 16px; background: var(--neutral-50); border-bottom: 1px solid var(--neutral-150); font-size: 13px; font-weight: 500; color: var(--neutral-400); }
 .attemptRow { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--neutral-100); font-size: 14px; color: var(--neutral-400); }
 .attemptRow:last-child { border-bottom: none; }
-.attemptIcon { font-size: 18px; flex-shrink: 0; color: #DC2626; }
+.attemptIcon { font-size: 18px; flex-shrink: 0; color: var(--status-error); }
 .attemptDetail { display: flex; flex-direction: column; gap: 2px; flex: 1; }
 .attemptTime { font-size: 12px; color: var(--neutral-200); }
 .attemptOutcome { font-size: 14px; color: var(--neutral-400); font-weight: 400; }
-.attemptNumBadge { font-size: 12px; font-weight: 500; color: #D72825; background: #FFF5F5; padding: 2px 8px; border-radius: 4px; border: 0.5px solid rgba(215,40,37,0.2); flex-shrink: 0; }
+.attemptNumBadge { font-size: 12px; font-weight: 500; color: var(--status-error); background: var(--status-error-light); padding: 2px 8px; border-radius: 4px; border: 0.5px solid rgba(215,40,37,0.2); flex-shrink: 0; }

@@ -14,13 +14,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  border-bottom: 0.5px solid #E9ECF1;
+  border-bottom: 0.5px solid var(--neutral-100);
   flex-shrink: 0;
 }
 .headerTitle {
   font-size: 13px;
   font-weight: 500;
-  color: #16181D;
+  color: var(--neutral-500);
 }
 .headerActions {
   display: flex;
@@ -30,7 +30,7 @@
 .saveTextBtn {
   font-size: 12px;
   font-weight: 500;
-  color: #8C5AE2;
+  color: var(--primary-300);
   background: none;
   border: none;
   cursor: pointer;
@@ -38,7 +38,7 @@
   border-radius: 6px;
   transition: background .12s;
 }
-.saveTextBtn:hover { background: #F5F0FF; }
+.saveTextBtn:hover { background: var(--primary-100); }
 
 /* Node identity */
 .nodeIdentity {
@@ -60,7 +60,7 @@
   flex: 1;
   font-size: 13px;
   font-weight: 500;
-  color: #16181D;
+  color: var(--neutral-500);
   line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -70,12 +70,12 @@
   flex: 1;
   font-size: 13px;
   font-weight: 500;
-  color: #16181D;
-  border: 0.5px solid #8C5AE2;
+  color: var(--neutral-500);
+  border: 0.5px solid var(--primary-300);
   border-radius: 6px;
   outline: none;
   padding: 4px 8px;
-  background: #FCFAFF;
+  background: var(--primary-50);
   font-family: inherit;
   line-height: 1.3;
 }
@@ -90,11 +90,11 @@
   transition: background .12s;
   flex-shrink: 0;
 }
-.editBtn:hover { background: #F5F0FF; }
+.editBtn:hover { background: var(--primary-100); }
 
 .divider {
   height: 1px;
-  background: #E9ECF1;
+  background: var(--neutral-100);
   margin: 0;
 }
 
@@ -112,7 +112,7 @@
   display: block;
   font-size: 12px;
   font-weight: 500;
-  color: #16181D;
+  color: var(--neutral-500);
   margin-bottom: 8px;
 }
 .sectionHeader .sectionLabel {
@@ -121,7 +121,7 @@
 .addBtn {
   font-size: 11px;
   font-weight: 500;
-  color: #8C5AE2;
+  color: var(--primary-300);
   background: none;
   border: none;
   cursor: pointer;
@@ -129,17 +129,17 @@
   border-radius: 6px;
   transition: background .12s;
 }
-.addBtn:hover { background: #F5F0FF; }
+.addBtn:hover { background: var(--primary-100); }
 
 /* Textarea */
 .textarea {
   width: 100%;
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 12.5px;
   font-family: 'Inter', sans-serif;
-  color: #3A485F;
+  color: var(--neutral-400);
   line-height: 1.55;
   resize: vertical;
   outline: none;
@@ -147,14 +147,14 @@
   background: #fff;
 }
 .textarea:focus {
-  border-color: #8C5AE2;
+  border-color: var(--primary-300);
   box-shadow: 0 0 0 3px rgba(140,90,226,.08);
 }
 
 /* Transition blocks */
 .transitionBlock {
-  background: #F6F7F8;
-  border: 0.5px solid #E9ECF1;
+  background: var(--neutral-50);
+  border: 0.5px solid var(--neutral-100);
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 8px;
@@ -170,23 +170,23 @@
   display: block;
   font-size: 11px;
   font-weight: 500;
-  color: #6F7A90;
+  color: var(--neutral-300);
   margin-bottom: 4px;
 }
 .fieldInput {
   width: 100%;
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 6px;
   padding: 7px 10px;
   font-size: 12px;
   font-family: 'Inter', sans-serif;
-  color: #16181D;
+  color: var(--neutral-500);
   outline: none;
   background: #fff;
   transition: border-color .15s, box-shadow .15s;
 }
 .fieldInput:focus {
-  border-color: #8C5AE2;
+  border-color: var(--primary-300);
   box-shadow: 0 0 0 3px rgba(140,90,226,.08);
 }
 
@@ -200,29 +200,29 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 6px;
   padding: 7px 10px;
   font-size: 12px;
   font-family: 'Inter', sans-serif;
-  color: #16181D;
+  color: var(--neutral-500);
   background: #fff;
   cursor: pointer;
   transition: border-color .15s, box-shadow .15s;
   text-align: left;
 }
 .customSelectTrigger:hover {
-  border-color: #8C5AE2;
+  border-color: var(--primary-300);
 }
 .customSelectTriggerOpen {
-  border-color: #8C5AE2;
+  border-color: var(--primary-300);
   box-shadow: 0 0 0 3px rgba(140,90,226,.08);
 }
 .customSelectValue {
-  color: #16181D;
+  color: var(--neutral-500);
 }
 .customSelectPlaceholder {
-  color: #8A94A8;
+  color: var(--neutral-200);
 }
 .customSelectDropdown {
   position: absolute;
@@ -231,7 +231,7 @@
   right: 0;
   margin-top: 4px;
   background: #fff;
-  border: 0.5px solid #E9ECF1;
+  border: 0.5px solid var(--neutral-100);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0,0,0,.12);
   max-height: 180px;
@@ -241,22 +241,22 @@
 .customSelectItem {
   padding: 8px 12px;
   font-size: 12px;
-  color: #3A485F;
+  color: var(--neutral-400);
   cursor: pointer;
   transition: background .1s;
 }
 .customSelectItem:hover {
-  background: #F5F0FF;
+  background: var(--primary-100);
 }
 .customSelectItemActive {
-  background: #F5F0FF;
-  color: #8C5AE2;
+  background: var(--primary-100);
+  color: var(--primary-300);
   font-weight: 500;
 }
 .customSelectEmpty {
   padding: 12px;
   font-size: 11px;
-  color: #8A94A8;
+  color: var(--neutral-200);
   text-align: center;
 }
 
@@ -285,14 +285,14 @@
   gap: 6px;
   padding: 16px 0;
   font-size: 11px;
-  color: #8A94A8;
+  color: var(--neutral-200);
 }
 
 /* Delete section */
 .deleteSection {
   padding: 12px 16px;
   margin-top: auto;
-  border-top: 0.5px solid #E9ECF1;
+  border-top: 0.5px solid var(--neutral-100);
 }
 .deleteBtn {
   display: flex;
@@ -303,17 +303,17 @@
   padding: 8px 0;
   font-size: 12px;
   font-weight: 500;
-  color: #D72825;
+  color: var(--status-error);
   background: none;
-  border: 0.5px solid #E9ECF1;
+  border: 0.5px solid var(--neutral-100);
   border-radius: 8px;
   cursor: pointer;
   transition: background .12s, border-color .12s;
   font-family: 'Inter', sans-serif;
 }
 .deleteBtn:hover {
-  background: #FFF5F5;
-  border-color: #D72825;
+  background: var(--status-error-light);
+  border-color: var(--status-error);
 }
 
 /* End node info */
@@ -322,11 +322,11 @@
   gap: 10px;
   align-items: flex-start;
   padding: 12px 14px;
-  background: #F6F7F8;
-  border: 0.5px solid #E9ECF1;
+  background: var(--neutral-50);
+  border: 0.5px solid var(--neutral-100);
   border-radius: 8px;
   font-size: 12px;
-  color: #6F7A90;
+  color: var(--neutral-300);
   line-height: 1.5;
 }
 .endNodeInfo svg {

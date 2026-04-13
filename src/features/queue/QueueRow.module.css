@@ -13,7 +13,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #059669;
+  background: var(--status-success);
   animation: oncallPulse 1.5s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -42,7 +42,7 @@
 
 .goalsFillInner {
   height: 100%;
-  background: #059669;
+  background: var(--status-success);
   border-radius: 3px;
 }
 
@@ -55,8 +55,8 @@
   gap: 4px;
   font-size: 12px;
   font-weight: 500;
-  color: #D72825;
-  background: #FFF5F5;
+  color: var(--status-error);
+  background: var(--status-error-light);
   padding: 3px 8px;
   border-radius: 4px;
   cursor: default;
@@ -64,7 +64,7 @@
 }
 
 .nextAction { font-size: 13px; color: var(--neutral-400); max-width: 240px; line-height: 1.5; }
-.medDone { display: inline-flex; align-items: center; gap: 3px; color: #059669; font-size: 12px; font-weight: 500; }
+.medDone { display: inline-flex; align-items: center; gap: 3px; color: var(--status-success); font-size: 12px; font-weight: 500; }
 .medLink { display: inline-flex; align-items: center; gap: 3px; color: var(--primary-300); font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; }
 .medLink:hover { text-decoration: underline; }
 
@@ -129,8 +129,8 @@
 .goalRow:last-child { border-bottom: none; }
 .goalRowLabel { flex: 1; color: var(--neutral-400); }
 .goalBadge { font-size: 12px; font-weight: 500; padding: 2px 10px; border-radius: 4px; }
-.goalPass { background: #ECFDF5; color: #059669; }
-.goalFail { background: #FEF2F2; color: #DC2626; }
+.goalPass { background: var(--status-success-light); color: var(--status-success); }
+.goalFail { background: var(--status-error-light); color: var(--status-error); }
 
 /* Attempts Tooltip */
 .attemptsTooltip {
@@ -169,8 +169,8 @@
 .attemptNumBadge {
   font-size: 12px;
   font-weight: 500;
-  color: #D72825;
-  background: #FFF5F5;
+  color: var(--status-error);
+  background: var(--status-error-light);
   padding: 2px 8px;
   border-radius: 4px;
   border: 0.5px solid rgba(215,40,37,0.2);

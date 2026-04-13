@@ -39,15 +39,15 @@
   flex-shrink: 0;
 }
 
-.icon.success { background: #ECFDF5; color: #059669; }
-.icon.failed { background: #FEF2F2; color: #DC2626; }
+.icon.success { background: var(--status-success-light); color: var(--status-success); }
+.icon.failed { background: var(--status-error-light); color: var(--status-error); }
 
 .detail { flex: 1; }
 .meta { font-size: 12px; color: var(--neutral-200); }
 .desc { font-size: 13px; color: var(--neutral-400); font-weight: 500; margin-top: 1px; }
 .outcome { font-size: 12px; font-weight: 500; margin-top: 2px; }
-.outcome.success { color: #059669; }
-.outcome.failed { color: #DC2626; }
+.outcome.success { color: var(--status-success); }
+.outcome.failed { color: var(--status-error); }
 
 .footer {
   padding: 8px 16px;

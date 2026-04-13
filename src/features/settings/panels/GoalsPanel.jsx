@@ -74,10 +74,10 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
 
   const thStyle = {
     padding: '8px 16px', fontSize: 12, fontWeight: 500, color: 'var(--neutral-300)',
-    textAlign: 'left', whiteSpace: 'nowrap', borderBottom: '1px solid var(--neutral-150)',
+    textAlign: 'left', whiteSpace: 'nowrap', borderBottom: '0.5px solid var(--neutral-150)',
     background: 'var(--neutral-0)', position: 'sticky', top: 0,
   };
-  const tdStyle = { padding: '10px 16px', fontSize: 14, color: 'var(--neutral-400)', verticalAlign: 'middle' };
+  const tdStyle = { padding: '12px 16px', fontSize: 14, fontWeight: 400, color: 'var(--neutral-300)', verticalAlign: 'middle' };
 
   const handleConfirmDelete = async () => {
     if (!deleteTarget) return;
@@ -109,7 +109,7 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
             const pct = g.completionRate;
             return (
               <tr key={g.id} onClick={() => onOpen(g.id)}
-                style={{ borderBottom: '0.5px solid var(--neutral-150)', cursor: 'pointer', transition: 'background .1s' }}
+                style={{ borderBottom: '0.5px solid #EAECF0', cursor: 'pointer', transition: 'background .1s' }}
                 onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25)'}
                 onMouseOut={e => e.currentTarget.style.background = ''}
               >
@@ -118,7 +118,7 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
                     <span style={{ fontWeight: 500, fontSize: 14, color: 'var(--neutral-400)' }}>{g.name}</span>
                     {g.status === 'draft' && <Badge variant="status-queued" label="Draft" />}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--neutral-200)', maxWidth: 280, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.description}</div>
+                  <div style={{ fontSize: 12, color: 'var(--neutral-300)', maxWidth: 280, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{g.description}</div>
                 </td>
                 <td style={tdStyle}><Badge variant={PROGRAM_VARIANT[g.programColor] || 'ai-care'} label={g.program} /></td>
                 <td style={tdStyle}>
@@ -127,7 +127,7 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
                       <span key={st.id} style={{ width: 7, height: 7, borderRadius: '50%', display: 'inline-block', background: st.type === 'mandatory' ? 'var(--status-success)' : 'var(--neutral-200)' }} />
                     ))}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--neutral-200)', marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{mc}R · {cc}O</div>
+                  <div style={{ fontSize: 12, color: 'var(--neutral-300)', marginTop: 2, fontVariantNumeric: 'tabular-nums' }}>{mc}R · {cc}O</div>
                 </td>
                 <td style={tdStyle}>
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -137,13 +137,13 @@ function GoalsTable({ goals, onOpen, onEdit, onDelete }) {
                     <span style={{ fontSize: 12, fontWeight: 500, fontVariantNumeric: 'tabular-nums', color: pct < 50 ? 'var(--status-warning)' : 'var(--status-success)' }}>{pct}%</span>
                   </div>
                 </td>
-                <td style={{ ...tdStyle, fontVariantNumeric: 'tabular-nums', fontSize: 14, color: 'var(--neutral-300)' }}>
+                <td style={{ ...tdStyle, fontVariantNumeric: 'tabular-nums' }}>
                   {g.totalRuns > 0 ? g.totalRuns.toLocaleString() : '—'}
                 </td>
-                <td style={{ ...tdStyle, fontSize: 14, color: 'var(--neutral-300)' }}>
+                <td style={tdStyle}>
                   {g.agents.length > 0 ? g.agents.length : '—'}
                 </td>
-                <td style={{ ...tdStyle, fontSize: 12, color: 'var(--neutral-200)', whiteSpace: 'nowrap' }}>
+                <td style={{ ...tdStyle, whiteSpace: 'nowrap' }}>
                   {g.created || '—'}
                 </td>
                 <td style={tdStyle} onClick={e => e.stopPropagation()}>

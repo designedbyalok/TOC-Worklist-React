@@ -1,6 +1,6 @@
 /* ── ComplianceBadges ── */
 .container {
-  border: 0.5px solid #d0d6e1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   background: #fafbff;
   padding: 10px 12px;
@@ -17,7 +17,7 @@
 .label {
   font-size: 12px;
   font-weight: 500;
-  color: #6f7a90;
+  color: var(--neutral-300);
   margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -41,13 +41,13 @@
   border: 0.5px solid transparent;
 }
 
-.pass { background: #F5FFFA; color: #009B53; border-color: rgba(0,155,83,0.2); }
-.fail { background: #FFF5F5; color: #D72825; border-color: rgba(215,40,37,0.2); }
-.warn { background: #FFFCF5; color: #D9A50B; border-color: rgba(217,165,11,0.2); }
-.na { background: #f5f6f8; color: #8a94a8; border-color: rgba(111,122,144,0.15); }
+.pass { background: var(--status-success-light); color: var(--status-success); border-color: rgba(0,155,83,0.2); }
+.fail { background: var(--status-error-light); color: var(--status-error); border-color: rgba(215,40,37,0.2); }
+.warn { background: var(--status-warning-light); color: var(--status-warning); border-color: rgba(217,165,11,0.2); }
+.na { background: #f5f6f8; color: var(--neutral-200); border-color: rgba(111,122,144,0.15); }
 .emergency {
-  background: #FFF5F5;
-  color: #D72825;
+  background: var(--status-error-light);
+  color: var(--status-error);
   border-color: rgba(215,40,37,0.25);
   font-weight: 500;
   animation: emergencyPulse 2s infinite;
@@ -64,7 +64,7 @@
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #6f7a90;
+  color: var(--neutral-300);
 }
 
 .tcpaText {
@@ -74,5 +74,5 @@
 }
 
 .tcpaSep {
-  color: #d0d6e1;
+  color: var(--neutral-150);
 }

@@ -61,7 +61,7 @@
 
 /* ── State: Error ── */
 .error:hover {
-  background: #FFF5F5;
+  background: var(--status-error-light);
 }
 
 /* ── Notification badge (orange dot / count) ── */

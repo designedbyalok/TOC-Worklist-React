@@ -16,11 +16,11 @@ import { useTableSort } from '../../../components/Table/useTableSort';
 import { SortableHeader } from '../../../components/Table/SortableHeader';
 
 const thStyle = {
-  textAlign: 'left', padding: '8px 16px', color: '#6F7A90', fontWeight: 500,
-  fontSize: 12, whiteSpace: 'nowrap', borderBottom: '1px solid #D0D6E1',
+  textAlign: 'left', padding: '8px 16px', color: 'var(--neutral-300)', fontWeight: 500,
+  fontSize: 12, whiteSpace: 'nowrap', borderBottom: '0.5px solid var(--neutral-150)',
   background: 'var(--neutral-0)', position: 'sticky', top: 0,
 };
-const tdStyle = { padding: '12px 16px', fontSize: 14, fontWeight: 400, color: '#3D4A5C', verticalAlign: 'middle' };
+const tdStyle = { padding: '12px 16px', fontSize: 14, fontWeight: 400, color: 'var(--neutral-300)', verticalAlign: 'middle' };
 
 const CATEGORY_BADGE_MAP = {
   'Internal': 'ai-care', 'Prior authorization': 'ai-care',
@@ -288,7 +288,7 @@ export function DomainRegistryPanel({ searchQuery = '' }) {
                 onMouseOver={e => e.currentTarget.style.background = 'var(--primary-25)'}
                 onMouseOut={e => e.currentTarget.style.background = ''}
               >
-                <td style={{ ...tdStyle, fontWeight: 500, color: '#1A1F36' }}>{d.vendor}</td>
+                <td style={{ ...tdStyle, fontWeight: 500, color: 'var(--neutral-400)' }}>{d.vendor}</td>
                 <td style={tdStyle}>
                   <code style={{ background: 'var(--neutral-50)', padding: '2px 6px', borderRadius: 4, fontSize: 11, fontFamily: "'SF Mono', monospace", color: 'var(--neutral-400)' }}>{d.domain}</code>
                 </td>

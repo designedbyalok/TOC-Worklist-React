@@ -25,7 +25,7 @@
   padding: 10px 4px;
   font-size: 14px;
   font-weight: 500;
-  color: #6F7A90;
+  color: var(--neutral-300);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   font-family: 'Inter', sans-serif;
@@ -33,11 +33,11 @@
   transition: color .12s;
 }
 
-.tab:hover { color: #3D4A5C; }
+.tab:hover { color: var(--neutral-400); }
 
 .tabActive {
-  color: #8C5AE2;
-  border-bottom-color: #8C5AE2;
+  color: var(--primary-300);
+  border-bottom-color: var(--primary-300);
 }
 
 .tabActions {
@@ -68,29 +68,29 @@
   outline: none;
   font-size: 14px;
   font-family: 'Inter', sans-serif;
-  color: #3D4A5C;
+  color: var(--neutral-400);
   flex: 1;
   background: transparent;
 }
 
-.searchInput input::placeholder { color: #A0AAB8; }
+.searchInput input::placeholder { color: var(--neutral-200); }
 
 .searchClose {
   background: none;
   border: none;
-  color: #6F7A90;
+  color: var(--neutral-300);
   cursor: pointer;
   font-size: 14px;
   padding: 0;
   line-height: 1;
 }
 
-.searchClose:hover { color: #3D4A5C; }
+.searchClose:hover { color: var(--neutral-400); }
 
 .tabDivider {
   width: 0.5px;
   height: 16px;
-  background: #D0D6E1;
+  background: var(--neutral-150);
 }
 
 /* Table / content area */
@@ -112,18 +112,18 @@
 .emptyTitle {
   font-size: 16px;
   font-weight: 500;
-  color: #3D4A5C;
+  color: var(--neutral-400);
   margin: 0;
 }
 
 .emptyDesc {
   font-size: 14px;
-  color: #6F7A90;
+  color: var(--neutral-300);
   margin: 0;
   text-align: center;
   max-width: 320px;
 }
 
 .emptyDesc strong {
-  color: #3D4A5C;
+  color: var(--neutral-400);
 }

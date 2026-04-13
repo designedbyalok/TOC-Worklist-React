@@ -84,8 +84,8 @@
   border-radius: 4px;
 }
 
-.tag.mostUsed { background: #EFF6FF; color: #2563EB; }
-.tag.lastUsed { background: #ECFDF5; color: #059669; }
+.tag.mostUsed { background: var(--status-info-light); color: #2563EB; }
+.tag.lastUsed { background: var(--status-success-light); color: var(--status-success); }
 
 .via {
   display: flex;

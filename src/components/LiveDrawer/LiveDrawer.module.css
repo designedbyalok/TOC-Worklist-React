@@ -6,14 +6,14 @@
   gap: 8px;
   font-size: 13px;
   font-weight: 500;
-  color: #DC2626;
+  color: var(--status-error);
 }
 
 .liveDot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #DC2626;
+  background: var(--status-error);
   animation: livePulse 1.5s infinite;
 }
 
@@ -55,20 +55,20 @@
   gap: 6px;
   font-size: 14px;
   font-weight: 500;
-  color: #3a485f;
+  color: var(--neutral-400);
   flex-wrap: wrap;
 }
 
-.callLine1Detail { font-weight: 400; color: #6f7a90; }
-.callTimer { font-weight: 500; color: #059669; font-variant-numeric: tabular-nums; }
-.dot { color: #8a94a8; font-size: 10px; }
+.callLine1Detail { font-weight: 400; color: var(--neutral-300); }
+.callTimer { font-weight: 500; color: var(--status-success); font-variant-numeric: tabular-nums; }
+.dot { color: var(--neutral-200); font-size: 10px; }
 
 .callLine2 {
   display: flex;
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: #6f7a90;
+  color: var(--neutral-300);
   margin-top: 4px;
 }
 
@@ -77,7 +77,7 @@
   display: flex;
   gap: 8px;
   padding: 12px 0;
-  border-bottom: 0.5px solid #d0d6e1;
+  border-bottom: 0.5px solid var(--neutral-150);
   margin-bottom: 4px;
 }
 
@@ -89,15 +89,15 @@
   border-radius: 6px;
   font-size: 13px;
   font-weight: 500;
-  border: 1px solid #d0d6e1;
+  border: 1px solid var(--neutral-150);
   background: #fff;
-  color: #3a485f;
+  color: var(--neutral-400);
   cursor: pointer;
   font-family: 'Inter', sans-serif;
   transition: all .15s;
 }
-.actionBtn:hover { border-color: #c4b5fd; background: #f5f0ff; color: #8c5ae2; }
-.actionBtn.active { background: #ede5fb; color: #8c5ae2; border-color: #c4b5fd; }
+.actionBtn:hover { border-color: #c4b5fd; background: var(--primary-100); color: var(--primary-300); }
+.actionBtn.active { background: #ede5fb; color: var(--primary-300); border-color: #c4b5fd; }
 
 /* ── Section Headers (shared pattern with DetailDrawer) ── */
 .sectionHeader {
@@ -106,7 +106,7 @@
   justify-content: space-between;
   padding: 12px 0;
   cursor: pointer;
-  border-bottom: 0.5px solid #e9ecf1;
+  border-bottom: 0.5px solid var(--neutral-100);
   user-select: none;
 }
 
@@ -116,12 +116,12 @@
   gap: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: #3a485f;
+  color: var(--neutral-400);
 }
 
 .chevron {
   transition: transform .2s;
-  color: #8a94a8;
+  color: var(--neutral-200);
   display: flex;
 }
 .chevronOpen { transform: rotate(90deg); }
@@ -134,14 +134,14 @@
   align-items: center;
   gap: 10px;
   padding: 10px 0;
-  border-bottom: 0.5px solid #e9ecf1;
+  border-bottom: 0.5px solid var(--neutral-100);
   font-size: 14px;
-  color: #6f7a90;
+  color: var(--neutral-300);
 }
 .goalRow:last-child { border-bottom: none; }
-.goalRow.completed { color: #3a485f; }
+.goalRow.completed { color: var(--neutral-400); }
 .goalLabel { flex: 1; }
-.goalTime { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #009b53; font-weight: 500; }
+.goalTime { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--status-success); font-weight: 500; }
 
 /* ── Transcript Section ── */
 .transcriptSection { padding-top: 8px; }
@@ -166,17 +166,17 @@
 }
 
 .msgContent { display: flex; flex-direction: column; gap: 2px; max-width: 80%; }
-.msgSender { font-size: 12px; font-weight: 500; color: #6f7a90; }
+.msgSender { font-size: 12px; font-weight: 500; color: var(--neutral-300); }
 .msgBubble {
   font-size: 13px;
-  color: #3a485f;
+  color: var(--neutral-400);
   line-height: 1.5;
   padding: 10px 14px;
   border-radius: 12px;
   background: #f0f2f5;
 }
-.message.patient .msgBubble { background: #8c5ae2; color: #fff; }
-.msgTime { font-size: 11px; color: #8a94a8; }
+.message.patient .msgBubble { background: var(--primary-300); color: #fff; }
+.msgTime { font-size: 11px; color: var(--neutral-200); }
 
 .typing {
   display: flex;
@@ -184,7 +184,7 @@
   gap: 6px;
   padding: 10px 0;
   font-size: 13px;
-  color: #6f7a90;
+  color: var(--neutral-300);
   font-style: italic;
 }
 

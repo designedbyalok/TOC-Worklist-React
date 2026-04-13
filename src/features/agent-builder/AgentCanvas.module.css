@@ -5,7 +5,7 @@
   flex: 1;
   height: 100%;
   overflow: hidden;
-  background: #F6F7F8;
+  background: var(--neutral-50);
 }
 
 /* ── Toolbar ── */
@@ -16,7 +16,7 @@
   padding: 0 16px;
   height: 48px;
   background: #fff;
-  border-bottom: 0.5px solid #E9ECF1;
+  border-bottom: 0.5px solid var(--neutral-100);
   flex-shrink: 0;
   position: relative;
 }
@@ -30,7 +30,7 @@
 .agentName {
   font-size: 15px;
   font-weight: 500;
-  color: #16181D;
+  color: var(--neutral-500);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -46,7 +46,7 @@
 .toolbarTabs {
   display: flex;
   gap: 2px;
-  background: #F3F4F7;
+  background: var(--neutral-75);
   border-radius: 8px;
   padding: 3px;
 }
@@ -57,7 +57,7 @@
   padding: 6px 18px;
   font-size: 13px;
   font-weight: 500;
-  color: #6F7A90;
+  color: var(--neutral-300);
   background: transparent;
   border: none;
   border-radius: 6px;
@@ -65,10 +65,10 @@
   transition: all .15s;
   white-space: nowrap;
 }
-.toolbarTab:hover { color: #3A485F; }
+.toolbarTab:hover { color: var(--neutral-400); }
 .toolbarTabActive {
   background: #fff;
-  color: #16181D;
+  color: var(--neutral-500);
   box-shadow: 0 1px 3px rgba(0,0,0,.08);
 }
 
@@ -83,22 +83,22 @@
   padding: 6px 18px;
   font-size: 13px;
   font-weight: 500;
-  color: #8C5AE2;
+  color: var(--primary-300);
   background: #fff;
-  border: 0.5px solid #8C5AE2;
+  border: 0.5px solid var(--primary-300);
   border-radius: 8px;
   cursor: pointer;
   transition: all .15s;
   font-family: 'Inter', sans-serif;
   white-space: nowrap;
 }
-.toolbarSaveBtn:hover { background: #F5F0FF; }
+.toolbarSaveBtn:hover { background: var(--primary-100); }
 .toolbarSaveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .toolbarDivider {
   width: 1px;
   height: 20px;
-  background: #E9ECF1;
+  background: var(--neutral-100);
 }
 .toolbarSecondaryBtn {
   display: flex;
@@ -107,9 +107,9 @@
   padding: 6px 14px;
   font-size: 13px;
   font-weight: 500;
-  color: #6F7A90;
+  color: var(--neutral-300);
   background: #fff;
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 8px;
   cursor: pointer;
   transition: all .15s;
@@ -117,8 +117,8 @@
   white-space: nowrap;
 }
 .toolbarSecondaryBtn:hover:not(:disabled) {
-  border-color: #8C5AE2;
-  color: #8C5AE2;
+  border-color: var(--primary-300);
+  color: var(--primary-300);
 }
 .toolbarSecondaryBtn:disabled { opacity: 0.35; cursor: not-allowed; }
 
@@ -133,7 +133,7 @@
   border-radius: 6px;
   transition: background .12s;
 }
-.toolbarCloseBtn:hover { background: #F3F4F7; }
+.toolbarCloseBtn:hover { background: var(--neutral-75); }
 
 /* ── Body ── */
 .body {
@@ -157,14 +157,14 @@
   justify-content: center;
   height: 100%;
   gap: 12px;
-  color: #6F7A90;
+  color: var(--neutral-300);
   font-size: 14px;
 }
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid #E9ECF1;
-  border-top-color: #8C5AE2;
+  border: 3px solid var(--neutral-100);
+  border-top-color: var(--primary-300);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -175,7 +175,7 @@
 /* ── Right Panel Wrapper (resizable) ── */
 .rightPanelWrap {
   position: relative;
-  border-left: 0.5px solid #E9ECF1;
+  border-left: 0.5px solid var(--neutral-100);
   display: flex;
   flex-shrink: 0;
   overflow: hidden;
@@ -201,7 +201,7 @@
 /* ── React Flow overrides ── */
 .minimap {
   border-radius: 8px !important;
-  border: 0.5px solid #E9ECF1 !important;
+  border: 0.5px solid var(--neutral-100) !important;
   box-shadow: 0 2px 8px rgba(0,0,0,.06) !important;
   overflow: hidden !important;
   background: #fff !important;
@@ -213,7 +213,7 @@
   align-items: center;
   gap: 0;
   background: #fff;
-  border: 0.5px solid #E9ECF1;
+  border: 0.5px solid var(--neutral-100);
   border-radius: 8px;
   padding: 3px 6px;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
@@ -227,7 +227,7 @@
   gap: 4px;
   font-size: 11px;
   font-weight: 500;
-  color: #6F7A90;
+  color: var(--neutral-300);
   background: none;
   border: none;
   cursor: pointer;
@@ -236,17 +236,17 @@
   transition: background .12s;
   white-space: nowrap;
 }
-.zoomBtn:hover { background: #F3F4F7; }
+.zoomBtn:hover { background: var(--neutral-75); }
 .zoomDivider {
   width: 1px;
   height: 16px;
-  background: #E9ECF1;
+  background: var(--neutral-100);
   margin: 0 4px;
 }
 .zoomLevel {
   font-size: 11px;
   font-weight: 500;
-  color: #3A485F;
+  color: var(--neutral-400);
   min-width: 34px;
   text-align: center;
 }
@@ -263,16 +263,16 @@
   gap: 5px;
   font-size: 11px;
   font-weight: 500;
-  color: #6F7A90;
+  color: var(--neutral-300);
   background: #fff;
-  border: 0.5px solid #E9ECF1;
+  border: 0.5px solid var(--neutral-100);
   border-radius: 8px;
   padding: 6px 12px;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0,0,0,.06);
   transition: border-color .15s;
 }
-.versionBtn:hover { border-color: #8C5AE2; }
+.versionBtn:hover { border-color: var(--primary-300); }
 
 .versionDropdown {
   position: absolute;
@@ -280,7 +280,7 @@
   right: 0;
   width: 220px;
   background: #fff;
-  border: 0.5px solid #E9ECF1;
+  border: 0.5px solid var(--neutral-100);
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0,0,0,.12);
   margin-bottom: 6px;
@@ -292,22 +292,22 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  border-bottom: 0.5px solid #E9ECF1;
+  border-bottom: 0.5px solid var(--neutral-100);
   font-size: 12px;
   font-weight: 500;
-  color: #16181D;
+  color: var(--neutral-500);
 }
 .newVersionBtn {
   font-size: 11px;
   font-weight: 500;
-  color: #8C5AE2;
+  color: var(--primary-300);
   background: none;
   border: none;
   cursor: pointer;
   padding: 2px 4px;
   border-radius: 4px;
 }
-.newVersionBtn:hover { background: #F5F0FF; }
+.newVersionBtn:hover { background: var(--primary-100); }
 
 .versionItem {
   display: flex;
@@ -316,25 +316,25 @@
   padding: 8px 14px;
   cursor: pointer;
   font-size: 12px;
-  color: #3A485F;
+  color: var(--neutral-400);
   transition: background .12s;
 }
-.versionItem:hover { background: #F6F7F8; }
+.versionItem:hover { background: var(--neutral-50); }
 .versionItemActive {
-  background: #F5F0FF;
+  background: var(--primary-100);
   font-weight: 500;
 }
 .versionDate {
   flex: 1;
   text-align: right;
   font-size: 10px;
-  color: #8A94A8;
+  color: var(--neutral-200);
 }
 .currentBadge {
   font-size: 10px;
   font-weight: 500;
-  color: #009B53;
-  background: #F5FFFA;
+  color: var(--status-success);
+  background: var(--status-success-light);
   padding: 1px 6px;
   border-radius: 4px;
 }

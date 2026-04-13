@@ -54,7 +54,7 @@
 
 .stepNum.pending { background: var(--neutral-100); color: var(--neutral-300); }
 .stepNum.active { background: var(--primary-300); color: #fff; }
-.stepNum.done { background: #ECFDF5; color: #059669; }
+.stepNum.done { background: var(--status-success-light); color: var(--status-success); }
 
 .stepTitle {
   font-size: 14px;
@@ -72,7 +72,7 @@
 
 .stepBadge.todo { background: var(--neutral-100); color: var(--neutral-300); }
 .stepBadge.inProgress { background: var(--primary-100); color: var(--primary-300); }
-.stepBadge.done { background: #ECFDF5; color: #059669; }
+.stepBadge.done { background: var(--status-success-light); color: var(--status-success); }
 
 .chevron {
   transition: transform .2s;
@@ -134,9 +134,9 @@
   transition: all .15s;
 }
 
-.optYes { background: #ECFDF5; color: #059669; border-color: #A7F3D0; }
+.optYes { background: var(--status-success-light); color: var(--status-success); border-color: #A7F3D0; }
 .optYes:hover { background: #D1FAE5; }
-.optNo { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
+.optNo { background: var(--status-error-light); color: var(--status-error); border-color: #FECACA; }
 .optNo:hover { background: #FEE2E2; }
 .optLater { background: var(--neutral-50); color: var(--neutral-400); border-color: var(--neutral-150); }
 .optLater:hover { background: var(--neutral-75); }
@@ -161,7 +161,7 @@
 }
 
 .checkItem:hover { background: var(--neutral-75); }
-.checkItem.checked { background: #ECFDF5; }
+.checkItem.checked { background: var(--status-success-light); }
 .checkItem.checked span { text-decoration: line-through; color: var(--neutral-300); }
 
 .checkBox {
@@ -177,8 +177,8 @@
 }
 
 .checkItem.checked .checkBox {
-  background: #059669;
-  border-color: #059669;
+  background: var(--status-success);
+  border-color: var(--status-success);
 }
 
 .tocTypeToggle {

@@ -121,7 +121,7 @@
 
 /* ── Type: Success ── */
 .success {
-  background: #F5FFFA;
+  background: var(--status-success-light);
   color: var(--status-success);
   border: 0.5px solid rgba(18, 183, 106, 0.5);
 }
@@ -132,7 +132,7 @@
 
 /* ── Type: Error / Danger ── */
 .danger {
-  background: #FFF5F5;
+  background: var(--status-error-light);
   color: var(--status-error);
   border: 0.5px solid rgba(217, 45, 32, 0.5);
 }

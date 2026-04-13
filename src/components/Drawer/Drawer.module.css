@@ -37,7 +37,7 @@
 .headerTitle {
   font-size: 20px;
   font-weight: 500;
-  color: #3a485f;
+  color: var(--neutral-400);
   margin: 0;
   line-height: 1.2;
   display: flex;
@@ -58,7 +58,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #8a94a8;
+  color: var(--neutral-200);
   padding: 4px;
   border-radius: 4px;
   display: flex;
@@ -69,7 +69,7 @@
 }
 .closeBtn:hover {
   background: #f0f2f5;
-  color: #3a485f;
+  color: var(--neutral-400);
 }
 
 .body {
@@ -80,7 +80,7 @@
 
 .footer {
   padding: 16px 24px;
-  border-top: 0.5px solid #d0d6e1;
+  border-top: 0.5px solid var(--neutral-150);
   display: flex;
   justify-content: flex-end;
   gap: 10px;

@@ -32,14 +32,14 @@
   gap: 6px;
   font-size: 12px;
   font-weight: 500;
-  color: #059669;
+  color: var(--status-success);
 }
 
 .liveDot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #059669;
+  background: var(--status-success);
   animation: pulse-green 1.4s infinite;
 }
 
@@ -124,7 +124,7 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #DC2626;
+  background: var(--status-error);
   border: none;
   cursor: pointer;
   display: flex;

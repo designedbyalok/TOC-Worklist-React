@@ -25,7 +25,7 @@
   padding: 10px 4px;
   font-size: 14px;
   font-weight: 500;
-  color: #6F7A90;
+  color: var(--neutral-300);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   font-family: 'Inter', sans-serif;
@@ -33,11 +33,11 @@
   transition: color .12s;
 }
 
-.tab:hover { color: #3D4A5C; }
+.tab:hover { color: var(--neutral-400); }
 
 .tabActive {
-  color: #8C5AE2;
-  border-bottom-color: #8C5AE2;
+  color: var(--primary-300);
+  border-bottom-color: var(--primary-300);
 }
 
 .tabActions {
@@ -68,29 +68,29 @@
   outline: none;
   font-size: 14px;
   font-family: 'Inter', sans-serif;
-  color: #3D4A5C;
+  color: var(--neutral-400);
   flex: 1;
   background: transparent;
 }
 
-.searchInput input::placeholder { color: #A0AAB8; }
+.searchInput input::placeholder { color: var(--neutral-200); }
 
 .searchClose {
   background: none;
   border: none;
-  color: #6F7A90;
+  color: var(--neutral-300);
   cursor: pointer;
   font-size: 14px;
   padding: 0;
   line-height: 1;
 }
 
-.searchClose:hover { color: #3D4A5C; }
+.searchClose:hover { color: var(--neutral-400); }
 
 .tabDivider {
   width: 0.5px;
   height: 16px;
-  background: #D0D6E1;
+  background: var(--neutral-150);
 }
 
 .createBtn {
@@ -99,11 +99,11 @@
   gap: 6px;
   padding: 6px 14px;
   background: var(--neutral-0);
-  border: 0.5px solid #D0D6E1;
+  border: 0.5px solid var(--neutral-150);
   border-radius: 6px;
   font-size: 14px;
   font-weight: 500;
-  color: #3D4A5C;
+  color: var(--neutral-400);
   cursor: pointer;
   font-family: 'Inter', sans-serif;
 }
@@ -126,17 +126,17 @@
   padding: 8px 16px;
   font-size: 12px;
   font-weight: 500;
-  color: #6F7A90;
+  color: var(--neutral-300);
   text-align: left;
   white-space: nowrap;
-  border-bottom: 1px solid #D0D6E1;
+  border-bottom: 0.5px solid var(--neutral-150);
   background: var(--neutral-0);
   position: sticky;
   top: 0;
 }
 
 .table tbody tr {
-  border-bottom: 0.5px solid #EAECF0;
+  border-bottom: 0.5px solid var(--neutral-100);
   transition: background .1s;
 }
 
@@ -146,21 +146,21 @@
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 400;
-  color: #3D4A5C;
+  color: var(--neutral-300);
   vertical-align: middle;
 }
 
 .nameCell {
   font-weight: 500 !important;
-  color: #1A1F36 !important;
+  color: var(--neutral-400) !important;
 }
 
 .versionCell {
-  color: #6F7A90;
+  color: var(--neutral-300);
 }
 
 .dateCell {
-  color: #6F7A90;
+  color: var(--neutral-300);
   white-space: nowrap;
 }
 
@@ -170,7 +170,7 @@
   align-items: center;
   gap: 6px;
   font-size: 14px;
-  color: #3D4A5C;
+  color: var(--neutral-400);
 }
 
 .voiceDot {
@@ -181,7 +181,7 @@
 }
 
 .voiceMeta {
-  color: #6F7A90;
+  color: var(--neutral-300);
   font-size: 14px;
 }
 
@@ -190,7 +190,7 @@
   width: 36px;
   height: 20px;
   border-radius: 4px;
-  background: #D0D6E1;
+  background: var(--neutral-150);
   border: none;
   cursor: pointer;
   position: relative;
@@ -199,7 +199,7 @@
 }
 
 .toggleOn {
-  background: #8C5AE2;
+  background: var(--primary-300);
 }
 
 .toggleThumb {
@@ -285,12 +285,12 @@
 
 /* User link in Last Updated By */
 .userLink {
-  color: #3A485F;
+  color: var(--neutral-400);
   cursor: pointer;
   transition: color .12s;
 }
 .userLink:hover {
-  color: #8C5AE2;
+  color: var(--primary-300);
   text-decoration: underline;
 }
 
@@ -316,7 +316,7 @@
   justify-content: center;
   background: none;
   border: none;
-  color: #6F7A90;
+  color: var(--neutral-300);
   cursor: pointer;
   border-radius: 6px;
 }
@@ -339,20 +339,20 @@
 .emptyTitle {
   font-size: 16px;
   font-weight: 500;
-  color: #3D4A5C;
+  color: var(--neutral-400);
   margin: 0;
 }
 
 .emptyDesc {
   font-size: 14px;
-  color: #6F7A90;
+  color: var(--neutral-300);
   margin: 0;
   text-align: center;
   max-width: 320px;
 }
 
 .emptyDesc strong {
-  color: #3D4A5C;
+  color: var(--neutral-400);
 }
 
 /* ── Action Dropdown (3-dot menu) ── */
@@ -384,10 +384,10 @@
   background: var(--neutral-50);
 }
 .dropdownItemDanger {
-  color: #D72825;
+  color: var(--status-error);
 }
 .dropdownItemDanger:hover {
-  background: #FEF2F2;
+  background: var(--status-error-light);
 }
 .dropdownDivider {
   height: 1px;
