@@ -1,16 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { Icon } from '../../components/Icon/Icon';
 import { useAppStore } from '../../store/useAppStore';
+import { ConversationIcon, GuardrailsIcon, CallTransferIcon, AgentsIcon } from './nodes/NodeIcons';
 import styles from './NodeSettings.module.css';
 
 const TYPE_CONFIG = {
-  conversation: { icon: 'solar:chat-round-dots-linear', color: 'var(--status-success)' },
-  appointment: { icon: 'solar:calendar-linear', color: 'var(--status-info)' },
-  guardrails: { icon: 'solar:shield-check-linear', color: 'var(--status-warning)' },
-  callTransfer: { icon: 'solar:phone-calling-linear', color: 'var(--primary-300)' },
-  escalation: { icon: 'solar:danger-triangle-linear', color: 'var(--status-error)' },
-  agents: { icon: 'solar:ghost-smile-linear', color: 'var(--primary-400)' },
-  end: { icon: 'solar:stop-bold', color: 'var(--status-error)' },
+  conversation: { color: '#009688', CustomIcon: ConversationIcon },
+  appointment: { icon: 'solar:calendar-mark-linear', color: '#8C5AE2' },
+  guardrails: { color: '#D9A50B', CustomIcon: GuardrailsIcon },
+  callTransfer: { color: '#9C27B0', CustomIcon: CallTransferIcon },
+  escalation: { icon: 'solar:danger-triangle-linear', color: '#D72825' },
+  agents: { color: '#FF907F', CustomIcon: AgentsIcon },
+  end: { icon: 'solar:forbidden-circle-linear', color: '#109CAE' },
 };
 
 /* ── Custom select dropdown ── */
@@ -143,7 +144,13 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
   const removeTransition = (i) => setTransitions(t => t.filter((_, idx) => idx !== i));
 
   const [shakeIdx, setShakeIdx] = useState(null);
-  const handleTransitionClick = (i) => {
+  const handleTransitionClick = (e, i) => {
+    // Don't shake when clicking form controls inside the block
+    const tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'BUTTON' || tag === 'TEXTAREA' || tag === 'LABEL' || e.target.closest('button') || e.target.closest('select')) {
+      if (activeTransition !== i) setActiveTransition(i);
+      return;
+    }
     if (activeTransition === i) {
       setShakeIdx(null);
       requestAnimationFrame(() => setShakeIdx(i));
@@ -190,7 +197,7 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
 
       <div className={styles.nodeIdentity}>
         <div className={styles.nodeIcon} style={{ background: config.color }}>
-          <Icon name={config.icon} size={16} color="#fff" />
+          {config.CustomIcon ? <config.CustomIcon size={16} color="#fff" /> : <Icon name={config.icon} size={16} color="#fff" />}
         </div>
         {isEditing ? (
           <input
@@ -273,7 +280,7 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
                 <div
                   key={i}
                   className={`${styles.transitionBlock} ${isActive ? styles.transitionBlockActive : ''} ${shakeIdx === i ? styles.transitionBlockShake : ''}`}
-                  onClick={() => handleTransitionClick(i)}
+                  onClick={(e) => handleTransitionClick(e, i)}
                   draggable
                   onDragStart={() => handleDragStart(i)}
                   onDragEnter={() => handleDragEnter(i)}

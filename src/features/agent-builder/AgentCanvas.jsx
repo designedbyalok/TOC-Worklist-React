@@ -65,6 +65,16 @@ export function AgentCanvas() {
   const hasUnsavedChanges = useRef(false);
   const reactFlowWrapper = useRef(null);
   const reactFlowInstance = useRef(null);
+  const tabsRef = useRef(null);
+  const [tabSliderStyle, setTabSliderStyle] = useState({});
+
+  const updateTabSlider = useCallback(() => {
+    if (!tabsRef.current) return;
+    const activeBtn = tabsRef.current.querySelector('[data-active="true"]');
+    if (activeBtn) setTabSliderStyle({ left: activeBtn.offsetLeft, width: activeBtn.offsetWidth });
+  }, []);
+  useEffect(() => { updateTabSlider(); }, [activeTab, updateTabSlider]);
+  useEffect(() => { requestAnimationFrame(updateTabSlider); }, [updateTabSlider]);
 
   // Load flow data when it arrives
   useEffect(() => {
@@ -355,10 +365,12 @@ export function AgentCanvas() {
         </div>
 
         <div className={styles.toolbarCenter}>
-          <div className={styles.toolbarTabs}>
+          <div className={styles.toolbarTabs} ref={tabsRef}>
+            <div className={styles.toolbarSlider} style={tabSliderStyle} />
             {BUILDER_TABS.map(tab => (
               <button
                 key={tab}
+                data-active={activeTab === tab}
                 className={`${styles.toolbarTab} ${activeTab === tab ? styles.toolbarTabActive : ''}`}
                 onClick={() => setActiveTab(tab)}
               >

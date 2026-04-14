@@ -46,30 +46,46 @@
 .toolbarTabs {
   display: flex;
   gap: 2px;
-  background: var(--neutral-75);
-  border-radius: 8px;
-  padding: 3px;
+  background: var(--neutral-50);
+  border-radius: 4px;
+  padding: 2px;
+  position: relative;
 }
 .toolbarTab {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
-  padding: 6px 18px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--neutral-300);
-  background: transparent;
+  height: 28px;
+  padding: 4px 14px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-200);
+  background: none;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all .15s;
+  font-family: 'Inter', sans-serif;
+  transition: color .2s ease;
   white-space: nowrap;
+  position: relative;
+  z-index: 1;
 }
-.toolbarTab:hover { color: var(--neutral-400); }
+.toolbarTab:hover { color: var(--neutral-300); }
 .toolbarTabActive {
+  color: var(--neutral-400);
+}
+/* Sliding pill indicator — applied via JS inline style on a ::before or a span */
+.toolbarSlider {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  border-radius: 4px;
   background: var(--neutral-0);
-  color: var(--neutral-500);
-  box-shadow: var(--shadow-card);
+  border: 0.5px solid var(--neutral-150);
+  box-shadow: 0 12px 60px rgba(0,0,0,0.06);
+  transition: left .25s cubic-bezier(.4,0,.2,1), width .25s cubic-bezier(.4,0,.2,1);
+  z-index: 0;
 }
 
 /* Toolbar actions */

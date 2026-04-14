@@ -2,15 +2,16 @@ import { memo, useRef, useState, useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { Icon } from '../../../components/Icon/Icon';
 import { useAppStore } from '../../../store/useAppStore';
+import { ConversationIcon, GuardrailsIcon, CallTransferIcon, AgentsIcon } from './NodeIcons';
 import styles from './ConversationNode.module.css';
 
 const TYPE_CONFIG = {
-  conversation: { icon: 'solar:chat-round-dots-linear', color: 'var(--status-success)', label: 'Conversation' },
-  appointment: { icon: 'solar:calendar-linear', color: 'var(--status-info)', label: 'Appointment' },
-  guardrails: { icon: 'solar:shield-check-linear', color: 'var(--status-warning)', label: 'Guardrails' },
-  callTransfer: { icon: 'solar:phone-calling-linear', color: 'var(--primary-300)', label: 'Call Transfer' },
-  escalation: { icon: 'solar:danger-triangle-linear', color: 'var(--status-error)', label: 'Escalation' },
-  agents: { icon: 'solar:ghost-smile-linear', color: 'var(--primary-400)', label: 'Agents' },
+  conversation: { color: '#009688', label: 'Conversation', CustomIcon: ConversationIcon },
+  appointment: { icon: 'solar:calendar-mark-linear', color: '#8C5AE2', label: 'Appointment' },
+  guardrails: { color: '#D9A50B', label: 'Guardrails', CustomIcon: GuardrailsIcon },
+  callTransfer: { color: '#9C27B0', label: 'Call Transfer', CustomIcon: CallTransferIcon },
+  escalation: { icon: 'solar:danger-triangle-linear', color: '#D72825', label: 'Escalation' },
+  agents: { color: '#FF907F', label: 'Agents', CustomIcon: AgentsIcon },
 };
 
 function DragDots({ className, onPointerDown }) {
@@ -130,7 +131,7 @@ export const ConversationNode = memo(function ConversationNode({ data, id }) {
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerIcon} style={{ background: config.color }}>
-          <Icon name={config.icon} size={16} color="#fff" />
+          {config.CustomIcon ? <config.CustomIcon size={16} color="#fff" /> : <Icon name={config.icon} size={16} color="#fff" />}
         </div>
         <span className={styles.headerLabel} style={{ color: config.color }}>{data.label}</span>
         {data.verified && (

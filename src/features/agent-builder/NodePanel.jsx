@@ -1,15 +1,66 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Icon } from '../../components/Icon/Icon';
+import { ConversationIcon, GuardrailsIcon, CallTransferIcon, AgentsIcon } from './nodes/NodeIcons';
 import styles from './NodePanel.module.css';
 
+/* ── Node type config: drawer icons use light bg + colored border; canvas icons use solid bg ── */
 const NODE_TYPES = [
-  { type: 'conversation', icon: 'solar:chat-round-dots-linear', label: 'Conversation', color: 'var(--status-success)', bg: '#ECFDF5' },
-  { type: 'appointment', icon: 'solar:calendar-linear', label: 'Appointment', color: 'var(--status-info)', bg: '#EFF6FF' },
-  { type: 'guardrails', icon: 'solar:shield-check-linear', label: 'Guardrails', color: 'var(--status-warning)', bg: '#FFFBEB' },
-  { type: 'callTransfer', icon: 'solar:phone-calling-linear', label: 'Call Transfer', color: 'var(--primary-300)', bg: 'var(--primary-100)' },
-  { type: 'escalation', icon: 'solar:danger-triangle-linear', label: 'Escalations', color: 'var(--status-error)', bg: '#FEF2F2' },
-  { type: 'agents', icon: 'solar:ghost-smile-linear', label: 'Agents', color: 'var(--primary-400)', bg: 'var(--primary-100)' },
-  { type: 'end', icon: 'solar:stop-bold', label: 'End', color: 'var(--status-error)', bg: '#FEF2F2' },
+  {
+    type: 'conversation',
+    label: 'Conversation',
+    iconColor: '#009688',
+    drawerBg: '#E5F4F3',
+    drawerBorder: 'rgba(0,150,136,0.1)',
+    CustomIcon: ConversationIcon,
+  },
+  {
+    type: 'appointment',
+    icon: 'solar:calendar-mark-linear',
+    label: 'Appointment',
+    iconColor: '#8C5AE2',
+    drawerBg: '#FCFAFF',
+    drawerBorder: 'rgba(140,90,226,0.3)',
+  },
+  {
+    type: 'guardrails',
+    label: 'Guardrails',
+    iconColor: '#D9A50B',
+    drawerBg: '#FFFCF5',
+    drawerBorder: 'rgba(217,165,11,0.3)',
+    CustomIcon: GuardrailsIcon,
+  },
+  {
+    type: 'callTransfer',
+    label: 'Call Transfer',
+    iconColor: '#9C27B0',
+    drawerBg: '#F5E9F7',
+    drawerBorder: 'rgba(156,39,176,0.2)',
+    CustomIcon: CallTransferIcon,
+  },
+  {
+    type: 'escalation',
+    icon: 'solar:danger-triangle-linear',
+    label: 'Escalations',
+    iconColor: '#D72825',
+    drawerBg: '#FFFCF5',
+    drawerBorder: 'rgba(215,40,37,0.2)',
+  },
+  {
+    type: 'agents',
+    label: 'Agents',
+    iconColor: '#FF907F',
+    drawerBg: 'linear-gradient(136deg, #FFF2F0 2%, #FFEDFA 52%, #EDF5FF 94%)',
+    drawerBorder: '#FF907F',
+    CustomIcon: AgentsIcon,
+  },
+  {
+    type: 'end',
+    icon: 'solar:forbidden-circle-linear',
+    label: 'End',
+    iconColor: '#109CAE',
+    drawerBg: '#E5F8FB',
+    drawerBorder: 'rgba(16,156,174,0.3)',
+  },
 ];
 
 const COMPONENTS = [
@@ -21,6 +72,19 @@ const COMPONENTS = [
 
 export function NodePanel({ onDragStart }) {
   const [activeTab, setActiveTab] = useState('node');
+  const toggleRef = useRef(null);
+  const [sliderStyle, setSliderStyle] = useState({});
+
+  const updateSlider = useCallback(() => {
+    if (!toggleRef.current) return;
+    const activeBtn = toggleRef.current.querySelector('[data-active="true"]');
+    if (activeBtn) {
+      setSliderStyle({ left: activeBtn.offsetLeft, width: activeBtn.offsetWidth });
+    }
+  }, []);
+
+  useEffect(() => { updateSlider(); }, [activeTab, updateSlider]);
+  useEffect(() => { requestAnimationFrame(updateSlider); }, [updateSlider]);
 
   const handleDragStart = (e, nodeType, label) => {
     e.dataTransfer.setData('application/reactflow', JSON.stringify({ nodeType, label }));
@@ -30,36 +94,51 @@ export function NodePanel({ onDragStart }) {
 
   return (
     <aside className={styles.panel}>
-      <div className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === 'node' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('node')}
-        >
-          Node
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === 'components' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('components')}
-        >
-          Components
-        </button>
+      {/* Segmented toggle */}
+      <div className={styles.toggleWrap}>
+        <div className={styles.toggle} ref={toggleRef}>
+          <div className={styles.toggleSlider} style={sliderStyle} />
+          <button
+            data-active={activeTab === 'node'}
+            className={`${styles.toggleBtn} ${activeTab === 'node' ? styles.toggleBtnActive : ''}`}
+            onClick={() => setActiveTab('node')}
+          >
+            Node
+          </button>
+          <button
+            data-active={activeTab === 'components'}
+            className={`${styles.toggleBtn} ${activeTab === 'components' ? styles.toggleBtnActive : ''}`}
+            onClick={() => setActiveTab('components')}
+          >
+            Components
+          </button>
+        </div>
       </div>
 
       <div className={styles.list}>
         {activeTab === 'node' ? (
-          NODE_TYPES.map(n => (
-            <div
-              key={n.type}
-              className={styles.nodeItem}
-              draggable
-              onDragStart={e => handleDragStart(e, n.type, n.label)}
-            >
-              <div className={styles.nodeIcon} style={{ background: n.bg }}>
-                <Icon name={n.icon} size={18} color={n.color} />
+          NODE_TYPES.map(n => {
+            const isGradient = n.drawerBg.startsWith('linear');
+            return (
+              <div
+                key={n.type}
+                className={styles.nodeItem}
+                draggable
+                onDragStart={e => handleDragStart(e, n.type, n.label)}
+              >
+                <div
+                  className={styles.nodeIcon}
+                  style={{
+                    background: n.drawerBg,
+                    borderColor: n.drawerBorder,
+                  }}
+                >
+                  {n.CustomIcon ? <n.CustomIcon size={16} color={n.iconColor} /> : <Icon name={n.icon} size={16} color={n.iconColor} />}
+                </div>
+                <span className={styles.nodeLabel}>{n.label}</span>
               </div>
-              <span className={styles.nodeLabel}>{n.label}</span>
-            </div>
-          ))
+            );
+          })
         ) : (
           COMPONENTS.map(c => (
             <div
