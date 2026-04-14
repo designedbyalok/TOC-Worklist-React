@@ -14,6 +14,7 @@ import '@xyflow/react/dist/style.css';
 import { Icon } from '../../components/Icon/Icon';
 import { CloseIcon } from '../../components/Icon/CloseIcon';
 import { Button } from '../../components/Button/Button';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../../components/ui/dialog';
 import { useAppStore } from '../../store/useAppStore';
 import { NodePanel } from './NodePanel';
 import { NodeSettings } from './NodeSettings';
@@ -60,6 +61,8 @@ export function AgentCanvas() {
   const [panelWidth, setPanelWidth] = useState(DEFAULT_PANEL_WIDTH);
   const [isResizing, setIsResizing] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
+  const [showCloseDialog, setShowCloseDialog] = useState(false);
+  const hasUnsavedChanges = useRef(false);
   const reactFlowWrapper = useRef(null);
   const reactFlowInstance = useRef(null);
 
@@ -81,6 +84,7 @@ export function AgentCanvas() {
   }, [builderFlow?.id]);
 
   const onConnect = useCallback((params) => {
+    hasUnsavedChanges.current = true;
     setEdges(eds => addEdge({
       ...params,
       type: 'smoothstep',
@@ -89,9 +93,29 @@ export function AgentCanvas() {
     }, eds));
   }, [setEdges]);
 
+  const wrappedOnNodesChange = useCallback((changes) => {
+    if (changes.some(c => c.type === 'position' || c.type === 'remove' || c.type === 'add')) {
+      hasUnsavedChanges.current = true;
+    }
+    onNodesChange(changes);
+  }, [onNodesChange]);
+
+  const wrappedOnEdgesChange = useCallback((changes) => {
+    if (changes.some(c => c.type === 'remove' || c.type === 'add')) {
+      hasUnsavedChanges.current = true;
+    }
+    onEdgesChange(changes);
+  }, [onEdgesChange]);
+
   const onNodeClick = useCallback((_, node) => {
-    if (node.type === 'startNode') return; // Start is never selectable
+    if (node.type === 'startNode') return;
     setBuilderSelectedNode(node.id);
+    // Zoom and center on the clicked node
+    reactFlowInstance.current?.fitView({
+      nodes: [node],
+      padding: 0.5,
+      duration: 300,
+    });
   }, [setBuilderSelectedNode]);
 
   const onPaneClick = useCallback(() => {
@@ -204,9 +228,19 @@ export function AgentCanvas() {
     setSaving(true);
     const viewport = reactFlowInstance.current?.getViewport() || { x: 0, y: 0, zoom: 1 };
     await saveFlow(nodes, edges, viewport);
+    hasUnsavedChanges.current = false;
     setSaving(false);
     showToast('Flow saved successfully');
   };
+
+  // Close with unsaved changes check
+  const handleCloseBuilder = useCallback(() => {
+    if (hasUnsavedChanges.current) {
+      setShowCloseDialog(true);
+    } else {
+      closeBuilder();
+    }
+  }, [closeBuilder]);
 
   // Save as new version
   const handleSaveVersion = async () => {
@@ -304,7 +338,7 @@ export function AgentCanvas() {
       {/* Top toolbar */}
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft}>
-          <Button variant="ghost" size="S" iconOnly leadingIcon="solar:arrow-left-linear" onClick={closeBuilder} title="Back to Agents" />
+          <Button variant="ghost" size="S" iconOnly leadingIcon="solar:arrow-left-linear" onClick={handleCloseBuilder} title="Back to Agents" />
           <span className={styles.agentName}>{builderAgent.name}</span>
         </div>
 
@@ -335,7 +369,7 @@ export function AgentCanvas() {
           <Button variant="ghost" size="L" disabled>
             Deploy Agent Now
           </Button>
-          <button className={styles.toolbarCloseBtn} onClick={closeBuilder} title="Close">
+          <button className={styles.toolbarCloseBtn} onClick={handleCloseBuilder} title="Close">
             <CloseIcon size={18} />
           </button>
         </div>
@@ -360,8 +394,8 @@ export function AgentCanvas() {
               <ReactFlow
                 nodes={nodes}
                 edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
+                onNodesChange={wrappedOnNodesChange}
+                onEdgesChange={wrappedOnEdgesChange}
                 onConnect={onConnect}
                 onNodeClick={onNodeClick}
                 onPaneClick={onPaneClick}
@@ -468,7 +502,7 @@ export function AgentCanvas() {
               <NodeSettings
                 node={selectedNode}
                 allNodes={nodes}
-                onSave={handleSave}
+                onSave={() => { hasUnsavedChanges.current = true; handleSave(); }}
                 onClose={() => setBuilderSelectedNode(null)}
                 onDelete={() => handleDeleteNode(selectedNode.id)}
               />
@@ -483,6 +517,30 @@ export function AgentCanvas() {
           </div>
         </div>
       )}
+
+      {/* Unsaved changes confirmation dialog */}
+      <Dialog open={showCloseDialog} onOpenChange={setShowCloseDialog}>
+        <DialogContent className="max-w-[360px] p-0 gap-0 overflow-hidden rounded-lg">
+          <DialogTitle className="sr-only">Unsaved Changes</DialogTitle>
+          <DialogDescription className="sr-only">You have unsaved changes. Choose to discard or save.</DialogDescription>
+          <div style={{ padding: 16, borderBottom: '0.5px solid var(--neutral-150)' }}>
+            <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-500)', marginBottom: 8 }}>
+              Unsaved Changes
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--neutral-300)', lineHeight: 1.5 }}>
+              You have unsaved changes to this workflow. Would you like to save before leaving?
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8, padding: 12 }}>
+            <Button variant="secondary" size="L" fullWidth style={{ flex: 1, minWidth: 0 }} onClick={() => { setShowCloseDialog(false); closeBuilder(); }}>
+              Discard
+            </Button>
+            <Button variant="primary" size="L" fullWidth style={{ flex: 1, minWidth: 0 }} onClick={async () => { setShowCloseDialog(false); await handleSave(); closeBuilder(); }}>
+              Save & Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

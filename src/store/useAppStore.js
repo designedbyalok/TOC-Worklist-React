@@ -871,7 +871,9 @@ export const useAppStore = create((set, get) => ({
     set({ builderAgent: null, builderFlow: null, builderSelectedNode: null, builderVersions: [], builderPrompt: '', builderConfig: null, activePage: 'settings' });
   },
 
-  setBuilderSelectedNode: (nodeId) => set({ builderSelectedNode: nodeId }),
+  setBuilderSelectedNode: (nodeId) => set({ builderSelectedNode: nodeId, builderActiveTransition: null }),
+  builderActiveTransition: null,
+  setBuilderActiveTransition: (idx) => set({ builderActiveTransition: idx }),
 
   fetchAgentConfig: async (agentId) => {
     set({ builderConfigLoading: true });

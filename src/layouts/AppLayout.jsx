@@ -95,7 +95,6 @@ function PopulationView() {
       <div className={styles.main}>
         <TopBar />
         <DegradedBanner />
-        <SystemHealthStrip />
         <div className={styles.content}>
           <TabBar />
           {showFilterBar && <FilterBar />}

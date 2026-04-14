@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Icon } from '../Icon/Icon';
 import { CloseIcon } from '../Icon/CloseIcon';
+import { BotIcon } from '../Icon/BotIcon';
 import { Button } from '../Button/Button';
 import { ActionButton } from '../ActionButton/ActionButton';
+import { Checkbox } from '../ui/checkbox';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './BulkBar.module.css';
 
@@ -40,19 +42,18 @@ export function BulkBar() {
   return (
     <div className={styles.bulkBar}>
       <div className={styles.count}>
-        <input
-          type="checkbox"
+        <Checkbox
           checked={selectedIds.length > 0}
-          onChange={() => clearSelected()}
-          className={styles.countCheckbox}
+          onCheckedChange={() => clearSelected()}
+          style={{ width: 20, height: 20 }}
         />
         <span className={styles.countText}>{selectedIds.length} Selected</span>
       </div>
       <div className={styles.divider} />
-      <Button variant="ghost" size="S" leadingIcon="solar:user-check-rounded-linear" onClick={() => showToast('Change Assignee – coming soon')}>
+      <Button variant="secondary" size="S" leadingIcon="solar:user-check-rounded-linear" onClick={() => showToast('Change Assignee – coming soon')}>
         Change Assignee
       </Button>
-      <Button variant="ghost" size="S" leadingIcon="solar:bolt-bold" onClick={() => showToast('Run Automation – coming soon')}>
+      <Button variant="secondary" size="S" leadingIcon="solar:bolt-outline" onClick={() => showToast('Run Automation – coming soon')}>
         Run Automation
       </Button>
       <div className={styles.moreWrap} ref={moreRef}>
@@ -82,8 +83,9 @@ export function BulkBar() {
               </button>
             ))}
             <button className={styles.moreItem} onClick={() => { setShowMore(false); setShowInvokeModal(true); }}>
-              <Icon name="solar:bot-linear" size={16} color="var(--neutral-400)" />
-              Invoke Agent
+              <BotIcon size={16} color="var(--neutral-400)" />
+              <span style={{ flex: 1 }}>Invoke Agent</span>
+              <Icon name="solar:alt-arrow-right-linear" size={16} color="var(--neutral-300)" />
             </button>
             <div className={styles.moreDivider} />
             <button className={`${styles.moreItem} ${styles.danger}`} onClick={() => showToast('Removed from list')}>
@@ -95,7 +97,7 @@ export function BulkBar() {
       </div>
       <div className={styles.divider} />
       <button className={styles.closeBtn} title="Close" onClick={handleDismiss}>
-        <CloseIcon size={16} />
+        <CloseIcon size={20} color="var(--neutral-300)" />
       </button>
     </div>
   );

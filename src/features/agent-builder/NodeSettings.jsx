@@ -57,6 +57,8 @@ function CustomSelect({ value, options, placeholder, onChange }) {
 
 export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
   const updateNodeData = useAppStore(s => s.updateNodeData);
+  const activeTransition = useAppStore(s => s.builderActiveTransition);
+  const setActiveTransition = useAppStore(s => s.setBuilderActiveTransition);
   const [label, setLabel] = useState(node.data.label || '');
   const [prompt, setPrompt] = useState(node.data.prompt || '');
   const [guardrails, setGuardrails] = useState(node.data.guardrails || '');
@@ -71,6 +73,11 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
     setTransitions(node.data.transitions || []);
     setIsEditing(false);
   }, [node.id]);
+
+  // Auto-sync transitions to store so ConversationNode updates in real-time
+  useEffect(() => {
+    updateNodeData(node.id, { transitions });
+  }, [transitions, node.id, updateNodeData]);
 
   useEffect(() => {
     if (isEditing && nameInputRef.current) {
@@ -95,9 +102,52 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
     else if (e.key === 'Escape') { setLabel(node.data.label || ''); setIsEditing(false); }
   };
 
-  const addTransition = () => setTransitions(t => [...t, { condition: '', target: '' }]);
+  const [showAddMenu, setShowAddMenu] = useState(false);
+  const addMenuRef = useRef(null);
+
+  useEffect(() => {
+    if (!showAddMenu) return;
+    const close = (e) => { if (addMenuRef.current && !addMenuRef.current.contains(e.target)) setShowAddMenu(false); };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [showAddMenu]);
+
+  const addTransition = (type) => {
+    if (type === 'equation') {
+      setTransitions(t => [...t, { type: 'equation', matchMode: 'all', rules: [{ variable: '', operator: '>', value: '' }], target: '' }]);
+    } else {
+      setTransitions(t => [...t, { type: 'prompt', condition: '', target: '' }]);
+    }
+    setShowAddMenu(false);
+  };
   const updateTransition = (i, field, val) => setTransitions(t => t.map((tr, idx) => idx === i ? { ...tr, [field]: val } : tr));
   const removeTransition = (i) => setTransitions(t => t.filter((_, idx) => idx !== i));
+
+  const addRule = (tIdx) => setTransitions(t => t.map((tr, idx) => idx === tIdx ? { ...tr, rules: [...(tr.rules || []), { variable: '', operator: '>', value: '' }] } : tr));
+  const updateRule = (tIdx, rIdx, field, val) => setTransitions(t => t.map((tr, idx) => idx === tIdx ? { ...tr, rules: tr.rules.map((r, ri) => ri === rIdx ? { ...r, [field]: val } : r) } : tr));
+  const removeRule = (tIdx, rIdx) => setTransitions(t => t.map((tr, idx) => idx === tIdx ? { ...tr, rules: tr.rules.filter((_, ri) => ri !== rIdx) } : tr));
+
+  const dragItem = useRef(null);
+  const dragOverItem = useRef(null);
+
+  const handleDragStart = (idx) => { dragItem.current = idx; };
+  const handleDragEnter = (idx) => { dragOverItem.current = idx; };
+  const handleDragEnd = () => {
+    const from = dragItem.current;
+    const to = dragOverItem.current;
+    if (from === null || to === null || from === to) { dragItem.current = null; dragOverItem.current = null; return; }
+    setTransitions(t => {
+      const arr = [...t];
+      const [moved] = arr.splice(from, 1);
+      arr.splice(to, 0, moved);
+      return arr;
+    });
+    if (activeTransition === from) setActiveTransition(to);
+    dragItem.current = null;
+    dragOverItem.current = null;
+  };
+
+  const [promptExpanded, setPromptExpanded] = useState(false);
 
   return (
     <div className={styles.panel}>
@@ -144,7 +194,20 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
         <>
           <div className={styles.section}>
             <label className={styles.sectionLabel}>Conversation</label>
-            <textarea className={styles.textarea} value={prompt} onChange={e => setPrompt(e.target.value)} placeholder="Enter the conversation prompt for this node..." rows={6} />
+            <div className={styles.promptWrap}>
+              <textarea
+                className={`${styles.textarea} ${!promptExpanded ? styles.textareaTruncated : ''}`}
+                value={prompt}
+                onChange={e => setPrompt(e.target.value)}
+                placeholder="Enter the conversation prompt for this node..."
+                rows={promptExpanded ? undefined : 12}
+              />
+              {prompt && prompt.split('\n').length > 12 && (
+                <button className={styles.showMoreBtn} onClick={() => setPromptExpanded(v => !v)}>
+                  {promptExpanded ? 'Show less' : 'Show more'}
+                </button>
+              )}
+            </div>
           </div>
 
           <div className={styles.divider} />
@@ -152,29 +215,135 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
           <div className={styles.section}>
             <div className={styles.sectionHeader}>
               <span className={styles.sectionLabel}>Transition</span>
-              <button className={styles.addBtn} onClick={addTransition}>+ Add New</button>
+              <div className={styles.addBtnWrap} ref={addMenuRef}>
+                <button className={styles.addBtn} onClick={() => setShowAddMenu(v => !v)}>+ Add New</button>
+                {showAddMenu && (
+                  <div className={styles.addDropdown}>
+                    <button className={styles.addDropdownItem} onClick={() => addTransition('prompt')}>
+                      <Icon name="solar:notes-minimalistic-linear" size={16} color="var(--neutral-300)" />
+                      <span>Prompt</span>
+                    </button>
+                    <button className={styles.addDropdownItem} onClick={() => addTransition('equation')}>
+                      <Icon name="solar:calculator-minimalistic-linear" size={16} color="var(--neutral-300)" />
+                      <span>Equation</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {transitions.map((t, i) => (
-              <div key={i} className={styles.transitionBlock}>
-                <button className={styles.removeTransitionBtn} onClick={() => removeTransition(i)} title="Remove transition">
-                  <Icon name="solar:trash-bin-minimalistic-linear" size={13} color="var(--status-error)" />
-                </button>
-                <div className={styles.transitionField}>
-                  <label className={styles.fieldLabel}>Condition</label>
-                  <input className={styles.fieldInput} value={t.condition} onChange={e => updateTransition(i, 'condition', e.target.value)} placeholder="e.g. If Yes" />
+            {transitions.map((t, i) => {
+              const tType = t.type || 'prompt';
+              const isEquation = tType === 'equation';
+              const isActive = activeTransition === i;
+              return (
+                <div
+                  key={i}
+                  className={`${styles.transitionBlock} ${isActive ? styles.transitionBlockActive : ''}`}
+                  onClick={() => setActiveTransition(i)}
+                  draggable
+                  onDragStart={() => handleDragStart(i)}
+                  onDragEnter={() => handleDragEnter(i)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={(e) => e.preventDefault()}
+                >
+                  <div className={styles.transitionIconCol}>
+                    <span title={isEquation ? 'Equation condition' : 'Prompt condition'} className={styles.typeIconWrap}>
+                      <Icon
+                        name={isEquation ? 'solar:calculator-minimalistic-linear' : 'solar:notes-minimalistic-linear'}
+                        size={16}
+                        color={isActive ? 'var(--primary-300)' : 'var(--neutral-300)'}
+                      />
+                    </span>
+                    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" className={styles.dragHandle} title="Drag to reorder">
+                      <circle cx="2" cy="2" r="1" fill="#8A94A8" /><circle cx="6" cy="2" r="1" fill="#8A94A8" />
+                      <circle cx="2" cy="6" r="1" fill="#8A94A8" /><circle cx="6" cy="6" r="1" fill="#8A94A8" />
+                      <circle cx="2" cy="10" r="1" fill="#8A94A8" /><circle cx="6" cy="10" r="1" fill="#8A94A8" />
+                    </svg>
+                  </div>
+                  <div className={styles.transitionContentCol}>
+                    {/* Condition header + delete */}
+                    <div className={styles.conditionHeader}>
+                      <label className={styles.fieldLabel}>Condition</label>
+                      <button className={styles.removeTransitionBtn} onClick={() => removeTransition(i)} title="Remove transition">
+                        <Icon name="solar:trash-bin-minimalistic-linear" size={13} color="var(--status-error)" />
+                      </button>
+                    </div>
+
+                    {isEquation ? (
+                      /* ── Equation rule builder ── */
+                      <div className={styles.equationBox}>
+                        <div className={styles.equationHeader}>
+                          <div className={styles.toggleWrap}>
+                            <button
+                              className={`${styles.toggleBtn} ${(t.matchMode || 'all') === 'all' ? styles.toggleBtnActive : ''}`}
+                              onClick={() => updateTransition(i, 'matchMode', 'all')}
+                            >All</button>
+                            <button
+                              className={`${styles.toggleBtn} ${(t.matchMode || 'all') === 'any' ? styles.toggleBtnActive : ''}`}
+                              onClick={() => updateTransition(i, 'matchMode', 'any')}
+                            >Any</button>
+                          </div>
+                          <button className={styles.addRuleBtn} onClick={() => addRule(i)}>Add Rule</button>
+                        </div>
+                        <div className={styles.ruleRows}>
+                          {(t.rules || []).map((r, ri) => (
+                            <div key={ri} className={styles.ruleRow}>
+                              <input
+                                className={styles.ruleVarInput}
+                                value={r.variable}
+                                onChange={e => updateRule(i, ri, 'variable', e.target.value)}
+                                placeholder="{Variable}"
+                              />
+                              <select
+                                className={styles.ruleOpSelect}
+                                value={r.operator}
+                                onChange={e => updateRule(i, ri, 'operator', e.target.value)}
+                              >
+                                <option value=">">&gt;</option>
+                                <option value="<">&lt;</option>
+                                <option value="=">=</option>
+                                <option value=">=">&gt;=</option>
+                                <option value="<=">&lt;=</option>
+                                <option value="!=">!=</option>
+                              </select>
+                              <input
+                                className={styles.ruleValInput}
+                                value={r.value}
+                                onChange={e => updateRule(i, ri, 'value', e.target.value)}
+                                placeholder="Value"
+                              />
+                              <button className={styles.ruleDeleteBtn} onClick={() => removeRule(i, ri)} title="Remove rule">
+                                <Icon name="solar:trash-bin-minimalistic-linear" size={13} color="var(--status-error)" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      /* ── Prompt condition input ── */
+                      <input
+                        className={styles.fieldInput}
+                        value={t.condition || ''}
+                        onChange={e => updateTransition(i, 'condition', e.target.value)}
+                        placeholder="e.g. If Yes"
+                      />
+                    )}
+
+                    {/* Jump to Node */}
+                    <div className={styles.transitionField}>
+                      <label className={styles.fieldLabel}>Jump to Node</label>
+                      <CustomSelect
+                        value={t.target || ''}
+                        options={nodeOptions}
+                        placeholder="Select Transfer Node"
+                        onChange={val => updateTransition(i, 'target', val)}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className={styles.transitionField}>
-                  <label className={styles.fieldLabel}>Jump to Node</label>
-                  <CustomSelect
-                    value={t.target || ''}
-                    options={nodeOptions}
-                    placeholder="Select Node"
-                    onChange={val => updateTransition(i, 'target', val)}
-                  />
-                </div>
-              </div>
-            ))}
+              );
+            })}
 
             {transitions.length === 0 && (
               <div className={styles.emptyTransitions}>

@@ -124,7 +124,7 @@ function DropdownMenu({ patientId, onClose }) {
       <div className={styles.dropdownDivider} />
       <div className={styles.dropdownSection}>Automation</div>
       <button className={styles.dropdownItem} onClick={() => { showToast('Run Automation – coming soon'); onClose(); }}>
-        <Icon name="solar:bolt-circle-linear" size={18} color="var(--neutral-300)" />
+        <Icon name="solar:bolt-outline" size={18} color="var(--neutral-300)" />
         Run Automation
       </button>
       <div className={styles.dropdownDivider} />

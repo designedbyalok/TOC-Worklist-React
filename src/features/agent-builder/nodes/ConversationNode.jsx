@@ -1,6 +1,7 @@
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { Icon } from '../../../components/Icon/Icon';
+import { useAppStore } from '../../../store/useAppStore';
 import styles from './ConversationNode.module.css';
 
 const TYPE_CONFIG = {
@@ -12,23 +13,54 @@ const TYPE_CONFIG = {
   agents: { icon: 'solar:ghost-smile-linear', color: 'var(--primary-400)', label: 'Agents' },
 };
 
-export const ConversationNode = memo(function ConversationNode({ data, selected }) {
+function DragDots({ className }) {
+  return (
+    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" className={className}>
+      <circle cx="2" cy="2" r="1" fill="currentColor" /><circle cx="6" cy="2" r="1" fill="currentColor" />
+      <circle cx="2" cy="6" r="1" fill="currentColor" /><circle cx="6" cy="6" r="1" fill="currentColor" />
+      <circle cx="2" cy="10" r="1" fill="currentColor" /><circle cx="6" cy="10" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
+export const ConversationNode = memo(function ConversationNode({ data, id }) {
   const config = TYPE_CONFIG[data.nodeType] || TYPE_CONFIG.conversation;
   const transitions = data.transitions || [];
+  const builderSelectedNode = useAppStore(s => s.builderSelectedNode);
+  const activeTransitionIdx = useAppStore(s => s.builderActiveTransition);
+  const updateNodeData = useAppStore(s => s.updateNodeData);
+  const isThisNodeSelected = builderSelectedNode === id;
+
+  const dragItem = useRef(null);
+  const dragOverItem = useRef(null);
+
+  const handleDragStart = (idx) => { dragItem.current = idx; };
+  const handleDragEnter = (idx) => { dragOverItem.current = idx; };
+  const handleDragEnd = () => {
+    const from = dragItem.current;
+    const to = dragOverItem.current;
+    if (from === null || to === null || from === to) { dragItem.current = null; dragOverItem.current = null; return; }
+    const arr = [...transitions];
+    const [moved] = arr.splice(from, 1);
+    arr.splice(to, 0, moved);
+    updateNodeData(id, { transitions: arr });
+    dragItem.current = null;
+    dragOverItem.current = null;
+  };
 
   return (
-    <div className={`${styles.node} ${selected ? styles.nodeSelected : ''}`}>
+    <div className={`${styles.node} ${isThisNodeSelected ? styles.nodeSelected : ''}`}>
       <Handle type="target" position={Position.Left} className={styles.handle} />
 
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerIcon} style={{ background: config.color }}>
-          <Icon name={config.icon} size={14} color="#fff" />
+          <Icon name={config.icon} size={16} color="#fff" />
         </div>
-        <span className={styles.headerLabel}>{data.label}</span>
+        <span className={styles.headerLabel} style={{ color: config.color }}>{data.label}</span>
         {data.verified && (
           <span className={styles.verifiedBadge}>
-            <Icon name="solar:verified-check-bold" size={10} color="var(--status-success)" />
+            <Icon name="solar:shield-check-bold" size={10} color="var(--status-success)" />
             Verified Node
           </span>
         )}
@@ -45,26 +77,41 @@ export const ConversationNode = memo(function ConversationNode({ data, selected 
       {transitions.length > 0 && (
         <div className={styles.transitions}>
           <div className={styles.transitionHeader}>
-            <Icon name="solar:transfer-horizontal-linear" size={14} color="var(--neutral-300)" />
+            <Icon name="solar:tuning-2-linear" size={14} color="var(--neutral-300)" />
             <span>Transition</span>
             <button className={styles.addTransitionBtn}>
               <Icon name="solar:add-circle-linear" size={14} color="var(--primary-300)" />
             </button>
           </div>
-          <div className={styles.transitionDivider} />
-          {transitions.map((t, i) => (
-            <div key={i} className={styles.transitionRow}>
-              <Icon name="solar:tuning-2-linear" size={12} color="var(--neutral-300)" />
-              <span>{t.condition} &rarr; {t.target}</span>
-              <Handle
-                type="source"
-                position={Position.Right}
-                id={`t-${i}`}
-                className={styles.transitionHandle}
-                style={{ top: 'auto', right: -6 }}
-              />
-            </div>
-          ))}
+          <div className={styles.transitionList}>
+            {transitions.map((t, i) => {
+              const isActiveRow = isThisNodeSelected && activeTransitionIdx === i;
+              const condLabel = t.type === 'equation'
+                ? (t.rules || []).map(r => `${r.variable || '?'} ${r.operator} ${r.value || '?'}`).join(', ') || 'Equation'
+                : (t.condition || '—');
+              return (
+                <div
+                  key={i}
+                  className={`${styles.transitionRow} ${isActiveRow ? styles.transitionRowActive : ''}`}
+                  draggable
+                  onDragStart={() => handleDragStart(i)}
+                  onDragEnter={() => handleDragEnter(i)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={(e) => e.preventDefault()}
+                >
+                  <DragDots className={styles.dragDots} />
+                  <span className={styles.transitionText}>{condLabel} &rarr; {t.target || '—'}</span>
+                  <Handle
+                    type="source"
+                    position={Position.Right}
+                    id={`t-${i}`}
+                    className={styles.transitionHandle}
+                    style={{ top: 'auto', right: -6 }}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

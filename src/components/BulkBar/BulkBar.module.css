@@ -9,6 +9,7 @@
   gap: 8px;
   padding: 12px;
   background: var(--neutral-0);
+  border: 1px solid var(--neutral-150);
   border-radius: 8px;
   box-shadow: 4px 15px 60px 24px rgba(0, 0, 0, 0.15);
   animation: bulkSlide .18s ease;
@@ -20,11 +21,6 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
-}
-
-.countCheckbox {
-  flex-shrink: 0;
-  cursor: pointer;
 }
 
 .countText {
@@ -40,79 +36,6 @@
   height: 16px;
   background: var(--neutral-150);
   flex-shrink: 0;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  height: 32px;
-  min-width: 32px;
-  padding: 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  border: 0.5px solid var(--neutral-200);
-  background: var(--neutral-0);
-  color: var(--neutral-300);
-  transition: all .15s;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.btn:hover {
-  border-color: var(--primary-200);
-  background: var(--primary-50);
-  color: var(--primary-300);
-}
-
-/* Reusable action button — same as table row action buttons */
-.actionBtn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--neutral-300);
-  transition: all .15s;
-  position: relative;
-  flex-shrink: 0;
-  padding: 4px;
-}
-
-.actionBtn:hover {
-  background: var(--neutral-50);
-  color: var(--primary-300);
-}
-
-.closeBtn {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--neutral-300);
-  transition: all .15s;
-  flex-shrink: 0;
-  font-size: 14px;
-  line-height: 1;
-  padding: 0;
-}
-
-.closeBtn:hover {
-  background: var(--neutral-50);
-  color: var(--neutral-400);
 }
 
 .moreWrap { position: relative; }
@@ -163,4 +86,24 @@
   height: 0.5px;
   background: var(--neutral-150);
   margin: 4px 0;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background .1s;
+}
+.closeBtn:hover { background: var(--neutral-50); }
+
+@keyframes bulkSlide {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }

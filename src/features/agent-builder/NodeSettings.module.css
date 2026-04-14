@@ -118,6 +118,7 @@
 .sectionHeader .sectionLabel {
   margin-bottom: 0;
 }
+.addBtnWrap { position: relative; }
 .addBtn {
   font-size: 11px;
   font-weight: 500;
@@ -131,7 +132,43 @@
 }
 .addBtn:hover { background: var(--primary-100); }
 
+/* Add-type dropdown */
+.addDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 150px;
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-100);
+  border-radius: 8px;
+  box-shadow: 0 12px 60px -15px rgba(0,0,0,0.06);
+  z-index: 50;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.addDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-400);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  text-align: left;
+  transition: background .1s;
+}
+.addDropdownItem:hover { background: var(--neutral-50); }
+
 /* Textarea */
+.promptWrap { position: relative; }
 .textarea {
   width: 100%;
   border: 0.5px solid var(--neutral-150);
@@ -146,48 +183,235 @@
   transition: border-color .15s, box-shadow .15s;
   background: var(--neutral-0);
 }
+.textareaTruncated {
+  max-height: calc(12 * 1.55em + 20px);
+  overflow: hidden;
+  resize: none;
+}
 .textarea:focus {
   border-color: var(--primary-300);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-300) 8%, transparent);
 }
+.showMoreBtn {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--primary-300);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 0;
+  font-family: 'Inter', sans-serif;
+}
+.showMoreBtn:hover { text-decoration: underline; }
 
-/* Transition blocks */
+/* Transition blocks — two-column layout */
 .transitionBlock {
-  background: var(--neutral-50);
-  border: 0.5px solid var(--neutral-100);
-  border-radius: 8px;
-  padding: 10px 12px;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  background: #F6F7F8;
+  border: 0.5px solid #D0D6E1;
+  border-radius: 6px;
+  padding: 8px 12px 12px 8px;
   margin-bottom: 8px;
-  position: relative;
 }
+.transitionBlockActive {
+  background: var(--primary-50);
+  border-color: var(--primary-300);
+  box-shadow: 0 4px 4px rgba(229,209,255,0.2);
+}
+.transitionIconCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 1px 0 4px;
+  flex-shrink: 0;
+}
+.typeIconWrap {
+  display: flex;
+  cursor: default;
+}
+.dragHandle {
+  cursor: grab;
+  opacity: 0.5;
+  flex-shrink: 0;
+  transition: opacity .12s;
+}
+.dragHandle:hover { opacity: 1; }
+.transitionBlock[draggable]:active .dragHandle { cursor: grabbing; }
+.transitionContentCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.conditionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.conditionHeader .fieldLabel { margin-bottom: 0; }
 .transitionField {
-  margin-bottom: 8px;
-}
-.transitionField:last-of-type {
-  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .fieldLabel {
   display: block;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--neutral-300);
-  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #8A94A8;
+  font-family: 'Inter', sans-serif;
 }
 .fieldInput {
   width: 100%;
-  border: 0.5px solid var(--neutral-150);
-  border-radius: 6px;
-  padding: 7px 10px;
-  font-size: 12px;
+  border: 0.5px solid #8A94A8;
+  border-radius: 4px;
+  padding: 7px 8px;
+  height: 32px;
+  font-size: 14px;
   font-family: 'Inter', sans-serif;
-  color: var(--neutral-500);
+  color: var(--neutral-400);
   outline: none;
   background: var(--neutral-0);
   transition: border-color .15s, box-shadow .15s;
+  box-sizing: border-box;
 }
 .fieldInput:focus {
   border-color: var(--primary-300);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-300) 8%, transparent);
+}
+
+/* Equation rule builder */
+.equationBox {
+  background: var(--neutral-0);
+  border: 0.5px solid #8A94A8;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.equationHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 0;
+}
+.toggleWrap {
+  display: flex;
+  gap: 2px;
+  background: #F6F7F8;
+  border-radius: 4px;
+  padding: 2px;
+}
+.toggleBtn {
+  height: 28px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #8A94A8;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all .12s;
+}
+.toggleBtnActive {
+  background: var(--neutral-0);
+  border: 0.5px solid #CED4DD;
+  color: #344054;
+  box-shadow: 0 12px 60px rgba(0,0,0,0.06);
+}
+.addRuleBtn {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary-300);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  transition: background .12s;
+}
+.addRuleBtn:hover { background: var(--primary-100); }
+.ruleRows {
+  display: flex;
+  flex-direction: column;
+}
+.ruleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-bottom: 0.5px solid #D0D6E1;
+}
+.ruleRow:last-child { border-bottom: none; }
+.ruleVarInput {
+  width: 130px;
+  height: 32px;
+  border: 0.5px solid #8A94A8;
+  border-radius: 4px;
+  padding: 0 8px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: var(--neutral-400);
+  outline: none;
+  background: var(--neutral-0);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.ruleVarInput:focus { border-color: var(--primary-300); }
+.ruleOpSelect {
+  width: 50px;
+  height: 32px;
+  border: 0.5px solid #8A94A8;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: var(--neutral-400);
+  outline: none;
+  background: var(--neutral-0);
+  flex-shrink: 0;
+  cursor: pointer;
+  appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+}
+.ruleOpSelect:focus { border-color: var(--primary-300); }
+.ruleValInput {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  border: 0.5px solid #8A94A8;
+  border-radius: 4px;
+  padding: 0 8px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: var(--neutral-400);
+  outline: none;
+  background: var(--neutral-0);
+  box-sizing: border-box;
+}
+.ruleValInput:focus { border-color: var(--primary-300); }
+.ruleDeleteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 4px;
+  display: flex;
+  opacity: 0.5;
+  flex-shrink: 0;
+  transition: opacity .12s, background .12s;
+}
+.ruleDeleteBtn:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--status-error) 8%, transparent);
 }
 
 /* ── Custom Select Dropdown ── */
@@ -261,9 +485,6 @@
 }
 
 .removeTransitionBtn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   background: none;
   border: none;
   cursor: pointer;
@@ -271,6 +492,7 @@
   border-radius: 4px;
   display: flex;
   opacity: 0.5;
+  flex-shrink: 0;
   transition: opacity .12s, background .12s;
 }
 .removeTransitionBtn:hover {

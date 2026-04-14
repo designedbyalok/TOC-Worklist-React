@@ -153,28 +153,47 @@ function CustomSelect({ value, options, onChange, placeholder }) {
 }
 
 /* ─────────────── Slider ─────────────── */
+function getSliderColor(value) {
+  if (value >= 80) return { bg: 'var(--status-success)', border: '#34d399', light: 'var(--status-success-light)' };
+  if (value >= 40) return { bg: '#F59E0B', border: '#FCD34D', light: '#FEF3C7' };
+  return { bg: '#FA4335', border: '#FF766C', light: '#FEE2E2' };
+}
+
 function Slider({ value, onChange, label, badgeText }) {
+  const color = getSliderColor(value);
+  const badgeClass = value >= 80 ? styles.sliderBadgeHigh : value >= 40 ? styles.sliderBadgeMedium : styles.sliderBadgeLow;
+
   return (
     <div className={styles.sliderRow}>
       <div className={styles.sliderHeader}>
         <span className={styles.sliderLabel}>{label}</span>
-        <span className={styles.sliderBadge}>{badgeText}</span>
+        <span className={`${styles.sliderBadge} ${badgeClass}`}>{badgeText}</span>
       </div>
-      <div className={styles.sliderWrap}>
+      <div className={styles.sliderTrackArea}>
         <div className={styles.sliderTrack}>
-          <div className={styles.sliderFill} style={{ width: `${value}%` }} />
-          <div className={styles.sliderThumb} style={{ left: `${value}%` }}>
-            <span className={styles.sliderTooltip}>{value}%</span>
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={value}
-            onChange={(e) => onChange(Number(e.target.value))}
-            className={styles.sliderInput}
-          />
+          <div className={styles.sliderFill} style={{ width: `${value}%`, background: color.bg }} />
         </div>
+        {/* Glow behind thumb */}
+        <div
+          className={styles.sliderGlow}
+          style={{ left: `${value}%`, background: color.bg }}
+        />
+        {/* Pill thumb */}
+        <div
+          className={styles.sliderThumb}
+          style={{ left: `${value}%`, background: color.bg, borderColor: color.border }}
+        >
+          <Icon name="solar:bolt-bold" size={12} color="#fff" />
+          <span className={styles.sliderThumbText}>{value}</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className={styles.sliderInput}
+        />
       </div>
     </div>
   );

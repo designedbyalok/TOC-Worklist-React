@@ -2,16 +2,14 @@ import { useState } from 'react';
 import { Avatar } from '../Avatar/Avatar';
 import { Icon } from '../Icon/Icon';
 import { Button } from '../Button/Button';
+import { ActionButton } from '../ActionButton/ActionButton';
 import { useAppStore } from '../../store/useAppStore';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
-  DialogFooter,
   DialogDescription,
 } from '../ui/dialog';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 
 const AGENTS = [
   { name: 'Ricardo', role: 'SNP Agent' },
@@ -43,49 +41,90 @@ export function InvokeAgentModal() {
 
   return (
     <Dialog open={showInvokeModal} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-[360px] p-4 gap-3">
-        <DialogHeader>
-          <DialogTitle className="text-[15px] font-medium text-[var(--neutral-400)] px-1">
+      <DialogContent className="max-w-[340px] p-0 gap-0 overflow-hidden rounded-lg">
+        <DialogTitle className="sr-only">Select Agent to Invoke</DialogTitle>
+        <DialogDescription className="sr-only">
+          Choose an agent to invoke for the selected patients.
+        </DialogDescription>
+
+        {/* Title section */}
+        <div style={{
+          display: 'flex', alignItems: 'center', padding: '8px',
+          borderBottom: '0.5px solid var(--neutral-150)',
+        }}>
+          <span style={{
+            flex: 1, fontSize: 14, fontWeight: 500,
+            color: 'var(--neutral-400)', fontFamily: "'Inter', sans-serif",
+          }}>
             Select Agent to Invoke
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            Choose an agent to invoke for the selected patients.
-          </DialogDescription>
-        </DialogHeader>
+          </span>
+        </div>
 
-        <RadioGroup
-          value={selected}
-          onValueChange={setSelected}
-          className="grid gap-1"
-        >
-          {AGENTS.map(agent => (
-            <label
-              key={agent.name}
-              className={[
-                'flex items-center gap-2.5 px-2 py-1 rounded-lg cursor-pointer border-[1.5px] transition-all duration-150',
-                selected === agent.name
-                  ? 'bg-[var(--primary-50)] border-[var(--primary-200)]'
-                  : 'border-transparent hover:bg-[var(--primary-50)]',
-              ].join(' ')}
-            >
-              <RadioGroupItem value={agent.name} />
-              <Avatar variant="invokeAgent" agentName={agent.name} />
-              <div className="flex-1">
-                <div className="text-sm font-medium text-[var(--neutral-400)]">{agent.name}</div>
-                <div className="text-xs text-[var(--neutral-300)] mt-px">{agent.role}</div>
-              </div>
-              {selected === agent.name && (
-                <Icon name="solar:play-bold" size={14} color="var(--primary-300)" />
-              )}
-            </label>
-          ))}
-        </RadioGroup>
+        {/* Agent list section */}
+        <div style={{
+          padding: 8,
+          borderBottom: '0.5px solid var(--neutral-150)',
+          display: 'flex', flexDirection: 'column', gap: 2,
+        }}>
+          {AGENTS.map(agent => {
+            const isSelected = selected === agent.name;
+            return (
+              <button
+                key={agent.name}
+                type="button"
+                onClick={() => setSelected(agent.name)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '4px 8px', borderRadius: 6, cursor: 'pointer',
+                  border: isSelected ? '0.5px solid var(--primary-200)' : '0.5px solid transparent',
+                  background: isSelected ? 'var(--primary-50)' : 'transparent',
+                  fontFamily: "'Inter', sans-serif", textAlign: 'left',
+                  width: '100%', transition: 'all .12s',
+                }}
+                onMouseOver={e => { if (!isSelected) e.currentTarget.style.background = 'var(--neutral-50)'; }}
+                onMouseOut={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+              >
+                {/* Radio circle */}
+                <div style={{
+                  width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
+                  border: isSelected ? '5px solid var(--primary-300)' : '1.5px solid var(--neutral-200)',
+                  background: isSelected ? 'var(--neutral-0)' : 'var(--neutral-0)',
+                  boxSizing: 'border-box',
+                }} />
+                {/* Avatar */}
+                <Avatar variant="invokeAgent" agentName={agent.name} style={{ width: 32, height: 32, borderRadius: 4, flexShrink: 0 }} />
+                {/* Text */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 400, color: 'var(--neutral-400)', lineHeight: 1.2 }}>
+                    {agent.name}
+                  </div>
+                  <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)', lineHeight: 1.2, marginTop: 4 }}>
+                    {agent.role}
+                  </div>
+                </div>
+                {/* Play icon for selected */}
+                {isSelected && (
+                  <ActionButton
+                    icon="solar:play-linear"
+                    size="S"
+                    tooltip="Preview agent"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-        <DialogFooter className="flex-row gap-2.5 mt-0 sm:flex-row">
+        {/* Footer buttons */}
+        <div style={{
+          display: 'flex', gap: 12, padding: 8,
+        }}>
           <Button
             variant="secondary"
             size="L"
             fullWidth
+            style={{ flex: 1, minWidth: 0 }}
             onClick={() => setShowInvokeModal(false)}
           >
             Cancel
@@ -94,12 +133,13 @@ export function InvokeAgentModal() {
             variant="primary"
             size="L"
             fullWidth
+            style={{ flex: 1, minWidth: 0 }}
             disabled={!selected}
             onClick={handleConfirm}
           >
             Invoke Agent
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
