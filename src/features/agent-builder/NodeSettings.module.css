@@ -168,7 +168,6 @@
 .addDropdownItem:hover { background: var(--neutral-50); }
 
 /* Textarea */
-.promptWrap { position: relative; }
 .textarea {
   width: 100%;
   border: 0.5px solid var(--neutral-150);
@@ -182,29 +181,15 @@
   outline: none;
   transition: border-color .15s, box-shadow .15s;
   background: var(--neutral-0);
-}
-.textareaTruncated {
-  max-height: calc(12 * 1.55em + 20px);
-  overflow: hidden;
-  resize: none;
+  min-height: 80px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 .textarea:focus {
   border-color: var(--primary-300);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-300) 8%, transparent);
 }
-.showMoreBtn {
-  display: block;
-  margin-top: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--primary-300);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px 0;
-  font-family: 'Inter', sans-serif;
-}
-.showMoreBtn:hover { text-decoration: underline; }
 
 /* Transition blocks — two-column layout */
 .transitionBlock {
@@ -216,11 +201,24 @@
   border-radius: 6px;
   padding: 8px 12px 12px 8px;
   margin-bottom: 8px;
+  cursor: pointer;
+  transition: all .2s ease, transform .2s ease;
 }
 .transitionBlockActive {
   background: var(--primary-50);
   border-color: var(--primary-300);
   box-shadow: 0 4px 4px rgba(229,209,255,0.2);
+}
+.transitionBlockShake {
+  animation: nodeShake .4s ease;
+}
+@keyframes nodeShake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-4px); }
+  30% { transform: translateX(3px); }
+  45% { transform: translateX(-2px); }
+  60% { transform: translateX(2px); }
+  75% { transform: translateX(-1px); }
 }
 .transitionIconCol {
   display: flex;

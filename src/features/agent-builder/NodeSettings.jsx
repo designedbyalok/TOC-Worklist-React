@@ -65,19 +65,36 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
   const [transitions, setTransitions] = useState(node.data.transitions || []);
   const [isEditing, setIsEditing] = useState(false);
   const nameInputRef = useRef(null);
+  const lastSyncedJson = useRef(JSON.stringify(node.data.transitions || []));
 
   useEffect(() => {
     setLabel(node.data.label || '');
     setPrompt(node.data.prompt || '');
     setGuardrails(node.data.guardrails || '');
-    setTransitions(node.data.transitions || []);
+    const t = node.data.transitions || [];
+    setTransitions(t);
+    lastSyncedJson.current = JSON.stringify(t);
     setIsEditing(false);
   }, [node.id]);
 
   // Auto-sync transitions to store so ConversationNode updates in real-time
   useEffect(() => {
-    updateNodeData(node.id, { transitions });
-  }, [transitions, node.id, updateNodeData]);
+    const json = JSON.stringify(transitions);
+    if (json !== lastSyncedJson.current) {
+      lastSyncedJson.current = json;
+      updateNodeData(node.id, { transitions });
+    }
+  }, [transitions, node.id]);
+
+  // Sync transitions from store when changed externally (e.g. + button on node card)
+  useEffect(() => {
+    const storeTransitions = node.data.transitions || [];
+    const storeJson = JSON.stringify(storeTransitions);
+    if (storeJson !== lastSyncedJson.current) {
+      lastSyncedJson.current = storeJson;
+      setTransitions(storeTransitions);
+    }
+  }, [node.data.transitions]);
 
   useEffect(() => {
     if (isEditing && nameInputRef.current) {
@@ -113,15 +130,28 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
   }, [showAddMenu]);
 
   const addTransition = (type) => {
+    const newIdx = transitions.length;
     if (type === 'equation') {
       setTransitions(t => [...t, { type: 'equation', matchMode: 'all', rules: [{ variable: '', operator: '>', value: '' }], target: '' }]);
     } else {
       setTransitions(t => [...t, { type: 'prompt', condition: '', target: '' }]);
     }
+    setActiveTransition(newIdx);
     setShowAddMenu(false);
   };
   const updateTransition = (i, field, val) => setTransitions(t => t.map((tr, idx) => idx === i ? { ...tr, [field]: val } : tr));
   const removeTransition = (i) => setTransitions(t => t.filter((_, idx) => idx !== i));
+
+  const [shakeIdx, setShakeIdx] = useState(null);
+  const handleTransitionClick = (i) => {
+    if (activeTransition === i) {
+      setShakeIdx(null);
+      requestAnimationFrame(() => setShakeIdx(i));
+      setTimeout(() => setShakeIdx(null), 500);
+    } else {
+      setActiveTransition(i);
+    }
+  };
 
   const addRule = (tIdx) => setTransitions(t => t.map((tr, idx) => idx === tIdx ? { ...tr, rules: [...(tr.rules || []), { variable: '', operator: '>', value: '' }] } : tr));
   const updateRule = (tIdx, rIdx, field, val) => setTransitions(t => t.map((tr, idx) => idx === tIdx ? { ...tr, rules: tr.rules.map((r, ri) => ri === rIdx ? { ...r, [field]: val } : r) } : tr));
@@ -147,7 +177,7 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
     dragOverItem.current = null;
   };
 
-  const [promptExpanded, setPromptExpanded] = useState(false);
+  // promptExpanded removed — textarea now auto-resizes
 
   return (
     <div className={styles.panel}>
@@ -194,20 +224,23 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
         <>
           <div className={styles.section}>
             <label className={styles.sectionLabel}>Conversation</label>
-            <div className={styles.promptWrap}>
-              <textarea
-                className={`${styles.textarea} ${!promptExpanded ? styles.textareaTruncated : ''}`}
-                value={prompt}
-                onChange={e => setPrompt(e.target.value)}
-                placeholder="Enter the conversation prompt for this node..."
-                rows={promptExpanded ? undefined : 12}
-              />
-              {prompt && prompt.split('\n').length > 12 && (
-                <button className={styles.showMoreBtn} onClick={() => setPromptExpanded(v => !v)}>
-                  {promptExpanded ? 'Show less' : 'Show more'}
-                </button>
-              )}
-            </div>
+            <textarea
+              className={styles.textarea}
+              value={prompt}
+              onChange={e => {
+                setPrompt(e.target.value);
+                // Auto-resize
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.min(e.target.scrollHeight, 400) + 'px';
+              }}
+              ref={el => {
+                if (el) {
+                  el.style.height = 'auto';
+                  el.style.height = Math.min(el.scrollHeight, 400) + 'px';
+                }
+              }}
+              placeholder="Enter the conversation prompt for this node..."
+            />
           </div>
 
           <div className={styles.divider} />
@@ -239,8 +272,8 @@ export function NodeSettings({ node, allNodes, onSave, onClose, onDelete }) {
               return (
                 <div
                   key={i}
-                  className={`${styles.transitionBlock} ${isActive ? styles.transitionBlockActive : ''}`}
-                  onClick={() => setActiveTransition(i)}
+                  className={`${styles.transitionBlock} ${isActive ? styles.transitionBlockActive : ''} ${shakeIdx === i ? styles.transitionBlockShake : ''}`}
+                  onClick={() => handleTransitionClick(i)}
                   draggable
                   onDragStart={() => handleDragStart(i)}
                   onDragEnter={() => handleDragEnter(i)}

@@ -83,8 +83,8 @@
   font-weight: 400;
   margin-bottom: 8px;
 }
+.addBtnWrap { position: relative; margin-left: auto; }
 .addTransitionBtn {
-  margin-left: auto;
   background: none;
   border: none;
   cursor: pointer;
@@ -94,6 +94,40 @@
   transition: opacity .15s;
 }
 .addTransitionBtn:hover { opacity: 1; }
+
+.addDropdown {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  right: 0;
+  min-width: 140px;
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-100);
+  border-radius: 8px;
+  box-shadow: 0 12px 60px -15px rgba(0,0,0,0.06);
+  z-index: 50;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.addDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--neutral-400);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  text-align: left;
+  transition: background .1s;
+}
+.addDropdownItem:hover { background: var(--neutral-50); }
 
 .transitionDivider { display: none; }
 
@@ -114,10 +148,9 @@
   border-radius: 4px;
   background: var(--neutral-50);
   border: 0.5px solid var(--neutral-150);
-  cursor: grab;
-  transition: background .12s, border-color .12s;
+  cursor: pointer;
+  transition: all .2s ease, transform .2s ease;
 }
-.transitionRow:active { cursor: grabbing; }
 .transitionRowActive {
   background: var(--primary-50);
   border-color: var(--primary-300);
@@ -125,12 +158,32 @@
 .transitionRowDragOver {
   border-color: var(--primary-300);
   border-style: dashed;
+  transform: scale(1.02);
+}
+.transitionRowDragging {
+  opacity: 0.5;
+  transform: scale(0.96);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+.transitionRowShake {
+  animation: shake .4s ease;
 }
 .dragDots {
   flex-shrink: 0;
   color: var(--neutral-200);
+  cursor: grab;
 }
+.dragDots:active { cursor: grabbing; }
 .transitionRowActive .dragDots { color: var(--primary-300); }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-4px); }
+  30% { transform: translateX(3px); }
+  45% { transform: translateX(-2px); }
+  60% { transform: translateX(2px); }
+  75% { transform: translateX(-1px); }
+}
 .transitionText {
   flex: 1;
   min-width: 0;

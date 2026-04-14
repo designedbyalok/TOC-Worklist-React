@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react';
+import { memo, useRef, useState, useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { Icon } from '../../../components/Icon/Icon';
 import { useAppStore } from '../../../store/useAppStore';
@@ -13,9 +13,14 @@ const TYPE_CONFIG = {
   agents: { icon: 'solar:ghost-smile-linear', color: 'var(--primary-400)', label: 'Agents' },
 };
 
-function DragDots({ className }) {
+function DragDots({ className, onPointerDown }) {
   return (
-    <svg width="8" height="12" viewBox="0 0 8 12" fill="none" className={className}>
+    <svg
+      width="8" height="12" viewBox="0 0 8 12" fill="none"
+      className={className}
+      onPointerDown={onPointerDown}
+      style={{ touchAction: 'none' }}
+    >
       <circle cx="2" cy="2" r="1" fill="currentColor" /><circle cx="6" cy="2" r="1" fill="currentColor" />
       <circle cx="2" cy="6" r="1" fill="currentColor" /><circle cx="6" cy="6" r="1" fill="currentColor" />
       <circle cx="2" cy="10" r="1" fill="currentColor" /><circle cx="6" cy="10" r="1" fill="currentColor" />
@@ -28,25 +33,95 @@ export const ConversationNode = memo(function ConversationNode({ data, id }) {
   const transitions = data.transitions || [];
   const builderSelectedNode = useAppStore(s => s.builderSelectedNode);
   const activeTransitionIdx = useAppStore(s => s.builderActiveTransition);
+  const setActiveTransition = useAppStore(s => s.setBuilderActiveTransition);
   const updateNodeData = useAppStore(s => s.updateNodeData);
   const isThisNodeSelected = builderSelectedNode === id;
 
-  const dragItem = useRef(null);
-  const dragOverItem = useRef(null);
+  // Shake animation for already-selected clicks
+  const [shakeIdx, setShakeIdx] = useState(null);
 
-  const handleDragStart = (idx) => { dragItem.current = idx; };
-  const handleDragEnter = (idx) => { dragOverItem.current = idx; };
-  const handleDragEnd = () => {
-    const from = dragItem.current;
-    const to = dragOverItem.current;
-    if (from === null || to === null || from === to) { dragItem.current = null; dragOverItem.current = null; return; }
-    const arr = [...transitions];
-    const [moved] = arr.splice(from, 1);
-    arr.splice(to, 0, moved);
-    updateNodeData(id, { transitions: arr });
-    dragItem.current = null;
-    dragOverItem.current = null;
-  };
+  const handleRowClick = useCallback((e, i) => {
+    e.stopPropagation();
+    if (activeTransitionIdx === i) {
+      // Already selected — trigger shake
+      setShakeIdx(null);
+      requestAnimationFrame(() => setShakeIdx(i));
+      setTimeout(() => setShakeIdx(null), 500);
+    } else {
+      setActiveTransition(i);
+    }
+  }, [activeTransitionIdx, setActiveTransition]);
+
+  // Pointer-based drag reorder (works inside React Flow nodes)
+  const dragIdx = useRef(null);
+  const [dragOverIdx, setDragOverIdx] = useState(null);
+  const [draggingIdx, setDraggingIdx] = useState(null);
+  const listRef = useRef(null);
+
+  const handlePointerDown = useCallback((e, idx) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dragIdx.current = idx;
+    setDraggingIdx(idx);
+    setDragOverIdx(null);
+
+    const onPointerMove = (ev) => {
+      if (!listRef.current) return;
+      const rows = listRef.current.querySelectorAll('[data-row-idx]');
+      for (const row of rows) {
+        const rect = row.getBoundingClientRect();
+        if (ev.clientY >= rect.top && ev.clientY <= rect.bottom) {
+          const overIdx = Number(row.dataset.rowIdx);
+          setDragOverIdx(overIdx !== dragIdx.current ? overIdx : null);
+          break;
+        }
+      }
+    };
+
+    const onPointerUp = () => {
+      const from = dragIdx.current;
+      document.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerup', onPointerUp);
+
+      if (!listRef.current) { dragIdx.current = null; setDragOverIdx(null); setDraggingIdx(null); return; }
+      const rows = listRef.current.querySelectorAll('[data-row-idx]');
+      let targetIdx = null;
+      for (const row of rows) {
+        if (row.classList.contains(styles.transitionRowDragOver)) {
+          targetIdx = Number(row.dataset.rowIdx);
+          break;
+        }
+      }
+
+      dragIdx.current = null;
+      setDragOverIdx(null);
+      setDraggingIdx(null);
+
+      if (targetIdx !== null && targetIdx !== from) {
+        const arr = [...transitions];
+        const [moved] = arr.splice(from, 1);
+        arr.splice(targetIdx, 0, moved);
+        updateNodeData(id, { transitions: arr });
+      }
+    };
+
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+  }, [transitions, id, updateNodeData]);
+
+  // + button: add transition via store (shared with NodeSettings)
+  const [showAddMenu, setShowAddMenu] = useState(false);
+  const addMenuRef = useRef(null);
+
+  const handleAddTransition = useCallback((type) => {
+    const newTransition = type === 'equation'
+      ? { type: 'equation', matchMode: 'all', rules: [{ variable: '', operator: '>', value: '' }], target: '' }
+      : { type: 'prompt', condition: '', target: '' };
+    const newTransitions = [...transitions, newTransition];
+    updateNodeData(id, { transitions: newTransitions });
+    setActiveTransition(transitions.length);
+    setShowAddMenu(false);
+  }, [transitions, id, updateNodeData, setActiveTransition]);
 
   return (
     <div className={`${styles.node} ${isThisNodeSelected ? styles.nodeSelected : ''}`}>
@@ -79,11 +154,25 @@ export const ConversationNode = memo(function ConversationNode({ data, id }) {
           <div className={styles.transitionHeader}>
             <Icon name="solar:tuning-2-linear" size={14} color="var(--neutral-300)" />
             <span>Transition</span>
-            <button className={styles.addTransitionBtn}>
-              <Icon name="solar:add-circle-linear" size={14} color="var(--primary-300)" />
-            </button>
+            <div className={styles.addBtnWrap} ref={addMenuRef}>
+              <button className={`${styles.addTransitionBtn} nodrag nopan`} onClick={(e) => { e.stopPropagation(); setShowAddMenu(v => !v); }}>
+                <Icon name="solar:add-circle-linear" size={14} color="var(--primary-300)" />
+              </button>
+              {showAddMenu && (
+                <div className={`${styles.addDropdown} nodrag nopan`}>
+                  <button className={styles.addDropdownItem} onClick={(e) => { e.stopPropagation(); handleAddTransition('prompt'); }}>
+                    <Icon name="solar:notes-minimalistic-linear" size={14} color="var(--neutral-300)" />
+                    <span>Prompt</span>
+                  </button>
+                  <button className={styles.addDropdownItem} onClick={(e) => { e.stopPropagation(); handleAddTransition('equation'); }}>
+                    <Icon name="solar:calculator-minimalistic-linear" size={14} color="var(--neutral-300)" />
+                    <span>Equation</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-          <div className={styles.transitionList}>
+          <div className={styles.transitionList} ref={listRef}>
             {transitions.map((t, i) => {
               const isActiveRow = isThisNodeSelected && activeTransitionIdx === i;
               const condLabel = t.type === 'equation'
@@ -92,14 +181,11 @@ export const ConversationNode = memo(function ConversationNode({ data, id }) {
               return (
                 <div
                   key={i}
-                  className={`${styles.transitionRow} ${isActiveRow ? styles.transitionRowActive : ''}`}
-                  draggable
-                  onDragStart={() => handleDragStart(i)}
-                  onDragEnter={() => handleDragEnter(i)}
-                  onDragEnd={handleDragEnd}
-                  onDragOver={(e) => e.preventDefault()}
+                  data-row-idx={i}
+                  className={`${styles.transitionRow} nodrag nopan ${isActiveRow ? styles.transitionRowActive : ''} ${dragOverIdx === i ? styles.transitionRowDragOver : ''} ${draggingIdx === i ? styles.transitionRowDragging : ''} ${shakeIdx === i ? styles.transitionRowShake : ''}`}
+                  onClick={(e) => handleRowClick(e, i)}
                 >
-                  <DragDots className={styles.dragDots} />
+                  <DragDots className={styles.dragDots} onPointerDown={(e) => handlePointerDown(e, i)} />
                   <span className={styles.transitionText}>{condLabel} &rarr; {t.target || '—'}</span>
                   <Handle
                     type="source"

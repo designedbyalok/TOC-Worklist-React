@@ -83,6 +83,18 @@ export function AgentCanvas() {
     }
   }, [builderFlow?.id]);
 
+  // Sync node data changes from store (e.g. transitions edited in NodeSettings) back to React Flow
+  useEffect(() => {
+    if (!builderFlow?.nodes) return;
+    setNodes(prev => prev.map(n => {
+      const storeNode = builderFlow.nodes.find(sn => sn.id === n.id);
+      if (storeNode && storeNode.data !== n.data) {
+        return { ...n, data: { ...storeNode.data } };
+      }
+      return n;
+    }));
+  }, [builderFlow?.nodes]);
+
   const onConnect = useCallback((params) => {
     hasUnsavedChanges.current = true;
     setEdges(eds => addEdge({
