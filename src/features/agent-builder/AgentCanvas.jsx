@@ -68,6 +68,18 @@ export function AgentCanvas() {
   const tabsRef = useRef(null);
   const [tabSliderStyle, setTabSliderStyle] = useState({});
 
+  // Warn on browser refresh with unsaved changes
+  useEffect(() => {
+    const handler = (e) => {
+      if (hasUnsavedChanges.current) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, []);
+
   const updateTabSlider = useCallback(() => {
     if (!tabsRef.current) return;
     const activeBtn = tabsRef.current.querySelector('[data-active="true"]');

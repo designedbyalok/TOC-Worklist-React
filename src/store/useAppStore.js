@@ -221,6 +221,7 @@ export const useAppStore = create((set, get) => ({
   builderFlow: null,        // { id, nodes, edges, viewport, version }
   builderFlowLoading: false,
   builderSelectedNode: null, // id of currently selected node
+  _pendingAgentId: null,    // set by router on refresh — triggers re-open in AppLayout
   builderVersions: [],      // list of saved versions
   builderPrompt: '',        // original creation prompt
   builderConfig: null,      // agent_config row for current agent
@@ -864,11 +865,13 @@ export const useAppStore = create((set, get) => ({
     sessionStorage.setItem('activePage', 'builder');
     set({ builderAgent: agent, activePage: 'builder', builderSelectedNode: null, builderPrompt: prompt || '' });
     get().fetchFlow(agent.id, prompt);
+    updateHash(get);
   },
 
   closeBuilder: () => {
     sessionStorage.setItem('activePage', 'settings');
-    set({ builderAgent: null, builderFlow: null, builderSelectedNode: null, builderVersions: [], builderPrompt: '', builderConfig: null, activePage: 'settings' });
+    set({ builderAgent: null, builderFlow: null, builderSelectedNode: null, builderVersions: [], builderPrompt: '', builderConfig: null, activePage: 'settings', _pendingAgentId: null });
+    updateHash(get);
   },
 
   setBuilderSelectedNode: (nodeId) => set({ builderSelectedNode: nodeId, builderActiveTransition: null }),

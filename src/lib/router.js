@@ -28,7 +28,10 @@ export function stateToHash(state) {
     goalDetailId, goalWizardOpen, goalWizardEditId,
     chatGroupDetailId, agentRulesGroupId, businessHoursOpen } = state;
 
-  if (activePage === 'builder') return buildHash('builder');
+  if (activePage === 'builder') {
+    const agentId = state.builderAgent?.id;
+    return agentId ? buildHash('settings', 'agents', 'edit', String(agentId)) : buildHash('builder');
+  }
   if (activePage === 'analytics') {
     const view = state.analyticsView || 'executive';
     return view === 'executive' ? buildHash('analytics') : buildHash('analytics', view);
@@ -111,6 +114,12 @@ export function hashToState(route) {
     if (route.section === 'account') {
       updates.settingsNavItem = 'account';
       updates.accountTab = route.tab || 'users';
+      return updates;
+    }
+    // Agent edit (builder) route: #/settings/agents/edit/{id}
+    if (route.section === 'agents' && route.tab === 'edit' && route.id) {
+      updates.activePage = 'builder';
+      updates._pendingAgentId = route.id;
       return updates;
     }
     // Agents section

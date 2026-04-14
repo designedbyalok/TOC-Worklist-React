@@ -69,6 +69,44 @@
   --sidebar-active-overlay: rgba(0, 0, 0, 0.25);
   --sidebar-active-overlay-border: rgba(255, 255, 255, 0.25);
 
+  /* Chart Colors — ordered data-point palette for visualizations */
+  --chart-1:  #80A4D5;
+  --chart-2:  #BFD7F6;
+  --chart-3:  #8DE3D4;
+  --chart-4:  #BD9ECF;
+  --chart-5:  #BBC892;
+  --chart-6:  #EEA47B;
+  --chart-7:  #F4B6C2;
+  --chart-8:  #FAD6BF;
+  --chart-9:  #C5C6E0;
+  --chart-10: #D3A5BD;
+  --chart-11: #DCE3BF;
+  --chart-12: #F7EBAC;
+
+  /* Accent Dark — versatile hues for tags, schedules, categorical UI */
+  --accent-blue-grey:    #607D8B;
+  --accent-brown:        #795548;
+  --accent-amber:        #EEB200;
+  --accent-light-green:  #8BC34A;
+  --accent-teal:         #009688;
+  --accent-cyan:         #109CAE;
+  --accent-blue:         #2196F3;
+  --accent-persian-blue: #5800FF;
+  --accent-purple:       #9C27B0;
+  --accent-pink:         #E81E63;
+
+  /* Accent Light — soft background shades for tags, chips, tinted surfaces */
+  --accent-light-blue-grey:    #EFF2F3;
+  --accent-light-brown:        #F2EEED;
+  --accent-light-amber:        #FDF7E5;
+  --accent-light-light-green:  #F3F9ED;
+  --accent-light-teal:         #E5F4F3;
+  --accent-light-cyan:         #E5F8FB;
+  --accent-light-blue:         #E9F4FE;
+  --accent-light-persian-blue: #EEE5FF;
+  --accent-light-purple:       #F5E9F7;
+  --accent-light-pink:         #FDE8EF;
+
   /* Native form / scrollbar coloring */
   color-scheme: light;
 }
@@ -124,6 +162,44 @@
   /* Button accent backgrounds */
   --button-danger-bg: #E03B3B;
   --button-info-bg:   #5B8DEF;
+
+  /* Chart Colors — brighter/saturated variants for dark backgrounds */
+  --chart-1:  #5495EE;
+  --chart-2:  #4870EA;
+  --chart-3:  #008E76;
+  --chart-4:  #81519D;
+  --chart-5:  #415501;
+  --chart-6:  #CF713D;
+  --chart-7:  #ED5371;
+  --chart-8:  #9B755D;
+  --chart-9:  #6A6FDE;
+  --chart-10: #D05696;
+  --chart-11: #757D02;
+  --chart-12: #BB8D01;
+
+  /* Accent Dark — inverted: light tints become the "dark" accent on dark bg */
+  --accent-blue-grey:    #EFF2F3;
+  --accent-brown:        #F2EEED;
+  --accent-amber:        #FDF7E5;
+  --accent-light-green:  #F3F9ED;
+  --accent-teal:         #E5F4F3;
+  --accent-cyan:         #E5F8FB;
+  --accent-blue:         #E9F4FE;
+  --accent-persian-blue: #EEE5FF;
+  --accent-purple:       #F5E9F7;
+  --accent-pink:         #FDE8EF;
+
+  /* Accent Light — inverted: dark hues become the "light" surface on dark bg */
+  --accent-light-blue-grey:    #607D8B;
+  --accent-light-brown:        #795548;
+  --accent-light-amber:        #6E632A;
+  --accent-light-light-green:  #8BC34A;
+  --accent-light-teal:         #009688;
+  --accent-light-cyan:         #109CAE;
+  --accent-light-blue:         #2196F3;
+  --accent-light-persian-blue: #5800FF;
+  --accent-light-purple:       #9C27B0;
+  --accent-light-pink:         #E81E63;
 
   /* Elevation shadows — deeper on dark for visual separation */
   --shadow-popover: 0 12px 60px rgba(0, 0, 0, 0.50);
