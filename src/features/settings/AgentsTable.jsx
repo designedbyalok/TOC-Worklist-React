@@ -20,24 +20,85 @@ import { ViewUserDrawer } from './AccountPanel';
 import { ProductTour } from '../../components/ProductTour/ProductTour';
 import { useTableSort } from '../../components/Table/useTableSort';
 import { SortableHeader } from '../../components/Table/SortableHeader';
+import { VoicePreviewPopover } from '../../components/VoicePreviewPopover/VoicePreviewPopover';
 import styles from './AgentsTable.module.css';
 
 const TABS = ['Agents', 'Goals', 'Knowledge Base', 'Tools', 'Compliance Policies', 'Test Cases', 'Analytics'];
 
+const VOICE_COLORS = { Erica: '#E74C8B', Ricardo: '#7C5CFC', Jia: '#F59E0B' };
+const POPOVER_W = 280;
+const POPOVER_H = 200;
+
 function VoiceBadge({ voice }) {
+  const badgeRef = useRef(null);
+  const openTimer = useRef(null);
+  const closeTimer = useRef(null);
+  const [popoverPos, setPopoverPos] = useState(null);
+
+  const cancelClose = () => {
+    if (closeTimer.current) {
+      clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+  };
+  const cancelOpen = () => {
+    if (openTimer.current) {
+      clearTimeout(openTimer.current);
+      openTimer.current = null;
+    }
+  };
+
+  const open = () => {
+    cancelClose();
+    if (popoverPos) return; // already open
+    openTimer.current = setTimeout(() => {
+      const rect = badgeRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const left = Math.max(12, Math.min(window.innerWidth - POPOVER_W - 12, rect.left));
+      const flipUp = rect.bottom + POPOVER_H + 12 > window.innerHeight;
+      const top = flipUp ? Math.max(12, rect.top - POPOVER_H - 8) : rect.bottom + 8;
+      setPopoverPos({ top, left });
+    }, 250);
+  };
+  const close = () => {
+    cancelOpen();
+    closeTimer.current = setTimeout(() => setPopoverPos(null), 180);
+  };
+
+  useEffect(() => () => {
+    cancelOpen();
+    cancelClose();
+  }, []);
+
   if (!voice) return <span style={{ color: 'var(--neutral-300)' }}>—</span>;
-  const colors = { Erica: '#E74C8B', Ricardo: '#7C5CFC', Jia: '#F59E0B' };
   const name = voice.name || 'Erica';
-  const color = colors[name] || '#7C5CFC';
+  const color = VOICE_COLORS[name] || '#7C5CFC';
+
   return (
-    <div className={styles.voiceBadge}>
-      <span className={styles.voiceDot} style={{ background: color }} />
-      <span>{name}</span>
-      <span className={styles.voiceMeta}>
-        {voice.gender && <> &bull; {voice.gender}</>}
-        {voice.language && <> &bull; {voice.language}</>}
-      </span>
-    </div>
+    <>
+      <div
+        ref={badgeRef}
+        className={styles.voiceBadge}
+        onMouseEnter={open}
+        onMouseLeave={close}
+      >
+        <span className={styles.voiceDot} style={{ background: color }} />
+        <span>{name}</span>
+        <span className={styles.voiceMeta}>
+          {voice.gender && <> &bull; {voice.gender}</>}
+          {voice.language && <> &bull; {voice.language}</>}
+        </span>
+      </div>
+      {popoverPos && createPortal(
+        <VoicePreviewPopover
+          voice={voice}
+          pos={popoverPos}
+          onMouseEnter={cancelClose}
+          onMouseLeave={close}
+        />,
+        document.body,
+      )}
+    </>
   );
 }
 
@@ -132,7 +193,18 @@ function AgentRow({ agent, isFirst }) {
 
   return (
     <tr>
-      <td className={styles.nameCell}>{agent.name}</td>
+      <td className={`${styles.nameCell} ${styles.stickyLeft} ${styles.colName}`}>
+        <span
+          className={styles.nameLink}
+          onClick={(e) => {
+            e.stopPropagation();
+            openBuilder({ id: agent.id, name: agent.name });
+          }}
+          {...(isFirst ? { 'data-tour': 'agent-name-link' } : {})}
+        >
+          {agent.name}
+        </span>
+      </td>
       <td>{agent.use_case}</td>
       <td className={styles.versionCell}>v{agent.version}</td>
       <td><VoiceBadge voice={agent.voice} /></td>
@@ -158,10 +230,10 @@ function AgentRow({ agent, isFirst }) {
           {agent.last_updated_by}
         </span>
       </td>
-      <td>
+      <td className={`${styles.stickyStatus} ${styles.colStatus}`}>
         <Switch checked={agent.enabled} onChange={() => updateAgent(agent.id, { enabled: !agent.enabled })} />
       </td>
-      <td>
+      <td className={`${styles.stickyRight} ${styles.colActions}`}>
         <div className={styles.actions} {...(isFirst ? { 'data-tour': 'agent-actions' } : {})}>
           <ActionButton size="L" tooltip="Call Queue" onClick={() => setShowCallQueue(true)} {...(isFirst ? { 'data-tour': 'call-queue-btn' } : {})}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -170,8 +242,6 @@ function AgentRow({ agent, isFirst }) {
           </ActionButton>
           <span className={styles.actionDivider} />
           <ActionButton icon="solar:chart-outline" size="L" tooltip="Call Analytics" onClick={() => { setCallQueueInitTab('analytics'); setShowCallQueue(true); }} {...(isFirst ? { 'data-tour': 'call-analytics-btn' } : {})} />
-          <span className={styles.actionDivider} />
-          <ActionButton icon="solar:pen-linear" size="L" tooltip="Edit Agent" onClick={() => openBuilder({ id: agent.id, name: agent.name })} {...(isFirst ? { 'data-tour': 'edit-agent-btn' } : {})} />
           <span className={styles.actionDivider} />
           <ActionButton icon="solar:menu-dots-bold" size="L" tooltip="More Options" ref={moreBtnRef} onClick={handleMoreClick} {...(isFirst ? { 'data-tour': 'more-options-btn' } : {})} />
         </div>
@@ -348,14 +418,14 @@ export function AgentsTable() {
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <SortableHeader label="Agent Name" sortKey="name" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} />
-                      <SortableHeader label="Use Case" sortKey="use_case" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} />
-                      <SortableHeader label="Version" sortKey="version" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} />
-                      <th>Voice</th>
-                      <SortableHeader label="Last Updated" sortKey="last_updated" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} />
-                      <SortableHeader label="Last Updated By" sortKey="last_updated_by" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} />
-                      <th>Status</th>
-                      <th>Actions</th>
+                      <SortableHeader label="Agent Name" sortKey="name" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={`${styles.stickyLeft} ${styles.colName}`} />
+                      <SortableHeader label="Use Case" sortKey="use_case" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={styles.colUseCase} />
+                      <SortableHeader label="Version" sortKey="version" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={styles.colVersion} />
+                      <th className={styles.colVoice}>Voice</th>
+                      <SortableHeader label="Last Updated" sortKey="last_updated" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={styles.colUpdated} />
+                      <SortableHeader label="Last Updated By" sortKey="last_updated_by" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={styles.colUpdatedBy} />
+                      <th className={`${styles.stickyStatus} ${styles.colStatus}`}>Status</th>
+                      <th className={`${styles.stickyRight} ${styles.colActions}`}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -429,9 +499,9 @@ const AGENT_TOUR_STEPS = [
     skipBeacon: true,
   },
   {
-    target: '[data-tour="edit-agent-btn"]',
-    title: 'Edit Agent',
-    content: 'Open the agent builder to modify conversation flows, prompts, and configuration.',
+    target: '[data-tour="agent-name-link"]',
+    title: 'Quick Edit',
+    content: "Click an agent's name to jump straight into the builder and modify conversation flows, prompts, and configuration.",
     icon: 'solar:pen-linear',
     placement: 'bottom',
     skipBeacon: true,

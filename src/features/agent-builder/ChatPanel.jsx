@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Icon } from '../../components/Icon/Icon';
+import { UnityIcon } from '../../components/UnityIcon/UnityIcon';
 import { useAppStore } from '../../store/useAppStore';
 import { generateFlowFromPrompt } from '../../lib/flowGenerator';
 import styles from './ChatPanel.module.css';
@@ -150,7 +151,7 @@ export function ChatPanel({ nodes, edges, onApplyFlow, agentName }) {
       <div className={styles.header}>
         <div className={styles.headerInfo}>
           <div className={styles.avatar}>
-            <Icon name="solar:ghost-smile-linear" size={16} color="#fff" />
+            <UnityIcon size={16} color="#fff" />
           </div>
           <span className={styles.headerName}>Workflow Assistant</span>
         </div>
@@ -165,7 +166,7 @@ export function ChatPanel({ nodes, edges, onApplyFlow, agentName }) {
           <div key={i} className={`${styles.message} ${msg.role === 'user' ? styles.messageUser : styles.messageAssistant}`}>
             {msg.role === 'assistant' && (
               <div className={styles.msgAvatar}>
-                <Icon name="solar:ghost-smile-linear" size={12} color="#fff" />
+                <UnityIcon size={12} color="#fff" />
               </div>
             )}
             <div className={styles.msgBubble}>
@@ -182,7 +183,7 @@ export function ChatPanel({ nodes, edges, onApplyFlow, agentName }) {
         {isProcessing && (
           <div className={`${styles.message} ${styles.messageAssistant}`}>
             <div className={styles.msgAvatar}>
-              <Icon name="solar:ghost-smile-linear" size={12} color="#fff" />
+              <UnityIcon size={12} color="#fff" />
             </div>
             <div className={styles.msgBubble}>
               <div className={styles.typing}>

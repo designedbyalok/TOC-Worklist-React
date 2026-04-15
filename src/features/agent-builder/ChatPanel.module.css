@@ -25,7 +25,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--primary-300);
+  background: linear-gradient(135deg, #1E9DAE 0%, #D478FF 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,7 +73,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--primary-300);
+  background: linear-gradient(135deg, #1E9DAE 0%, #D478FF 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -91,7 +91,7 @@
   padding: 10px 12px;
 }
 .messageUser .msgBubble {
-  background: var(--primary-500);
+  background: var(--primary-300);
   color: var(--neutral-0);
   border-radius: 12px 2px 12px 12px;
   padding: 10px 12px;

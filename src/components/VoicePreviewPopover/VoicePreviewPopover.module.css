@@ -1,0 +1,138 @@
+.popover {
+  position: fixed;
+  z-index: 250;
+  width: 280px;
+  background: var(--neutral-0);
+  border: 1px solid var(--neutral-150);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  animation: vpFadeInUp 0.15s ease;
+}
+
+@keyframes vpFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.identity {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--neutral-400);
+  line-height: 1.2;
+}
+
+.meta {
+  font-size: 12px;
+  color: var(--neutral-300);
+  margin-top: 3px;
+}
+
+.voiceDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sample {
+  padding: 6px 16px 14px;
+  font-size: 13px;
+  color: var(--neutral-400);
+  font-style: italic;
+  line-height: 1.45;
+  border-bottom: 1px solid var(--neutral-100);
+}
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+}
+
+.playBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.1s, filter 0.1s;
+  padding: 0;
+  color: #fff;
+}
+
+.playBtn:hover {
+  filter: brightness(1.08);
+}
+.playBtn:active {
+  transform: scale(0.94);
+}
+
+.progressWrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.progressBar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--neutral-100);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.08s linear;
+}
+
+.timer {
+  font-size: 11px;
+  color: var(--neutral-300);
+  margin-top: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.footnote {
+  padding: 8px 16px 10px;
+  font-size: 11px;
+  color: var(--neutral-200);
+  border-top: 1px solid var(--neutral-100);
+  background: var(--neutral-50);
+}

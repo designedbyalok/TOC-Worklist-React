@@ -139,6 +139,14 @@ The platform follows the **Fold Health design system** with strict adherence to:
 
 ## Recent Changes
 
+### Agents Table Polish + Unity Chat Avatar (April 2026)
+- **Clickable agent names** (`AgentsTable.jsx`) — the Agent Name cell is now a link that opens the builder directly on the Workflow tab. New `.nameLink` hover style in `AgentsTable.module.css` mirrors the existing `.userLink` pattern.
+- **Responsive + sticky table** — `.stickyLeft` (Agent Name), `.stickyStatus` (`right: 148px`) and `.stickyRight` (Actions) keep identity and primary actions pinned while middle columns scroll horizontally. Column `min-width` helpers (`.colName`/`.colUseCase`/`.colVersion`/`.colVoice`/`.colUpdated`/`.colUpdatedBy`/`.colStatus`/`.colActions`) force scroll below ~1080px; row height stays constant across scroll.
+- **Pencil "Edit Agent" removed** — redundant now that the name is clickable. Actions column is Call Queue · Call Analytics · More Options (3 buttons, 2 dividers). `AGENT_TOUR_STEPS` retargeted from `edit-agent-btn` to `agent-name-link` with "Quick Edit" copy.
+- **Voice preview popover** — new `src/components/VoicePreviewPopover/` card (portal + `createPortal`) appears on voice-badge hover. Color-tinted avatar/dot, italic sample line, play button with animated `requestAnimationFrame` progress bar (mock 4s playback), auto-flips up if no room below, stays open while cursor is inside (250ms open / 180ms close delay).
+- **Chat bubble color** — user message bubble in `ChatPanel.module.css` switched from `var(--primary-500)` (dark navy) to `var(--primary-300)` so it matches the primary brand purple.
+- **Unity chat avatar** — new `src/components/UnityIcon/` component renders the Unity brand glyph as a single-color SVG (color prop drives all paths). All three `solar:ghost-smile-linear` usages in `ChatPanel.jsx` swapped for `<UnityIcon />`; `.avatar` and `.msgAvatar` backgrounds switched from solid primary to `linear-gradient(135deg, #1E9DAE 0%, #D478FF 100%)`. Icon stays white on the gradient.
+
 ### Astrana Plum Theme (April 2026)
 - New `[data-theme="plum"]` block in `src/tokens/tokens.css`. Primary palette anchored at `#6C0C46` (primary-300) with deep-plum chrome for the sidebar (`#2A0519` / `#4A0A30`). Neutral, secondary (orange), and status tokens inherit from `:root`.
 - Registered as `'plum'` in `THEME_VALUES`, the `index.html` inline-script allowlist, and `ThemePicker` OPTIONS (label "Astrana Plum", crown-star icon).

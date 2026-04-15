@@ -155,6 +155,61 @@
   color: var(--neutral-400) !important;
 }
 
+.nameLink {
+  cursor: pointer;
+  transition: color .12s;
+}
+.nameLink:hover {
+  color: var(--primary-300);
+  text-decoration: underline;
+}
+
+/* ── Sticky columns (responsive horizontal scroll) ── */
+.stickyLeft {
+  position: sticky;
+  left: 0;
+  background: var(--neutral-0);
+  z-index: 2;
+  box-shadow: 6px 0 8px -6px rgba(0,0,0,0.08);
+}
+.stickyStatus {
+  position: sticky;
+  right: 148px; /* must equal .colActions min-width */
+  background: var(--neutral-0);
+  z-index: 2;
+}
+.stickyRight {
+  position: sticky;
+  right: 0;
+  background: var(--neutral-0);
+  z-index: 2;
+  box-shadow: -6px 0 8px -6px rgba(0,0,0,0.08);
+}
+
+/* Header cells intersect sticky-top + sticky-side; bump z-index so they cover scrolling cells below */
+.table thead th.stickyLeft,
+.table thead th.stickyStatus,
+.table thead th.stickyRight {
+  z-index: 3;
+}
+
+/* Repaint sticky cells on row hover so they don't show through as opaque white strips */
+.table tbody tr:hover .stickyLeft,
+.table tbody tr:hover .stickyStatus,
+.table tbody tr:hover .stickyRight {
+  background: var(--primary-25);
+}
+
+/* Column min-widths — total ~1062px, forces horizontal scroll below that viewport */
+.colName      { min-width: 180px; }
+.colUseCase   { min-width: 140px; }
+.colVersion   { min-width: 64px; }
+.colVoice     { min-width: 200px; }
+.colUpdated   { min-width: 120px; }
+.colUpdatedBy { min-width: 150px; }
+.colStatus    { min-width: 80px; }
+.colActions   { min-width: 148px; }
+
 .versionCell {
   color: var(--neutral-300);
 }
