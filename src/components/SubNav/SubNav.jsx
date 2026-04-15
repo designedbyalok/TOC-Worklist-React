@@ -16,6 +16,7 @@ const SHARED_LISTS = [
   { label: 'SNP', filter: null },
   { label: 'AWV', filter: null },
   { label: 'TOC', filter: null },  // default — shows all TOC patients
+  { label: 'HCC Worklist', filter: null, view: 'hcc' },
   { label: 'High Utilizers', filter: { readmission: 'Yes' } },
   { label: 'DM', filter: null },
 ];
@@ -25,13 +26,18 @@ export function SubNav({ collapsed }) {
   const setActiveSubnavList = useAppStore(s => s.setActiveSubnavList);
   const setActiveFilters = useAppStore(s => s.setActiveFilters);
   const patients = useAppStore(s => s.patients);
+  const hccMembers = useAppStore(s => s.hccMembers);
+  const clearSelected = useAppStore(s => s.clearSelected);
+  const clearHccSelected = useAppStore(s => s.clearHccSelected);
 
   // Compute counts based on the filter criteria for each list
   const getCounts = useMemo(() => {
     const counts = {};
     const allLists = [...MY_LISTS, ...SHARED_LISTS];
     for (const list of allLists) {
-      if (!list.filter) {
+      if (list.view === 'hcc') {
+        counts[list.label] = hccMembers.length;
+      } else if (!list.filter) {
         // Use total patient count for unfiltered lists
         counts[list.label] = patients.length;
       } else {
@@ -41,10 +47,13 @@ export function SubNav({ collapsed }) {
       }
     }
     return counts;
-  }, [patients]);
+  }, [patients, hccMembers]);
 
   const handleListClick = (list) => {
     setActiveSubnavList(list.label);
+    // Clear selection from both worklists so selection doesn't bleed across lists
+    clearSelected();
+    clearHccSelected();
     // Apply the list's filter to the active filters
     if (list.filter) {
       setActiveFilters(list.filter);

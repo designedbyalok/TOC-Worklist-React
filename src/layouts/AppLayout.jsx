@@ -23,6 +23,7 @@ import { ComponentWizardDrawer } from '../features/settings/panels/ComponentWiza
 import { WorklistTable } from '../features/worklist/WorklistTable';
 import { QueueTable } from '../features/queue/QueueTable';
 import { QueueSummaryBar } from '../features/queue/QueueSummaryBar';
+import { HccWorklistTable } from '../features/hcc/HccWorklistTable';
 import { SettingsLayout } from '../features/settings/SettingsLayout';
 import { CreateAgentDrawer } from '../features/settings/CreateAgentDrawer';
 import { AgentCanvas } from '../features/agent-builder/AgentCanvas';
@@ -75,6 +76,7 @@ function PopulationView() {
   const subnavCollapsed = useAppStore(s => s.subnavCollapsed);
   const activeTab = useAppStore(s => s.activeTab);
   const showFilterBar = useAppStore(s => s.showFilterBar);
+  const activeSubnavList = useAppStore(s => s.activeSubnavList);
 
   const selectedPatientId = useAppStore(s => s.selectedPatientId);
 
@@ -90,6 +92,8 @@ function PopulationView() {
     );
   }
 
+  const isHcc = activeSubnavList === 'HCC Worklist';
+
   return (
     <>
       <SubNav collapsed={subnavCollapsed} />
@@ -97,10 +101,12 @@ function PopulationView() {
         <TopBar />
         <DegradedBanner />
         <div className={styles.content}>
-          <TabBar />
-          {showFilterBar && <FilterBar />}
-          {activeTab === 'queue' && <QueueSummaryBar />}
-          {activeTab === 'worklist' ? <WorklistTable /> : <QueueTable />}
+          {!isHcc && <TabBar />}
+          {!isHcc && showFilterBar && <FilterBar />}
+          {!isHcc && activeTab === 'queue' && <QueueSummaryBar />}
+          {isHcc
+            ? <HccWorklistTable />
+            : (activeTab === 'worklist' ? <WorklistTable /> : <QueueTable />)}
           <Pagination />
         </div>
       </div>

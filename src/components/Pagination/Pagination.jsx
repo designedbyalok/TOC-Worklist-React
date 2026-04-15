@@ -8,6 +8,8 @@ export function Pagination() {
   const currentPage = useAppStore(s => s.currentPage);
   const perPage = useAppStore(s => s.perPage);
   const patients = useAppStore(s => s.patients);
+  const hccMembers = useAppStore(s => s.hccMembers);
+  const activeSubnavList = useAppStore(s => s.activeSubnavList);
   const searchQuery = useAppStore(s => s.searchQuery);
   const activeTab = useAppStore(s => s.activeTab);
   const activeFilters = useAppStore(s => s.activeFilters);
@@ -15,8 +17,21 @@ export function Pagination() {
   const setCurrentPage = useAppStore(s => s.setCurrentPage);
   const setPerPage = useAppStore(s => s.setPerPage);
 
+  const isHcc = activeSubnavList === 'HCC Worklist';
+
   // Derive the total count based on what's actually being shown
   const totalItems = useMemo(() => {
+    // HCC list: just search-filter against hccMembers
+    if (isHcc) {
+      if (!searchQuery.trim()) return hccMembers.length;
+      const q = searchQuery.toLowerCase().trim();
+      return hccMembers.filter(m =>
+        m.name?.toLowerCase().includes(q) ||
+        m.in?.toLowerCase().includes(q) ||
+        m.id?.toLowerCase().includes(q)
+      ).length;
+    }
+
     let result = patients;
 
     // For queue tab, only count patients with agents assigned
@@ -43,7 +58,7 @@ export function Pagination() {
     }
 
     return result.length;
-  }, [patients, searchQuery, activeTab, activeFilters]);
+  }, [isHcc, hccMembers, patients, searchQuery, activeTab, activeFilters]);
 
   const [goToInput, setGoToInput] = useState('');
 

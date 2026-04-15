@@ -139,6 +139,17 @@ The platform follows the **Fold Health design system** with strict adherence to:
 
 ## Recent Changes
 
+### HCC Worklist — Phase 1: sidebar entry + 100-member sticky table (April 2026)
+- **New sidebar entry** — `HCC Worklist` added to SubNav's Shared Lists section, below TOC. Shows count of 100. Selecting it hides the TabBar / FilterBar / QueueSummaryBar (all TOC-specific) and swaps `<WorklistTable>` for `<HccWorklistTable>`.
+- **New feature folder** `src/features/hcc/` — `HccWorklistTable.jsx` + `HccWorklistRow.jsx` + CSS modules + `data/mock.js` (100 members ported verbatim from the HCC prototype at `/Users/alokk/Downloads/HCC/hcc_worklist_v2.tsx`; all hex colors mapped to our tokens via a local `C` map, so dark-mode theming works for free).
+- **Sticky 23-column table** — member cell pinned left, actions pinned right, middle 21 columns scroll horizontally (DOS, Open ICDs, Create Date, Chart Available, Support Team, Coder, Reviewer 1/2/3, Rendering Provider, Visit Type, RAF Score/Impact, IPA, HP Code, PCP, Decile, Cohort, Risk Level, Advillness, Frailty). Row height stable across scroll. Reuses the sticky pattern from `WorklistRow.module.css`.
+- **Store slice** — `hccMembers` / `hccMembersLoading` / `fetchHccMembers` (lazy-imports mock) / `selectedHccIds` / `selectHccMember` / `selectAllHcc` / `clearHccSelected` in `useAppStore.js`, additive to the existing patients slice.
+- **Pagination extension** — `Pagination.jsx` is now list-aware: when `activeSubnavList === 'HCC Worklist'` it counts against `hccMembers` + `searchQuery` instead of TOC patients. Existing TOC pagination unchanged.
+- **Built-in toolbar search** — the existing TabBar search is hidden for HCC, so the HCC table ships with its own toolbar (title + count + SearchIconButton). Search uses the shared store `searchQuery` and filters by member name / initials / id.
+- **Sort via `useTableSort` + `SortableHeader`** — every column except IPA / HP Code / Cohort is sortable.
+- **Typography uses inherited `Inter` + existing tokens** — no hardcoded hex in code or data; header 12px, body 13px, `font-variant-numeric: tabular-nums` for RAF / decile / numeric cells.
+- **Phase 1 scope** — list-only. Row click is a no-op (wired in Phase 2), no DiagPanel drawer, no accept/dismiss actions, no activity log, no sweep mode. Documented in `/Users/alokk/.claude/plans/lovely-wibbling-milner.md`.
+
 ### Agents Table Polish + Unity Chat Avatar (April 2026)
 - **Clickable agent names** (`AgentsTable.jsx`) — the Agent Name cell is now a link that opens the builder directly on the Workflow tab. New `.nameLink` hover style in `AgentsTable.module.css` mirrors the existing `.userLink` pattern.
 - **Responsive + sticky table** — `.stickyLeft` (Agent Name), `.stickyStatus` (`right: 148px`) and `.stickyRight` (Actions) keep identity and primary actions pinned while middle columns scroll horizontally. Column `min-width` helpers (`.colName`/`.colUseCase`/`.colVersion`/`.colVoice`/`.colUpdated`/`.colUpdatedBy`/`.colStatus`/`.colActions`) force scroll below ~1080px; row height stays constant across scroll.

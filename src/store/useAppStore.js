@@ -1092,6 +1092,24 @@ export const useAppStore = create((set, get) => ({
   selectAll: (ids) => set({ selectedIds: ids }),
   clearSelected: () => set({ selectedIds: [] }),
 
+  // ─── HCC Worklist (Phase 1: read-only list view) ───
+  hccMembers: [],
+  hccMembersLoading: false,
+  fetchHccMembers: async () => {
+    if (get().hccMembers.length > 0) return;
+    set({ hccMembersLoading: true });
+    const { HCC_MEMBERS } = await import('../features/hcc/data/mock');
+    set({ hccMembers: HCC_MEMBERS, hccMembersLoading: false });
+  },
+  selectedHccIds: [],
+  selectHccMember: (id) => set(s => ({
+    selectedHccIds: s.selectedHccIds.includes(id)
+      ? s.selectedHccIds.filter(x => x !== id)
+      : [...s.selectedHccIds, id]
+  })),
+  selectAllHcc: (ids) => set({ selectedHccIds: ids }),
+  clearHccSelected: () => set({ selectedHccIds: [] }),
+
   openWorkflow: (patientId) => {
     const p = get().patients.find(x => x.id === patientId);
     if (!p) return;

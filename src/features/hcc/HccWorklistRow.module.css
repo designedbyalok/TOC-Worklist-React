@@ -1,0 +1,166 @@
+/* ── Sticky columns (same pattern as WorklistRow + AgentsTable) ── */
+.stickyLeft {
+  position: sticky;
+  left: 0;
+  background: var(--neutral-0);
+  z-index: 2;
+  box-shadow: 6px 0 8px -6px rgba(0, 0, 0, 0.08);
+}
+.stickyRight {
+  position: sticky;
+  right: 0;
+  background: var(--neutral-0);
+  z-index: 2;
+  box-shadow: -6px 0 8px -6px rgba(0, 0, 0, 0.08);
+}
+
+/* Selected row repaints sticky cells + whole row */
+.rowChecked,
+.rowChecked .stickyLeft,
+.rowChecked .stickyRight {
+  background: var(--primary-50) !important;
+}
+
+/* ── Member (sticky left) cell ── */
+.memberCell {
+  padding: 10px 14px !important;
+}
+.memberInner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.memberIdentity {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.memberName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.memberMeta {
+  font-size: 11px;
+  color: var(--neutral-300);
+  white-space: nowrap;
+  margin-top: 1px;
+}
+
+/* ── DOS cell ── */
+.dosCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dosDate {
+  font-size: 13px;
+  color: var(--neutral-400);
+  font-variant-numeric: tabular-nums;
+}
+.dosLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.dosDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* ── Chart cell (count + dots) ── */
+.chartCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.chartCount {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-400);
+}
+.docDots {
+  display: flex;
+  gap: 3px;
+}
+.docDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.docDotPass { background: var(--status-success); }
+.docDotPend { background: var(--neutral-200); }
+.docDotFail { background: var(--status-error); }
+
+/* ── Role status cell (name + status pill) ── */
+.roleCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.roleName {
+  font-size: 12px;
+  color: var(--neutral-400);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.assignText {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary-300);
+  cursor: pointer;
+}
+.assignText:hover { text-decoration: underline; }
+
+/* ── Generic cell text styles ── */
+.dateText,
+.numText,
+.codeText,
+.providerText {
+  font-size: 13px;
+  color: var(--neutral-400);
+  white-space: nowrap;
+}
+.numText { font-variant-numeric: tabular-nums; }
+.numStrong {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-500);
+  font-variant-numeric: tabular-nums;
+}
+.muted { color: var(--neutral-200); }
+
+/* ── Column min-widths (21 total — sum ≈ 2,240px) ── */
+.colMember    { min-width: 240px; }
+.colDos       { min-width: 150px; }
+.colOpen      { min-width: 100px; }
+.colDate      { min-width: 110px; }
+.colChart     { min-width: 120px; }
+.colRole      { min-width: 170px; }
+.colRp        { min-width: 160px; }
+.colVt        { min-width: 110px; }
+.colRaf       { min-width: 100px; }
+.colRi        { min-width: 110px; }
+.colIpa       { min-width: 80px; }
+.colHp        { min-width: 90px; }
+.colPcp       { min-width: 150px; }
+.colDec       { min-width: 80px; }
+.colCoh       { min-width: 90px; }
+.colRl        { min-width: 100px; }
+.colAd        { min-width: 100px; }
+.colFr        { min-width: 90px; }
+.colActions   { min-width: 64px; }
+
+.actionsCell {
+  text-align: center;
+}
