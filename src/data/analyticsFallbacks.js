@@ -21,6 +21,7 @@ export const FALLBACK_KPIS = {
     insight: {
       icon: 'solar:lightbulb-minimalistic-linear',
       title: 'AI Insight Summary \u2014 YTD 2025',
+      variant: '',
       text: '<strong>3 priorities this week.</strong> Readmissions up <strong>+20% vs Q3</strong> \u2014 3 facilities driving 71% of increase. RAF gap on <strong>1,840 members</strong> = <strong>$2.1M</strong> uncaptured. AWV at <strong>61%</strong> vs 80% target \u2014 847 members unscheduled.',
       buttons: [
         { label: 'Utilization Detail', primary: true, navTo: 'utilization' },

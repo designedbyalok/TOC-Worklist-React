@@ -232,7 +232,7 @@
    Insight Banner
    ────────────────────────────────────────────── */
 .insight {
-  background: var(--neutral-0); border: 0.5px solid var(--neutral-150);
+  background: var(--primary-50); border: 0.5px solid var(--neutral-150);
   border-left: 3px solid var(--primary-300); border-radius: 8px;
   padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px;
   margin-bottom: 14px;
@@ -247,6 +247,14 @@
 .insight.amber .insightIcon { background: var(--status-warning-light); }
 .insight.red .insightIcon { background: var(--status-error-light); }
 .insight.green .insightIcon { background: var(--status-success-light); }
+.insightIconAi {
+  width: 36px; height: 36px;
+  background: var(--primary-50);
+  border: 0.5px solid var(--primary-300);
+  border-radius: 8px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
 .insightBody { flex: 1; min-width: 0; }
 .insightEyebrow {
   font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .8px;

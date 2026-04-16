@@ -1,4 +1,5 @@
 import { Icon } from '../../../components/Icon/Icon';
+import { AiInsightIcon } from '../../../components/Icon/AiInsightIcon';
 import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import s from '../AnalyticsLayout.module.css';
@@ -66,10 +67,14 @@ export function InsightBanner({ icon, title, text, variant = '', buttons = [], s
 
   return (
     <div className={`${s.insight} ${variant ? s[variant] : ''}`}>
-      <div className={s.insightIcon}>
-        <Icon name={icon} size={16} color={
-          variant === 'amber' ? 'var(--status-warning)' : variant === 'red' ? 'var(--status-error)' : variant === 'green' ? 'var(--status-success)' : 'var(--primary-300)'
-        } />
+      <div className={icon?.includes('lightbulb') ? s.insightIconAi : s.insightIcon}>
+        {icon?.includes('lightbulb') ? (
+          <AiInsightIcon size={20} />
+        ) : (
+          <Icon name={icon} size={16} color={
+            variant === 'amber' ? 'var(--status-warning)' : variant === 'red' ? 'var(--status-error)' : variant === 'green' ? 'var(--status-success)' : 'var(--primary-300)'
+          } />
+        )}
       </div>
       <div className={s.insightBody}>
         <div className={s.insightEyebrow}>{title}</div>
