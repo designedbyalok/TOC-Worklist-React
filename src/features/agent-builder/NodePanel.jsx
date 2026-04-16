@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Icon } from '../../components/Icon/Icon';
+import { Toggle } from '../../components/Toggle/Toggle';
 import { ConversationIcon, GuardrailsIcon, CallTransferIcon, AgentsIcon } from './nodes/NodeIcons';
 import styles from './NodePanel.module.css';
 
@@ -71,20 +72,7 @@ const COMPONENTS = [
 ];
 
 export function NodePanel({ onDragStart }) {
-  const [activeTab, setActiveTab] = useState('node');
-  const toggleRef = useRef(null);
-  const [sliderStyle, setSliderStyle] = useState({});
-
-  const updateSlider = useCallback(() => {
-    if (!toggleRef.current) return;
-    const activeBtn = toggleRef.current.querySelector('[data-active="true"]');
-    if (activeBtn) {
-      setSliderStyle({ left: activeBtn.offsetLeft, width: activeBtn.offsetWidth });
-    }
-  }, []);
-
-  useEffect(() => { updateSlider(); }, [activeTab, updateSlider]);
-  useEffect(() => { requestAnimationFrame(updateSlider); }, [updateSlider]);
+  const [activeTab, setActiveTab] = useState('Node');
 
   const handleDragStart = (e, nodeType, label) => {
     e.dataTransfer.setData('application/reactflow', JSON.stringify({ nodeType, label }));
@@ -96,27 +84,11 @@ export function NodePanel({ onDragStart }) {
     <aside className={styles.panel}>
       {/* Segmented toggle */}
       <div className={styles.toggleWrap}>
-        <div className={styles.toggle} ref={toggleRef}>
-          <div className={styles.toggleSlider} style={sliderStyle} />
-          <button
-            data-active={activeTab === 'node'}
-            className={`${styles.toggleBtn} ${activeTab === 'node' ? styles.toggleBtnActive : ''}`}
-            onClick={() => setActiveTab('node')}
-          >
-            Node
-          </button>
-          <button
-            data-active={activeTab === 'components'}
-            className={`${styles.toggleBtn} ${activeTab === 'components' ? styles.toggleBtnActive : ''}`}
-            onClick={() => setActiveTab('components')}
-          >
-            Components
-          </button>
-        </div>
+        <Toggle items={['Node', 'Components']} active={activeTab} onChange={setActiveTab} fullWidth />
       </div>
 
       <div className={styles.list}>
-        {activeTab === 'node' ? (
+        {activeTab === 'Node' ? (
           NODE_TYPES.map(n => {
             const isGradient = n.drawerBg.startsWith('linear');
             return (

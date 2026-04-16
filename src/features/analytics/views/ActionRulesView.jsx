@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_CONFIGS } from '../../../data/analyticsFallbacks';
 import { KpiCard, InsightBanner, Card, safeConfigData } from './shared';
@@ -91,7 +92,7 @@ export function ActionRulesView({ showToast }) {
       {/* Rules Builder */}
       <Card
         title="Rules Builder"
-        actions={<button className={`${s.btn} ${s.btnPrimary}`} onClick={() => showToast?.('Opening no-code rules builder')}>+ New Rule</button>}
+        actions={<Button variant="primary" size="S" onClick={() => showToast?.('Opening no-code rules builder')}>+ New Rule</Button>}
       >
         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: '10px 14px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 8, fontSize: 14, color: 'var(--neutral-300)', lineHeight: 1.6 }}>
           <span style={{ fontSize: 14, marginTop: 1 }}>{'\u2139\uFE0F'}</span>

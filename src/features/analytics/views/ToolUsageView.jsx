@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_TABLES } from '../../../data/analyticsFallbacks';
 import { KpiCard, InsightBanner, Card, ProgressBar, StatusPill, safeTableRows } from './shared';
@@ -49,13 +50,9 @@ export function ToolUsageView({ showToast }) {
           <ProgressBar label="HCC Alerts Acted On" value="78%" pct={78} color="green" sub="Within 48 hours \u2713" />
           <ProgressBar label="Rx Opportunities Acted On" value="62%" pct={62} color="amber" sub="Target 75%" />
           <ProgressBar label="Quality Flags Reviewed" value="71%" pct={71} color="teal" sub="Target 80%" />
-          <button
-            className={`${s.btn} ${s.btnPrimary}`}
-            style={{ marginTop: 8, width: '100%', justifyContent: 'center' }}
-            onClick={() => showToast?.('Viewing 12 non-adopters')}
-          >
+          <Button variant="primary" size="S" fullWidth style={{ marginTop: 8 }} onClick={() => showToast?.('Viewing 12 non-adopters')}>
             View 12 Non-Adopters &rarr;
-          </button>
+          </Button>
         </Card>
 
         {/* Automation Engine Performance */}

@@ -67,39 +67,85 @@ const GRID_STYLE = { stroke: COLORS.neutral100, strokeDasharray: '3 3' };
 // ═══════════════════════════════════════════════════
 //  1. TCOC Trend Chart (Executive Dashboard)
 // ═══════════════════════════════════════════════════
-export function TcocLineChart({ tab, data, benchmark, mode = 'pmpm' }) {
+const BENCHMARK_PMPM = 910; // $910 PMPM benchmark — only shown in PMPM mode
+
+function TcocLegend({ isTotal }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, padding: '4px 14px 8px', ...FONT, fontSize: 12, color: 'var(--neutral-300)' }}>
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ width: 18, height: 2, background: 'var(--primary-300)', borderRadius: 1, display: 'inline-block' }} />
+        {isTotal ? 'Total Cost' : 'Actual PMPM'}
+      </span>
+      {!isTotal && (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 18, height: 0, borderTop: '2px dashed var(--neutral-200)', display: 'inline-block' }} />
+          Benchmark ${BENCHMARK_PMPM}
+        </span>
+      )}
+    </div>
+  );
+}
+
+export function TcocLineChart({ tab, data, mode = 'pmpm' }) {
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const isTotal = mode === 'total';
   const series = data?.[`tcoc_${tab}`] || data?.tcoc_all || [];
-  const benchSeries = benchmark || null;
   // For "Total Cost" mode, multiply PMPM by a member count factor (8,420 members / 1000)
   const multiplier = isTotal ? 8.42 : 1;
 
   const chartData = MONTHS.map((m, i) => ({
     month: m,
     value: series[i] != null ? Math.round(series[i] * multiplier) : null,
-    ...(benchSeries ? { benchmark: benchSeries[i] != null ? Math.round(benchSeries[i] * multiplier) : null } : {}),
+    ...(!isTotal ? { benchmark: BENCHMARK_PMPM } : {}),
   }));
 
-  const labelName = isTotal ? 'Total Cost' : 'TCOC PMPM';
+  const labelName = isTotal ? 'Total Cost' : 'Actual PMPM';
   const yFormat = isTotal ? (v => `$${(v / 1000).toFixed(0)}K`) : (v => `$${v}`);
   const tipPrefix = '$';
   const tipSuffix = isTotal ? 'K' : '';
 
+  // End-of-line value label for last data point
+  const lastValue = chartData[chartData.length - 1]?.value;
+  const endLabel = lastValue != null
+    ? (isTotal ? `$${(lastValue / 1000).toFixed(0)}K` : `$${lastValue}`)
+    : '';
+
   return (
-    <div style={{ padding: '8px 14px 4px' }}>
-      <ResponsiveContainer width="100%" height={200}>
-        <LineChart data={chartData} margin={{ top: 8, right: 12, bottom: 4, left: 8 }}>
-          <CartesianGrid {...GRID_STYLE} vertical={false} />
-          <XAxis dataKey="month" tick={AXIS_TICK} axisLine={{ stroke: COLORS.neutral150 }} tickLine={false} />
-          <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} domain={['dataMin - 10', 'dataMax + 10']} tickFormatter={yFormat} width={isTotal ? 52 : 48} />
-          <Tooltip content={<FoldTooltip prefix={tipPrefix} suffix={tipSuffix} />} />
-          <Line type="monotone" dataKey="value" name={labelName} stroke={COLORS.primary} strokeWidth={2} dot={{ r: 3, fill: COLORS.primary, strokeWidth: 0 }} activeDot={{ r: 5, fill: COLORS.primary, stroke: COLORS.white, strokeWidth: 2 }} />
-          {benchSeries && (
-            <Line type="monotone" dataKey="benchmark" name="Benchmark" stroke={COLORS.neutral200} strokeWidth={1.5} strokeDasharray="4 4" dot={false} />
-          )}
-        </LineChart>
-      </ResponsiveContainer>
+    <div>
+      <div style={{ padding: '8px 14px 4px' }}>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={chartData} margin={{ top: 8, right: 44, bottom: 4, left: 8 }}>
+            <CartesianGrid {...GRID_STYLE} vertical={false} />
+            <XAxis dataKey="month" tick={AXIS_TICK} axisLine={{ stroke: COLORS.neutral150 }} tickLine={false} />
+            <YAxis tick={AXIS_TICK} axisLine={false} tickLine={false} domain={['dataMin - 10', 'dataMax + 10']} tickFormatter={yFormat} width={isTotal ? 52 : 48} />
+            <Tooltip content={<FoldTooltip prefix={tipPrefix} suffix={tipSuffix} />} />
+            {!isTotal && (
+              <ReferenceLine
+                y={BENCHMARK_PMPM}
+                stroke={COLORS.neutral200}
+                strokeDasharray="4 4"
+                strokeWidth={1.5}
+                label={{ value: `$${BENCHMARK_PMPM}`, position: 'right', fill: 'var(--neutral-300)', fontSize: 12, ...FONT }}
+              />
+            )}
+            <Line
+              type="monotone"
+              dataKey="value"
+              name={labelName}
+              stroke={COLORS.primary}
+              strokeWidth={2}
+              dot={{ r: 3, fill: COLORS.primary, strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: COLORS.primary, stroke: COLORS.white, strokeWidth: 2 }}
+              label={({ index, x, y }) =>
+                index === chartData.length - 1
+                  ? <text x={x + 8} y={y} fill={COLORS.primary} fontSize={12} fontFamily="Inter, sans-serif" fontWeight={500} dominantBaseline="middle">{endLabel}</text>
+                  : null
+              }
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <TcocLegend isTotal={isTotal} />
     </div>
   );
 }

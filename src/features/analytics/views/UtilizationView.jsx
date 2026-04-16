@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS } from '../../../data/analyticsFallbacks';
 import { KpiCard, InsightBanner, Card, ProgressBar, safeBarItems, safeTableRows } from './shared';
@@ -51,7 +52,7 @@ export function UtilizationView({ showToast }) {
           <div style={{ fontWeight: 500, fontSize: 14, color: 'var(--status-error)' }}>Live ADT Alert &mdash; Manager View</div>
           <div style={{ fontSize: 12, color: 'var(--status-error)', marginTop: 2 }}>James M. (Tier 5) discharged to Valley SNF. 34% readmit risk. TCM: Maria Chen, RN.</div>
         </div>
-        <button className={`${s.btn} ${s.btnPrimary}`} style={{ fontSize: 12 }} onClick={() => showToast?.('Opening ADT detail for James M.')}>View &rarr;</button>
+        <Button variant="primary" size="S" style={{ fontSize: 12 }} onClick={() => showToast?.('Opening ADT detail for James M.')}>View &rarr;</Button>
       </div>
 
       {insight && (
@@ -86,9 +87,9 @@ export function UtilizationView({ showToast }) {
           {tcmFallback.map(b => (
             <ProgressBar key={b.label} label={b.label} value={b.value} pct={b.pct} color={b.color} sub={b.sub} />
           ))}
-          <button className={`${s.btn} ${s.btnPrimary}`} style={{ marginTop: 8, width: '100%', justifyContent: 'center' }} onClick={() => showToast?.('Creating post-discharge TCM cohort for 48 members')}>
+          <Button variant="primary" size="S" style={{ marginTop: 8, width: '100%', justifyContent: 'center' }} onClick={() => showToast?.('Creating post-discharge TCM cohort for 48 members')}>
             Create Post-Discharge TCM Cohort (48)
-          </button>
+          </Button>
         </Card>
       </div>
 

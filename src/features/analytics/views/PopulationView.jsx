@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_PROGRESS_BARS, FALLBACK_TABLES } from '../../../data/analyticsFallbacks';
 import { KpiCard, InsightBanner, Card, ProgressBar, safeBarItems, safeTableRows } from './shared';
@@ -81,11 +82,11 @@ export function PopulationView({ showToast }) {
                 <Icon name={bm.icon} size={18} color="var(--primary-300)" />
                 <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-400)' }}>{bm.label}</span>
               </div>
-              <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-500)', fontFamily: "'Inter', sans-serif" }}>{bm.count.toLocaleString()}</div>
+              <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-500)' }}>{bm.count.toLocaleString()}</div>
               <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>members</div>
-              <button className={`${s.btn} ${s.btnGhost}`} style={{ alignSelf: 'flex-start', marginTop: 4 }} onClick={() => showToast?.(bm.toast)}>
+              <Button variant="ghost" size="S" style={{ alignSelf: 'flex-start', marginTop: 4 }} onClick={() => showToast?.(bm.toast)}>
                 View List &rarr;
-              </button>
+              </Button>
             </div>
           ))}
         </div>

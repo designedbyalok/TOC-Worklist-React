@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS, FALLBACK_CONFIGS } from '../../../data/analyticsFallbacks';
 import { KpiCard, InsightBanner, Card, ProgressBar, StatusPill, safeBarItems, safeTableRows, safeConfigData } from './shared';
@@ -132,7 +133,7 @@ function ProductivityTab({ stripMetrics, cmRows, showToast }) {
             onClick={() => c.label === 'Overdue Cases' ? showToast?.('Viewing 127 overdue cases') : showToast?.('Loading case list...')}
           >
             <div>
-              <div style={{ fontSize: 24, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: c.color }}>{c.value}</div>
+              <div style={{ fontSize: 24, fontWeight: 500, color: c.color }}>{c.value}</div>
               <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{c.label}</div>
             </div>
           </div>
@@ -200,7 +201,7 @@ function BottlenecksTab({ showToast }) {
               <div style={{ width: 140, fontSize: 12, fontWeight: 500 }}>{stage.label}</div>
               <div style={{ flex: 1, height: 20, background: 'var(--neutral-50)', borderRadius: 4, overflow: 'hidden', position: 'relative' }}>
                 <div style={{ width: `${stage.pct}%`, height: '100%', background: stage.pct < 25 ? 'var(--status-success)' : stage.pct < 50 ? 'var(--status-info)' : 'var(--status-info)', borderRadius: 4, display: 'flex', alignItems: 'center', paddingLeft: 6 }}>
-                  <span style={{ fontSize: 12, fontWeight: 500, color: '#fff' }}>{stage.n.toLocaleString()}</span>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--neutral-0)' }}>{stage.n.toLocaleString()}</span>
                 </div>
               </div>
               {stage.drop && <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--status-error)', width: 40 }}>{stage.drop}</span>}
@@ -219,7 +220,7 @@ function BottlenecksTab({ showToast }) {
                     <div style={{ fontSize: 12, color: 'var(--neutral-200)', marginTop: 2 }}>{lp.reason}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 18, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: rc }}>{lp.n}</div>
+                    <div style={{ fontSize: 16, fontWeight: 500, color: rc }}>{lp.n}</div>
                     <div style={{ fontSize: 12, fontWeight: 500, color: rc }}>{lp.drop} drop-off</div>
                   </div>
                 </div>
@@ -237,7 +238,7 @@ function BottlenecksTab({ showToast }) {
             onClick={() => showToast?.(`Viewing ${a.n} ${a.label.toLowerCase()}`)}
           >
             <div>
-              <div style={{ fontSize: 24, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: a.color }}>{a.n}</div>
+              <div style={{ fontSize: 24, fontWeight: 500, color: a.color }}>{a.n}</div>
               <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{a.label}</div>
             </div>
           </div>
@@ -270,7 +271,7 @@ function TeamTab({ showToast }) {
       <div style={{ padding: '10px 12px', background: bg, borderRadius: 8, marginBottom: 6, cursor: 'pointer' }}
         onClick={() => showToast?.(`Viewing ${staff.name} detail`)}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <div style={{ width: 28, height: 28, borderRadius: '50%', background: rkColor, color: '#fff', fontSize: 12, fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>#{staff.rank}</div>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', background: rkColor, color: 'var(--neutral-0)', fontSize: 12, fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>#{staff.rank}</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 500, fontSize: 14 }}>{staff.name}</div>
             <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{staff.role}</div>
@@ -303,9 +304,9 @@ function TeamTab({ showToast }) {
       </Card>
       <Card title={<span>&#x26A0; Needs Support</span>} style={{ border: '1px solid var(--status-warning-light)' }}>
         {needsSupport.map(st => <StaffCard key={st.name} staff={st} isBottom={true} />)}
-        <button className={`${s.btn} ${s.btnPrimary}`} style={{ marginTop: 10, width: '100%', justifyContent: 'center' }} onClick={() => showToast?.('Scheduling coaching sessions for 3 staff')}>
+        <Button variant="primary" size="S" style={{ marginTop: 10, width: '100%', justifyContent: 'center' }} onClick={() => showToast?.('Scheduling coaching sessions for 3 staff')}>
           Schedule Support Sessions (3)
-        </button>
+        </Button>
       </Card>
     </div>
   );
@@ -347,14 +348,14 @@ function QualityTab({ bars, showToast }) {
                   <div style={{ fontWeight: 500, fontSize: 12 }}>{q.label}</div>
                   <div style={{ fontSize: 12, color: dc, marginTop: 2 }}>{q.delta}</div>
                 </div>
-                <div style={{ fontSize: 24, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: q.color }}>{q.value}</div>
+                <div style={{ fontSize: 24, fontWeight: 500, color: q.color }}>{q.value}</div>
               </div>
             );
           })}
         </Card>
 
         <Card title={<span>&#x26A0; Compliance Issues</span>} style={{ border: '1px solid var(--status-warning-light)' }}
-          actions={<button className={`${s.btn} ${s.btnPrimary}`} style={{ fontSize: 12 }} onClick={() => showToast?.('Compliance alerts sent to managers')}>Alert All</button>}
+          actions={<Button variant="primary" size="S" style={{ fontSize: 12 }} onClick={() => showToast?.('Compliance alerts sent to managers')}>Alert All</Button>}
         >
           {complianceIssues.map((c, i) => {
             const sc = c.severity === 'high' ? 'var(--status-error)' : c.severity === 'medium' ? 'var(--status-warning)' : 'var(--status-success)';
@@ -366,7 +367,7 @@ function QualityTab({ bars, showToast }) {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, marginLeft: 12 }}>
                   <span className={`${s.stPill} ${c.severity === 'high' ? s.stRed : c.severity === 'medium' ? s.stAmber : s.stGreen}`}>{c.severity}</span>
-                  <span style={{ fontSize: 18, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: sc }}>{c.n}</span>
+                  <span style={{ fontSize: 16, fontWeight: 500, color: sc }}>{c.n}</span>
                 </div>
               </div>
             );
@@ -380,7 +381,7 @@ function QualityTab({ bars, showToast }) {
             const vc = p.rate >= p.target ? 'var(--status-success)' : p.rate >= p.target - 5 ? 'var(--status-warning)' : 'var(--status-error)';
             return (
               <div key={i} style={{ background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 8, padding: 14, textAlign: 'center' }}>
-                <div style={{ fontSize: 24, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: vc }}>{p.rate}%</div>
+                <div style={{ fontSize: 24, fontWeight: 500, color: vc }}>{p.rate}%</div>
                 <div style={{ fontSize: 12, fontWeight: 500, marginTop: 4 }}>{p.name}</div>
                 <div style={{ fontSize: 12, color: 'var(--neutral-200)', marginTop: 2 }}>Target: {p.target}%</div>
                 <div style={{ fontSize: 12, color: 'var(--status-success)', marginTop: 3 }}>{'\u2191'} {p.delta}</div>
@@ -440,7 +441,7 @@ function ProgramsTab({ showToast, programsDetail }) {
   return (
     <>
       {/* Programs Detail Table */}
-      <Card title="Programs Detail" flush actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Exporting programs detail...')}>Export</button>}>
+      <Card title="Programs Detail" flush actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Exporting programs detail...')}>Export</Button>}>
         <div className={s.tblWrap}>
           <table className={s.tbl}>
             <thead>
@@ -460,7 +461,7 @@ function ProgramsTab({ showToast, programsDetail }) {
                     <td>{row.pref_day}</td>
                     <td className={`${s.r} ${s.mono}`}>{row.outreach_pct}</td>
                     <td className={`${s.r}`}><span className={`${s.stPill} ${engColor === 'green' ? s.stGreen : engColor === 'amber' ? s.stAmber : s.stRed}`}>{row.engage_pct}</span></td>
-                    <td><button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.(`${row.action} ${row.program}`)}>{row.action}</button></td>
+                    <td><Button variant="ghost" size="S" onClick={() => showToast?.(`${row.action} ${row.program}`)}>{row.action}</Button></td>
                   </tr>
                 );
               })}
@@ -472,7 +473,7 @@ function ProgramsTab({ showToast, programsDetail }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 12, padding: '12px 16px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 8 }}>
         {[['Total in Programs', '11,062', 'var(--status-info)'], ['Total Savings', '$7.3M', 'var(--status-success)'], ['Total Spend', '$1.95M', 'var(--status-warning)'], ['Blended ROI', '3.7x', 'var(--status-success)']].map(([label, val, c], i) => (
           <div key={i} style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 20, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: c }}>{val}</div>
+            <div style={{ fontSize: 20, fontWeight: 500, color: c }}>{val}</div>
             <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{label}</div>
           </div>
         ))}

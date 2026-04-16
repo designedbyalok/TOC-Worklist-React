@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_TABLES } from '../../../data/analyticsFallbacks';
 import { KpiCard, InsightBanner, Card, ProgressBar, Tag, safeTableRows } from './shared';
@@ -111,7 +112,7 @@ export function QualityView({ showToast }) {
           </div>
         </Card>
 
-        <Card title="Practice-Level Quality" flush actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Exporting practice quality...')}>Export</button>}>
+        <Card title="Practice-Level Quality" flush actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Exporting practice quality...')}>Export</Button>}>
           <div className={s.tblWrap}>
             <table className={s.tbl}>
               <thead>
@@ -144,8 +145,8 @@ export function QualityView({ showToast }) {
         style={{ border: '1px solid var(--status-error-light)' }}
         actions={
           <div style={{ display: 'flex', gap: 6 }}>
-            <button className={`${s.btn} ${s.btnPrimary}`} style={{ fontSize: 12 }} onClick={() => showToast?.('Scheduling AWV for 620 members')}>Schedule AWV (620)</button>
-            <button className={`${s.btn} ${s.btnGhost}`} style={{ fontSize: 12 }} onClick={() => showToast?.('Scheduling office visits for 620 members')}>Schedule Office Visit (620)</button>
+            <Button variant="primary" size="S" style={{ fontSize: 12 }} onClick={() => showToast?.('Scheduling AWV for 620 members')}>Schedule AWV (620)</Button>
+            <Button variant="ghost" size="S" style={{ fontSize: 12 }} onClick={() => showToast?.('Scheduling office visits for 620 members')}>Schedule Office Visit (620)</Button>
           </div>
         }
       >
@@ -153,8 +154,8 @@ export function QualityView({ showToast }) {
         <ProgressBar label="Tier 3 (Moderate Risk)" value="488 members \u00B7 close via AWV scheduling" pct={39} color="amber" />
         <ProgressBar label="Tier 1\u20132 (Low Risk)" value="340 members \u00B7 close via targeted reminder" pct={27} color="green" />
         <div style={{ display: 'flex', gap: 7, marginTop: 10, flexWrap: 'wrap' }}>
-          <button className={`${s.btn} ${s.btnPrimary}`} onClick={() => showToast?.('Viewing all 1,240 members')}>View All 1,240 Members &rarr;</button>
-          <button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('AWV Opportunity: 847 members')}>AWV Opportunity (847) &rarr;</button>
+          <Button variant="primary" size="S" onClick={() => showToast?.('Viewing all 1,240 members')}>View All 1,240 Members &rarr;</Button>
+          <Button variant="ghost" size="S" onClick={() => showToast?.('AWV Opportunity: 847 members')}>AWV Opportunity (847) &rarr;</Button>
         </div>
         <div style={{ fontSize: 12, color: 'var(--neutral-200)', marginTop: 8 }}>
           Two separate cohorts for split targeting: AWV scheduling for prevention-eligible members; office visit for members recently seen but no gap addressed.

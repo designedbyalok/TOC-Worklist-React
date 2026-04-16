@@ -1,4 +1,6 @@
 import { Icon } from '../../../components/Icon/Icon';
+import { Button } from '../../../components/Button/Button';
+import { useAppStore } from '../../../store/useAppStore';
 import s from '../AnalyticsLayout.module.css';
 
 // ─── Safe data extractors ───
@@ -52,6 +54,16 @@ export function KpiCard({ value, label, delta, deltaType = 'pos', sub, accentCol
 
 // ─── Insight Banner ───
 export function InsightBanner({ icon, title, text, variant = '', buttons = [], showToast }) {
+  const setAnalyticsView = useAppStore(st => st.setAnalyticsView);
+
+  const handleButtonClick = (b) => {
+    if (b.navTo) {
+      setAnalyticsView(b.navTo);
+    } else {
+      showToast?.(b.toast || b.label);
+    }
+  };
+
   return (
     <div className={`${s.insight} ${variant ? s[variant] : ''}`}>
       <div className={s.insightIcon}>
@@ -65,13 +77,14 @@ export function InsightBanner({ icon, title, text, variant = '', buttons = [], s
         {buttons.length > 0 && (
           <div className={s.insightBtns}>
             {buttons.map((b, i) => (
-              <button
+              <Button
                 key={i}
-                className={`${s.btn} ${b.primary ? s.btnPrimary : s.btnGhost}`}
-                onClick={() => showToast?.(b.toast || b.label)}
+                variant={b.primary ? 'primary' : 'secondary'}
+                size="S"
+                onClick={() => handleButtonClick(b)}
               >
                 {b.label}
-              </button>
+              </Button>
             ))}
           </div>
         )}
@@ -125,10 +138,10 @@ export function Tag({ label, variant = 'stars' }) {
   return <span className={`${s.tag} ${cls}`}>{label}</span>;
 }
 
-// ─── Ghost Button ───
+// ─── Button helpers (thin wrappers around shared Button component) ───
 export function GhostBtn({ label, onClick }) {
-  return <button className={`${s.btn} ${s.btnGhost}`} onClick={onClick}>{label}</button>;
+  return <Button variant="ghost" size="S" onClick={onClick}>{label}</Button>;
 }
 export function PrimaryBtn({ label, onClick }) {
-  return <button className={`${s.btn} ${s.btnPrimary}`} onClick={onClick}>{label}</button>;
+  return <Button variant="primary" size="S" onClick={onClick}>{label}</Button>;
 }

@@ -258,19 +258,7 @@
 .insightText { font-size: 14px; font-weight: 400; color: var(--neutral-400); line-height: 1.5; }
 .insightBtns { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
 
-/* ── Buttons ── */
-.btn {
-  font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 6px;
-  cursor: pointer; border: none; font-family: 'Inter', sans-serif; transition: all .15s;
-  white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;
-}
-.btnPrimary { background: var(--primary-300); color: #fff; }
-.btnPrimary:hover { background: var(--primary-400); }
-.btnGhost { background: transparent; color: var(--primary-300); border: 0.5px solid var(--primary-200); }
-.btnGhost:hover { background: var(--primary-100); }
-.btnNeutral { background: var(--neutral-0); color: var(--neutral-400); border: 0.5px solid var(--neutral-150); }
-.btnNeutral:hover { border-color: var(--neutral-200); }
-.btnDanger { background: var(--status-error-light); color: var(--status-error); border: 0.5px solid var(--status-error-light); }
+/* ── Buttons: REMOVED — all analytics buttons now use shared <Button> component ── */
 
 /* ── Progress Bar ── */
 .prRow { margin-bottom: 14px; }
@@ -321,23 +309,7 @@
 .tab:hover { color: var(--neutral-400); }
 .tab.active { color: var(--primary-300); border-bottom-color: var(--primary-300); font-weight: 500; }
 
-/* ── Sub tabs / toggles — matches AgentCanvas toolbar ── */
-.subTabs {
-  display: flex; gap: 2px;
-  background: var(--neutral-75); border-radius: 8px; padding: 3px;
-}
-.subTab {
-  display: flex; align-items: center; gap: 5px;
-  padding: 5px 14px; font-size: 14px; font-weight: 500; cursor: pointer;
-  border-radius: 6px; color: var(--neutral-300); transition: all .15s;
-  white-space: nowrap; user-select: none; border: none; background: transparent;
-  font-family: 'Inter', sans-serif;
-}
-.subTab:hover { color: var(--neutral-400); }
-.subTab.active {
-  background: var(--neutral-0); color: var(--neutral-500);
-  box-shadow: 0 1px 3px rgba(0,0,0,.08); font-weight: 500;
-}
+/* ── Sub tabs: REMOVED — replaced by shared <Toggle> component ── */
 
 /* ── Rule Card ── */
 .ruleCard {

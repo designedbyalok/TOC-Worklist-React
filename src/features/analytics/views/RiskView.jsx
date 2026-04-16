@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS } from '../../../data/analyticsFallbacks';
 import { KpiCard, InsightBanner, Card, ProgressBar, safeBarItems, safeTableRows } from './shared';
@@ -114,7 +115,7 @@ export function RiskView({ showToast }) {
       {/* HCC Performance */}
       <Card
         title="HCC Performance \u2014 Closure Rates"
-        actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Opening HCC Suspect Worklist')}>Full Workbook &rarr;</button>}
+        actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Opening HCC Suspect Worklist')}>Full Workbook &rarr;</Button>}
       >
         <div className={s.g2}>
           <div>
@@ -163,7 +164,7 @@ export function RiskView({ showToast }) {
       </Card>
 
       {/* Top Open HCC Suspects */}
-      <Card title="Top Open HCC Suspects" flush actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Opening full HCC suspect worklist')}>View All &rarr;</button>}>
+      <Card title="Top Open HCC Suspects" flush actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Opening full HCC suspect worklist')}>View All &rarr;</Button>}>
         <div className={s.tblWrap}>
           <table className={s.tbl}>
             <thead>
@@ -177,7 +178,7 @@ export function RiskView({ showToast }) {
                   <td>{row.description}</td>
                   <td className={`${s.r} ${s.valR}`} style={{ fontWeight: 500 }}>{row.revenue_impact}</td>
                   <td className={s.mono}>{row.last_coded}</td>
-                  <td><button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.(`${row.action} for ${row.member_id}`)}>{row.action}</button></td>
+                  <td><Button variant="ghost" size="S" onClick={() => showToast?.(`${row.action} for ${row.member_id}`)}>{row.action}</Button></td>
                 </tr>
               ))}
             </tbody>

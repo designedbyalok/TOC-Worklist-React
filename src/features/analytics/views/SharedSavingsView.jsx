@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS } from '../../../data/analyticsFallbacks';
 import { KpiCard, InsightBanner, Card, ProgressBar, safeBarItems, safeTableRows } from './shared';
@@ -77,7 +78,7 @@ export function SharedSavingsView({ showToast }) {
             {savingsMetadata.map(m => (
               <div key={m.label}>
                 <div style={{ fontSize: 12, color: 'var(--neutral-200)' }}>{m.label}</div>
-                <div style={{ fontSize: 14, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: 'var(--neutral-500)', marginTop: 2 }}>{m.value}</div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--neutral-500)', marginTop: 2 }}>{m.value}</div>
               </div>
             ))}
           </div>
@@ -121,18 +122,14 @@ export function SharedSavingsView({ showToast }) {
               <ProgressBar label="Pharmacy PMPM Growth" value="+18% QoQ \u00B7 GLP-1 driving" pct={58} color="amber" sub="Risk to TCOC if not managed" />
             </>
           )}
-          <button
-            className={`${s.btn} ${s.btnPrimary}`}
-            style={{ marginTop: 10, width: '100%', justifyContent: 'center' }}
-            onClick={() => showToast?.('Opening ROI Simulator')}
-          >
+          <Button variant="primary" size="S" fullWidth style={{ marginTop: 10 }} onClick={() => showToast?.('Opening ROI Simulator')}>
             &#9654; Run Scenario Simulator &rarr;
-          </button>
+          </Button>
         </Card>
       </div>
 
       {/* Quality Composite Breakdown */}
-      <Card title="Quality Composite Breakdown" actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Opening full Quality view')}>Full Quality View &rarr;</button>}>
+      <Card title="Quality Composite Breakdown" actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Opening full Quality view')}>Full Quality View &rarr;</Button>}>
         <div className={s.g2}>
           <div>
             {qualFallback.slice(0, 4).map(b => (

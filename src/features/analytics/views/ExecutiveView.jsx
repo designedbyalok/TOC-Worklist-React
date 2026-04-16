@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_TIME_SERIES, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS, FALLBACK_CONFIGS } from '../../../data/analyticsFallbacks';
 import { Icon } from '../../../components/Icon/Icon';
+import { Toggle } from '../../../components/Toggle/Toggle';
 import { KpiCard, InsightBanner, Card, ProgressBar, GhostBtn, safeTableRows, safeBarItems } from './shared';
 import { TcocLineChart, SavingsAreaChart } from './charts';
 import s from '../AnalyticsLayout.module.css';
@@ -109,17 +111,28 @@ export function ExecutiveView({ showToast }) {
         sub={periodLabel}
         actions={
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-            <div className={s.subTabs}>
-              <button className={`${s.subTab} ${tcocMode === 'pmpm' ? s.active : ''}`} onClick={() => setTcocMode('pmpm')}>PMPM</button>
-              <button className={`${s.subTab} ${tcocMode === 'total' ? s.active : ''}`} onClick={() => setTcocMode('total')}>Total Cost</button>
-            </div>
-            <div className={s.subTabs}>
-              {['all','ip','op','ed','rx','pac'].map(t => (
-                <button key={t} className={`${s.subTab} ${tcocTab === t ? s.active : ''}`} onClick={() => setTcocTab(t)}>
-                  {t === 'all' ? 'All' : t === 'ip' ? 'Inpatient' : t === 'op' ? 'Outpatient' : t === 'ed' ? 'ED' : t === 'rx' ? 'Pharmacy' : 'PAC'}
-                </button>
-              ))}
-            </div>
+            <Toggle
+              items={[
+                { key: 'pmpm', label: 'PMPM' },
+                { key: 'total', label: 'Total Cost' },
+              ]}
+              active={tcocMode}
+              onChange={setTcocMode}
+              size="S"
+            />
+            <Toggle
+              items={[
+                { key: 'all', label: 'All' },
+                { key: 'ip', label: 'Inpatient' },
+                { key: 'op', label: 'Outpatient' },
+                { key: 'ed', label: 'ED' },
+                { key: 'rx', label: 'Pharmacy' },
+                { key: 'pac', label: 'PAC' },
+              ]}
+              active={tcocTab}
+              onChange={setTcocTab}
+              size="S"
+            />
           </div>
         }
       >
@@ -130,7 +143,7 @@ export function ExecutiveView({ showToast }) {
           {costBySettingInline.map(c => (
             <div key={c.label} style={{ textAlign: 'center', padding: '10px 6px', background: 'var(--neutral-0)', border: '1px solid var(--neutral-150)', borderRadius: 6 }}>
               <div style={{ fontSize: 12, color: 'var(--neutral-200)', marginBottom: 4 }}>{c.label}</div>
-              <div style={{ fontSize: 18, fontWeight: 500, fontFamily: "'Inter', sans-serif", color: c.color, lineHeight: 1.2 }}>{c.value}</div>
+              <div style={{ fontSize: 20, fontWeight: 500, color: c.color, lineHeight: 1.2 }}>{c.value}</div>
               <div style={{ fontSize: 12, color: 'var(--neutral-300)', marginTop: 3 }}>{c.note}</div>
             </div>
           ))}
@@ -139,7 +152,7 @@ export function ExecutiveView({ showToast }) {
 
       {/* Quality Summary + Care Program Command Center */}
       <div className={s.g2}>
-        <Card title="Quality Summary" actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Opening Quality view')}>Full View &rarr;</button>}>
+        <Card title="Quality Summary" actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Opening Quality view')}>Full View &rarr;</Button>}>
           {qualFallback.map(q => (
             <ProgressBar key={q.label} label={q.label} value={q.value} pct={q.pct} color={q.color} sub={q.sub} />
           ))}
@@ -148,7 +161,7 @@ export function ExecutiveView({ showToast }) {
         <Card
           title="Care Program Command Center"
           sub={`8 programs \u00B7 $7.3M saved \u00B7 3.7\u00D7 blended ROI`}
-          actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Opening Care Management view')}>Full Program View &rarr;</button>}
+          actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Opening Care Management view')}>Full Program View &rarr;</Button>}
           flush
         >
           <div className={s.tblWrap}>
@@ -186,24 +199,24 @@ export function ExecutiveView({ showToast }) {
       <Card
         title="Shared Savings Trajectory"
         sub={periodLabel}
-        actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Opening Shared Savings view')}>Full View &rarr;</button>}
+        actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Opening Shared Savings view')}>Full View &rarr;</Button>}
       >
         <div style={{ display: 'flex', gap: 20, marginBottom: 12, flexWrap: 'wrap', alignItems: 'baseline' }}>
           <div>
-            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--status-success)', fontFamily: "'Inter', sans-serif" }}>{periodMode === 'r12' ? '$1.8M' : '$1.2M'}</div>
-            <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)', fontFamily: "'Inter', sans-serif" }}>Savings {periodMode === 'r12' ? 'Rolling 12M' : 'YTD'}</div>
+            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--status-success)' }}>{periodMode === 'r12' ? '$1.8M' : '$1.2M'}</div>
+            <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)' }}>Savings {periodMode === 'r12' ? 'Rolling 12M' : 'YTD'}</div>
           </div>
           <div style={{ borderLeft: '1px solid var(--neutral-100)', paddingLeft: 16 }}>
-            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--status-warning)', fontFamily: "'Inter', sans-serif" }}>{periodMode === 'r12' ? '82%' : '78%'}</div>
-            <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)', fontFamily: "'Inter', sans-serif" }}>Prob. of hitting MSR</div>
+            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--status-warning)' }}>{periodMode === 'r12' ? '82%' : '78%'}</div>
+            <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)' }}>Prob. of hitting MSR</div>
           </div>
           <div style={{ borderLeft: '1px solid var(--neutral-100)', paddingLeft: 16 }}>
-            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-500)', fontFamily: "'Inter', sans-serif" }}>4.1</div>
-            <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)', fontFamily: "'Inter', sans-serif" }}>Quality Composite</div>
+            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-500)' }}>4.1</div>
+            <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)' }}>Quality Composite</div>
           </div>
           <div style={{ borderLeft: '1px solid var(--neutral-100)', paddingLeft: 16 }}>
-            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-500)', fontFamily: "'Inter', sans-serif" }}>{periodMode === 'r12' ? '$3.8M' : '$3.2M'}</div>
-            <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)', fontFamily: "'Inter', sans-serif" }}>Full-year projection</div>
+            <div style={{ fontSize: 24, fontWeight: 500, color: 'var(--neutral-500)' }}>{periodMode === 'r12' ? '$3.8M' : '$3.2M'}</div>
+            <div style={{ fontSize: 12, fontWeight: 400, color: 'var(--neutral-200)' }}>Full-year projection</div>
           </div>
         </div>
         <SavingsAreaChart data={savingsTrajectory} targetLabel="MSR $2.8M" targetValue={2.8} />

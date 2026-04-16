@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
+import { Toggle } from '../../components/Toggle/Toggle';
 import {
   ReactFlow,
   MiniMap,
@@ -65,9 +66,6 @@ export function AgentCanvas() {
   const hasUnsavedChanges = useRef(false);
   const reactFlowWrapper = useRef(null);
   const reactFlowInstance = useRef(null);
-  const tabsRef = useRef(null);
-  const [tabSliderStyle, setTabSliderStyle] = useState({});
-
   // Warn on browser refresh with unsaved changes
   useEffect(() => {
     const handler = (e) => {
@@ -79,14 +77,6 @@ export function AgentCanvas() {
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
   }, []);
-
-  const updateTabSlider = useCallback(() => {
-    if (!tabsRef.current) return;
-    const activeBtn = tabsRef.current.querySelector('[data-active="true"]');
-    if (activeBtn) setTabSliderStyle({ left: activeBtn.offsetLeft, width: activeBtn.offsetWidth });
-  }, []);
-  useEffect(() => { updateTabSlider(); }, [activeTab, updateTabSlider]);
-  useEffect(() => { requestAnimationFrame(updateTabSlider); }, [updateTabSlider]);
 
   // Load flow data when it arrives
   useEffect(() => {
@@ -377,21 +367,7 @@ export function AgentCanvas() {
         </div>
 
         <div className={styles.toolbarCenter}>
-          <div className={styles.toolbarTabs} ref={tabsRef}>
-            <div className={styles.toolbarSlider} style={tabSliderStyle} />
-            {BUILDER_TABS.map(tab => (
-              <button
-                key={tab}
-                data-active={activeTab === tab}
-                className={`${styles.toolbarTab} ${activeTab === tab ? styles.toolbarTabActive : ''}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab === 'Configure' && <Icon name="solar:settings-linear" size={14} />}
-                {tab === 'Analytics' && <Icon name="solar:chart-2-linear" size={14} />}
-                {tab}
-              </button>
-            ))}
-          </div>
+          <Toggle items={BUILDER_TABS} active={activeTab} onChange={setActiveTab} />
         </div>
 
         <div className={styles.toolbarRight}>

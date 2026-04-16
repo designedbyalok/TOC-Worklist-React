@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS } from '../../../data/analyticsFallbacks';
 import { KpiCard, InsightBanner, Card, ProgressBar, StatusPill, safeBarItems, safeTableRows } from './shared';
@@ -112,7 +113,7 @@ function TcocTab({ data, highCost, showToast }) {
         </div>
       </Card>
 
-      <Card title="High-Cost Claimants" flush actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Exporting high-cost claimant list...')}>Export</button>}>
+      <Card title="High-Cost Claimants" flush actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Exporting high-cost claimant list...')}>Export</Button>}>
         <div className={s.tblWrap}>
           <table className={s.tbl}>
             <thead>
@@ -345,7 +346,7 @@ function SnfPostAcuteTab({ data, scorecard, showToast }) {
         </div>
       </Card>
 
-      <Card title="SNF Quality Scorecard" flush actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Exporting SNF scorecard...')}>Export</button>}>
+      <Card title="SNF Quality Scorecard" flush actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Exporting SNF scorecard...')}>Export</Button>}>
         <div className={s.tblWrap}>
           <table className={s.tbl}>
             <thead><tr><th>SNF</th><th className={s.r}>Admits</th><th className={s.r}>Readmit%</th><th className={s.r}>Avg LOS</th><th className={s.r}>CMS Stars</th><th>Status</th></tr></thead>

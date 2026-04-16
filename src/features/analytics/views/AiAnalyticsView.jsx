@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Button } from '../../../components/Button/Button';
 import { useAppStore } from '../../../store/useAppStore';
 import { FALLBACK_KPIS, FALLBACK_TABLES, FALLBACK_CONFIGS } from '../../../data/analyticsFallbacks';
 import { KpiCard, InsightBanner, Card, safeTableRows, safeConfigData } from './shared';
@@ -77,7 +78,7 @@ export function AiAnalyticsView({ showToast }) {
       </Card>
 
       <div className={s.g2}>
-        <Card title="Anomaly Detection" actions={<button className={`${s.btn} ${s.btnGhost}`} onClick={() => showToast?.('Configuring alert thresholds')}>Configure Thresholds</button>}>
+        <Card title="Anomaly Detection" actions={<Button variant="ghost" size="S" onClick={() => showToast?.('Configuring alert thresholds')}>Configure Thresholds</Button>}>
           {anomalyList.map((a, i) => (
             <div key={i} className={s.ruleCard} style={{ borderLeft: `3px solid ${a.severity === 'red' ? 'var(--status-error)' : 'var(--status-warning)'}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -89,9 +90,9 @@ export function AiAnalyticsView({ showToast }) {
               <div className={s.ruleTrigger} style={{ marginTop: 6, color: 'var(--neutral-500)' }}>{a.title}</div>
               <div style={{ fontSize: 12, color: 'var(--neutral-300)', lineHeight: 1.55, marginTop: 4 }}>{a.desc}</div>
               {a.actionLabel && (
-                <button className={`${s.btn} ${a.severity === 'red' ? s.btnPrimary : s.btnGhost}`} style={{ marginTop: 8 }} onClick={() => showToast?.(a.actionToast || a.actionLabel)}>
+                <Button variant={a.severity === 'red' ? 'primary' : 'ghost'} size="S" style={{ marginTop: 8 }} onClick={() => showToast?.(a.actionToast || a.actionLabel)}>
                   {a.actionLabel}
-                </button>
+                </Button>
               )}
             </div>
           ))}

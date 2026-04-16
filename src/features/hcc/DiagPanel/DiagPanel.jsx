@@ -1,9 +1,10 @@
-import { useMemo, useState, useRef, useCallback, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { Icon } from '../../../components/Icon/Icon';
 import { CloseIcon } from '../../../components/Icon/CloseIcon';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
+import { Toggle } from '../../../components/Toggle/Toggle';
 import { SearchIconButton } from '../../../components/SearchIconButton/SearchIconButton';
 import { HccCard } from './HccGroupRow';
 import styles from './DiagPanel.module.css';
@@ -18,41 +19,7 @@ function groupIcdsByHcc(icds) {
   return [...map.entries()];
 }
 
-/* ── Animated segmented control (same pattern as AgentCanvas toolbar tabs) ── */
 const VIEW_MODES = ['HCC', 'ICD'];
-
-function ViewByToggle({ active, onChange }) {
-  const containerRef = useRef(null);
-  const [sliderStyle, setSliderStyle] = useState({});
-
-  const updateSlider = useCallback(() => {
-    if (!containerRef.current) return;
-    const activeBtn = containerRef.current.querySelector('[data-active="true"]');
-    if (activeBtn) {
-      setSliderStyle({ left: activeBtn.offsetLeft, width: activeBtn.offsetWidth });
-    }
-  }, []);
-
-  useEffect(() => { updateSlider(); }, [active, updateSlider]);
-  useEffect(() => { requestAnimationFrame(updateSlider); }, [updateSlider]);
-
-  return (
-    <div className={styles.segmented} ref={containerRef}>
-      <div className={styles.segmentedSlider} style={sliderStyle} />
-      {VIEW_MODES.map(mode => (
-        <button
-          key={mode}
-          type="button"
-          data-active={active === mode}
-          className={`${styles.segmentBtn} ${active === mode ? styles.segmentBtnActive : ''}`}
-          onClick={() => onChange(mode)}
-        >
-          {mode}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 export function DiagPanel() {
   const memberId = useAppStore(s => s.diagPanelMemberId);
@@ -141,7 +108,7 @@ export function DiagPanel() {
       <div className={styles.toolbar}>
         <div className={styles.viewBy}>
           <span className={styles.viewByLabel}>View by:</span>
-          <ViewByToggle active={diagViewMode} onChange={setDiagViewMode} />
+          <Toggle items={VIEW_MODES} active={diagViewMode} onChange={setDiagViewMode} size="S" />
         </div>
 
         <div className={styles.toolbarIcons}>

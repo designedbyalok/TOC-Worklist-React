@@ -1,0 +1,73 @@
+/* ── Fold Health Toggle — animated segmented control ──
+ * Extracted from agent-builder NodePanel toggle.
+ * Sliding pill indicator via JS inline style (left + width).
+ *
+ * Sizes:
+ *   S: 28px height, 13px font, 4px 10px padding
+ *   M: 32px height, 14px font, 4px 14px padding (default)
+ */
+
+.toggle {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--neutral-50);
+  border-radius: 4px;
+  padding: 2px;
+  position: relative;
+}
+
+.fullWidth {
+  display: flex;
+}
+.fullWidth .btn {
+  flex: 1;
+}
+
+/* ── Sliding pill indicator ── */
+.slider {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  border-radius: 4px;
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-150);
+  box-shadow: 0 12px 60px rgba(0, 0, 0, 0.06);
+  transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+/* ── Segment button ── */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-weight: 400;
+  color: var(--neutral-200);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+}
+.btn:hover { color: var(--neutral-300); }
+.btnActive { color: var(--neutral-400); }
+
+/* ── Size: S (compact) ── */
+.sizeS .btn {
+  height: 28px;
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+/* ── Size: M (default) ── */
+.sizeM .btn {
+  height: 32px;
+  padding: 4px 14px;
+  font-size: 14px;
+}

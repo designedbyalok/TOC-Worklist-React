@@ -19,13 +19,12 @@ export const FALLBACK_KPIS = {
       { key: 'engagement_rate', value: '43%', label: 'Engagement Rate', delta: '+5pp QoQ', deltaType: 'pos', sub: 'Members with \u22652 touches', accentColor: 'var(--primary-300)' },
     ],
     insight: {
-      icon: 'solar:danger-triangle-bold',
-      title: '3 Priorities This Week',
-      variant: 'amber',
-      text: '(1) 30-day readmit rate <strong>18.4%</strong> \u2014 up 20% vs Q3. Concentrated at Valley SNF. (2) RAF recapture gap: <strong>$2.1M</strong> uncaptured revenue from 962 open HCC suspects. (3) AWV completion <strong>61%</strong> vs 80% target \u2014 1,600 members unscheduled.',
+      icon: 'solar:lightbulb-minimalistic-linear',
+      title: 'AI Insight Summary \u2014 YTD 2025',
+      text: '<strong>3 priorities this week.</strong> Readmissions up <strong>+20% vs Q3</strong> \u2014 3 facilities driving 71% of increase. RAF gap on <strong>1,840 members</strong> = <strong>$2.1M</strong> uncaptured. AWV at <strong>61%</strong> vs 80% target \u2014 847 members unscheduled.',
       buttons: [
-        { label: 'View Readmission Detail', primary: true, toast: 'Opening readmission view' },
-        { label: 'HCC Suspect List', toast: 'Opening risk & revenue' },
+        { label: 'Utilization Detail', primary: true, navTo: 'utilization' },
+        { label: 'Risk & Revenue', navTo: 'risk' },
       ],
     },
   },
@@ -263,12 +262,13 @@ export const FALLBACK_KPIS = {
 // ═══════════════════════════════════════════════════════════
 
 export const FALLBACK_TIME_SERIES = {
-  tcoc_all: [845, 858, 862, 870, 878, 882, 875, 890, 888, 892, 895, 890],
-  tcoc_ip:  [310, 315, 312, 320, 318, 325, 315, 318, 322, 320, 316, 318],
-  tcoc_op:  [130, 132, 135, 138, 140, 142, 138, 142, 140, 143, 141, 142],
-  tcoc_ed:  [78, 80, 82, 84, 85, 86, 88, 88, 86, 89, 87, 88],
-  tcoc_rx:  [148, 150, 152, 155, 158, 160, 162, 163, 165, 164, 162, 163],
-  tcoc_pac: [100, 102, 105, 108, 110, 112, 108, 106, 108, 107, 105, 106],
+  // Declining TCOC trend — cost reducing over time (benchmark: $910 PMPM)
+  tcoc_all: [918, 922, 920, 915, 912, 908, 905, 898, 895, 888, 892, 890],
+  tcoc_ip:  [325, 328, 326, 322, 320, 318, 316, 312, 310, 306, 310, 318],
+  tcoc_op:  [148, 150, 148, 146, 144, 142, 140, 138, 136, 134, 140, 142],
+  tcoc_ed:  [92, 94, 92, 90, 88, 86, 84, 82, 80, 82, 86, 88],
+  tcoc_rx:  [172, 170, 168, 166, 165, 164, 168, 166, 164, 162, 160, 163],
+  tcoc_pac: [118, 116, 114, 112, 110, 108, 106, 104, 102, 100, 104, 106],
 };
 
 export const TCOC_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -873,7 +873,7 @@ export const FALLBACK_CONFIGS = {
   exec_cost_by_setting_inline: {
     items: [
       { label: 'IP', value: '$318', color: 'var(--status-info)', note: '\u2191 $23 over' },
-      { label: 'OP', value: '$142', color: 'var(--status-info-light)', note: '\u2713 Benching' },
+      { label: 'OP', value: '$142', color: 'var(--status-success)', note: '\u2713 Benching' },
       { label: 'ED', value: '$88', color: 'var(--status-warning)', note: '\u2191 $8 over' },
       { label: 'Rx', value: '$163', color: 'var(--status-error)', note: '\u2191 $23 over' },
       { label: 'PAC', value: '$106', color: 'var(--status-success)', note: '\u2713 $9 under' },

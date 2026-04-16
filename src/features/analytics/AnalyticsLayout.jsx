@@ -217,7 +217,7 @@ export function AnalyticsLayout() {
             <span className={`${s.recDot} ${s.ok}`} />
             <span className={s.recLabel}>Labs</span>
             <span>3h ago</span>
-            <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--neutral-200)' }}>
+            <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--neutral-200)' }}>
               Last full refresh: Today 6:00 AM
             </span>
           </div>
