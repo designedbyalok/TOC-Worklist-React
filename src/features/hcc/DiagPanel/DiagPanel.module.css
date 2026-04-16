@@ -17,10 +17,11 @@
   color: var(--neutral-400);
 }
 
-/* ── Title row (replaces Drawer's default header) ── */
+/* ── Title row — Figma: pl-12 pr-12 py-6, border-bottom 0.5px grey-150 ── */
 .titleRow {
   display: flex;
   align-items: center;
+  gap: 8px;
   padding: 6px 12px;
   border-bottom: 0.5px solid var(--neutral-150);
   background: var(--neutral-0);
@@ -34,11 +35,11 @@
   color: var(--neutral-400);
 }
 
-/* ── Patient banner ── */
+/* ── Patient banner — Figma: px-12 py-8, gap-24 between info and actions ── */
 .patientBanner {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 8px;
   padding: 8px 12px;
   border-bottom: 0.5px solid var(--neutral-150);
   background: var(--neutral-0);
@@ -67,6 +68,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-left: 0; /* avatar gap comes from parent's gap:8px */
 }
 
 .memberName {
@@ -111,8 +113,9 @@
 .bannerActions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .divider {

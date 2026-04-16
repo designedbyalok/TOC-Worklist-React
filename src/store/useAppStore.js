@@ -1092,15 +1092,102 @@ export const useAppStore = create((set, get) => ({
   selectAll: (ids) => set({ selectedIds: ids }),
   clearSelected: () => set({ selectedIds: [] }),
 
-  // ─── HCC Worklist (Phase 1: read-only list view) ───
+  // ─── HCC Worklist (Supabase-backed) ───
   hccMembers: [],
   hccMembersLoading: false,
   fetchHccMembers: async () => {
-    if (get().hccMembers.length > 0) return;
     set({ hccMembersLoading: true });
-    const { HCC_MEMBERS } = await import('../features/hcc/data/mock');
-    set({ hccMembers: HCC_MEMBERS, hccMembersLoading: false });
+    const { data, error } = await supabase
+      .from('hcc_members')
+      .select('*')
+      .order('create_date', { ascending: false });
+    if (error) {
+      console.error('fetchHccMembers error:', error.message);
+      set({ hccMembers: [], hccMembersLoading: false });
+      return;
+    }
+    const POS_MAP = { 'Walk-in': { code: '11', desc: 'Office' }, Telehealth: { code: '02', desc: 'Telehealth' } };
+    const members = (data || []).map(row => {
+      const dosList = row.dos_list || [];
+      const pos = POS_MAP[row.visit_type] || { code: '', desc: row.visit_type || '' };
+      return {
+        id: row.id,
+        memberId: row.member_id,
+        in: row.initials,
+        name: row.name,
+        g: row.gender,
+        age: row.age,
+        cv: row.current_visit,
+        tv: row.total_visits,
+        dos_list: dosList,
+        dos: dosList[row.current_visit ? row.current_visit - 1 : 0]?.date,
+        visits: row.current_visit && row.total_visits ? `${row.current_visit} of ${row.total_visits} Visits` : null,
+        ch: row.chart_count,
+        docStatus: row.doc_status || [],
+        open: row.open_icds,
+        date: row.create_date,
+        due: row.due_label,
+        dueCol: row.due_color,
+        sup: row.support_name, supS: row.support_status,
+        cdr: row.coder_name, cdrS: row.coder_status,
+        r1: row.reviewer1_name, r1s: row.reviewer1_status,
+        r2: row.reviewer2_name, r2s: row.reviewer2_status,
+        r3: row.reviewer3_name, r3s: row.reviewer3_status,
+        rp: row.rendering_provider,
+        vt: row.visit_type,
+        raf: row.raf_score,
+        ri: row.raf_impact,
+        ru: row.risk_utilization,
+        ipa: row.ipa,
+        hp: row.health_plan,
+        pcp: row.pcp,
+        dec: row.decile,
+        coh: row.cohort,
+        rl: row.risk_level,
+        ad: row.advillness,
+        fr: row.frailty,
+        language: row.language || 'en',
+        pos: pos.code,
+        posDesc: pos.desc,
+      };
+    });
+    set({ hccMembers: members, hccMembersLoading: false });
   },
+
+  // HCC Diagnosis Gaps (fetched per member from Supabase)
+  hccDiagnosisGaps: [],
+  hccDiagnosisGapsLoading: false,
+  fetchHccDiagnosisGaps: async (memberName) => {
+    set({ hccDiagnosisGapsLoading: true });
+    const { data, error } = await supabase
+      .from('hcc_diagnosis_gaps')
+      .select('*')
+      .eq('member_name', memberName)
+      .order('created_at', { ascending: true });
+    if (error) {
+      console.error('fetchHccDiagnosisGaps error:', error.message);
+      set({ hccDiagnosisGaps: [], hccDiagnosisGapsLoading: false });
+      return;
+    }
+    const gaps = (data || []).map(row => ({
+      id: row.id,
+      code: row.code,
+      desc: row.description,
+      hcc: row.hcc_category,
+      status: row.status,
+      type: row.type,
+      docs: row.docs_count,
+      cmts: row.comments_count,
+      notes: row.notes_count,
+      raf: row.raf_weight,
+      last: row.last_activity,
+      by: row.last_activity_by,
+      dismissReason: row.dismiss_reason,
+      isLinked: row.is_linked,
+    }));
+    set({ hccDiagnosisGaps: gaps, hccDiagnosisGapsLoading: false });
+  },
+
   selectedHccIds: [],
   selectHccMember: (id) => set(s => ({
     selectedHccIds: s.selectedHccIds.includes(id)

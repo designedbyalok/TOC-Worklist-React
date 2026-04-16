@@ -6,7 +6,6 @@ import { Badge } from '../../components/Badge/Badge';
 import { Checkbox } from '../../components/ui/checkbox';
 import { ActionButton } from '../../components/ActionButton/ActionButton';
 import { Icon } from '../../components/Icon/Icon';
-import { getIcdsForMember, getNotLinkedForMember } from './data/icds';
 import styles from './HccWorklistRow.module.css';
 
 // ── Icon + color treatment per role-status ──
@@ -104,16 +103,11 @@ function RoleStatusCell({ name, status }) {
   );
 }
 
-function OpenIcdsCell({ count, memberName, onOpen }) {
+function OpenIcdsCell({ count, onOpen }) {
   const cellRef = useRef(null);
   const openTimer = useRef(null);
   const closeTimer = useRef(null);
   const [pos, setPos] = useState(null);
-
-  const computeOpenIcds = () => {
-    const all = [...getIcdsForMember(memberName), ...getNotLinkedForMember(memberName)];
-    return all.filter(i => !['Accepted', 'Dismissed'].includes(i.status));
-  };
 
   const open = () => {
     if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
@@ -121,8 +115,8 @@ function OpenIcdsCell({ count, memberName, onOpen }) {
     openTimer.current = setTimeout(() => {
       const rect = cellRef.current?.getBoundingClientRect();
       if (!rect) return;
-      const W = 360;
-      const H = 320;
+      const W = 260;
+      const H = 80;
       let left = rect.left;
       if (left + W > window.innerWidth - 12) left = window.innerWidth - W - 12;
       left = Math.max(12, left);
@@ -145,8 +139,6 @@ function OpenIcdsCell({ count, memberName, onOpen }) {
 
   if (count == null) return <span className={styles.muted}>—</span>;
 
-  const icds = pos ? computeOpenIcds() : [];
-
   return (
     <>
       <div
@@ -167,28 +159,13 @@ function OpenIcdsCell({ count, memberName, onOpen }) {
         >
           <div className={styles.openIcdsHeader}>
             <span className={styles.openIcdsTitle}>
-              Open ICDs <span className={styles.openIcdsCount}>{icds.length || count}</span>
+              Open ICDs <span className={styles.openIcdsCount}>{count}</span>
             </span>
           </div>
           <div className={styles.openIcdsBody}>
-            {icds.length === 0 ? (
-              <div className={styles.openIcdsEmpty}>
-                {count} open code{count === 1 ? '' : 's'} on chart · details pending
-              </div>
-            ) : (
-              icds.map((icd, i) => (
-                <div key={`${icd.code}-${i}`} className={styles.openIcdsRow}>
-                  <span className={styles.openIcdsCode}>{icd.code}</span>
-                  <div className={styles.openIcdsDetail}>
-                    <div className={styles.openIcdsDesc}>{icd.desc}</div>
-                    <div className={styles.openIcdsMeta}>
-                      {icd.hcc && <span>{icd.hcc}</span>}
-                      {icd.status && <span className={styles.openIcdsStatusPill}>{icd.status}</span>}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
+            <div className={styles.openIcdsEmpty}>
+              {count} open code{count === 1 ? '' : 's'} on chart
+            </div>
           </div>
           <div className={styles.openIcdsFooter}>
             <button type="button" className={styles.openIcdsOpenBtn} onClick={onOpen}>
@@ -276,7 +253,6 @@ export function HccWorklistRow({ member }) {
       <td className={styles.colOpen} onClick={(e) => e.stopPropagation()}>
         <OpenIcdsCell
           count={member.open}
-          memberName={member.name}
           onOpen={() => openDiagPanel(member.id)}
         />
       </td>

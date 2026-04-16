@@ -2,10 +2,10 @@ import { useMemo, useState, useRef, useCallback, useEffect } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { Icon } from '../../../components/Icon/Icon';
+import { CloseIcon } from '../../../components/Icon/CloseIcon';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { SearchIconButton } from '../../../components/SearchIconButton/SearchIconButton';
 import { HccCard } from './HccGroupRow';
-import { getIcdsForMember, getNotLinkedForMember } from '../data/icds';
 import styles from './DiagPanel.module.css';
 
 function groupIcdsByHcc(icds) {
@@ -61,14 +61,22 @@ export function DiagPanel() {
   const setDiagViewMode = useAppStore(s => s.setDiagViewMode);
   const member = useAppStore(s => s.hccMembers.find(m => m.id === memberId));
   const showToast = useAppStore(s => s.showToast);
+  const fetchHccDiagnosisGaps = useAppStore(s => s.fetchHccDiagnosisGaps);
+  const diagnosisGaps = useAppStore(s => s.hccDiagnosisGaps);
+  const diagnosisGapsLoading = useAppStore(s => s.hccDiagnosisGapsLoading);
 
   const [overriddenOpen, setOverriddenOpen] = useState(false);
   const [closedOpen, setClosedOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const icds = useMemo(() => (member ? getIcdsForMember(member.name) : []), [member]);
-  const notLinked = useMemo(() => (member ? getNotLinkedForMember(member.name) : []), [member]);
+  // Fetch diagnosis gaps from Supabase when member changes
+  useEffect(() => {
+    if (member?.name) fetchHccDiagnosisGaps(member.name);
+  }, [member?.name, fetchHccDiagnosisGaps]);
+
+  const icds = useMemo(() => diagnosisGaps.filter(g => g.isLinked !== false), [diagnosisGaps]);
+  const notLinked = useMemo(() => diagnosisGaps.filter(g => g.isLinked === false), [diagnosisGaps]);
   const hccGroups = useMemo(() => groupIcdsByHcc(icds), [icds]);
 
   if (!member) return null;
@@ -97,7 +105,9 @@ export function DiagPanel() {
       {/* ── Row 1: Title + Close ── */}
       <div className={styles.titleRow}>
         <span className={styles.titleText}>Diagnosis Gaps Details</span>
-        <ActionButton icon="solar:close-linear" size="L" tooltip="Close" onClick={closeDiagPanel} />
+        <ActionButton size="L" tooltip="Close" onClick={closeDiagPanel}>
+          <CloseIcon size={20} color="var(--neutral-300)" />
+        </ActionButton>
       </div>
 
       {/* ── Row 2: Patient Banner ── */}
