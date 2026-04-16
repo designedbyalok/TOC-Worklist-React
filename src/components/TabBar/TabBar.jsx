@@ -68,7 +68,7 @@ export function TabBar() {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
-    if (tab === 'queue') clearQueueTabDot();
+    if (tab === 'toc-queue') clearQueueTabDot();
   };
 
   const handleAbort = () => {
@@ -105,14 +105,14 @@ export function TabBar() {
       <div className={styles.tabBar}>
         <div className={styles.left}>
           <div
-            className={[styles.tabItem, activeTab === 'worklist' ? styles.active : ''].filter(Boolean).join(' ')}
-            onClick={() => handleTabChange('worklist')}
+            className={[styles.tabItem, activeTab === 'toc-worklist' ? styles.active : ''].filter(Boolean).join(' ')}
+            onClick={() => handleTabChange('toc-worklist')}
           >
             TOC Worklist
           </div>
           <div
-            className={[styles.tabItem, activeTab === 'queue' ? styles.active : ''].filter(Boolean).join(' ')}
-            onClick={() => handleTabChange('queue')}
+            className={[styles.tabItem, activeTab === 'toc-queue' ? styles.active : ''].filter(Boolean).join(' ')}
+            onClick={() => handleTabChange('toc-queue')}
           >
             TOC Agent Queue
             {queueTabDot && <span className={styles.notifDot} title="Agent invoked — view queue" />}
@@ -120,7 +120,7 @@ export function TabBar() {
         </div>
 
         <div className={styles.right}>
-          {activeTab === 'queue' && (
+          {activeTab === 'toc-queue' && (
             <div className={styles.queueActions}>
               <Button variant="secondary" size="L" leadingIcon="solar:pen-new-square-linear" onClick={handleEditConfiguration}>
                 Edit Configuration

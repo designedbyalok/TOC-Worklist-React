@@ -6,7 +6,7 @@ import { Avatar } from '../../components/Avatar/Avatar';
 import { Badge } from '../../components/Badge/Badge';
 import { Checkbox } from '../../components/ui/checkbox';
 import { useAppStore } from '../../store/useAppStore';
-import rowStyles from '../worklist/WorklistRow.module.css';
+import rowStyles from '../toc-worklist/WorklistRow.module.css';
 import styles from './QueueRow.module.css';
 
 const LANG_MAP = { en: 'English', es: 'Spanish', zh: 'Chinese', yue: 'Cantonese', ko: 'Korean', vi: 'Vietnamese', hi: 'Hindi', pa: 'Punjabi' };

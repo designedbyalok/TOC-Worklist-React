@@ -20,9 +20,9 @@ import { GroupDetailDrawer } from '../features/settings/panels/GroupDetailDrawer
 import { AgentRulesDrawer } from '../features/settings/panels/AgentRulesDrawer';
 import { BusinessHoursDrawer } from '../features/settings/panels/BusinessHoursDrawer';
 import { ComponentWizardDrawer } from '../features/settings/panels/ComponentWizardDrawer';
-import { WorklistTable } from '../features/worklist/WorklistTable';
-import { QueueTable } from '../features/queue/QueueTable';
-import { QueueSummaryBar } from '../features/queue/QueueSummaryBar';
+import { WorklistTable } from '../features/toc-worklist/WorklistTable';
+import { QueueTable } from '../features/toc-queue/QueueTable';
+import { QueueSummaryBar } from '../features/toc-queue/QueueSummaryBar';
 import { HccWorklistTable } from '../features/hcc/HccWorklistTable';
 import { DiagPanel } from '../features/hcc/DiagPanel/DiagPanel';
 import { SettingsLayout } from '../features/settings/SettingsLayout';
@@ -104,10 +104,10 @@ function PopulationView() {
         <div className={styles.content}>
           {!isHcc && <TabBar />}
           {!isHcc && showFilterBar && <FilterBar />}
-          {!isHcc && activeTab === 'queue' && <QueueSummaryBar />}
+          {!isHcc && activeTab === 'toc-queue' && <QueueSummaryBar />}
           {isHcc
             ? <HccWorklistTable />
-            : (activeTab === 'worklist' ? <WorklistTable /> : <QueueTable />)}
+            : (activeTab === 'toc-worklist' ? <WorklistTable /> : <QueueTable />)}
           <Pagination />
         </div>
       </div>

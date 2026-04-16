@@ -35,7 +35,7 @@ export function Pagination() {
     let result = patients;
 
     // For queue tab, only count patients with agents assigned
-    if (activeTab === 'queue') {
+    if (activeTab === 'toc-queue') {
       result = result.filter(p => p.agentAssigned);
       return result.length;
     }
@@ -103,9 +103,9 @@ export function Pagination() {
   };
 
   // Don't show pagination for queue with empty state
-  if (activeTab === 'queue' && totalItems === 0) return null;
+  if (activeTab === 'toc-queue' && totalItems === 0) return null;
   // Don't show pagination for outreach status grouped view (uses collapsible sections)
-  if (activeTab === 'worklist' && viewBy === 'status') return null;
+  if (activeTab === 'toc-worklist' && viewBy === 'status') return null;
 
   return (
     <div className={styles.pagination}>

@@ -30,7 +30,7 @@ function nextDate(lace) {
 
 // Restore navigation state from sessionStorage on reload
 const _savedPage = sessionStorage.getItem('activePage') || 'population';
-const _savedTab = sessionStorage.getItem('activeTab') || 'worklist';
+const _savedTab = sessionStorage.getItem('activeTab') || 'toc-worklist';
 const _savedSettingsTab = sessionStorage.getItem('settingsTab');
 
 // Hydrate theme from localStorage so the store agrees with what the

@@ -70,7 +70,7 @@ export function stateToHash(state) {
     return buildHash('population', 'hcc');
   }
 
-  return buildHash('population', activeTab || 'worklist');
+  return buildHash('population', activeTab || 'toc-worklist');
 }
 
 // ── Map parsed route → store state updates ──
@@ -155,11 +155,11 @@ export function hashToState(route) {
   updates.selectedPatientId = null;
   if (route.section === 'hcc') {
     updates.activeSubnavList = 'HCC';
-    updates.activeTab = 'worklist';
+    updates.activeTab = 'toc-worklist';
     return updates;
   }
-  // Anything else — if we were on HCC, fall back to TOC
-  updates.activeTab = route.section === 'queue' ? 'queue' : 'worklist';
+  // Map URL section → activeTab
+  updates.activeTab = route.section === 'toc-queue' ? 'toc-queue' : 'toc-worklist';
   return updates;
 }
 
