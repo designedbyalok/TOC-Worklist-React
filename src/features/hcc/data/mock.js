@@ -142,9 +142,25 @@ const MEMBERS_RAW = [
   { in:"MJ", name:"Michelle Jackson",g:"F", age:"61y 5m",  cv:3, tv:3, dos_list:[{date:"02/12/2027",label:"Due in 21D",labelColor:C.grey200},{date:"08/30/2026",label:"Due in 21D",labelColor:C.grey200},{date:"02/25/2026",label:"Due in 21D",labelColor:C.grey200}], ch:4, docStatus:["passed","passed","passed","passed"], open:5, date:"02/20/2026", due:"Due in 21D", dueCol:C.grey200, sup:"L. Torrance",supS:"Completed",cdr:"P. Plourde",cdrS:"Completed",r1:"M. Almeda",r1s:"Completed",r2:null,r2s:"Assign",r3:null,r3s:"Assign",rp:"Dr. Mallory Hayes",vt:"Walk-in",raf:"1.640",ri:"0.082",ru:true,ipa:"ACP",hp:"Lab",pcp:"Dr. Roland G.",dec:"4",coh:"HCC",rl:"Low",ad:"1",fr:"1" },
 ];
 
-export const HCC_MEMBERS = MEMBERS_RAW.map((m, i) => ({
-  ...m,
-  id: `hcc-${i + 1}`,
-  dos: m.dos_list[m.cv ? m.cv - 1 : 0]?.date,
-  visits: m.cv && m.tv ? `${m.cv} of ${m.tv} Visits` : null,
-}));
+// Derive POS (Place of Service) code + description from the visit type field.
+// Standard CMS POS codes — 11 Office, 02 Telehealth.
+const POS_MAP = {
+  'Walk-in':    { code: '11', desc: 'Office' },
+  'Telehealth': { code: '02', desc: 'Telehealth' },
+};
+
+export const HCC_MEMBERS = MEMBERS_RAW.map((m, i) => {
+  const pos = POS_MAP[m.vt] || { code: '', desc: m.vt || '' };
+  const left  = String(1000 + (i * 17) % 9000).padStart(4, '0');
+  const right = String(2500 + (i * 31) % 7500).padStart(4, '0');
+  return {
+    ...m,
+    id: `hcc-${i + 1}`,
+    memberId: `M-${left}-${right}`,     // realistic member id shown in meta line
+    language: 'en',
+    dos: m.dos_list[m.cv ? m.cv - 1 : 0]?.date,
+    visits: m.cv && m.tv ? `${m.cv} of ${m.tv} Visits` : null,
+    pos: pos.code,
+    posDesc: pos.desc,
+  };
+});

@@ -65,6 +65,11 @@ export function stateToHash(state) {
     return buildHash('population', 'patient', state.selectedPatientId);
   }
 
+  // HCC Worklist (separate sub-list; not a TOC filter)
+  if (state.activeSubnavList === 'HCC') {
+    return buildHash('population', 'hcc');
+  }
+
   return buildHash('population', activeTab || 'worklist');
 }
 
@@ -141,13 +146,19 @@ export function hashToState(route) {
     return updates;
   }
 
-  // Population — patient detail or worklist/queue
+  // Population — patient detail or worklist/queue/hcc
   updates.activePage = 'population';
   if (route.section === 'patient' && route.tab) {
     updates.selectedPatientId = route.tab;
     return updates;
   }
   updates.selectedPatientId = null;
+  if (route.section === 'hcc') {
+    updates.activeSubnavList = 'HCC';
+    updates.activeTab = 'worklist';
+    return updates;
+  }
+  // Anything else — if we were on HCC, fall back to TOC
   updates.activeTab = route.section === 'queue' ? 'queue' : 'worklist';
   return updates;
 }

@@ -17,7 +17,7 @@ export function Pagination() {
   const setCurrentPage = useAppStore(s => s.setCurrentPage);
   const setPerPage = useAppStore(s => s.setPerPage);
 
-  const isHcc = activeSubnavList === 'HCC Worklist';
+  const isHcc = activeSubnavList === 'HCC';
 
   // Derive the total count based on what's actually being shown
   const totalItems = useMemo(() => {

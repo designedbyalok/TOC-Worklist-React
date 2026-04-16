@@ -828,7 +828,7 @@ export const useAppStore = create((set, get) => ({
     return { activeFilters: next, currentPage: 1 };
   }),
   clearAllFilters: () => set({ activeFilters: {}, currentPage: 1 }),
-  setActiveSubnavList: (list) => set({ activeSubnavList: list, currentPage: 1 }),
+  setActiveSubnavList: (list) => { set({ activeSubnavList: list, currentPage: 1 }); updateHash(get); },
 
   fetchAgents: async () => {
     set({ agentsLoading: true });
@@ -1109,6 +1109,24 @@ export const useAppStore = create((set, get) => ({
   })),
   selectAllHcc: (ids) => set({ selectedHccIds: ids }),
   clearHccSelected: () => set({ selectedHccIds: [] }),
+
+  // HCC DiagPanel drawer (Phase 2: read-only)
+  diagPanelOpen: false,
+  diagPanelMemberId: null,
+  diagActiveTab: 'Codes',
+  diagDosFilter: null,      // null = first DOS (member.dos_list[0]); 'ALL' = sweep; else a date string
+  diagViewMode: 'HCC',      // 'HCC' (grouped) | 'ICD' (flat)
+  openDiagPanel: (id) => set({
+    diagPanelOpen: true,
+    diagPanelMemberId: id,
+    diagActiveTab: 'Codes',
+    diagDosFilter: null,
+    diagViewMode: 'HCC',
+  }),
+  closeDiagPanel: () => set({ diagPanelOpen: false, diagPanelMemberId: null }),
+  setDiagActiveTab: (tab) => set({ diagActiveTab: tab }),
+  setDiagDosFilter: (dos) => set({ diagDosFilter: dos }),
+  setDiagViewMode: (mode) => set({ diagViewMode: mode }),
 
   openWorkflow: (patientId) => {
     const p = get().patients.find(x => x.id === patientId);

@@ -114,6 +114,8 @@
 .tableWrap {
   flex: 1;
   overflow: auto;
+  position: relative;
+  z-index: 0; /* contain sticky-cell stacking contexts so they don't paint over drawers (z-index 400+) */
 }
 
 .table {

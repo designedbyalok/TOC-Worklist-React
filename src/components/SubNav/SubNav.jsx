@@ -16,7 +16,7 @@ const SHARED_LISTS = [
   { label: 'SNP', filter: null },
   { label: 'AWV', filter: null },
   { label: 'TOC', filter: null },  // default — shows all TOC patients
-  { label: 'HCC Worklist', filter: null, view: 'hcc' },
+  { label: 'HCC', filter: null, view: 'hcc' },
   { label: 'High Utilizers', filter: { readmission: 'Yes' } },
   { label: 'DM', filter: null },
 ];

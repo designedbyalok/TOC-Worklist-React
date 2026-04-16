@@ -4,6 +4,7 @@ import { HccWorklistRow } from './HccWorklistRow';
 import { TableSkeleton } from '../../components/Skeleton/TableSkeleton';
 import { Checkbox } from '../../components/ui/checkbox';
 import { Icon } from '../../components/Icon/Icon';
+import { ActionButton } from '../../components/ActionButton/ActionButton';
 import { SearchIconButton } from '../../components/SearchIconButton/SearchIconButton';
 import { SortableHeader } from '../../components/Table/SortableHeader';
 import { useTableSort } from '../../components/Table/useTableSort';
@@ -31,8 +32,10 @@ export function HccWorklistTable() {
   const setSearchQuery = useAppStore(s => s.setSearchQuery);
   const currentPage = useAppStore(s => s.currentPage);
   const perPage = useAppStore(s => s.perPage);
+  const showToast = useAppStore(s => s.showToast);
 
   const [searchOpen, setSearchOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => { fetchHccMembers(); }, [fetchHccMembers]);
 
@@ -64,60 +67,92 @@ export function HccWorklistTable() {
 
   return (
     <div className={styles.wrap}>
-      <div className={styles.toolbar}>
-        <div className={styles.toolbarTitle}>
-          <span>HCC Worklist</span>
-          <span className={styles.toolbarCount}>{filtered.length}</span>
+      <div className={styles.tabBar}>
+        <div className={styles.tabLeft}>
+          <div className={`${styles.tabItem} ${styles.tabActive}`}>
+            HCC Worklist
+          </div>
         </div>
-        <div className={styles.toolbarActions}>
-          {searchOpen ? (
-            <div className={styles.searchInput}>
-              <Icon name="solar:magnifer-linear" size={15} color="var(--neutral-300)" />
-              <input
-                autoFocus
-                type="text"
-                placeholder="Search by member name or ID…"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button
-                className={styles.searchClose}
-                onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
-                aria-label="Close search"
-              >
-                ✕
-              </button>
-            </div>
-          ) : (
-            <SearchIconButton title="Search" onClick={() => setSearchOpen(true)} />
-          )}
+
+        <div className={styles.tabRight}>
+          <div className={styles.searchWrap}>
+            {searchOpen ? (
+              <div className={styles.searchInput}>
+                <Icon name="solar:magnifer-linear" size={15} color="var(--neutral-300)" />
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="Search by member name…"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button
+                  className={styles.searchClose}
+                  onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                  aria-label="Close search"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <SearchIconButton title="Search" onClick={() => setSearchOpen(true)} />
+            )}
+          </div>
+          <span className={styles.iconDivider} />
+          <ActionButton
+            icon="solar:filter-linear"
+            size="L"
+            tooltip="Filter"
+            className={filterOpen ? styles.iconActive : ''}
+            onClick={() => { setFilterOpen(v => !v); showToast('Filters — coming soon'); }}
+          />
+          <span className={styles.iconDivider} />
+          <ActionButton
+            icon="solar:history-linear"
+            size="L"
+            tooltip="History"
+            onClick={() => showToast('History — coming soon')}
+          />
+          <span className={styles.iconDivider} />
+          <ActionButton
+            icon="solar:upload-minimalistic-linear"
+            size="L"
+            tooltip="Export"
+            onClick={() => showToast('Export — coming soon')}
+          />
         </div>
       </div>
-      <table className={styles.table}>
+      <div className={styles.scrollWrap}>
+        <table className={styles.table}>
         <thead>
           <tr>
-            <th className={`${rowStyles.stickyLeft} ${rowStyles.colMember}`}>
-              <div className={styles.headerMember}>
-                <Checkbox
-                  checked={someSelected ? 'indeterminate' : allSelected}
-                  onCheckedChange={handleSelectAll}
-                  aria-label="Select all members"
-                />
-                <span>Member</span>
-              </div>
+            <th
+              className={`${rowStyles.stickyLeft} ${rowStyles.stickyCheck} ${styles.checkTh}`}
+            >
+              <Checkbox
+                checked={someSelected ? 'indeterminate' : allSelected}
+                onCheckedChange={handleSelectAll}
+                aria-label="Select all members"
+              />
+            </th>
+            <th
+              className={`${rowStyles.stickyLeft} ${rowStyles.stickyMember} ${rowStyles.colMember} ${styles.memberTh}`}
+            >
+              Member
             </th>
 
-            <SortableHeader label="DOS" sortKey="dos" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colDos} />
+            <SortableHeader label="DOS" sortKey="dos" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colLastVisit} />
             <SortableHeader label="Open ICDs" sortKey="open" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colOpen} />
             <SortableHeader label="Create Date" sortKey="date" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colDate} />
-            <SortableHeader label="Chart Available" sortKey="ch" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colChart} />
+            <SortableHeader label="HCC Evidence" sortKey="ch" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colEvidence} />
             <SortableHeader label="Support Team" sortKey="sup" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colRole} />
             <SortableHeader label="Coder" sortKey="cdr" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colRole} />
             <SortableHeader label="Reviewer 1" sortKey="r1" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colRole} />
             <SortableHeader label="Reviewer 2" sortKey="r2" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colRole} />
             <SortableHeader label="Reviewer 3" sortKey="r3" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colRole} />
-            <SortableHeader label="Rendering Provider" sortKey="rp" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colRp} />
-            <SortableHeader label="Visit Type" sortKey="vt" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colVt} />
+            <SortableHeader label="Rendering Provider" sortKey="rp" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colProvider} />
+            <th className={rowStyles.colPos}>POS Code</th>
+            <th className={rowStyles.colPosDesc}>POS Description</th>
             <SortableHeader label="RAF Score" sortKey="raf" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colRaf} />
             <SortableHeader label="RAF Impact" sortKey="ri" currentKey={sortKey} currentDir={sortDir} onSort={requestSort} className={rowStyles.colRi} />
             <th className={rowStyles.colIpa}>IPA</th>
@@ -137,19 +172,20 @@ export function HccWorklistTable() {
         </tbody>
       </table>
 
-      {filtered.length === 0 && searchQuery?.trim() && (
-        <EmptyState
-          title="No results found"
-          message={`No members match "${searchQuery.trim()}". Try a different search term.`}
-        />
-      )}
-      {filtered.length === 0 && !searchQuery?.trim() && !hccMembersLoading && (
-        <EmptyState
-          title="No HCC members yet"
-          message="Members will appear here once assigned."
-          icon="solar:ghost-smile-linear"
-        />
-      )}
+        {filtered.length === 0 && searchQuery?.trim() && (
+          <EmptyState
+            title="No results found"
+            message={`No members match "${searchQuery.trim()}". Try a different search term.`}
+          />
+        )}
+        {filtered.length === 0 && !searchQuery?.trim() && !hccMembersLoading && (
+          <EmptyState
+            title="No HCC members yet"
+            message="Members will appear here once assigned."
+            icon="solar:ghost-smile-linear"
+          />
+        )}
+      </div>
     </div>
   );
 }

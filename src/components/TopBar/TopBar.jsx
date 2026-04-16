@@ -182,6 +182,7 @@ export function TopBar() {
   const selectedPatientId = useAppStore(s => s.selectedPatientId);
   const navigateBackToWorklist = useAppStore(s => s.navigateBackToWorklist);
   const patients = useAppStore(s => s.patients);
+  const activeSubnavList = useAppStore(s => s.activeSubnavList);
   const isPatientView = activePage === 'population' && !!selectedPatientId;
   const patientName = isPatientView ? (patients.find(p => p.id === selectedPatientId)?.name || 'Patient') : '';
 
@@ -226,7 +227,7 @@ export function TopBar() {
               <span className={styles.sep}>/</span>
               <a className={styles.breadcrumbLink} href="#" onClick={e => e.preventDefault()}>Worklists</a>
               <span className={styles.sep}>/</span>
-              <span className={styles.breadcrumbCurrent}>TOC</span>
+              <span className={styles.breadcrumbCurrent}>{activeSubnavList || 'TOC'}</span>
             </>
           )}
         </nav>

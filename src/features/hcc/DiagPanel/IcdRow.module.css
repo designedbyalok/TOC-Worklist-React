@@ -1,0 +1,114 @@
+.row {
+  display: grid;
+  grid-template-columns: 1fr 72px 96px;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 0.5px solid var(--neutral-100);
+  background: var(--neutral-0);
+  font-family: 'Inter', sans-serif;
+  align-items: center;
+}
+.row:last-child { border-bottom: none; }
+.row:hover { background: var(--neutral-50); }
+
+/* ── Code column ── */
+.codeCol {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.codeLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.code {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--primary-300);
+  padding-bottom: 1px;
+  border-bottom: 1px dashed var(--primary-200);
+  cursor: default;
+}
+
+/* ── Type tag ── */
+.typeTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.typeSuspect   { background: var(--primary-100);          color: var(--primary-300); border: 0.5px solid rgba(140, 90, 226, 0.2); }
+.typeRecapture { background: var(--status-info-light);    color: var(--status-info);   border: 0.5px solid rgba(20, 94, 204, 0.2); }
+.typeManual    { background: var(--status-warning-light); color: var(--status-warning); border: 0.5px solid rgba(217, 165, 11, 0.2); }
+
+/* ── Likelihood badge (yellow < 75, green >= 75) ── */
+.likelihood {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--neutral-0);
+  line-height: 1.2;
+}
+.likelihoodMed  { background: var(--status-warning); }
+.likelihoodHigh { background: var(--status-success); }
+
+/* ── Description ── */
+.desc {
+  font-size: 13px;
+  color: var(--neutral-400);
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+/* ── Evidence column ── */
+.evidenceCol {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--neutral-300);
+  font-variant-numeric: tabular-nums;
+}
+.evidenceCount { color: var(--neutral-300); }
+
+/* ── Actions column ── */
+.actionsCol {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-start;
+}
+
+.actionBtn {
+  width: 24px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.12s, border-color 0.12s;
+}
+.actionBtn:hover {
+  background: var(--neutral-50);
+  border-color: var(--neutral-200);
+}

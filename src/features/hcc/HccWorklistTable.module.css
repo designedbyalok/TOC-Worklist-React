@@ -1,63 +1,81 @@
 .wrap {
   flex: 1;
-  overflow: auto;
-  position: relative;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  background: var(--neutral-0);
 }
 
-/* Toolbar above the table — title + count + search */
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  border-bottom: 0.5px solid var(--neutral-150);
+.scrollWrap {
+  flex: 1;
+  overflow: auto;
   background: var(--neutral-0);
-  position: sticky;
-  top: 0;
-  z-index: 4;
-  flex-shrink: 0;
 }
-.toolbarTitle {
+
+/* ── TabBar header (mirrors src/components/TabBar/TabBar.module.css) ── */
+.tabBar {
+  background: var(--neutral-0);
+  border-bottom: 0.5px solid var(--neutral-150);
   display: flex;
   align-items: center;
-  gap: 8px;
+  padding: 0 16px;
+  flex-shrink: 0;
+  justify-content: space-between;
+  /* NOT sticky — kept outside the horizontal scroll wrap so it stays anchored */
+}
+
+.tabLeft {
+  display: flex;
+  gap: 12px;
+}
+
+.tabItem {
+  display: flex;
+  align-items: center;
+  padding: 10px 4px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--neutral-500);
+  color: var(--neutral-300);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  gap: 6px;
   font-family: 'Inter', sans-serif;
 }
-.toolbarCount {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--neutral-300);
-  background: var(--neutral-50);
-  padding: 2px 8px;
-  border-radius: 10px;
+.tabItem:hover { color: var(--neutral-400); }
+.tabActive {
+  color: var(--primary-300);
+  border-bottom-color: var(--primary-300);
 }
-.toolbarActions {
+
+.tabRight {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
 }
 .searchInput {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  padding: 0 10px;
+  height: 36px;
   border: 0.5px solid var(--primary-300);
   border-radius: 6px;
-  padding: 4px 10px;
   background: var(--neutral-0);
-  width: 280px;
+  width: 240px;
 }
 .searchInput input {
   border: none;
   outline: none;
-  background: transparent;
-  font-size: 13px;
   font-family: 'Inter', sans-serif;
-  color: var(--neutral-500);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--neutral-400);
   flex: 1;
   min-width: 0;
 }
@@ -65,15 +83,27 @@
 .searchClose {
   background: none;
   border: none;
-  color: var(--neutral-300);
   cursor: pointer;
-  font-size: 14px;
-  padding: 0 2px;
+  color: var(--neutral-300);
+  font-size: 16px;
+  padding: 0;
   display: flex;
-  align-items: center;
+  line-height: 1;
 }
-.searchClose:hover { color: var(--neutral-500); }
+.searchClose:hover { color: var(--neutral-400); }
 
+.iconDivider {
+  width: 1px;
+  height: 16px;
+  background: var(--neutral-150);
+  flex-shrink: 0;
+}
+.iconActive {
+  background: var(--primary-100);
+  color: var(--primary-300);
+}
+
+/* ── Table ── */
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -81,54 +111,36 @@
 }
 
 .table thead th {
-  padding: 10px 14px;
+  padding: 8px 14px;
   font-size: 12px;
   font-weight: 500;
   color: var(--neutral-300);
   text-align: left;
   white-space: nowrap;
-  border-bottom: 0.5px solid var(--neutral-150);
   background: var(--neutral-0);
+  border-bottom: 0.5px solid var(--neutral-150);
+  box-shadow: inset 0 -0.5px 0 0 var(--neutral-150);
   position: sticky;
-  top: 45px; /* sits below the toolbar (~45px tall) */
+  top: 0; /* tabBar is outside scrollWrap now, so header sticks at top of scroll */
   z-index: 2;
   user-select: none;
+  height: 32px;
 }
 
-/* Bump z-index where sticky-top intersects sticky-left or sticky-right
-   (class selectors are on the <th> via rowStyles.stickyLeft etc.) */
+/* Bump z-index on sticky-left / sticky-right header cells */
 .table thead th[class*="stickyLeft"],
 .table thead th[class*="stickyRight"] {
-  z-index: 3;
+  z-index: 4;
 }
 
-.table tbody tr {
-  border-bottom: 0.5px solid var(--neutral-100);
-  transition: background 0.12s;
-  cursor: default;
+/* Header cells for the split member columns */
+.checkTh {
+  padding: 8px 10px !important;
+  width: 36px;
 }
-
-.table tbody tr:hover {
-  background: var(--primary-25);
-}
-/* Repaint sticky cells on hover so they don't show as white strips */
-.table tbody tr:hover [class*="stickyLeft"],
-.table tbody tr:hover [class*="stickyRight"] {
-  background: var(--primary-25);
-}
-
-.table tbody td {
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--neutral-400);
-  vertical-align: middle;
-}
-
-.headerMember {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.memberTh {
+  padding: 8px 12px !important;
+  border-right: 1px solid var(--neutral-150);
 }
 
 /* ── Empty state ── */

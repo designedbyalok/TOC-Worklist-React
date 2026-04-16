@@ -1,9 +1,13 @@
+import { createPortal } from 'react-dom';
 import { Icon } from '../Icon/Icon';
 import { CloseIcon } from '../Icon/CloseIcon';
 import styles from './Drawer.module.css';
 
 /**
  * Shared Drawer shell — the standard floating right-side panel.
+ *
+ * Rendered via createPortal to document.body so the overlay + panel always
+ * sit above any stacking contexts (e.g. sticky table columns with z-index).
  *
  * Props:
  *  - title        (ReactNode)  Header title text / element
@@ -24,7 +28,7 @@ import styles from './Drawer.module.css';
  *  - Animation: slideIn .25s ease (translateX)
  */
 export function Drawer({ title, onClose, headerRight, footer, children, className, bodyClassName, headerStyle, titleStyle }) {
-  return (
+  return createPortal(
     <>
       <div className={styles.overlay} onClick={onClose} />
       <div className={`${styles.panel}${className ? ` ${className}` : ''}`}>
@@ -42,6 +46,7 @@ export function Drawer({ title, onClose, headerRight, footer, children, classNam
         </div>
         {footer && <div className={styles.footer}>{footer}</div>}
       </div>
-    </>
+    </>,
+    document.body,
   );
 }

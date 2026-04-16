@@ -1,166 +1,435 @@
-/* ── Sticky columns (same pattern as WorklistRow + AgentsTable) ── */
+/* ── Row shell — white cells, 71px row height ── */
+.row {
+  border-bottom: 1px solid var(--neutral-150);
+  transition: background 0.1s;
+  cursor: pointer;
+  background: var(--neutral-0);
+}
+.row > td {
+  background: var(--neutral-0);
+  vertical-align: middle;
+  padding: 8px 14px;
+  height: 59px;            /* matches TOC WorklistRow natural row height */
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--neutral-300);
+}
+.row:hover { background: var(--primary-25); }
+.row:hover > td,
+.row:hover [class*="stickyLeft"],
+.row:hover [class*="stickyRight"] { background: var(--primary-25) !important; }
+
+/* ── Sticky columns ── */
 .stickyLeft {
   position: sticky;
-  left: 0;
   background: var(--neutral-0);
-  z-index: 2;
-  box-shadow: 6px 0 8px -6px rgba(0, 0, 0, 0.08);
+  z-index: 3;
 }
 .stickyRight {
   position: sticky;
   right: 0;
   background: var(--neutral-0);
-  z-index: 2;
-  box-shadow: -6px 0 8px -6px rgba(0, 0, 0, 0.08);
+  border-left: 1px solid var(--neutral-150);
+  z-index: 3;
 }
+.stickyCheck  { left: 0; padding: 8px 10px !important; }
+.stickyMember { left: 36px; padding: 8px 12px !important; border-right: 1px solid var(--neutral-150); }
 
-/* Selected row repaints sticky cells + whole row */
+/* Selected row */
 .rowChecked,
-.rowChecked .stickyLeft,
-.rowChecked .stickyRight {
+.rowChecked > td,
+.rowChecked [class*="stickyLeft"],
+.rowChecked [class*="stickyRight"] {
   background: var(--primary-50) !important;
 }
 
-/* ── Member (sticky left) cell ── */
-.memberCell {
-  padding: 10px 14px !important;
+/* Active (drawer-open) row */
+.rowActive,
+.rowActive > td,
+.rowActive [class*="stickyLeft"],
+.rowActive [class*="stickyRight"] {
+  background: var(--primary-100) !important;
 }
-.memberInner {
+.rowActive .stickyCheck { box-shadow: inset 2px 0 0 0 var(--primary-300); }
+
+/* ── Member cell — exact clone of TOC WorklistRow .patientCell ── */
+.checkTd { vertical-align: middle; }
+.memberTd { vertical-align: middle; }
+
+.patientCell {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-width: 0;
+  gap: 12px;
 }
-.memberIdentity {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-.memberName {
-  font-size: 13px;
+.patientName {
+  font-size: 14px;
   font-weight: 500;
-  color: var(--neutral-500);
+  color: var(--neutral-400);
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-.memberMeta {
-  font-size: 11px;
+.patientNameLink {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  font-weight: 500;
+}
+.patientNameLink:hover {
+  color: var(--primary-300);
+  text-decoration: underline;
+}
+.patientDemo {
+  font-size: 13px;
+  font-weight: 400;
   color: var(--neutral-300);
-  white-space: nowrap;
-  margin-top: 1px;
 }
+.patientMeta {
+  font-size: 13px;
+  color: var(--neutral-200);
+  margin-top: 3px;
+}
+.langBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  background: var(--primary-100);
+  color: var(--primary-300);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 0.5px solid color-mix(in srgb, var(--primary-300) 20%, transparent);
+  position: relative;
+  cursor: default;
+}
+.langTooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 6px 10px;
+  background: var(--neutral-500);
+  color: var(--neutral-0);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.langBadge:hover .langTooltip { display: block; }
 
-/* ── DOS cell ── */
-.dosCell {
+/* ── Generic 2-line stack layout (Last Visit, Create Date, HCC Evidence, Role) ── */
+.stackCell {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
-.dosDate {
-  font-size: 13px;
-  color: var(--neutral-400);
+
+/* ── Last Visit cell — purple date + visits count ── */
+.lastVisitDate {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--primary-300);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
-.dosLabel {
+.lastVisitMeta {
+  font-size: 12px;
+  color: var(--neutral-400);
+  white-space: nowrap;
+}
+
+/* ── Create Date cell — date + due line with clock icon ── */
+.dateText {
+  font-size: 14px;
+  color: var(--neutral-300);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.dueLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* ── HCC Evidence cell — badge + status dot line ── */
+.evidenceBadge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
-  font-weight: 500;
+  padding: 2px 6px;
+  background: var(--primary-50);
+  border: 0.5px solid rgba(140, 90, 226, 0.2);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--primary-300);
+  width: max-content;
 }
-.dosDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-/* ── Chart cell (count + dots) ── */
-.chartCell {
-  display: flex;
+.evidenceStatus {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--neutral-300);
+  white-space: nowrap;
 }
-.chartCount {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--neutral-400);
-}
-.docDots {
-  display: flex;
-  gap: 3px;
-}
-.docDot {
-  width: 7px;
-  height: 7px;
+.evidenceDot {
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   flex-shrink: 0;
 }
-.docDotPass { background: var(--status-success); }
-.docDotPend { background: var(--neutral-200); }
-.docDotFail { background: var(--status-error); }
 
-/* ── Role status cell (name + status pill) ── */
-.roleCell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
+/* ── Role status cells ── */
 .roleName {
-  font-size: 12px;
-  color: var(--neutral-400);
+  font-size: 14px;
+  color: var(--neutral-300);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.assignText {
+.roleStatusLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 12px;
-  font-weight: 500;
-  color: var(--primary-300);
-  cursor: pointer;
+  white-space: nowrap;
 }
-.assignText:hover { text-decoration: underline; }
+.roleUnassigned {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  font-size: 14px;
+  color: var(--neutral-150);
+}
 
-/* ── Generic cell text styles ── */
-.dateText,
+/* ── RAF Impact badge — green with up arrow (or red with down) ── */
+.rafImpactBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border: 0.5px solid transparent;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+  min-width: 22px;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── POS Code badge (white bg, neutral border) ── */
+.posBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  background: var(--neutral-0);
+  border: 0.5px solid rgba(111, 122, 144, 0.1);
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--neutral-300);
+  min-width: 22px;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Generic numeric / provider text ── */
 .numText,
 .codeText,
 .providerText {
-  font-size: 13px;
-  color: var(--neutral-400);
+  font-size: 14px;
+  color: var(--neutral-300);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 .numText { font-variant-numeric: tabular-nums; }
-.numStrong {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--neutral-500);
-  font-variant-numeric: tabular-nums;
-}
 .muted { color: var(--neutral-200); }
 
-/* ── Column min-widths (21 total — sum ≈ 2,240px) ── */
-.colMember    { min-width: 240px; }
-.colDos       { min-width: 150px; }
-.colOpen      { min-width: 100px; }
-.colDate      { min-width: 110px; }
-.colChart     { min-width: 120px; }
-.colRole      { min-width: 170px; }
-.colRp        { min-width: 160px; }
-.colVt        { min-width: 110px; }
-.colRaf       { min-width: 100px; }
-.colRi        { min-width: 110px; }
-.colIpa       { min-width: 80px; }
-.colHp        { min-width: 90px; }
-.colPcp       { min-width: 150px; }
-.colDec       { min-width: 80px; }
-.colCoh       { min-width: 90px; }
-.colRl        { min-width: 100px; }
-.colAd        { min-width: 100px; }
-.colFr        { min-width: 90px; }
-.colActions   { min-width: 64px; }
+/* ── Column widths (match Figma frame 11436:432705 — Table Middle List) ── */
+.colMember      { min-width: 240px; }
+.colLastVisit   { min-width: 100px; }
+.colOpen        { min-width: 90px; }
+.colDate        { min-width: 110px; }
+.colEvidence    { min-width: 110px; }
+.colRole        { min-width: 150px; }
+.colProvider    { min-width: 140px; }
+.colPos         { min-width: 100px; }
+.colPosDesc     { min-width: 140px; }
+.colRaf         { min-width: 100px; }
+.colRi          { min-width: 110px; }
+.colIpa         { min-width: 70px; }
+.colHp          { min-width: 90px; }
+.colPcp         { min-width: 140px; }
+.colDec         { min-width: 80px; }
+.colCoh         { min-width: 80px; }
+.colRl          { min-width: 90px; }
+.colAd          { min-width: 90px; }
+.colFr          { min-width: 80px; }
+.colActions     { min-width: 56px; }
 
 .actionsCell {
   text-align: center;
+  padding: 8px 10px !important;
 }
+
+/* ── Open ICDs hover popover ── */
+.openIcdsTrigger {
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.openIcdsPopover {
+  position: fixed;
+  z-index: 250;
+  width: 360px;
+  max-height: 320px;
+  display: flex;
+  flex-direction: column;
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  animation: openIcdsFade 0.15s ease;
+}
+@keyframes openIcdsFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.openIcdsHeader {
+  padding: 10px 14px;
+  border-bottom: 0.5px solid var(--neutral-150);
+  background: var(--neutral-50);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.openIcdsTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--neutral-400);
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.openIcdsCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  padding: 1px 6px;
+  background: var(--status-warning-light);
+  color: var(--status-warning);
+  border: 0.5px solid rgba(217, 165, 11, 0.25);
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.openIcdsBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.openIcdsEmpty {
+  padding: 20px 14px;
+  color: var(--neutral-300);
+  font-size: 12px;
+  text-align: center;
+}
+
+.openIcdsRow {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 10px;
+  padding: 8px 14px;
+  border-bottom: 0.5px solid var(--neutral-100);
+  align-items: start;
+}
+.openIcdsRow:last-child { border-bottom: none; }
+
+.openIcdsCode {
+  font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-300);
+  background: var(--primary-50);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 0.5px solid rgba(140, 90, 226, 0.2);
+  align-self: start;
+  text-align: center;
+}
+.openIcdsDetail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.openIcdsDesc {
+  font-size: 13px;
+  color: var(--neutral-400);
+  line-height: 1.35;
+}
+.openIcdsMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--neutral-300);
+  align-items: center;
+}
+.openIcdsStatusPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  background: var(--status-warning-light);
+  color: var(--status-warning);
+  border: 0.5px solid rgba(217, 165, 11, 0.2);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.openIcdsFooter {
+  padding: 8px 14px;
+  border-top: 0.5px solid var(--neutral-150);
+  background: var(--neutral-50);
+}
+.openIcdsOpenBtn {
+  background: none;
+  border: none;
+  padding: 2px 0;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary-300);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.openIcdsOpenBtn:hover { text-decoration: underline; }

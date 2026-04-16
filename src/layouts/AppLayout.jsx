@@ -24,6 +24,7 @@ import { WorklistTable } from '../features/worklist/WorklistTable';
 import { QueueTable } from '../features/queue/QueueTable';
 import { QueueSummaryBar } from '../features/queue/QueueSummaryBar';
 import { HccWorklistTable } from '../features/hcc/HccWorklistTable';
+import { DiagPanel } from '../features/hcc/DiagPanel/DiagPanel';
 import { SettingsLayout } from '../features/settings/SettingsLayout';
 import { CreateAgentDrawer } from '../features/settings/CreateAgentDrawer';
 import { AgentCanvas } from '../features/agent-builder/AgentCanvas';
@@ -92,7 +93,7 @@ function PopulationView() {
     );
   }
 
-  const isHcc = activeSubnavList === 'HCC Worklist';
+  const isHcc = activeSubnavList === 'HCC';
 
   return (
     <>
@@ -188,6 +189,7 @@ export function AppLayout() {
   const agentRulesGroupId = useAppStore(s => s.agentRulesGroupId);
   const businessHoursOpen = useAppStore(s => s.businessHoursOpen);
   const componentWizardOpen = useAppStore(s => s.componentWizardOpen);
+  const diagPanelOpen = useAppStore(s => s.diagPanelOpen);
 
   // Agent Builder is a full-screen takeover
   if (activePage === 'builder') {
@@ -218,6 +220,7 @@ export function AppLayout() {
       {chatGroupDetailId && <GroupDetailDrawer />}
       {agentRulesGroupId && <AgentRulesDrawer />}
       {businessHoursOpen && <BusinessHoursDrawer />}
+      {diagPanelOpen && <DiagPanel />}
       <Toast />
       <ToastSuccess />
     </div>
