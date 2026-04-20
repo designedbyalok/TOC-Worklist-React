@@ -75,6 +75,7 @@ export function MessagesView() {
   const [showNewChat, setShowNewChat]     = useState(false);
   const [newChatSearch, setNewChatSearch] = useState('');
   const [convRefreshKey, setConvRefreshKey] = useState(0);
+  const [showSearch, setShowSearch]       = useState(false);
   const newChatRef = useRef(null);
 
   // ── Load current user ──
@@ -85,8 +86,8 @@ export function MessagesView() {
     });
   }, []);
 
-  // ── Load all user profiles ──
-  useEffect(() => {
+  // ── Load all user profiles + watch for new ones ──
+  const refreshProfiles = useCallback(() => {
     supabase.from('user_profiles').select('*').then(({ data }) => {
       setAllProfiles(data || []);
       const map = {};
@@ -94,6 +95,16 @@ export function MessagesView() {
       setProfiles(map);
     });
   }, []);
+
+  useEffect(() => { refreshProfiles(); }, [refreshProfiles]);
+
+  useEffect(() => {
+    const ch = supabase
+      .channel('user-profiles-watch')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_profiles' }, refreshProfiles)
+      .subscribe();
+    return () => ch.unsubscribe();
+  }, [refreshProfiles]);
 
   // ── Load & derive conversations ──
   const loadConversations = useCallback(async () => {
@@ -244,7 +255,16 @@ export function MessagesView() {
             </div>
             <div className={styles.convHeaderActions}>
               <ActionButton icon="solar:pen-new-square-linear" size="S" tooltip="New chat" onClick={() => setShowNewChat(true)} />
+              <div className={styles.convDivider} />
+              <ActionButton
+                icon="solar:magnifer-linear"
+                size="S"
+                tooltip="Search"
+                onClick={() => { setShowSearch(v => !v); if (showSearch) setSearchQuery(''); }}
+              />
+              <div className={styles.convDivider} />
               <ActionButton icon="solar:filter-linear" size="S" tooltip="Filter" />
+              <div className={styles.convDivider} />
               <ActionButton icon="solar:menu-dots-bold" size="S" tooltip="More" />
             </div>
           </div>
@@ -263,17 +283,26 @@ export function MessagesView() {
             />
           </div>
 
-          <div className={styles.convSearch}>
-            <div className={styles.convSearchWrap}>
-              <span className={styles.convSearchIcon}><Icon name="solar:magnifer-linear" size={13} /></span>
-              <Input
-                placeholder="Search conversations…"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                style={{ paddingLeft: 28, fontSize: 12 }}
-              />
+          {showSearch && (
+            <div className={styles.convSearch}>
+              <div className={styles.convSearchWrap}>
+                <span className={styles.convSearchIcon}><Icon name="solar:magnifer-linear" size={13} /></span>
+                <Input
+                  autoFocus
+                  placeholder="Search conversations…"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  style={{ paddingLeft: 28, paddingRight: 30, fontSize: 12 }}
+                />
+                <button
+                  className={styles.convSearchClear}
+                  onClick={() => { setSearchQuery(''); setShowSearch(false); }}
+                >
+                  <Icon name="solar:close-circle-bold" size={15} />
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className={styles.convList}>
             {filteredConversations.length === 0 ? (
@@ -285,7 +314,7 @@ export function MessagesView() {
                   {searchQuery ? 'No conversations match your search' : 'No conversations yet'}
                 </div>
                 {!searchQuery && (
-                  <Button variant="primary" size="S" leadingIcon="solar:pen-new-square-linear" onClick={() => setShowNewChat(true)}>
+                  <Button variant="primary" size="L" leadingIcon="solar:pen-new-square-linear" onClick={() => setShowNewChat(true)}>
                     Start a chat
                   </Button>
                 )}
@@ -335,7 +364,7 @@ export function MessagesView() {
                 <Icon name="solar:chat-round-linear" size={32} />
               </div>
               <div className={styles.noConvText}>Select a conversation or start a new one</div>
-              <Button variant="primary" size="S" leadingIcon="solar:pen-new-square-linear" onClick={() => setShowNewChat(true)}>
+              <Button variant="primary" size="L" leadingIcon="solar:pen-new-square-linear" onClick={() => setShowNewChat(true)}>
                 New Message
               </Button>
             </div>
