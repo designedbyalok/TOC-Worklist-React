@@ -517,10 +517,170 @@
   display: flex;
   align-items: flex-end;
   gap: 8px;
+  position: relative;
 }
 
 .msgRow.own {
   flex-direction: row-reverse;
+}
+
+/* Bubble wrapper — stacks quote, bubble, and status in a column */
+.msgBubbleWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 0;
+}
+
+.msgRow:not(.own) .msgBubbleWrap {
+  align-items: flex-start;
+}
+
+/* Read receipts */
+.msgStatus {
+  display: flex;
+  align-items: center;
+  color: var(--neutral-300);
+  line-height: 1;
+  padding-right: 2px;
+}
+
+.msgStatus.msgStatusRead {
+  color: #22c55e;
+}
+
+/* Reply button — shown on row hover via CSS */
+.msgReplyBtn {
+  opacity: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--neutral-300);
+  transition: opacity 0.15s, background 0.1s, color 0.1s;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.msgRow:hover .msgReplyBtn {
+  opacity: 1;
+}
+
+.msgReplyBtn:hover {
+  background: var(--neutral-100);
+  color: var(--neutral-500);
+}
+
+/* Reply quote inside a bubble */
+.msgReplyQuote {
+  display: flex;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px 8px 0 0;
+  background: var(--neutral-100);
+  border: 0.5px solid var(--neutral-150);
+  max-width: 500px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: -2px;
+}
+
+.msgReplyQuote.own {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.msgReplyBar {
+  width: 3px;
+  border-radius: 2px;
+  background: var(--primary-300);
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+.msgReplyName {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-300);
+  margin-bottom: 2px;
+}
+
+.msgReplyQuote.own .msgReplyName {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.msgReplyText {
+  font-size: 11px;
+  color: var(--neutral-400);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 360px;
+}
+
+.msgReplyQuote.own .msgReplyText {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Reply preview in compose area */
+.replyPreview {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--neutral-50);
+  border-radius: 8px;
+  border: 0.5px solid var(--neutral-150);
+  margin-bottom: 6px;
+}
+
+.replyPreviewBar {
+  width: 3px;
+  border-radius: 2px;
+  background: var(--primary-300);
+  flex-shrink: 0;
+}
+
+.replyPreviewContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.replyPreviewName {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-300);
+  margin-bottom: 2px;
+}
+
+.replyPreviewText {
+  font-size: 12px;
+  color: var(--neutral-400);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.replyPreviewClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: var(--neutral-300);
+  padding: 0;
+  flex-shrink: 0;
+  transition: color 0.1s;
+}
+
+.replyPreviewClose:hover {
+  color: var(--neutral-500);
 }
 
 .msgBubble {
@@ -812,4 +972,82 @@
   text-align: center;
   font-size: 13px;
   color: var(--neutral-300);
+}
+
+/* ── Typing indicator ── */
+.typingRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 0 16px 8px;
+}
+
+.typingBubble {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  background: var(--neutral-50);
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 12px;
+  border-bottom-left-radius: 4px;
+}
+
+.typingDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--neutral-300);
+  animation: typingBounce 1.2s infinite ease-in-out;
+}
+
+.typingDot:nth-child(2) { animation-delay: 0.2s; }
+.typingDot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0);    opacity: 0.4; }
+  30%            { transform: translateY(-5px); opacity: 1; }
+}
+
+.typingMeta {
+  color: var(--primary-300);
+  font-style: italic;
+}
+
+/* ── Media inside bubbles ── */
+.msgImage {
+  display: block;
+  max-width: 280px;
+  max-height: 200px;
+  border-radius: 8px;
+  object-fit: cover;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+
+.msgImage:only-child {
+  margin-bottom: 0;
+}
+
+.msgFile {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: inherit;
+  text-decoration: none;
+  padding: 2px 0;
+}
+
+.msgFile:hover {
+  text-decoration: underline;
+}
+
+/* ── Drag-over state on input area ── */
+.dragOver {
+  outline: 2px dashed var(--primary-300);
+  outline-offset: -3px;
+  background: rgba(119, 82, 254, 0.03);
+  border-radius: 0;
 }
