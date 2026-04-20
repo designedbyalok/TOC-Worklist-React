@@ -1,0 +1,631 @@
+.page {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--neutral-50);
+  overflow: hidden;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--neutral-0);
+  border-bottom: 0.5px solid var(--neutral-150);
+  flex-shrink: 0;
+}
+
+.toolbarBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-400);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.toolbarBtn:hover {
+  background: var(--neutral-100);
+  color: var(--neutral-500);
+}
+
+.toolbarBtn.editing {
+  background: var(--primary-100);
+  color: var(--primary-300);
+}
+
+.gridContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px 24px;
+}
+
+.card {
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.editing .card {
+  border: 1px dashed var(--primary-200);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 0.5px solid var(--neutral-150);
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutral-500);
+}
+
+.countChip {
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--neutral-400);
+  background: var(--neutral-100);
+  border-radius: 10px;
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--neutral-300);
+}
+
+.iconBtn {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--neutral-300);
+}
+
+.iconBtn:hover {
+  background: var(--neutral-100);
+  color: var(--neutral-500);
+}
+
+.dragHandle {
+  cursor: move;
+}
+
+.cardBody {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.emptyBody {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-size: 12px;
+  color: var(--neutral-300);
+}
+
+/* ── Welcome card ── */
+.welcomeCard {
+  position: relative;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  background:
+    linear-gradient(135deg, rgba(11, 22, 58, 0.88) 0%, rgba(27, 52, 112, 0.78) 45%, rgba(7, 15, 40, 0.92) 100%),
+    radial-gradient(circle at 75% 25%, rgba(120, 140, 200, 0.35), transparent 45%),
+    linear-gradient(180deg, #0b1a3a 0%, #081028 100%);
+}
+
+.welcomeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+
+.welcomeGreeting {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+}
+
+.welcomeLocation {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 0.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.welcomeLocation:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.welcomeClock {
+  padding: 6px 20px 0;
+}
+
+.welcomeTime {
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.welcomeDate {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: 4px;
+}
+
+.welcomeDateSep {
+  margin: 0 8px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.welcomeWeather {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.welcomeWeatherBody {
+  min-width: 0;
+}
+
+.welcomeWeatherLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.welcomeWeatherMain {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+.welcomeWeatherDesc {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: 2px;
+}
+
+.welcomeWeatherIcon {
+  flex-shrink: 0;
+  color: #ffdc7a;
+}
+
+/* ── Alerts & Monitoring patient row ── */
+.patientRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 0.5px solid var(--neutral-100);
+}
+
+.patientRow:last-child {
+  border-bottom: none;
+}
+
+.patientRow:hover {
+  background: var(--neutral-50);
+}
+
+.checkbox {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--neutral-200);
+  border-radius: 3px;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: var(--neutral-0);
+}
+
+.patientInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.patientName {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-500);
+}
+
+.chevron {
+  color: var(--neutral-300);
+  font-size: 10px;
+}
+
+.patientMeta {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--neutral-300);
+}
+
+.actionBadges {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  border: 0.5px solid var(--neutral-200);
+  border-radius: 10px;
+  color: var(--neutral-400);
+  background: var(--neutral-0);
+  white-space: nowrap;
+}
+
+.badge.missed { color: var(--status-error); border-color: var(--status-error-light); }
+.badge.alert { color: var(--secondary-300); border-color: var(--secondary-200); }
+.badge.task { color: var(--primary-300); border-color: var(--primary-200); }
+.badge.message { color: var(--neutral-400); }
+
+/* ── Assigned to me ── */
+.assignedRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 0.5px solid var(--neutral-100);
+}
+
+.assignedRow:last-child { border-bottom: none; }
+
+.assignedIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary-300);
+}
+
+.assignedBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.assignedName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-500);
+}
+
+.assignedText {
+  font-size: 11px;
+  color: var(--neutral-300);
+  margin-top: 2px;
+}
+
+.assignedTime {
+  font-size: 11px;
+  color: var(--neutral-300);
+  flex-shrink: 0;
+}
+
+/* ── Calendar card ── */
+.calNav {
+  display: flex;
+  gap: 2px;
+}
+
+.calBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0 16px;
+  position: relative;
+  min-height: 0;
+}
+
+.calGrid {
+  position: relative;
+  padding: 0 12px 0 44px;
+  min-height: 400px;
+}
+
+.calHourRow {
+  position: relative;
+  height: 48px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.calHourLabel {
+  position: absolute;
+  left: -40px;
+  top: -6px;
+  width: 38px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--neutral-300);
+  text-align: right;
+  padding-right: 4px;
+  background: var(--neutral-0);
+}
+
+.calHourRow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--neutral-100);
+}
+
+.calHalfLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 24px;
+  height: 1px;
+  background: var(--neutral-100);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.calSlot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 24px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.calSlot.topHalf { top: 0; }
+.calSlot.botHalf { top: 24px; }
+
+.calSlot:hover {
+  background: var(--primary-50);
+  border: 1px dashed var(--primary-300);
+  border-radius: 4px;
+}
+
+.calEvent {
+  position: absolute;
+  left: 4px;
+  right: 6px;
+  background: var(--primary-100);
+  border-left: 3px solid var(--primary-300);
+  border-radius: 4px;
+  padding: 4px 8px;
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.calEvent:hover {
+  background: var(--primary-200);
+}
+
+.calEventTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary-300);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calEventMeta {
+  font-size: 10px;
+  color: var(--neutral-400);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nowLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--status-error);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.nowLine::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status-error);
+}
+
+.nowLabel {
+  position: absolute;
+  left: -38px;
+  top: -6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--status-error);
+  background: var(--neutral-0);
+  padding-right: 4px;
+}
+
+/* ── Tasks ── */
+.taskRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 0.5px solid var(--neutral-100);
+}
+
+.taskRow:last-child { border-bottom: none; }
+
+.taskCheck {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--neutral-200);
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.taskBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.taskTitle {
+  font-size: 13px;
+  color: var(--neutral-500);
+  line-height: 1.4;
+}
+
+.taskMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--neutral-300);
+}
+
+.taskDue {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.taskDue.urgent { color: var(--status-error); }
+.taskDue.soon { color: var(--secondary-300); }
+.taskDue.later { color: var(--neutral-400); }
+.taskDue.done { color: var(--status-success); }
+
+.priorityFlag {
+  color: var(--secondary-300);
+}
+
+/* ── Quick Notes ── */
+.notesBody {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stickyNote {
+  background: #FFF6D6;
+  border: 0.5px solid #F6E8A5;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--neutral-500);
+  line-height: 1.5;
+}
+
+.stickyMeta {
+  font-size: 10px;
+  color: var(--neutral-400);
+  margin-top: 6px;
+}
+
+.loading, .errorState {
+  padding: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--neutral-300);
+}
+
+/* ── react-grid-layout overrides ── */
+:global(.react-grid-item.react-grid-placeholder) {
+  background: var(--primary-100) !important;
+  border: 1px dashed var(--primary-300) !important;
+  border-radius: 12px !important;
+  opacity: 0.5 !important;
+}
+
+:global(.react-grid-item > .react-resizable-handle) {
+  width: 16px;
+  height: 16px;
+  bottom: 4px;
+  right: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.editing :global(.react-grid-item > .react-resizable-handle) {
+  opacity: 0.6;
+  pointer-events: auto;
+}
+
+.editing :global(.react-grid-item:hover > .react-resizable-handle) {
+  opacity: 1;
+}
+
+:global(.react-grid-item.react-draggable-dragging) {
+  z-index: 100;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+}

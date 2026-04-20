@@ -29,6 +29,7 @@ import { SettingsLayout } from '../features/settings/SettingsLayout';
 import { CreateAgentDrawer } from '../features/settings/CreateAgentDrawer';
 import { AgentCanvas } from '../features/agent-builder/AgentCanvas';
 import { AnalyticsLayout } from '../features/analytics/AnalyticsLayout';
+import { HomeView } from '../features/home/HomeView';
 import { useEffect } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import styles from './AppLayout.module.css';
@@ -205,7 +206,7 @@ export function AppLayout() {
   return (
     <div className={styles.app}>
       <Sidebar />
-      {activePage === 'analytics' ? <AnalyticsView /> : activePage === 'settings' ? <SettingsView /> : activePage === 'calendar' ? <CalendarViewPage /> : <PopulationView />}
+      {activePage === 'home' ? <HomeView /> : activePage === 'analytics' ? <AnalyticsView /> : activePage === 'settings' ? <SettingsView /> : activePage === 'calendar' ? <CalendarViewPage /> : <PopulationView />}
 
       {showCreateAgent && <CreateAgentDrawer />}
       {workflowPatient && <WorkflowPanel />}

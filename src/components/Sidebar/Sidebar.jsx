@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Icon } from '../Icon/Icon';
+import { HelpPopover } from '../HelpPopover/HelpPopover';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './Sidebar.module.css';
 
@@ -16,16 +18,17 @@ const NAV_ITEMS = [
 ];
 
 const BOTTOM_ITEMS = [
-  { icon: 'solar:question-circle-linear', label: 'Help' },
+  { icon: 'solar:question-circle-linear', label: 'Help', action: 'help' },
 ];
 
 export function Sidebar() {
   const activePage = useAppStore(s => s.activePage);
   const setActivePage = useAppStore(s => s.setActivePage);
   const setCurrentPage = useAppStore(s => s.setCurrentPage);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const showToast = useAppStore(s => s.showToast);
-  const implementedPages = ['population', 'settings', 'analytics', 'calendar'];
+  const implementedPages = ['home', 'population', 'settings', 'analytics', 'calendar'];
 
   const handleClick = (e, page) => {
     e.preventDefault();
@@ -64,20 +67,28 @@ export function Sidebar() {
         );
       })}
       <div className={styles.spacer} />
-      {BOTTOM_ITEMS.map((item) => (
-        <a
-          key={item.label}
-          className={styles.item}
-          href="#"
-          title={item.label}
-          onClick={e => e.preventDefault()}
-        >
-          <div className={styles.itemInner}>
-            <Icon name={item.icon} size={22} />
-            <span>{item.label}</span>
-          </div>
-        </a>
-      ))}
+      {BOTTOM_ITEMS.map((item) => {
+        const isHelp = item.action === 'help';
+        const isActive = isHelp && helpOpen;
+        return (
+          <a
+            key={item.label}
+            className={[styles.item, isActive ? styles.active : ''].filter(Boolean).join(' ')}
+            href="#"
+            title={item.label}
+            onClick={e => {
+              e.preventDefault();
+              if (isHelp) setHelpOpen(v => !v);
+            }}
+          >
+            <div className={styles.itemInner}>
+              <Icon name={item.icon} size={22} />
+              <span>{item.label}</span>
+            </div>
+          </a>
+        );
+      })}
+      {helpOpen && <HelpPopover onClose={() => setHelpOpen(false)} />}
     </nav>
   );
 }

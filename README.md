@@ -139,6 +139,27 @@ The platform follows the **Fold Health design system** with strict adherence to:
 
 ## Recent Changes
 
+### Home Dashboard — Draggable, resizable cards with DB-backed patient list (April 2026)
+- **New Home page** (`src/features/home/HomeView.jsx`) rendered when `activePage === 'home'`. Matches the Figma "Dashboard" file (node `3:7795`): toolbar with "View Business Insights" + "Edit Dashboard", and five cards in a grid.
+- **Cards**:
+  - **Welcome** — greeting banner with dynamic "Good Morning/Afternoon/Evening/Night, {firstName}" (first name from the Supabase auth session's `user_metadata`), location pill, current time (updates every 30s), date, and a weather-forecast summary with a meteocons icon. Dark navy gradient with a soft highlight in the upper right. Capped at `maxH: 6` in the layout so the card never exceeds ~240 px tall (default lay-out renders at ~196 px).
+  - **Alerts & Monitoring** — pulls patients via `fetchPatients()` → Supabase `patients` table; renders initials, name, `Gender · DOB (age)`, and action badges (Missed, Message, Alerts, Tasks) derived from `outreachType`, `readmission`, and `tasks` fields.
+  - **Assigned to me** — mock recent interactions (Missed Call, message reply).
+  - **Today's Calendar** — full 24-hour day view with 48 thirty-minute slots per day. Hovering a slot highlights it; clicking one opens the shared [`ScheduleDrawer`](src/components/ScheduleDrawer/ScheduleDrawer.jsx) pre-populated with the clicked date/time. Saved appointments are pulled from `useAppStore.appointments` (Supabase `appointments` table) via `fetchAppointments()` and rendered as positioned blocks keyed off `date`/`time_start`/`time_end`. A live red "Now" line (updates every minute) is drawn for the current day. Previous / Today / Next-day arrows in the header navigate days. Card body scrolls vertically when the card is shorter than the 24-hour grid; grid has a 400px min-height.
+  - **TASKS** — mock task list with urgent/soon/later/done states.
+  - **Quick Notes** — yellow sticky-note cards with URL/text + timestamp.
+- **Drag & resize** via [`react-grid-layout/legacy`](https://github.com/react-grid-layout/react-grid-layout) (12-col grid, 40px row height). The package ships v2 as the default export with a new `gridConfig`/`dragConfig` API; we import `react-grid-layout/legacy` for the v1-compatible flat-props API. **Locked by default** — `isDraggable` and `isResizable` are both tied to the edit toggle, the `.home-drag-handle` class is only applied to card headers when editing, and the resize handle is hidden with `opacity: 0; pointer-events: none` in view mode. Clicking "Edit Dashboard" reveals the drag handle on each card header and a resize grip in the bottom-right corner.
+- **Persistence** — layout saved to `localStorage` under `home-dashboard-layout-v2` (bumped from v1 when the Welcome card was added). A "Reset" button in edit mode restores the default layout.
+- **Routing** — `src/lib/router.js` now recognizes the `home` page (hash `#/home`); `Sidebar` adds `home` to `implementedPages` so the Home nav item navigates instead of showing a coming-soon toast.
+- **HelpPopover** — added a "Home / Dashboard" entry to the Platform features directory.
+
+### Help Popover — Platform features directory (April 2026)
+- **HelpPopover component** (`src/components/HelpPopover/`) — opens when the Help item in the sidebar is clicked. 400×700px, positioned fixed at `left: 72px; bottom: 16px` so it anchors close to the sidebar.
+- **Sticky header** — "Platform features" title with compass icon + close button; the body scrolls beneath it when content exceeds 700px.
+- **Feature directory** — groups every implemented feature by top-level section (Population, Analytics, Calendar, Settings). Each row shows an icon, the breadcrumb path (e.g. `Analytics / Risk`), and a one-line description.
+- **Deep navigation** — clicking a row sets `activePage`, and where applicable also `activeTab` (TOC Worklist / TOC Queue / HCC), `settingsNavItem` (Agents / Messages / Embedded Components / Account), or `analyticsView` (Executive / Care / Financial / …), then closes the popover.
+- **Dismiss** — click-outside or Escape closes the popover; the Help sidebar item shows the active state while open.
+
 ### HCC Worklist — Phase 2: DiagPanel side-car + table polish (April 2026)
 - **DiagPanel side-car** — pixel-matched to the "HCC-DEMO-SIDE-CAR-New" Figma file (`A8BWt2o8MJkUhZ79Vq1SM0` node `3:582607`). The drawer is 582px wide (overrides the default 700px via `.panel` CSS with `!important`). Opens when a row in the HCC table is clicked; active row highlighted with `--primary-100` + 2px primary-300 left border.
 - **Header**: 40px title row `"Diagnosis Gaps Details"` + close button, then a 64px patient banner with a lavender rounded-square avatar (48×48, `#F5F0FF` bg, `#D7C0FF` border, primary-300 initials at 20px), name (16px/500), meta `F · 73y · RAF 4.234` and a green impact pill `0.512 ↑`, and a trailing action group (phone / divider / chat / divider / menu-dots).
