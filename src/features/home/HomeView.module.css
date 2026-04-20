@@ -11,7 +11,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
+  height: 32px;
+  padding: 0 16px;
   background: var(--neutral-0);
   border-bottom: 0.5px solid var(--neutral-150);
   flex-shrink: 0;
@@ -21,8 +22,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
-  font-size: 13px;
+  height: 24px;
+  padding: 0 8px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--neutral-400);
   background: none;
