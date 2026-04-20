@@ -142,9 +142,8 @@
   color: #ffffff;
   font-family: 'Inter', sans-serif;
   background:
-    linear-gradient(135deg, rgba(11, 22, 58, 0.88) 0%, rgba(27, 52, 112, 0.78) 45%, rgba(7, 15, 40, 0.92) 100%),
-    radial-gradient(circle at 75% 25%, rgba(120, 140, 200, 0.35), transparent 45%),
-    linear-gradient(180deg, #0b1a3a 0%, #081028 100%);
+    radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.18), transparent 50%),
+    linear-gradient(135deg, var(--primary-300) 0%, var(--primary-400) 55%, var(--primary-400) 100%);
 }
 
 .welcomeHeader {
@@ -234,6 +233,28 @@
   font-size: 11px;
   color: rgba(255, 255, 255, 0.72);
   margin-top: 2px;
+}
+
+.welcomeWeatherRight {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.welcomeTemp {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.welcomeTempUnit {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  margin-left: 2px;
 }
 
 .welcomeWeatherIcon {

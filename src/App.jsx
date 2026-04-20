@@ -65,12 +65,12 @@ function App() {
   // Not authenticated — show login
   if (!isAuthenticated) {
     if (window.location.hash !== '#/login') window.location.hash = '#/login';
-    return <LoginPage onBypass={() => { sessionStorage.setItem('__auth_bypass', 'true'); setBypassed(true); window.location.hash = '#/population/worklist'; }} />;
+    return <LoginPage onBypass={() => { sessionStorage.setItem('__auth_bypass', 'true'); setBypassed(true); window.location.hash = '#/home'; }} />;
   }
 
   // Authenticated — clear login hash if present
   if (window.location.hash === '#/login' || window.location.hash === '') {
-    window.location.hash = '#/population/worklist';
+    window.location.hash = '#/home';
   }
 
   // Authenticated — show app

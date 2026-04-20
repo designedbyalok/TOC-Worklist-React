@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import GridLayout from 'react-grid-layout/legacy';
 import { Icon } from '../../components/Icon/Icon';
+import { TopBar } from '../../components/TopBar/TopBar';
 import { WelcomeCard } from './WelcomeCard';
 import { AlertsMonitoringCard } from './AlertsMonitoringCard';
 import { AssignedToMeCard } from './AssignedToMeCard';
@@ -83,6 +84,7 @@ export function HomeView() {
 
   return (
     <div className={styles.page}>
+      <TopBar />
       <div className={styles.toolbar}>
         <button className={styles.toolbarBtn}>
           <Icon name="solar:chart-linear" size={14} />
