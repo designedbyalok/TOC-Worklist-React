@@ -1,0 +1,788 @@
+.page {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--neutral-0);
+}
+
+.panels {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Communication sidebar (left 200px) ── */
+.commPanel {
+  width: 200px;
+  flex-shrink: 0;
+  border-right: 0.5px solid var(--neutral-150);
+  background: var(--neutral-0);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+.commCreateBtn {
+  margin: 8px;
+  padding: 8px 12px;
+  background: var(--primary-300);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.commCreateBtn:hover {
+  background: var(--primary-400);
+}
+
+.commSection {
+  padding: 8px 16px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--neutral-300);
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.commMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--neutral-300);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  transition: background .12s, color .12s;
+  white-space: nowrap;
+  border-left: 2px solid transparent;
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.commMenuItem:hover {
+  background: var(--neutral-50);
+}
+
+.commMenuItem.active {
+  color: var(--primary-300);
+  background: var(--primary-100);
+  border-left-color: var(--primary-300);
+  border-radius: 0;
+}
+
+.commMenuLabel {
+  flex: 1;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.commBadge {
+  background: var(--secondary-300);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 1px 4px;
+  border-radius: 4px;
+  min-width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ── Chat list panel (middle 350px) ── */
+.convPanel {
+  width: 350px;
+  flex-shrink: 0;
+  border-right: 0.5px solid var(--neutral-150);
+  background: var(--neutral-0);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.convHeader {
+  padding: 6px 8px;
+  border-bottom: 0.5px solid var(--neutral-150);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.convHeaderLeft {
+  flex: 1;
+  min-width: 0;
+  padding-left: 4px;
+}
+
+.convHeaderTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--neutral-500);
+  line-height: 1.2;
+}
+
+.convHeaderSub {
+  font-size: 12px;
+  color: var(--secondary-300);
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+.convHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.iconBtn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--neutral-400);
+}
+
+.iconBtn:hover {
+  background: var(--neutral-100);
+  color: var(--neutral-500);
+}
+
+.convTabs {
+  padding: 8px 12px;
+  flex-shrink: 0;
+  background: var(--neutral-0);
+  border-bottom: 0.5px solid var(--neutral-150);
+}
+
+.convTab {
+  height: 28px;
+  padding: 4px 12px;
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 4px;
+  background: var(--neutral-0);
+  font-size: 13px;
+  color: var(--neutral-400);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.1s;
+}
+
+.convTab:hover {
+  background: var(--neutral-50);
+}
+
+.convTab.active {
+  background: var(--primary-100);
+  border-color: var(--primary-200);
+  color: var(--primary-300);
+  font-weight: 500;
+}
+
+.convSearch {
+  padding: 8px 12px;
+  border-bottom: 0.5px solid var(--neutral-150);
+  flex-shrink: 0;
+}
+
+.convSearchWrap {
+  position: relative;
+}
+
+/* Input component fills this wrapper — override padding for search icon */
+
+.convSearchIcon {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--neutral-300);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.convList {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.convItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 0.5px solid var(--neutral-150);
+  border-left: 3px solid transparent;
+  transition: background 0.1s;
+}
+
+.convItem:hover {
+  background: var(--neutral-50);
+}
+
+.convItem.selected {
+  background: var(--primary-100);
+  border-left-color: var(--primary-300);
+}
+
+.convAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--primary-100);
+  border: 0.5px solid var(--primary-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary-300);
+  flex-shrink: 0;
+}
+
+.convItem.selected .convAvatar {
+  background: var(--neutral-0);
+}
+
+.convInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.convNameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.convName {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-500);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.convName.muted {
+  font-weight: 400;
+  color: var(--neutral-400);
+}
+
+.convTime {
+  font-size: 12px;
+  color: var(--neutral-300);
+  flex-shrink: 0;
+}
+
+.convPreviewRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.convPreview {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--neutral-300);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.convUnread {
+  background: var(--secondary-300);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 1px 4px;
+  border-radius: 4px;
+  min-width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.emptyConv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  gap: 10px;
+  text-align: center;
+}
+
+.emptyConvIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--primary-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-300);
+}
+
+.emptyConvText {
+  font-size: 13px;
+  color: var(--neutral-300);
+}
+
+.emptyConvBtn {
+  padding: 7px 14px;
+  background: var(--primary-300);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Chat area (right panel) ── */
+.chatPanel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--neutral-0);
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 0.5px solid var(--neutral-150);
+  flex-shrink: 0;
+  min-height: 56px;
+}
+
+.chatHeaderInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.chatHeaderName {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--neutral-500);
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chatHeaderMeta {
+  font-size: 12px;
+  color: var(--neutral-300);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chatHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.divider {
+  width: 0.5px;
+  height: 16px;
+  background: var(--neutral-150);
+  flex-shrink: 0;
+}
+
+/* messages */
+.chatMessages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+}
+
+.chatLoading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--neutral-300);
+}
+
+.chatEmpty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chatEmptyAvatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: var(--primary-100);
+  border: 0.5px solid var(--primary-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--primary-300);
+}
+
+.msgDateSep {
+  text-align: center;
+  font-size: 11px;
+  color: var(--neutral-300);
+  padding: 8px 0 4px;
+}
+
+.msgRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.msgRow.own {
+  flex-direction: row-reverse;
+}
+
+.msgBubble {
+  max-width: 500px;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 12px;
+  word-break: break-word;
+}
+
+.msgBubble.other {
+  background: var(--neutral-50);
+  border: 0.5px solid var(--neutral-150);
+  color: var(--neutral-500);
+  border-bottom-left-radius: 4px;
+}
+
+.msgBubble.mine {
+  background: var(--primary-300);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.msgAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--primary-100);
+  border: 0.5px solid var(--primary-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--primary-300);
+  flex-shrink: 0;
+}
+
+/* ── Message input ── */
+.chatInput {
+  border-top: 0.5px solid var(--neutral-150);
+  padding: 12px 16px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--neutral-0);
+}
+
+.chatInputToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chatInputSwitch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.switchTrack {
+  width: 32px;
+  height: 18px;
+  background: var(--neutral-150);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 1px;
+}
+
+.switchThumb {
+  width: 16px;
+  height: 16px;
+  background: var(--neutral-0);
+  border-radius: 3px;
+}
+
+.switchLabel {
+  font-size: 12px;
+  color: var(--neutral-300);
+}
+
+.chatInputActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.chatInputRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chatInputBox {
+  flex: 1;
+  min-height: 32px;
+  max-height: 120px;
+  padding: 6px 10px;
+  border: 0.5px solid var(--neutral-300);
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--neutral-500);
+  font-family: inherit;
+  outline: none;
+  resize: none;
+  line-height: 1.4;
+  background: var(--neutral-0);
+}
+
+.chatInputBox:focus {
+  border-color: var(--primary-300);
+}
+
+.chatInputBox::placeholder {
+  color: var(--neutral-200);
+}
+
+.chatSendBtn {
+  width: 32px;
+  height: 32px;
+  background: var(--primary-300);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.1s;
+}
+
+.chatSendBtn:hover:not(:disabled) {
+  background: var(--primary-400);
+}
+
+.chatSendBtn:disabled {
+  background: var(--neutral-150);
+  color: var(--neutral-300);
+  cursor: not-allowed;
+}
+
+.chatInputFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ── No conversation selected placeholder ── */
+.noConvPlaceholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--neutral-300);
+}
+
+.noConvIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--primary-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-300);
+}
+
+.noConvText {
+  font-size: 14px;
+  color: var(--neutral-300);
+}
+
+.noConvBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--primary-300);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ── New chat modal ── */
+.newChatOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 500;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80px;
+}
+
+.newChatBox {
+  background: var(--neutral-0);
+  border: 0.5px solid var(--neutral-150);
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: var(--shadow-popover);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 480px;
+}
+
+.newChatHeader {
+  padding: 14px 16px;
+  border-bottom: 0.5px solid var(--neutral-150);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.newChatTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--neutral-500);
+}
+
+.newChatSearchInput {
+  width: 100%;
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-bottom: 0.5px solid var(--neutral-150);
+  font-size: 14px;
+  color: var(--neutral-500);
+  font-family: inherit;
+  outline: none;
+  flex-shrink: 0;
+}
+
+.newChatList {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.newChatUser {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-bottom: 0.5px solid var(--neutral-100);
+  transition: background 0.1s;
+}
+
+.newChatUser:hover {
+  background: var(--neutral-50);
+}
+
+.newChatUserInfo {
+  min-width: 0;
+}
+
+.newChatUserName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--neutral-500);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.newChatUserEmail {
+  font-size: 12px;
+  color: var(--neutral-300);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.newChatEmpty {
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--neutral-300);
+}

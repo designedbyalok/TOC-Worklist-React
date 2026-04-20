@@ -180,6 +180,7 @@ export function TopBar() {
   const isAnalytics = activePage === 'analytics';
   const isCalendar = activePage === 'calendar';
   const isHome = activePage === 'home';
+  const isMessages = activePage === 'messages';
   const selectedPatientId = useAppStore(s => s.selectedPatientId);
   const navigateBackToWorklist = useAppStore(s => s.navigateBackToWorklist);
   const patients = useAppStore(s => s.patients);
@@ -191,7 +192,7 @@ export function TopBar() {
     <>
     <header className={styles.topbar}>
       <div className={styles.left}>
-        {!isSettings && !isAnalytics && !isCalendar && !isHome && !isPatientView && (
+        {!isSettings && !isAnalytics && !isCalendar && !isHome && !isMessages && !isPatientView && (
           <ActionButton
             icon={subnavCollapsed ? 'solar:alt-arrow-right-linear' : 'solar:sidebar-minimalistic-linear'}
             size="L"
@@ -210,6 +211,8 @@ export function TopBar() {
             </>
           ) : isHome ? (
             <span className={styles.breadcrumbCurrent}>Home</span>
+          ) : isMessages ? (
+            <span className={styles.breadcrumbCurrent}>Messages</span>
           ) : isCalendar ? (
             <span className={styles.breadcrumbCurrent}>Calendar</span>
           ) : isAnalytics ? (

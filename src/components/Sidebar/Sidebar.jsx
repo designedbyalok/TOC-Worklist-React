@@ -28,7 +28,8 @@ export function Sidebar() {
   const [helpOpen, setHelpOpen] = useState(false);
 
   const showToast = useAppStore(s => s.showToast);
-  const implementedPages = ['home', 'population', 'settings', 'analytics', 'calendar'];
+  const messagesUnreadCount = useAppStore(s => s.messagesUnreadCount);
+  const implementedPages = ['home', 'population', 'settings', 'analytics', 'calendar', 'messages'];
 
   const handleClick = (e, page) => {
     e.preventDefault();
@@ -58,7 +59,10 @@ export function Sidebar() {
             title={item.label}
             onClick={e => handleClick(e, item.page)}
           >
-            {item.badge && <span className={styles.badge}>{item.badge}</span>}
+            {item.page === 'messages'
+              ? (messagesUnreadCount > 0 && <span className={styles.badge}>{messagesUnreadCount}</span>)
+              : (item.badge && <span className={styles.badge}>{item.badge}</span>)
+            }
             <div className={styles.itemInner}>
               <Icon name={isActive ? item.filledIcon : item.icon} size={22} />
               <span>{item.label}</span>

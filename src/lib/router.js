@@ -38,6 +38,7 @@ export function stateToHash(state) {
   }
   if (activePage === 'calendar') return buildHash('calendar');
   if (activePage === 'home') return buildHash('home');
+  if (activePage === 'messages') return buildHash('messages');
 
   if (activePage === 'settings') {
     if (settingsNavItem === 'messages') {
@@ -90,6 +91,7 @@ export function hashToState(route) {
   }
   if (route.page === 'calendar') { updates.activePage = 'calendar'; return updates; }
   if (route.page === 'home') { updates.activePage = 'home'; return updates; }
+  if (route.page === 'messages') { updates.activePage = 'messages'; return updates; }
 
   if (route.page === 'settings') {
     updates.activePage = 'settings';

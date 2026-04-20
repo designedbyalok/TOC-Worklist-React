@@ -30,8 +30,10 @@ import { CreateAgentDrawer } from '../features/settings/CreateAgentDrawer';
 import { AgentCanvas } from '../features/agent-builder/AgentCanvas';
 import { AnalyticsLayout } from '../features/analytics/AnalyticsLayout';
 import { HomeView } from '../features/home/HomeView';
+import { MessagesView } from '../features/messages/MessagesView';
 import { useEffect } from 'react';
 import { useAppStore } from '../store/useAppStore';
+import { supabase } from '../lib/supabase';
 import styles from './AppLayout.module.css';
 
 function Toast() {
@@ -153,6 +155,23 @@ export function AppLayout() {
   const activePage = useAppStore(s => s.activePage);
   const builderAgent = useAppStore(s => s.builderAgent);
 
+  // Upsert profile on mount so all users appear in user_profiles for search
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data }) => {
+      const user = data?.user;
+      if (!user) return;
+      const meta = user.user_metadata || {};
+      const firstName = meta.first_name || null;
+      const lastName  = meta.last_name  || null;
+      const fullName  = meta.full_name  || [firstName, lastName].filter(Boolean).join(' ') || null;
+      await supabase.from('user_profiles').upsert({
+        id: user.id, first_name: firstName, last_name: lastName,
+        full_name: fullName, email: user.email,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'id' });
+    });
+  }, []);
+
   // Re-open agent builder on page refresh when URL has agent edit path
   useEffect(() => {
     const pendingId = useAppStore.getState()._pendingAgentId;
@@ -206,7 +225,7 @@ export function AppLayout() {
   return (
     <div className={styles.app}>
       <Sidebar />
-      {activePage === 'home' ? <HomeView /> : activePage === 'analytics' ? <AnalyticsView /> : activePage === 'settings' ? <SettingsView /> : activePage === 'calendar' ? <CalendarViewPage /> : <PopulationView />}
+      {activePage === 'home' ? <HomeView /> : activePage === 'messages' ? <MessagesView /> : activePage === 'analytics' ? <AnalyticsView /> : activePage === 'settings' ? <SettingsView /> : activePage === 'calendar' ? <CalendarViewPage /> : <PopulationView />}
 
       {showCreateAgent && <CreateAgentDrawer />}
       {workflowPatient && <WorkflowPanel />}

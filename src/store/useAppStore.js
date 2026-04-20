@@ -195,6 +195,7 @@ export const useAppStore = create((set, get) => ({
 
   // Messages section
   messageTab: 'chat-settings',
+  messagesUnreadCount: 0,
 
   // Chat Groups (Messages > Chat Settings)
   chatGroupsData: null,
@@ -353,6 +354,7 @@ export const useAppStore = create((set, get) => ({
   setSettingsNavItem: (item) => { sessionStorage.setItem('settingsNavItem', item); set({ settingsNavItem: item }); updateHash(get); },
 
   // Chat Groups actions
+  setMessagesUnreadCount: (n) => set({ messagesUnreadCount: n }),
   setMessageTab: (tab) => { set({ messageTab: tab }); updateHash(get); },
   setChatGroupDetailId: (id) => { set({ chatGroupDetailId: id }); updateHash(get); },
   setAgentRulesGroupId: (id) => { set({ agentRulesGroupId: id }); updateHash(get); },
