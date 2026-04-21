@@ -258,18 +258,19 @@ export function AccountPanel() {
     const currentUserId = session.user.id;
     const currentUser = users.find(u => u.id === currentUserId);
     if (currentUser) {
-      return currentUser.role === 'Admin/Practice Manager' || currentUser.clinicalRoles?.includes('Admin/Practice Manager');
+      const isClinAdmin = currentUser.role === 'Admin/Practice Manager' || currentUser.clinicalRoles?.includes('Admin/Practice Manager');
+      const isSystemAdmin = currentUser._raw?.admin_role === 'Business/Practice Owner';
+      return isClinAdmin || isSystemAdmin;
     }
-    const { data } = await supabase.from('profiles').select('role, clinical_roles').eq('id', currentUserId).maybeSingle();
-    return data && (data.role === 'Admin/Practice Manager' || data.clinical_roles?.includes('Admin/Practice Manager'));
+    const { data } = await supabase.from('profiles').select('role, clinical_roles, admin_role').eq('id', currentUserId).maybeSingle();
+    if (!data) return false;
+    const isClinAdminData = data.role === 'Admin/Practice Manager' || data.clinical_roles?.includes('Admin/Practice Manager');
+    const isSystemAdminData = data.admin_role === 'Business/Practice Owner';
+    return isClinAdminData || isSystemAdminData;
   };
 
   // Toggle user status (Active/Inactive)
   const toggleUserStatus = async (user) => {
-    if (!(await checkIsAdmin())) {
-      showToast('Failed to update user status (Check permissions)');
-      return;
-    }
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
     const { data, error } = await supabase
       .from('profiles')
@@ -327,14 +328,6 @@ export function AccountPanel() {
 
   // Save edited user profile to DB
   const saveUserProfile = async (userId, updates) => {
-    // Restrict changing role to Admin
-    if (updates.clinical_roles?.includes('Admin/Practice Manager') || updates.role === 'Admin/Practice Manager') {
-      if (!(await checkIsAdmin())) {
-        showToast('Failed to update role to Admin (Check permissions)');
-        return;
-      }
-    }
-
     const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
     if (!error) {
       await fetchUsers();
@@ -378,13 +371,7 @@ export function AccountPanel() {
             <Badge variant={statusFilter === 'active' ? 'status-completed' : statusFilter === 'invited' ? 'status-queued' : 'status-failed'} label={statusFilter} style={{ textTransform: 'capitalize', cursor: 'pointer' }} onClick={() => setStatusFilter('all')} />
           )}
           <span className={styles.tabDivider} />
-          <Button variant="secondary" size="L" leadingIcon="solar:add-circle-linear" onClick={async () => {
-            if (!(await checkIsAdmin())) {
-              showToast('Failed to add user (Check permissions)');
-              return;
-            }
-            setShowInvite(true);
-          }}>Invite User</Button>
+          <Button variant="secondary" size="L" leadingIcon="solar:add-circle-linear" onClick={() => setShowInvite(true)}>Invite User</Button>
         </div>
       </div>
 
