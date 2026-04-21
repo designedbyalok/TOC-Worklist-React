@@ -255,7 +255,6 @@ export function TopBar() {
           icon="solar:bell-outline"
           size="L"
           tooltip="Notifications"
-          notification
         />
         <div className={styles.createNewWrap}>
           <button

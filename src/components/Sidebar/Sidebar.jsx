@@ -6,7 +6,7 @@ import styles from './Sidebar.module.css';
 
 const NAV_ITEMS = [
   { icon: 'solar:home-2-linear', filledIcon: 'solar:home-2-bold', label: 'Home', page: 'home' },
-  { icon: 'solar:users-group-rounded-linear', filledIcon: 'solar:users-group-rounded-bold', label: 'Population', badge: 8, page: 'population' },
+  { icon: 'solar:users-group-rounded-linear', filledIcon: 'solar:users-group-rounded-bold', label: 'Population', page: 'population' },
   { icon: 'solar:calendar-linear', filledIcon: 'solar:calendar-bold', label: 'Calendar', page: 'calendar' },
   { icon: 'solar:checklist-minimalistic-linear', filledIcon: 'solar:checklist-minimalistic-bold', label: 'Tasks', page: 'tasks' },
   { icon: 'solar:chat-round-dots-linear', filledIcon: 'solar:chat-round-dots-bold', label: 'Messages', badge: 8, page: 'messages' },
