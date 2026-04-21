@@ -208,7 +208,33 @@ export function AccountPanel() {
   const [viewingUser, setViewingUser] = useState(null);
   const [showInvite, setShowInvite] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
   const showToast = useAppStore(s => s.showToast);
+
+  // Resolve current user + admin status once on mount.
+  // Used synchronously by UI (hide buttons) and handlers (guard actions).
+  useEffect(() => {
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        // Local/dev bypass — no session means running without auth
+        setIsCurrentUserAdmin(true);
+        return;
+      }
+      setCurrentUserId(session.user.id);
+      const { data } = await supabase
+        .from('profiles')
+        .select('role, clinical_roles, admin_role')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      if (!data) { setIsCurrentUserAdmin(false); return; }
+      const isClinAdmin = data.role === 'Admin/Practice Manager'
+        || data.clinical_roles?.includes('Admin/Practice Manager');
+      const isSystemAdmin = data.admin_role === 'Business/Practice Owner';
+      setIsCurrentUserAdmin(isClinAdmin || isSystemAdmin);
+    })();
+  }, []);
 
   // Fetch users from profiles table (synced with Supabase Auth)
   const fetchUsers = useCallback(async () => {
@@ -251,33 +277,19 @@ export function AccountPanel() {
 
   useEffect(() => { fetchUsers(); }, [fetchUsers]);
 
-  // Helper to verify if current user is an admin
-  const checkIsAdmin = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return true; // Local bypass
-    const currentUserId = session.user.id;
-    const currentUser = users.find(u => u.id === currentUserId);
-    if (currentUser) {
-      const isClinAdmin = currentUser.role === 'Admin/Practice Manager' || currentUser.clinicalRoles?.includes('Admin/Practice Manager');
-      const isSystemAdmin = currentUser._raw?.admin_role === 'Business/Practice Owner';
-      return isClinAdmin || isSystemAdmin;
-    }
-    const { data } = await supabase.from('profiles').select('role, clinical_roles, admin_role').eq('id', currentUserId).maybeSingle();
-    if (!data) return false;
-    const isClinAdminData = data.role === 'Admin/Practice Manager' || data.clinical_roles?.includes('Admin/Practice Manager');
-    const isSystemAdminData = data.admin_role === 'Business/Practice Owner';
-    return isClinAdminData || isSystemAdminData;
-  };
-
-  // Toggle user status (Active/Inactive)
+  // Toggle user status (Active/Inactive) — admin only
   const toggleUserStatus = async (user) => {
+    if (!isCurrentUserAdmin) {
+      showToast('Only Admin/Practice Manager can change user status');
+      return;
+    }
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
     const { data, error } = await supabase
       .from('profiles')
       .update({ status: newStatus })
       .eq('id', user.id)
       .select();
-      
+
     if (!error && data && data.length > 0) {
       setUsers(prev => prev.map(u => u.id === user.id ? { ...u, status: newStatus } : u));
       showToast(`${user.name} ${newStatus === 'Active' ? 'enabled' : 'disabled'}`);
@@ -286,34 +298,55 @@ export function AccountPanel() {
     }
   };
 
-  // Delete user (profiles + auth via Edge Function)
+  // Delete user (profiles + auth via Edge Function) — admin only
   const deleteUser = async (user) => {
-    if (!(await checkIsAdmin())) {
-      showToast('Failed to delete user (Check permissions)');
+    if (!isCurrentUserAdmin) {
+      showToast('Only Admin/Practice Manager can delete users');
       return;
     }
     if (!confirm(`Delete ${user.name}? This will permanently remove them from the platform.`)) return;
+
+    const removeFromUI = () => setUsers(prev => prev.filter(u => u.id !== user.id));
+    const fail = (msg) => { showToast(msg); fetchUsers(); };
+
     try {
       // Try Edge Function first (deletes from both auth + profiles)
       const { error: fnError } = await supabase.functions.invoke('delete-user', {
         body: { userId: user.id },
       });
-      if (fnError) {
-        // Fallback: delete from profiles only (if Edge Function not deployed yet)
-        await supabase.from('profiles').delete().eq('id', user.id);
+
+      if (!fnError) {
+        removeFromUI();
+        showToast(`${user.name} deleted`);
+        return;
       }
-      setUsers(prev => prev.filter(u => u.id !== user.id));
+
+      // Fallback: delete from profiles — verify rows were actually removed.
+      // `.select()` returns the deleted rows; empty array means RLS blocked it.
+      const { data, error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', user.id)
+        .select();
+
+      if (error || !data || data.length === 0) {
+        fail(error?.message || 'Failed to delete user (Check permissions)');
+        return;
+      }
+
+      removeFromUI();
       showToast(`${user.name} deleted`);
-    } catch {
-      // Fallback: delete from profiles only
-      await supabase.from('profiles').delete().eq('id', user.id);
-      setUsers(prev => prev.filter(u => u.id !== user.id));
-      showToast(`${user.name} deleted`);
+    } catch (err) {
+      fail(err?.message || 'Failed to delete user');
     }
   };
 
-  // Reset password via Supabase Auth
+  // Reset password via Supabase Auth — admin only (users reset their own via forgot-password flow)
   const resetPassword = async (user) => {
+    if (!isCurrentUserAdmin) {
+      showToast('Only Admin/Practice Manager can reset passwords');
+      return;
+    }
     if (!user.email) { showToast('No email address for this user'); return; }
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
@@ -326,16 +359,38 @@ export function AccountPanel() {
     }
   };
 
+  // Role-controlling columns — only admins may change these on any profile
+  const ROLE_FIELDS = ['admin_role', 'role', 'clinical_roles'];
+
   // Save edited user profile to DB
   const saveUserProfile = async (userId, updates) => {
-    const { error } = await supabase.from('profiles').update(updates).eq('id', userId);
-    if (!error) {
-      await fetchUsers();
-      showToast('Profile updated');
-      setEditingUser(null);
-    } else {
-      showToast(`Error: ${error.message}`);
+    const isSelf = userId === currentUserId;
+
+    // Non-admins: only self-edit, and role fields are stripped so they cannot promote themselves.
+    if (!isCurrentUserAdmin) {
+      if (!isSelf) {
+        showToast('Only Admin/Practice Manager can edit other users');
+        return;
+      }
+      const stripped = { ...updates };
+      for (const f of ROLE_FIELDS) delete stripped[f];
+      updates = stripped;
     }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', userId)
+      .select();
+
+    if (error || !data || data.length === 0) {
+      showToast(`Error: ${error?.message || 'Permission denied'}`);
+      return;
+    }
+
+    await fetchUsers();
+    showToast('Profile updated');
+    setEditingUser(null);
   };
 
   const filteredUsers = useMemo(() => {
@@ -427,6 +482,7 @@ export function AccountPanel() {
                       <td>
                         <UserActions
                           user={user}
+                          isAdmin={isCurrentUserAdmin}
                           onResetPassword={() => resetPassword(user)}
                           onToggleStatus={() => toggleUserStatus(user)}
                           onEdit={() => setEditingUser(user)}
@@ -482,7 +538,7 @@ export function AccountPanel() {
 
 /* ── User Row Actions: Reset Password, Disable, More (Edit/Delete) ── */
 
-function UserActions({ user, onResetPassword, onToggleStatus, onEdit, onDelete }) {
+function UserActions({ user, isAdmin, onResetPassword, onToggleStatus, onEdit, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -492,6 +548,11 @@ function UserActions({ user, onResetPassword, onToggleStatus, onEdit, onDelete }
     document.addEventListener('click', close);
     return () => document.removeEventListener('click', close);
   }, [menuOpen]);
+
+  // Non-admins see no row actions — disable/enable, password reset, edit, delete are all admin-only.
+  if (!isAdmin) {
+    return <span style={{ color: 'var(--neutral-200)', fontSize: 13 }}>—</span>;
+  }
 
   return (
     <div className={styles.actions}>
