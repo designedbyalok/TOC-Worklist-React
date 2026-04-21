@@ -67,9 +67,26 @@ export function stateToHash(state) {
     return buildHash('population', 'patient', state.selectedPatientId);
   }
 
-  // HCC Worklist (separate sub-list; not a TOC filter)
-  if (state.activeSubnavList === 'HCC') {
-    return buildHash('population', 'hcc');
+  const LIST_TO_URL = {
+    'Day Optimizer': 'day-optimizer',
+    'Review HRA': 'review-hra',
+    'IP Visits': 'ip-visits',
+    'High Risk': 'high-risk',
+    'High Cost': 'high-cost',
+    'SNP': 'snp',
+    'AWV': 'awv',
+    'HCC': 'hcc',
+    'High Utilizers': 'high-utilizers',
+    'DM': 'dm',
+    'My Patients': 'my-patients',
+    'All Patients': 'all-patients'
+  };
+
+  if (state.activeSubnavList && state.activeSubnavList !== 'TOC') {
+    const section = LIST_TO_URL[state.activeSubnavList];
+    if (section) {
+      return buildHash('population', section);
+    }
   }
 
   return buildHash('population', activeTab || 'toc-worklist');
@@ -157,12 +174,30 @@ export function hashToState(route) {
     return updates;
   }
   updates.selectedPatientId = null;
-  if (route.section === 'hcc') {
-    updates.activeSubnavList = 'HCC';
-    updates.activeTab = 'toc-worklist';
+
+  const URL_TO_LIST = {
+    'day-optimizer': 'Day Optimizer',
+    'review-hra': 'Review HRA',
+    'ip-visits': 'IP Visits',
+    'high-risk': 'High Risk',
+    'high-cost': 'High Cost',
+    'snp': 'SNP',
+    'awv': 'AWV',
+    'hcc': 'HCC',
+    'high-utilizers': 'High Utilizers',
+    'dm': 'DM',
+    'my-patients': 'My Patients',
+    'all-patients': 'All Patients'
+  };
+
+  if (route.section && URL_TO_LIST[route.section]) {
+    updates.activeSubnavList = URL_TO_LIST[route.section];
+    updates.activeTab = 'toc-worklist'; // Default to worklist view within lists
     return updates;
   }
-  // Map URL section → activeTab
+
+  // Default TOC routes: toc-worklist or toc-queue
+  updates.activeSubnavList = 'TOC';
   updates.activeTab = route.section === 'toc-queue' ? 'toc-queue' : 'toc-worklist';
   return updates;
 }

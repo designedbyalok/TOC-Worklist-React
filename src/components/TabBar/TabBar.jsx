@@ -60,6 +60,7 @@ export function TabBar() {
   const patients = useAppStore(s => s.patients);
   const agents = useAppStore(s => s.agents);
   const openBuilder = useAppStore(s => s.openBuilder);
+  const activeSubnavList = useAppStore(s => s.activeSubnavList);
   const [searchOpen, setSearchOpen] = useState(false);
   const [confirmAbort, setConfirmAbort] = useState(false);
   const [showEditConfirm, setShowEditConfirm] = useState(false);
@@ -104,19 +105,31 @@ export function TabBar() {
     <>
       <div className={styles.tabBar}>
         <div className={styles.left}>
-          <div
-            className={[styles.tabItem, activeTab === 'toc-worklist' ? styles.active : ''].filter(Boolean).join(' ')}
-            onClick={() => handleTabChange('toc-worklist')}
-          >
-            TOC Worklist
-          </div>
-          <div
-            className={[styles.tabItem, activeTab === 'toc-queue' ? styles.active : ''].filter(Boolean).join(' ')}
-            onClick={() => handleTabChange('toc-queue')}
-          >
-            TOC Agent Queue
-            {queueTabDot && <span className={styles.notifDot} title="Agent invoked — view queue" />}
-          </div>
+          {activeSubnavList === 'All Patients' ? (
+            <div className={`${styles.tabItem} ${styles.active}`}>
+              All Patients
+            </div>
+          ) : activeSubnavList === 'HCC' ? (
+            <div className={`${styles.tabItem} ${styles.active}`}>
+              HCC Worklist
+            </div>
+          ) : (
+            <>
+              <div
+                className={[styles.tabItem, activeTab === 'toc-worklist' ? styles.active : ''].filter(Boolean).join(' ')}
+                onClick={() => handleTabChange('toc-worklist')}
+              >
+                TOC Worklist
+              </div>
+              <div
+                className={[styles.tabItem, activeTab === 'toc-queue' ? styles.active : ''].filter(Boolean).join(' ')}
+                onClick={() => handleTabChange('toc-queue')}
+              >
+                TOC Agent Queue
+                {queueTabDot && <span className={styles.notifDot} title="Agent invoked — view queue" />}
+              </div>
+            </>
+          )}
         </div>
 
         <div className={styles.right}>

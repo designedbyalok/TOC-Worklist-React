@@ -128,8 +128,8 @@ function PopulationView() {
         <TopBar />
         <DegradedBanner />
         <div className={styles.content}>
-          {!isHcc && !isAllPatients && !isComingSoon && <TabBar />}
-          {!isHcc && !isAllPatients && !isComingSoon && showFilterBar && <FilterBar />}
+          {!isHcc && !isComingSoon && <TabBar />}
+          {!isHcc && !isComingSoon && showFilterBar && <FilterBar />}
           {!isHcc && !isAllPatients && !isComingSoon && activeTab === 'toc-queue' && <QueueSummaryBar />}
           {isHcc
             ? <HccWorklistTable />
