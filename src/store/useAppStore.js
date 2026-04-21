@@ -196,6 +196,7 @@ export const useAppStore = create((set, get) => ({
   // Messages section
   messageTab: 'chat-settings',
   messagesUnreadCount: 0,
+  pendingChatUserEmail: null,
 
   // Chat Groups (Messages > Chat Settings)
   chatGroupsData: null,
@@ -355,6 +356,7 @@ export const useAppStore = create((set, get) => ({
 
   // Chat Groups actions
   setMessagesUnreadCount: (n) => set({ messagesUnreadCount: n }),
+  setPendingChatUserEmail: (email) => set({ pendingChatUserEmail: email }),
   setMessageTab: (tab) => { set({ messageTab: tab }); updateHash(get); },
   setChatGroupDetailId: (id) => { set({ chatGroupDetailId: id }); updateHash(get); },
   setAgentRulesGroupId: (id) => { set({ agentRulesGroupId: id }); updateHash(get); },

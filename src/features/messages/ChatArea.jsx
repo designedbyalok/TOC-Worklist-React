@@ -41,12 +41,14 @@ export function ChatArea({ currentUser, otherUser, onConversationUpdate }) {
   const [dragOver, setDragOver]           = useState(false);
   const [uploading, setUploading]         = useState(false);
 
-  const messagesRef  = useRef(null);
-  const channelRef   = useRef(null);
-  const textareaRef  = useRef(null);
-  const fileInputRef = useRef(null);
-  const typingTimer  = useRef(null);
-  const stopTimer    = useRef(null);
+  const messagesRef   = useRef(null);
+  const channelRef    = useRef(null);
+  const textareaRef   = useRef(null);
+  const fileInputRef  = useRef(null);
+  const typingTimer   = useRef(null);
+  const stopTimer     = useRef(null);
+  const onUpdateRef   = useRef(onConversationUpdate);
+  useEffect(() => { onUpdateRef.current = onConversationUpdate; });
 
   // ── Scroll helper: instant on load, smooth only when near bottom ──
   const scrollToBottom = useCallback((instant = false) => {
@@ -69,8 +71,8 @@ export function ChatArea({ currentUser, otherUser, onConversationUpdate }) {
       .map(m => m.id);
     if (!ids.length) return;
     await supabase.from('direct_messages').update({ read_at: new Date().toISOString() }).in('id', ids);
-    onConversationUpdate?.();
-  }, [currentUser.id, onConversationUpdate]);
+    onUpdateRef.current?.();
+  }, [currentUser.id]);
 
   // ── Fetch conversation ──
   const fetchMessages = useCallback(async () => {
@@ -112,7 +114,7 @@ export function ChatArea({ currentUser, otherUser, onConversationUpdate }) {
         setMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg]);
         if (msg.recipient_id === currentUser.id) {
           supabase.from('direct_messages').update({ read_at: new Date().toISOString() }).eq('id', msg.id)
-            .then(() => onConversationUpdate?.());
+            .then(() => onUpdateRef.current?.());
         }
         scrollToBottom(false);
       })
@@ -134,7 +136,7 @@ export function ChatArea({ currentUser, otherUser, onConversationUpdate }) {
       })
       .subscribe();
     return () => { channelRef.current?.unsubscribe(); clearTimeout(typingTimer.current); };
-  }, [currentUser.id, otherUser.id, onConversationUpdate, scrollToBottom]);
+  }, [currentUser.id, otherUser.id, scrollToBottom]);
 
   // ── Broadcast typing state ──
   const broadcastTyping = useCallback((isTyping) => {
@@ -183,11 +185,11 @@ export function ChatArea({ currentUser, otherUser, onConversationUpdate }) {
     const { data } = await supabase.from('direct_messages').insert(payload).select().single();
     if (data) {
       setMessages(prev => prev.map(m => m.id === optId ? data : m));
-      onConversationUpdate?.();
+      onUpdateRef.current?.();
     }
     setSending(false);
     textareaRef.current?.focus();
-  }, [inputValue, sending, currentUser.id, otherUser.id, replyTo, broadcastTyping, scrollToBottom, onConversationUpdate]);
+  }, [inputValue, sending, currentUser.id, otherUser.id, replyTo, broadcastTyping, scrollToBottom]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); }
@@ -246,7 +248,17 @@ export function ChatArea({ currentUser, otherUser, onConversationUpdate }) {
       {/* ── Messages ── */}
       <div ref={messagesRef} className={styles.chatMessages}>
         {loading ? (
-          <div className={styles.chatLoading}>Loading messages…</div>
+          <div className={styles.skeletonMessages}>
+            {[
+              { own: false, w: 160 }, { own: true, w: 120 }, { own: false, w: 220 },
+              { own: true, w: 80 }, { own: false, w: 140 }, { own: true, w: 180 },
+            ].map((s, i) => (
+              <div key={i} className={[styles.skeletonRow, s.own ? styles.skeletonOwn : ''].filter(Boolean).join(' ')}>
+                {!s.own && <div className={styles.skeletonAvatar} />}
+                <div className={styles.skeletonBubble} style={{ width: s.w }} />
+              </div>
+            ))}
+          </div>
         ) : messages.length === 0 ? (
           <div className={styles.chatEmpty}>
             <div className={styles.chatEmptyAvatar}>{initials}</div>

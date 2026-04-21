@@ -509,6 +509,16 @@ const VIEW_TABS = ['User Details', 'Business Hours', 'Assigned Patients', 'Audit
 export function ViewUserDrawer({ user, onClose, onEdit }) {
   const raw = user._raw || {};
   const [viewTab, setViewTab] = useState('User Details');
+  const setActivePage = useAppStore(s => s.setActivePage);
+  const setCurrentPage = useAppStore(s => s.setCurrentPage);
+  const setPendingChatUserEmail = useAppStore(s => s.setPendingChatUserEmail);
+
+  const openChat = () => {
+    setPendingChatUserEmail(user.email);
+    setActivePage('messages');
+    setCurrentPage(1);
+    onClose();
+  };
 
   const adminRole = raw.admin_role || 'Business/Practice Owner';
   const roles = raw.clinical_roles?.length > 0 ? raw.clinical_roles : (raw.role && raw.role !== 'Viewer' ? [raw.role] : []);
@@ -536,7 +546,7 @@ export function ViewUserDrawer({ user, onClose, onEdit }) {
           </div>
           <span className={styles.editHeaderDivider} />
           <div className={styles.editHeaderActionItem}>
-            <ActionButton icon="solar:chat-round-line-linear" size="L" tooltip="Chat" />
+            <ActionButton icon="solar:chat-round-line-linear" size="L" tooltip="Chat" onClick={openChat} />
             <span className={styles.editHeaderActionLabel}>Chat</span>
           </div>
           <span className={styles.editHeaderDivider} />

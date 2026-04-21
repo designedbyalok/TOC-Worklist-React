@@ -5,6 +5,8 @@ import styles from './CreateNewPopover.module.css';
 
 export function CreateNewPopover({ onClose }) {
   const showToast = useAppStore(s => s.showToast);
+  const setActivePage = useAppStore(s => s.setActivePage);
+  const setCurrentPage = useAppStore(s => s.setCurrentPage);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -36,7 +38,10 @@ export function CreateNewPopover({ onClose }) {
         <div className={styles.section}>Start New</div>
         {item('solar:videocamera-record-linear', 'Video Meeting', 'vm')}
         {item('solar:phone-calling-linear', 'Voice Call', 'vc')}
-        {item('solar:chat-dots-linear', 'Chat', 'ch')}
+        <button key="ch" className={styles.item} onClick={() => { setActivePage('messages'); setCurrentPage(1); onClose(); }}>
+          <Icon name="solar:chat-dots-linear" size={16} color="var(--neutral-300)" />
+          Chat
+        </button>
         {item('solar:chat-square-linear', 'SMS', 'sms')}
         {item('solar:letter-linear', 'Email', 'em')}
       </div>
