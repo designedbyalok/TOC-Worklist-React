@@ -42,6 +42,28 @@ const FEATURES = [
     ],
   },
   {
+    group: 'Calendar',
+    items: [
+      {
+        icon: 'solar:calendar-linear',
+        crumbs: ['Scheduling'],
+        description: 'View and schedule patient appointments by type.',
+        page: 'calendar',
+      },
+    ],
+  },
+  {
+    group: 'Messages',
+    items: [
+      {
+        icon: 'solar:chat-round-dots-linear',
+        crumbs: ['Inbox'],
+        description: 'View and reply to patient SMS and chat messages.',
+        page: 'messages',
+      },
+    ],
+  },
+  {
     group: 'Analytics',
     items: [
       {
@@ -127,28 +149,6 @@ const FEATURES = [
         description: 'Automated rule triggers and compliance tracking.',
         page: 'analytics',
         analyticsView: 'action-rules',
-      },
-    ],
-  },
-  {
-    group: 'Calendar',
-    items: [
-      {
-        icon: 'solar:calendar-linear',
-        crumbs: ['Scheduling'],
-        description: 'View and schedule patient appointments by type.',
-        page: 'calendar',
-      },
-    ],
-  },
-  {
-    group: 'Messages',
-    items: [
-      {
-        icon: 'solar:chat-round-dots-linear',
-        crumbs: ['Inbox'],
-        description: 'View and reply to patient SMS and chat messages.',
-        page: 'messages',
       },
     ],
   },
