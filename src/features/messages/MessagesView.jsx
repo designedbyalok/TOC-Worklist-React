@@ -99,7 +99,11 @@ export function MessagesView() {
 
   // ── Load all user profiles + watch for new ones ──
   const refreshProfiles = useCallback(() => {
-    supabase.from('user_profiles').select('*').then(({ data }) => {
+    supabase.from('profiles').select('*').then(({ data, error }) => {
+      if (error) {
+        console.warn('[MessagesView] profiles fetch failed — chat names will show as "Unknown" and New Chat list will be empty.', error);
+        return;
+      }
       setAllProfiles(data || []);
       const map = {};
       (data || []).forEach(p => { map[p.id] = p; });
@@ -111,8 +115,8 @@ export function MessagesView() {
 
   useEffect(() => {
     const ch = supabase
-      .channel('user-profiles-watch')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_profiles' }, refreshProfiles)
+      .channel('profiles-watch')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, refreshProfiles)
       .subscribe();
     return () => ch.unsubscribe();
   }, [refreshProfiles]);

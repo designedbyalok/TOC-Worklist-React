@@ -182,7 +182,10 @@ export function AppLayout() {
   const activePage = useAppStore(s => s.activePage);
   const builderAgent = useAppStore(s => s.builderAgent);
 
-  // Upsert profile on mount so all users appear in user_profiles for search
+  // Keep profiles in sync with auth.users. Self-signups and OAuth logins don't
+  // go through the Invite flow, so profiles would otherwise stay empty for them.
+  // First login inserts with safe defaults; later logins only refresh identity
+  // fields so admin-set role/status aren't clobbered.
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
       const user = data?.user;
@@ -191,11 +194,33 @@ export function AppLayout() {
       const firstName = meta.first_name || null;
       const lastName  = meta.last_name  || null;
       const fullName  = meta.full_name  || [firstName, lastName].filter(Boolean).join(' ') || null;
-      await supabase.from('user_profiles').upsert({
-        id: user.id, first_name: firstName, last_name: lastName,
-        full_name: fullName, email: user.email,
+
+      const identity = {
+        id: user.id,
+        first_name: firstName,
+        last_name: lastName,
+        full_name: fullName,
+        email: user.email,
         updated_at: new Date().toISOString(),
-      }, { onConflict: 'id' });
+      };
+
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (existing) {
+        await supabase.from('profiles').update(identity).eq('id', user.id);
+      } else {
+        await supabase.from('profiles').insert({
+          ...identity,
+          status: 'Active',
+          role: 'Viewer',
+          clinical_roles: [],
+          admin_role: 'Employer',
+        });
+      }
     });
   }, []);
 
