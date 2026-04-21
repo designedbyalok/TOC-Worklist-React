@@ -235,7 +235,7 @@ export function LoginPage({ onBypass }) {
           </div>
 
           {/* Dev bypass */}
-          {onBypass && (
+          {onBypass && window.location.hostname === 'localhost' && (
             <button className={styles.bypassLink} onClick={onBypass}>
               Continue without login (dev mode)
             </button>
