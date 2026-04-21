@@ -254,13 +254,17 @@ export function AccountPanel() {
   // Toggle user status (Active/Inactive)
   const toggleUserStatus = async (user) => {
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .update({ status: newStatus })
-      .eq('id', user.id);
-    if (!error) {
+      .eq('id', user.id)
+      .select();
+      
+    if (!error && data && data.length > 0) {
       setUsers(prev => prev.map(u => u.id === user.id ? { ...u, status: newStatus } : u));
       showToast(`${user.name} ${newStatus === 'Active' ? 'enabled' : 'disabled'}`);
+    } else {
+      showToast(error?.message || 'Failed to update user status (Check permissions)');
     }
   };
 
@@ -1365,7 +1369,7 @@ function EditUserDrawer({ user, onClose, onSave }) {
       full_name: `${form.first_name} ${form.last_name}`.trim(),
       first_name: form.first_name, middle_name: form.middle_name, last_name: form.last_name,
       date_of_birth: form.date_of_birth, gender: form.gender,
-      admin_role: form.admin_role, role: form.role, bio: form.bio,
+      admin_role: form.admin_role, role: form.clinical_roles.length > 0 ? form.clinical_roles[0] : 'Viewer', bio: form.bio,
       mobile: form.mobile, fax: form.fax, zip_code: form.zip_code,
       address_line1: form.address_line1, address_line2: form.address_line2,
       state: form.state, city: form.city,
