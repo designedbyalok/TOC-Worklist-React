@@ -50,7 +50,7 @@ function MissedCallIcon({ size = 16, color = 'currentColor' }) {
 
 // ── Communication sidebar config ─────────────────────────────
 const INBOX_ITEMS = [
-  { id: 'assigned',    icon: 'solar:user-check-linear',         label: 'Assigned to me',    badge: 8 },
+  { id: 'assigned',    icon: 'solar:user-check-linear',         label: 'Assigned to me' },
   { id: 'mentions',   icon: 'solar:mention-square-linear',      label: 'Mentions' },
   { id: 'others',     icon: 'solar:users-group-rounded-linear', label: 'Assigned to Others' },
   { id: 'unassigned', icon: 'solar:user-cross-linear',          label: 'Unassigned' },
@@ -62,9 +62,9 @@ const INBOX_ITEMS = [
 const CHANNEL_ITEMS = [
   { id: 'all',      icon: 'solar:chat-round-call-linear', label: 'All Conversations' },
   { id: 'chat',     icon: 'solar:chat-round-linear',      label: 'Chat' },
-  { id: 'sms',      icon: 'solar:chat-square-linear',     label: 'SMS',   badge: 3 },
-  { id: 'calls',    icon: 'solar:phone-calling-linear',   label: 'Calls', badge: 2 },
-  { id: 'email',    icon: 'solar:letter-linear',          label: 'Email', badge: 1 },
+  { id: 'sms',      icon: 'solar:chat-square-linear',     label: 'SMS' },
+  { id: 'calls',    icon: 'solar:phone-calling-linear',   label: 'Calls' },
+  { id: 'email',    icon: 'solar:letter-linear',          label: 'Email' },
   { id: 'efax',     icon: 'solar:printer-linear',         label: 'E-fax' },
   { id: 'internal', icon: 'solar:user-speak-linear',      label: 'Internal Chat' },
 ];
@@ -195,6 +195,9 @@ export function MessagesView() {
   }, [showNewChat]);
 
   // ── Derived ──
+  // Internal chats (DMs between users) show under All Conversations, Chat, and Internal Chat
+  const showConversations = ['all', 'chat', 'internal'].includes(activeChannel);
+
   const filteredConversations = conversations.filter(conv => {
     if (filterTab === 'unread' && conv.unreadCount === 0) return false;
     if (!searchQuery) return true;
@@ -259,7 +262,8 @@ export function MessagesView() {
           <div className={styles.commSection} style={{ marginTop: 8 }}>Channels</div>
           {CHANNEL_ITEMS.map(item => {
             const isActive = activeChannel === item.id;
-            const badge = item.id === 'chat' ? (totalUnread > 0 ? totalUnread : null) : item.badge ?? null;
+            // Show unread badge on internal-chat channels only
+            const badge = ['all', 'chat', 'internal'].includes(item.id) && totalUnread > 0 ? totalUnread : null;
             return (
               <button
                 key={item.id}
@@ -278,8 +282,10 @@ export function MessagesView() {
         <div className={styles.convPanel}>
           <div className={styles.convHeader}>
             <div className={styles.convHeaderLeft}>
-              <div className={styles.convHeaderTitle}>Chats</div>
-              {totalUnread > 0 && (
+              <div className={styles.convHeaderTitle}>
+                {activeChannel === 'all' ? 'All Conversations' : activeChannel === 'internal' ? 'Internal Chats' : 'Chats'}
+              </div>
+              {showConversations && totalUnread > 0 && (
                 <div className={styles.convHeaderSub}>{totalUnread} unread chat{totalUnread !== 1 ? 's' : ''}</div>
               )}
             </div>
@@ -335,7 +341,14 @@ export function MessagesView() {
           )}
 
           <div className={styles.convList}>
-            {filteredConversations.length === 0 ? (
+            {!showConversations ? (
+              <div className={styles.emptyConv}>
+                <div className={styles.emptyConvIcon}>
+                  <Icon name="solar:widget-linear" size={28} />
+                </div>
+                <div className={styles.emptyConvText}>Coming soon</div>
+              </div>
+            ) : filteredConversations.length === 0 ? (
               <div className={styles.emptyConv}>
                 <div className={styles.emptyConvIcon}>
                   <Icon name="solar:chat-round-linear" size={28} />
@@ -380,7 +393,7 @@ export function MessagesView() {
         </div>
 
         {/* ── Chat area ── */}
-        {selectedUserId && selectedProfile && currentUser ? (
+        {showConversations && selectedUserId && selectedProfile && currentUser ? (
           <ChatArea
             key={selectedUserId}
             currentUser={currentUser}

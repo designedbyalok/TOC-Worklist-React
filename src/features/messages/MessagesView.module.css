@@ -287,19 +287,19 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: var(--primary-100);
-  border: 0.5px solid var(--primary-200);
+  background: var(--secondary-100);
+  border: 0.5px solid var(--secondary-200);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   font-weight: 500;
-  color: var(--primary-300);
+  color: var(--secondary-300);
   flex-shrink: 0;
 }
 
 .convItem.selected .convAvatar {
-  background: var(--neutral-0);
+  background: var(--secondary-50, var(--secondary-100));
 }
 
 .convInfo {
@@ -535,14 +535,14 @@
   width: 56px;
   height: 56px;
   border-radius: 12px;
-  background: var(--primary-100);
-  border: 0.5px solid var(--primary-200);
+  background: var(--secondary-100);
+  border: 0.5px solid var(--secondary-200);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   font-weight: 500;
-  color: var(--primary-300);
+  color: var(--secondary-300);
 }
 
 .msgDateSep {
@@ -748,14 +748,14 @@
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  background: var(--primary-100);
-  border: 0.5px solid var(--primary-200);
+  background: var(--secondary-100);
+  border: 0.5px solid var(--secondary-200);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 10px;
   font-weight: 500;
-  color: var(--primary-300);
+  color: var(--secondary-300);
   flex-shrink: 0;
 }
 
