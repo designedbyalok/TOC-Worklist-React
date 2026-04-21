@@ -18,9 +18,21 @@ export function Pagination() {
   const setPerPage = useAppStore(s => s.setPerPage);
 
   const isHcc = activeSubnavList === 'HCC';
+  const isAllPatients = activeSubnavList === 'All Patients';
+  const allPatients = useAppStore(s => s.allPatients);
 
   // Derive the total count based on what's actually being shown
   const totalItems = useMemo(() => {
+    if (isAllPatients) {
+      const base = allPatients.length > 0 ? allPatients : [...patients, ...hccMembers];
+      if (!searchQuery.trim()) return base.length;
+      const q = searchQuery.toLowerCase().trim();
+      return base.filter(r =>
+        r.name?.toLowerCase().includes(q) ||
+        r.memberId?.toString().toLowerCase().includes(q) ||
+        r.pcp?.toLowerCase().includes(q)
+      ).length;
+    }
     // HCC list: just search-filter against hccMembers
     if (isHcc) {
       if (!searchQuery.trim()) return hccMembers.length;
@@ -58,7 +70,7 @@ export function Pagination() {
     }
 
     return result.length;
-  }, [isHcc, hccMembers, patients, searchQuery, activeTab, activeFilters]);
+  }, [isHcc, isAllPatients, allPatients, hccMembers, patients, searchQuery, activeTab, activeFilters]);
 
   const [goToInput, setGoToInput] = useState('');
 

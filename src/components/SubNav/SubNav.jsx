@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Icon } from '../Icon/Icon';
 import { useAppStore } from '../../store/useAppStore';
 import styles from './SubNav.module.css';
@@ -27,27 +27,25 @@ export function SubNav({ collapsed }) {
   const setActiveFilters = useAppStore(s => s.setActiveFilters);
   const patients = useAppStore(s => s.patients);
   const hccMembers = useAppStore(s => s.hccMembers);
+  const fetchHccMembers = useAppStore(s => s.fetchHccMembers);
   const clearSelected = useAppStore(s => s.clearSelected);
   const clearHccSelected = useAppStore(s => s.clearHccSelected);
 
-  // Compute counts based on the filter criteria for each list
+  // Prefetch HCC members on mount so the count is available immediately
+  useEffect(() => { fetchHccMembers(); }, []);
+
+  // Only TOC and HCC show real counts; all others show 0
   const getCounts = useMemo(() => {
     const counts = {};
-    const allLists = [...MY_LISTS, ...SHARED_LISTS];
-    for (const list of allLists) {
-      if (list.view === 'hcc') {
-        counts[list.label] = hccMembers.length;
-      } else if (!list.filter) {
-        // Use total patient count for unfiltered lists
-        counts[list.label] = patients.length;
-      } else {
-        counts[list.label] = patients.filter(p => {
-          return Object.entries(list.filter).every(([key, val]) => p[key] === val);
-        }).length;
-      }
+    for (const list of [...MY_LISTS, ...SHARED_LISTS]) {
+      if (list.view === 'hcc') counts[list.label] = hccMembers.length;
+      else if (list.label === 'TOC') counts[list.label] = patients.length;
+      else counts[list.label] = 0;
     }
     return counts;
   }, [patients, hccMembers]);
+
+  const allPatientsCount = patients.length + hccMembers.length;
 
   const handleListClick = (list) => {
     setActiveSubnavList(list.label);
@@ -93,15 +91,17 @@ export function SubNav({ collapsed }) {
       <div className={styles.sectionLabel} style={{ marginTop: 8 }}>Patients</div>
       <div
         className={[styles.item, activeSubnavList === 'My Patients' ? styles.active : ''].filter(Boolean).join(' ')}
-        onClick={() => { setActiveSubnavList('My Patients'); setActiveFilters({ assignee: 'You' }); }}
+        onClick={() => { setActiveSubnavList('My Patients'); clearSelected(); clearHccSelected(); setActiveFilters({}); }}
       >
         My Patients
+        <span className={styles.count}>0</span>
       </div>
       <div
         className={[styles.item, activeSubnavList === 'All Patients' ? styles.active : ''].filter(Boolean).join(' ')}
-        onClick={() => { setActiveSubnavList('All Patients'); setActiveFilters({}); }}
+        onClick={() => { setActiveSubnavList('All Patients'); clearSelected(); clearHccSelected(); setActiveFilters({}); }}
       >
         All Patients
+        <span className={styles.count}>{allPatientsCount || 0}</span>
       </div>
       <div className={styles.sectionLabel} style={{ marginTop: 8 }}>Population Groups</div>
       <div className={styles.sectionLabel} style={{ marginTop: 4 }}>Leads &amp; Contacts</div>

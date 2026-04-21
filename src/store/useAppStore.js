@@ -1201,6 +1201,66 @@ export const useAppStore = create((set, get) => ({
   selectAllHcc: (ids) => set({ selectedHccIds: ids }),
   clearHccSelected: () => set({ selectedHccIds: [] }),
 
+  // ─── All Patients (unified TOC + HCC view, Supabase-backed) ───
+  allPatients: [],
+  allPatientsLoading: false,
+  fetchAllPatients: async () => {
+    set({ allPatientsLoading: true });
+    const { data, error } = await supabase
+      .from('all_patients')
+      .select('*')
+      .order('name', { ascending: true });
+    if (error) {
+      console.warn('fetchAllPatients error (falling back to combined TOC+HCC):', error.message);
+      set({ allPatients: [], allPatientsLoading: false });
+      return;
+    }
+    const rows = (data || []).map(r => ({
+      id: r.id,
+      source: r.source,
+      name: r.name,
+      initials: r.initials,
+      gender: r.gender,
+      age: r.age,
+      memberId: r.member_id,
+      email: r.email,
+      phone: r.phone,
+      language: r.language || 'en',
+      city: r.city,
+      state: r.state,
+      tags: r.tags || [],
+      groupNumber: r.group_number,
+      familyId: r.family_id,
+      uniqueMemberId: r.unique_member_id,
+      coverageType: r.coverage_type,
+      planCode: r.plan_code,
+      employeeSsn: r.employee_ssn,
+      memberSsn: r.member_ssn,
+      subscriberHireDate: r.subscriber_hire_date,
+      location: r.location,
+      tpa: r.tpa,
+      chronicConditions: r.chronic_conditions || [],
+      pcp: r.pcp,
+      pcpInitials: r.pcp_initials,
+      lastVisit: r.last_visit,
+      activeCareProgram: r.active_care_program,
+      ccmConsent: r.ccm_consent,
+      apcmConsent: r.apcm_consent,
+      assignee: r.assignee,
+      assigneeInitials: r.assignee_initials,
+    }));
+    set({ allPatients: rows, allPatientsLoading: false });
+  },
+
+  selectedAllPatientsIds: [],
+  selectAllPatient: (id) => set(s => ({
+    selectedAllPatientsIds: s.selectedAllPatientsIds.includes(id)
+      ? s.selectedAllPatientsIds.filter(x => x !== id)
+      : [...s.selectedAllPatientsIds, id]
+  })),
+  selectAllAllPatients: (ids) => set({ selectedAllPatientsIds: ids }),
+  clearAllPatientsSelected: () => set({ selectedAllPatientsIds: [] }),
+
   // HCC DiagPanel drawer (Phase 2: read-only)
   diagPanelOpen: false,
   diagPanelMemberId: null,

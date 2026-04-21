@@ -24,7 +24,9 @@ import { WorklistTable } from '../features/toc-worklist/WorklistTable';
 import { QueueTable } from '../features/toc-queue/QueueTable';
 import { QueueSummaryBar } from '../features/toc-queue/QueueSummaryBar';
 import { HccWorklistTable } from '../features/hcc/HccWorklistTable';
+import { AllPatientsTable } from '../features/all-patients/AllPatientsTable';
 import { DiagPanel } from '../features/hcc/DiagPanel/DiagPanel';
+import { Icon } from '../components/Icon/Icon';
 import { SettingsLayout } from '../features/settings/SettingsLayout';
 import { CreateAgentDrawer } from '../features/settings/CreateAgentDrawer';
 import { AgentCanvas } from '../features/agent-builder/AgentCanvas';
@@ -35,6 +37,23 @@ import { useEffect } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { supabase } from '../lib/supabase';
 import styles from './AppLayout.module.css';
+
+function ComingSoonState({ listName }) {
+  return (
+    <div style={{
+      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+      justifyContent: 'center', padding: '64px 24px', gap: 12,
+    }}>
+      <Icon name="solar:hourglass-line-linear" size={44} color="var(--neutral-200)" />
+      <p style={{ fontSize: 17, fontWeight: 600, color: 'var(--neutral-400)', margin: 0 }}>
+        {listName}
+      </p>
+      <p style={{ fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 320, color: 'var(--neutral-300)' }}>
+        This worklist is coming soon. Check back for updates.
+      </p>
+    </div>
+  );
+}
 
 function Toast() {
   const toast = useAppStore(s => s.toast);
@@ -97,6 +116,10 @@ function PopulationView() {
   }
 
   const isHcc = activeSubnavList === 'HCC';
+  const isAllPatients = activeSubnavList === 'All Patients';
+  const TOC_LISTS = ['TOC'];
+  const isToc = TOC_LISTS.includes(activeSubnavList) || (!isHcc && !isAllPatients && activeSubnavList !== 'My Patients' && !['Day Optimizer', 'Review HRA', 'IP Visits', 'High Risk', 'High Cost', 'SNP', 'AWV', 'High Utilizers', 'DM', 'My Patients'].includes(activeSubnavList));
+  const isComingSoon = ['Day Optimizer', 'Review HRA', 'IP Visits', 'High Risk', 'High Cost', 'SNP', 'AWV', 'High Utilizers', 'DM', 'My Patients'].includes(activeSubnavList);
 
   return (
     <>
@@ -105,13 +128,17 @@ function PopulationView() {
         <TopBar />
         <DegradedBanner />
         <div className={styles.content}>
-          {!isHcc && <TabBar />}
-          {!isHcc && showFilterBar && <FilterBar />}
-          {!isHcc && activeTab === 'toc-queue' && <QueueSummaryBar />}
+          {!isHcc && !isAllPatients && !isComingSoon && <TabBar />}
+          {!isHcc && !isAllPatients && !isComingSoon && showFilterBar && <FilterBar />}
+          {!isHcc && !isAllPatients && !isComingSoon && activeTab === 'toc-queue' && <QueueSummaryBar />}
           {isHcc
             ? <HccWorklistTable />
-            : (activeTab === 'toc-worklist' ? <WorklistTable /> : <QueueTable />)}
-          <Pagination />
+            : isAllPatients
+              ? <AllPatientsTable />
+              : isComingSoon
+                ? <ComingSoonState listName={activeSubnavList} />
+                : (activeTab === 'toc-worklist' ? <WorklistTable /> : <QueueTable />)}
+          {!isHcc && !isComingSoon && <Pagination />}
         </div>
       </div>
     </>

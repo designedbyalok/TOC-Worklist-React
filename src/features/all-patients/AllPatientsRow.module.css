@@ -1,0 +1,55 @@
+.dash {
+  color: var(--neutral-200);
+  font-size: 14px;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 180px;
+}
+
+.contactCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contactLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--neutral-400);
+  white-space: nowrap;
+}
+
+.attrCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 200px;
+}
+
+.attrRow {
+  display: inline-flex;
+  gap: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.attrKey {
+  color: var(--neutral-300);
+  font-weight: 500;
+}
+
+.attrVal {
+  color: var(--neutral-400);
+}
+
+.attrMore {
+  font-size: 11px;
+  color: var(--neutral-300);
+  font-style: italic;
+}
