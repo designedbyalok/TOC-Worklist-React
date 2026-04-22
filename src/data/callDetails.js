@@ -36,7 +36,7 @@ const PATIENT_COMPLIANCE_OVERRIDES = {
 // Quality & sentiment data for completed calls
 const QUALITY_DATA = {
   cd2:  { qualityScore: { overall: 92, intentAccuracy: 95, outcomeAppropriateness: 90, escalationTimeliness: 88, complianceDisclosure: 96 }, sentimentScore: { overall: 78, label: 'positive' } },
-  cd4:  { qualityScore: { overall: 74, intentAccuracy: 80, outcomeAppropriateness: 68, escalationTimeliness: 72, complianceDisclosure: 76 }, sentimentScore: { overall: 55, label: 'neutral' } },
+  cd4:  { qualityScore: { overall: 78, intentAccuracy: 80, outcomeAppropriateness: 68, escalationTimeliness: 72, complianceDisclosure: 76 }, sentimentScore: { overall: 55, label: 'neutral' } },
   cd6:  { qualityScore: { overall: 85, intentAccuracy: 88, outcomeAppropriateness: 82, escalationTimeliness: 84, complianceDisclosure: 86 }, sentimentScore: { overall: 72, label: 'positive' } },
   cd12: { qualityScore: { overall: 70, intentAccuracy: 75, outcomeAppropriateness: 64, escalationTimeliness: 70, complianceDisclosure: 72 }, sentimentScore: { overall: 42, label: 'negative' } },
   cd16: { qualityScore: { overall: 78, intentAccuracy: 82, outcomeAppropriateness: 76, escalationTimeliness: 74, complianceDisclosure: 80 }, sentimentScore: { overall: 60, label: 'neutral' } },

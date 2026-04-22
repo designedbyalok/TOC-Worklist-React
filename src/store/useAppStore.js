@@ -248,6 +248,7 @@ export const useAppStore = create((set, get) => ({
   callTimerRef: null,
   detailPatient: null,
   detailPatientCalls: [],
+  activeCallRow: null,
   liveDrawerPatient: null,
 
   // ─── Supabase: Fetch patients ───
@@ -1492,14 +1493,14 @@ export const useAppStore = create((set, get) => ({
   closeToast: () => set({ toast: null }),
   closeToastSuccess: () => set({ toastSuccess: false }),
 
-  openDetail: (patientId) => {
+  openDetail: (patientId, callRow = null) => {
     const p = get().patients.find(x => x.id === patientId);
     if (p) {
       const patientCalls = get().callDetails.filter(c => c.patientId === patientId);
-      set({ detailPatient: p, detailPatientCalls: patientCalls });
+      set({ detailPatient: p, detailPatientCalls: patientCalls, activeCallRow: callRow });
     }
   },
-  closeDetail: () => set({ detailPatient: null, detailPatientCalls: [] }),
+  closeDetail: () => set({ detailPatient: null, detailPatientCalls: [], activeCallRow: null }),
 
   openLiveDrawer: (patientId) => set({ liveDrawerPatient: patientId }),
   closeLiveDrawer: () => set({ liveDrawerPatient: null }),

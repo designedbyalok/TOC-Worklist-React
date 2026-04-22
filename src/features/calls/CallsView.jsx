@@ -72,43 +72,18 @@ const CALLS_ROWS = [
   { id: 'r9', dir: 'incoming', agent: 'Louise Koch',       isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '1 m 23s', ooo: '-', goalStatus: '3/4 Met', engagementScore: 88, patientId: 'p9' },
 ];
 
-const DIR_LABEL = {
-  outgoing: 'Outgoing',
-  incoming: 'Incoming',
-  missed:   'Missed',
-  answered: 'Answered',
-  declined: 'Declined',
-};
+import { CallTypeAvatar, DIR_ICON, DIR_LABEL } from '../../components/Avatar/CallTypeAvatar';
 
 // ── Helpers ──
 function getInitials(name) {
   if (!name) return '?';
   return name
-    .replace(/^Dr\.\\s*/i, '')
+    .replace(/^Dr\.\s*/i, '')
     .split(' ')
     .slice(0, 2)
     .map(p => p[0])
     .join('')
     .toUpperCase();
-}
-
-const DIR_ICON = {
-  outgoing: { icon: 'solar:outgoing-call-rounded-linear', color: 'var(--primary-300)',        bg: 'var(--primary-100)',        border: 'var(--primary-200)' },
-  incoming: { icon: 'solar:incoming-call-rounded-linear', color: 'var(--status-success)',     bg: 'rgba(5, 150, 105, 0.1)',   border: 'rgba(5, 150, 105, 0.2)' },
-  answered: { icon: 'solar:phone-calling-linear',         color: 'var(--status-success)',     bg: 'rgba(5, 150, 105, 0.1)',   border: 'rgba(5, 150, 105, 0.2)' },
-  missed:   { isMissed: true,                             color: 'var(--status-error)',       bg: 'rgba(220, 38, 38, 0.1)',    border: 'rgba(220, 38, 38, 0.2)' },
-  declined: { isDeclined: true,                           color: 'var(--neutral-300)',       bg: 'var(--neutral-50)',         border: 'var(--neutral-150)' },
-};
-
-function CallTypeAvatar({ dir }) {
-  const cfg = DIR_ICON[dir] || DIR_ICON.outgoing;
-  return (
-    <div className={styles.callTypeAvatar} style={{ background: cfg.bg, borderColor: cfg.border }}>
-      {cfg.isMissed && <MissedCallIcon size={18} color={cfg.color} />}
-      {cfg.isDeclined && <DeclinedCallIcon size={18} color={cfg.color} />}
-      {!cfg.isMissed && !cfg.isDeclined && <Icon name={cfg.icon} size={18} color={cfg.color} />}
-    </div>
-  );
 }
 
 function CallDirBadge({ dir, size = 14 }) {
@@ -248,7 +223,7 @@ export function CallsView() {
 
   const handleRowClick = (row) => {
     if (row.patientId) {
-      openDetail(row.patientId);
+      openDetail(row.patientId, row);
     } else {
       showToast('Call details — coming soon');
     }

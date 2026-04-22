@@ -5,6 +5,7 @@ import { ActionButton } from '../ActionButton/ActionButton';
 import { Drawer } from '../Drawer/Drawer';
 import { useAppStore } from '../../store/useAppStore';
 import { EngagementCard } from '../EngagementCard/EngagementCard';
+import { CallTypeAvatar, DIR_LABEL } from '../Avatar/CallTypeAvatar';
 import styles from './DetailDrawer.module.css';
 
 /* ── Waveform data (seeded random heights for consistent look) ── */
@@ -24,6 +25,7 @@ function formatTime(secs) {
 export function DetailDrawer() {
   const detailPatient = useAppStore(s => s.detailPatient);
   const detailPatientCalls = useAppStore(s => s.detailPatientCalls);
+  const activeCallRow = useAppStore(s => s.activeCallRow);
   const closeDetail = useAppStore(s => s.closeDetail);
   const showToast = useAppStore(s => s.showToast);
   const [openSections, setOpenSections] = useState({ goals: true, summary: true, transcript: true });
@@ -70,12 +72,12 @@ export function DetailDrawer() {
   const goalsDetail = callRecord.goalsDetail || [];
   const callSummary = callRecord.callSummary || null;
   const callTranscript = callRecord.callTranscript || [];
-  const callDate = callRecord.startedAt || p.callDate || null;
-  const callDurationFull = callRecord.duration || p.callDurationFull || null;
-  const agentName = callRecord.agentName || 'Anna';
-
-  // Show voicemail attempts if available
-  const voicemailCalls = (detailPatientCalls || []).filter(c => c.callType === 'voicemail');
+  
+  // Sync with activeCallRow if available
+  const callDate = activeCallRow?.date || callRecord.startedAt || p.callDate || null;
+  const callDurationFull = activeCallRow?.duration || callRecord.duration || p.callDurationFull || null;
+  const callDir = activeCallRow?.dir || (callRecord.callType === 'voicemail' ? 'missed' : 'outgoing');
+  const agentName = activeCallRow?.agent || callRecord.agentName || 'Anna';
 
   const toggleSection = (key) => setOpenSections(s => ({ ...s, [key]: !s[key] }));
   const progress = TOTAL_DURATION > 0 ? elapsed / TOTAL_DURATION : 0;
@@ -87,15 +89,21 @@ export function DetailDrawer() {
       <div className={styles.callCard}>
         <div className={styles.callCardLeft}>
           <div className={styles.callIcon}>
-            <Icon name="solar:outgoing-call-bold" size={24} color="#e8742c" />
+            <CallTypeAvatar dir={callDir} size={32} iconSize={16} />
           </div>
           <div className={styles.callInfo}>
             <div className={styles.callLine1}>
-              Outgoing Call
+              {DIR_LABEL[callDir]} Call
               <span className={styles.dot}>•</span>
-              <span className={styles.callLine1Detail}>{callDate || '11/28/2023 10:55'}</span>
+              <span className={styles.callLine1Detail}>{callDate}</span>
               <span className={styles.dot}>•</span>
-              <span className={styles.callLine1Detail}>{callDurationFull || '05:20'}s</span>
+              <span className={styles.callLine1Detail}>{callDurationFull}</span>
+              {detailPatientCalls?.length > 1 && (
+                <>
+                  <span className={styles.dot}>•</span>
+                  <span className={styles.callLine1Detail}>{detailPatientCalls.length} calls</span>
+                </>
+              )}
             </div>
             <div className={styles.callLine2}>
               Via: <Icon name="solar:bot-bold" size={13} color="var(--primary-300)" /> {agentName} (581) 824-1591 → To: {p.name} (581) 824-1591
@@ -113,9 +121,9 @@ export function DetailDrawer() {
       </div>
 
       {/* ── Engagement Card (Replaces Compliance, Quality, Sentiment, Sub-agents, Intents) ── */}
-      {(callRecord.qualityScore || callRecord.sentimentScore) && (
+      {(callRecord.qualityScore || callRecord.sentimentScore || activeCallRow?.engagementScore) && (
         <EngagementCard 
-          engagementScore={callRecord.qualityScore?.overall || 0}
+          engagementScore={activeCallRow?.engagementScore ?? callRecord.qualityScore?.overall ?? 0}
           sentimentScore={callRecord.sentimentScore?.overall || 0}
           sentimentLabel={callRecord.sentimentScore?.label || 'neutral'}
         />
