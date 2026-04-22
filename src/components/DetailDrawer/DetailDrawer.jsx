@@ -67,9 +67,9 @@ export function DetailDrawer() {
   // Resolve call data from call_details records
   const completedCall = (detailPatientCalls || []).find(c => c.callType === 'completed');
   const callRecord = completedCall || {};
-  const goalsDetail = callRecord.goalsDetail || goalsDetail || [];
-  const callSummary = callRecord.callSummary || callSummary || null;
-  const callTranscript = callRecord.callTranscript || callTranscript || [];
+  const goalsDetail = callRecord.goalsDetail || [];
+  const callSummary = callRecord.callSummary || null;
+  const callTranscript = callRecord.callTranscript || [];
   const callDate = callRecord.startedAt || p.callDate || null;
   const callDurationFull = callRecord.duration || p.callDurationFull || null;
   const agentName = callRecord.agentName || 'Anna';
@@ -115,12 +115,12 @@ export function DetailDrawer() {
       {/* ── Compliance & Quality Section ── */}
       <ComplianceBadges compliance={callRecord.compliance} />
 
-      {/* Quality Score */}
+      {/* Engagement Score */}
       {callRecord.qualityScore && (
         <div className={styles.qualityCard}>
           <div className={styles.qualityHeader}>
             <Icon name="solar:star-bold" size={14} color="var(--status-warning)" />
-            <span className={styles.qualityLabel}>Quality Score</span>
+            <span className={styles.qualityLabel}>Engagement Score</span>
             <span className={`${styles.qualityOverall} ${
               callRecord.qualityScore.overall >= 85 ? styles.qualityGood :
               callRecord.qualityScore.overall >= 70 ? styles.qualityFair : styles.qualityPoor

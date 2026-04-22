@@ -33,6 +33,7 @@ import { AgentCanvas } from '../features/agent-builder/AgentCanvas';
 import { AnalyticsLayout } from '../features/analytics/AnalyticsLayout';
 import { HomeView } from '../features/home/HomeView';
 import { MessagesView } from '../features/messages/MessagesView';
+import { CallsView } from '../features/calls/CallsView';
 import { useEffect } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { supabase } from '../lib/supabase';
@@ -277,7 +278,7 @@ export function AppLayout() {
   return (
     <div className={styles.app}>
       <Sidebar />
-      {activePage === 'home' ? <HomeView /> : activePage === 'messages' ? <MessagesView /> : activePage === 'analytics' ? <AnalyticsView /> : activePage === 'settings' ? <SettingsView /> : activePage === 'calendar' ? <CalendarViewPage /> : <PopulationView />}
+      {activePage === 'home' ? <HomeView /> : activePage === 'messages' ? <MessagesView /> : activePage === 'calls' ? <CallsView /> : activePage === 'analytics' ? <AnalyticsView /> : activePage === 'settings' ? <SettingsView /> : activePage === 'calendar' ? <CalendarViewPage /> : <PopulationView />}
 
       {showCreateAgent && <CreateAgentDrawer />}
       {workflowPatient && <WorkflowPanel />}

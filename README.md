@@ -139,6 +139,14 @@ The platform follows the **Fold Health design system** with strict adherence to:
 
 ## Recent Changes
 
+### Calls — Full Calls page wired to the sidebar (April 2026)
+- **New Calls page** (`src/features/calls/CallsView.jsx`) rendered when `activePage === 'calls'`. Matches the Figma "Build Health Agent Wizard" Calls screen (node `754:67514`).
+- **Layout** — reuses the shared `TopBar` (breadcrumb "Calls", search, Ask Unity, notifications, Create New, Schedule, avatar). Below it, a 40 px tabs bar hosts `All | Incoming | Outgoing | Missed | Calling Agents` (Calling Agents active), with right-aligned shortcut/settings action buttons.
+- **Left panel (350 px)** — "All Call Lines" dropdown, search + refresh row, scrollable call-history list with direction-coded phone avatars (outgoing/incoming/missed/answered/declined), call-back pins, and a "Dial a Number" block pinned at the bottom with a country-code selector and dial-pad launcher.
+- **Main panel** — patient profile banner (72 px avatar, name with external-link glyph, Patient · Male · 31Y (03-29-1992) · (581) 824-1591), a horizontal row of quick actions (Home, Call, Email, Chat, Video, Files, Call history), a `To: +1 25648 84230` subtitle, and a 5-column calls table (Calls | Date & Time | Duration | Out of Office | Actions) with play/transcript/retry/more action buttons per row.
+- **Routing** — `src/lib/router.js` now recognizes the `calls` page (hash `#/calls`); `Sidebar` adds `'calls'` to `implementedPages` so the Calls nav item navigates to the new view instead of the coming-soon toast.
+- **TopBar** — added a `Calls` breadcrumb branch and suppressed the subnav-toggle button while on the Calls page (same pattern as Messages/Home/Calendar).
+
 ### Home Dashboard — Draggable, resizable cards with DB-backed patient list (April 2026)
 - **New Home page** (`src/features/home/HomeView.jsx`) rendered when `activePage === 'home'`. Matches the Figma "Dashboard" file (node `3:7795`): toolbar with "View Business Insights" + "Edit Dashboard", and five cards in a grid.
 - **Cards**:

@@ -29,7 +29,7 @@ export function Sidebar() {
 
   const showToast = useAppStore(s => s.showToast);
   const messagesUnreadCount = useAppStore(s => s.messagesUnreadCount);
-  const implementedPages = ['home', 'population', 'settings', 'analytics', 'calendar', 'messages'];
+  const implementedPages = ['home', 'population', 'settings', 'analytics', 'calendar', 'messages', 'calls'];
 
   const handleClick = (e, page) => {
     e.preventDefault();
