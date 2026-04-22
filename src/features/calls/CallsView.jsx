@@ -102,8 +102,20 @@ function CallDirBadge({ dir, size = 14 }) {
 
 function EngagementScoreBadge({ score }) {
   if (score == null) return <span className={styles.dateDash}>-</span>;
-  const cls = score >= 85 ? styles.engGood : score >= 70 ? styles.engFair : styles.engPoor;
-  return <span className={`${styles.engBadge} ${cls}`}>{score}%</span>;
+  
+  let color = '#D72825'; // Poor
+  if (score >= 85) color = '#009B53'; // Excellent
+  else if (score >= 70) color = '#009B53'; // Good (using same green per card)
+  else if (score >= 30) color = '#D9A50B'; // Fair / Needs review
+  
+  return (
+    <span 
+      className={styles.engBadge} 
+      style={{ color: color, background: `${color}15`, borderColor: `${color}25` }}
+    >
+      {score}%
+    </span>
+  );
 }
 
 function CallListItem({ entry, selected, onClick }) {

@@ -1,7 +1,25 @@
 import styles from './Avatar.module.css';
 
-export function Avatar({ variant = 'patient', initials, agentName, size, className }) {
+export function Avatar({ variant = 'patient', initials, agentName, size, icon, backgroundColor, borderColor, color, className }) {
   const agentKey = agentName ? agentName.toLowerCase() : '';
+  
+  if (variant === 'generic' || variant === 'icon') {
+    return (
+      <div 
+        className={[styles.generic, className || ''].filter(Boolean).join(' ')}
+        style={{ 
+          background: backgroundColor, 
+          borderColor: borderColor, 
+          color: color,
+          width: size,
+          height: size
+        }}
+      >
+        {icon || initials}
+      </div>
+    );
+  }
+
   if (variant === 'agent') {
     const hasGradient = ['erica', 'ricardo', 'maria', 'jia', 'dubois'].includes(agentKey);
     return (

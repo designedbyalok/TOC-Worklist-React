@@ -1,8 +1,7 @@
-import React from 'react';
+import { Avatar } from './Avatar';
 import { Icon } from '../Icon/Icon';
 import { MissedCallIcon } from '../Icon/MissedCallIcon';
 import { DeclinedCallIcon } from '../Icon/DeclinedCallIcon';
-import styles from './CallTypeAvatar.module.css';
 
 export const DIR_ICON = {
   outgoing: { icon: 'solar:outgoing-call-rounded-linear', color: 'var(--primary-300)',        bg: 'var(--primary-100)',        border: 'var(--primary-200)' },
@@ -22,19 +21,17 @@ export const DIR_LABEL = {
 
 export function CallTypeAvatar({ dir, size = 36, iconSize = 18 }) {
   const cfg = DIR_ICON[dir] || DIR_ICON.outgoing;
+  const icon = cfg.isMissed ? <MissedCallIcon size={iconSize} color={cfg.color} /> :
+               cfg.isDeclined ? <DeclinedCallIcon size={iconSize} color={cfg.color} /> :
+               <Icon name={cfg.icon} size={iconSize} color={cfg.color} />;
+
   return (
-    <div 
-      className={styles.callTypeAvatar} 
-      style={{ 
-        background: cfg.bg, 
-        borderColor: cfg.border,
-        width: size,
-        height: size
-      }}
-    >
-      {cfg.isMissed && <MissedCallIcon size={iconSize} color={cfg.color} />}
-      {cfg.isDeclined && <DeclinedCallIcon size={iconSize} color={cfg.color} />}
-      {!cfg.isMissed && !cfg.isDeclined && <Icon name={cfg.icon} size={iconSize} color={cfg.color} />}
-    </div>
+    <Avatar 
+      variant="generic"
+      size={size}
+      icon={icon}
+      backgroundColor={cfg.bg}
+      borderColor={cfg.border}
+    />
   );
 }

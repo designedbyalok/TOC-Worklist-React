@@ -88,9 +88,7 @@ export function DetailDrawer() {
       {/* ── Call Info Card ── */}
       <div className={styles.callCard}>
         <div className={styles.callCardLeft}>
-          <div className={styles.callIcon}>
-            <CallTypeAvatar dir={callDir} size={32} iconSize={16} />
-          </div>
+          <CallTypeAvatar dir={callDir} size={40} iconSize={20} />
           <div className={styles.callInfo}>
             <div className={styles.callLine1}>
               {DIR_LABEL[callDir]} Call
