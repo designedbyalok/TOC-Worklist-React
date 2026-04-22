@@ -104,8 +104,8 @@ function CallTypeAvatar({ dir }) {
   return (
     <div className={styles.callTypeAvatar} style={{ background: cfg.bg, borderColor: cfg.border }}>
       {cfg.isMissed
-        ? <MissedCallIcon size={16} color={cfg.color} />
-        : <Icon name={cfg.icon} size={16} color={cfg.color} />}
+        ? <MissedCallIcon size={18} color={cfg.color} />
+        : <Icon name={cfg.icon} size={18} color={cfg.color} />}
     </div>
   );
 }
