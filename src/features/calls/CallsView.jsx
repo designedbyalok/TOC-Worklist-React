@@ -64,8 +64,8 @@ const CALLS_ROWS = [
   { id: 'r2', dir: 'missed',   agent: 'Anna',              isBot: true,  date: 'Nov 02 2023 12:42 PM', duration: '-',       ooo: '-', goalStatus: '-',      engagementScore: null, patientId: 'p2' },
   { id: 'r3', dir: 'missed',   agent: 'Automation',        isBot: true,  date: 'Nov 02 2023 12:42 PM', duration: '-',       ooo: '-', goalStatus: '-',      engagementScore: null, patientId: 'p3' },
   { id: 'r4', dir: 'answered', agent: 'Albert Flores',     isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '1 m 23s', ooo: '-', goalStatus: '2/4 Met', engagementScore: 78, patientId: 'p4' },
-  { id: 'r5', dir: 'outgoing', agent: 'Anna',              isBot: true,  date: 'Nov 02 2023 12:42 PM', duration: '1 m 23s', ooo: '-', goalStatus: '4/4 Met', engagementScore: 95, patientId: 'p5' },
-  { id: 'r6', dir: 'incoming', agent: 'Louise Koch',       isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '-',       ooo: '-', goalStatus: '-',      engagementScore: null, patientId: 'p6' },
+  { id: 'r5', dir: 'outgoing', agent: 'Anna',              isBot: true,  date: 'Nov 02 2023 12:42 PM', duration: '4 m 12s', ooo: '-', goalStatus: '4/4 Met', engagementScore: 95, patientId: 'p5' },
+  { id: 'r6', dir: 'incoming', agent: 'Louise Koch',       isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '2 m 45s', ooo: '-', goalStatus: '3/4 Met', engagementScore: 82, patientId: 'p6' },
   { id: 'r7', dir: 'declined', agent: 'Richard Floyd',     isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '-',       ooo: '-', goalStatus: '-',      engagementScore: null, patientId: 'p7' },
   { id: 'r8', dir: 'incoming', agent: 'Dr. Courtney Henry',isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '2 m 21s', ooo: '-', goalStatus: '1/4 Met', engagementScore: 64, patientId: 'p8' },
   { id: 'r9', dir: 'incoming', agent: 'Louise Koch',       isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '1 m 23s', ooo: '-', goalStatus: '3/4 Met', engagementScore: 88, patientId: 'p9' },
@@ -215,6 +215,7 @@ export function CallsView() {
   const [listSearch, setListSearch] = useState('');
   const [dialNumber, setDialNumber] = useState('');
   const [callLine, setCallLine] = useState('all');
+  const [showSearch, setShowSearch] = useState(false);
   const showToast = useAppStore(s => s.showToast);
   const openDetail = useAppStore(s => s.openDetail);
   const detailPatient = useAppStore(s => s.detailPatient);
@@ -225,6 +226,15 @@ export function CallsView() {
   useEffect(() => { fetchPatients(); fetchCallDetails(); }, [fetchPatients, fetchCallDetails]);
 
   const filteredList = CALL_LIST.filter(c => {
+    // 1. Filter by listFilter (Direction)
+    if (listFilter === 'incoming') {
+      // Missed and Declined come under Incoming as per request
+      if (c.dir !== 'incoming' && c.dir !== 'missed' && c.dir !== 'declined') return false;
+    } else if (listFilter === 'outgoing') {
+      if (c.dir !== 'outgoing') return false;
+    }
+
+    // 2. Filter by search
     if (!listSearch) return true;
     return c.name.toLowerCase().includes(listSearch.toLowerCase());
   });
@@ -326,7 +336,13 @@ export function CallsView() {
               )}
             </div>
             <div className={styles.convHeaderActions}>
-              <ActionButton icon="solar:magnifer-linear" size="L" tooltip="Search" />
+              <ActionButton
+                icon="solar:magnifer-linear"
+                size="L"
+                tooltip="Search"
+                active={showSearch}
+                onClick={() => setShowSearch(!showSearch)}
+              />
               <div className={styles.convDivider} />
               <ActionButton icon="solar:refresh-linear"  size="L" tooltip="Refresh" />
               <div className={styles.convDivider} />
@@ -348,28 +364,31 @@ export function CallsView() {
             </Select>
           </div>
 
-          {/* Search row */}
-          <div className={styles.convSearch}>
-            <div className={styles.convSearchWrap}>
-              <span className={styles.convSearchIcon}>
-                <Icon name="solar:magnifer-linear" size={13} />
-              </span>
-              <Input
-                placeholder="Search calls…"
-                value={listSearch}
-                onChange={e => setListSearch(e.target.value)}
-                style={{ paddingLeft: 28, fontSize: 13 }}
-              />
+          {/* Search row — conditional based on showSearch */}
+          {showSearch && (
+            <div className={styles.convSearch}>
+              <div className={styles.convSearchWrap}>
+                <span className={styles.convSearchIcon}>
+                  <Icon name="solar:magnifer-linear" size={13} />
+                </span>
+                <Input
+                  placeholder="Search calls…"
+                  value={listSearch}
+                  onChange={e => setListSearch(e.target.value)}
+                  style={{ paddingLeft: 28, fontSize: 13 }}
+                  autoFocus
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Filter toggle */}
           <div className={styles.convTabs}>
             <Toggle
               items={[
-                { key: 'all',    label: 'All' },
-                { key: 'unread', label: 'Unread' },
-                { key: 'pinned', label: 'Pinned' },
+                { key: 'all',      label: 'All' },
+                { key: 'incoming', label: 'Incoming' },
+                { key: 'outgoing', label: 'Outgoing' },
               ]}
               active={listFilter}
               onChange={setListFilter}
