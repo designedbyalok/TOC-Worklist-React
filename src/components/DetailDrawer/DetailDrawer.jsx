@@ -121,32 +121,6 @@ export function DetailDrawer() {
         />
       )}
 
-      {/* Escalation Details */}
-
-      {/* Security Badges */}
-      {callRecord.security && (
-        <div className={styles.securityRow}>
-          <span className={`${styles.secBadge} ${callRecord.security.piiScrubbed ? styles.secPass : styles.secFail}`}>
-            <Icon name="solar:shield-check-bold" size={12} />
-            {callRecord.security.piiScrubbed ? 'PII Scrubbed' : 'PII Present'}
-          </span>
-          <span className={styles.secBadge}>
-            <Icon name="solar:map-point-bold" size={12} />
-            {callRecord.security.stateCompliance}
-          </span>
-          <span className={styles.secBadge}>
-            <Icon name="solar:clock-circle-bold" size={12} />
-            {callRecord.security.dataRetentionDays}d retention
-          </span>
-          {callRecord.security.promptInjectionDetected && (
-            <span className={`${styles.secBadge} ${styles.secAlert}`}>
-              <Icon name="solar:danger-triangle-bold" size={12} />
-              Injection Alert
-            </span>
-          )}
-        </div>
-      )}
-
       {/* ── Goals Tracking ── */}
       <div className={styles.sectionHeader} onClick={() => toggleSection('goals')}>
         <span className={styles.sectionTitle}>Goals Tracking</span>
