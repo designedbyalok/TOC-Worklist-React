@@ -4,6 +4,7 @@ import { Icon } from '../../components/Icon/Icon';
 import { MissedCallIcon } from '../../components/Icon/MissedCallIcon';
 import { ActionButton } from '../../components/ActionButton/ActionButton';
 import { Avatar } from '../../components/Avatar/Avatar';
+import { DeclinedCallIcon } from '../../components/Icon/DeclinedCallIcon';
 import { Button } from '../../components/Button/Button';
 import { Input } from '../../components/Input/Input';
 import { Toggle } from '../../components/Toggle/Toggle';
@@ -96,16 +97,16 @@ const DIR_ICON = {
   incoming: { icon: 'solar:incoming-call-rounded-linear', color: 'var(--status-success)',     bg: 'rgba(5, 150, 105, 0.1)',   border: 'rgba(5, 150, 105, 0.2)' },
   answered: { icon: 'solar:phone-calling-linear',         color: 'var(--status-success)',     bg: 'rgba(5, 150, 105, 0.1)',   border: 'rgba(5, 150, 105, 0.2)' },
   missed:   { isMissed: true,                             color: 'var(--status-error)',       bg: 'rgba(220, 38, 38, 0.1)',    border: 'rgba(220, 38, 38, 0.2)' },
-  declined: { icon: 'solar:close-circle-bold',            color: 'var(--status-error)',       bg: 'rgba(220, 38, 38, 0.1)',    border: 'rgba(220, 38, 38, 0.2)' },
+  declined: { isDeclined: true,                           color: 'var(--status-error)',       bg: 'rgba(220, 38, 38, 0.1)',    border: 'rgba(220, 38, 38, 0.2)' },
 };
 
 function CallTypeAvatar({ dir }) {
   const cfg = DIR_ICON[dir] || DIR_ICON.outgoing;
   return (
     <div className={styles.callTypeAvatar} style={{ background: cfg.bg, borderColor: cfg.border }}>
-      {cfg.isMissed
-        ? <MissedCallIcon size={18} color={cfg.color} />
-        : <Icon name={cfg.icon} size={18} color={cfg.color} />}
+      {cfg.isMissed && <MissedCallIcon size={18} color={cfg.color} />}
+      {cfg.isDeclined && <DeclinedCallIcon size={18} color={cfg.color} />}
+      {!cfg.isMissed && !cfg.isDeclined && <Icon name={cfg.icon} size={18} color={cfg.color} />}
     </div>
   );
 }
