@@ -18,61 +18,8 @@ import {
   SelectValue,
 } from '../../components/ui/select';
 import { useAppStore } from '../../store/useAppStore';
+import { CallTypeAvatar, DIR_LABEL } from '../../components/Avatar/CallTypeAvatar';
 import styles from './CallsView.module.css';
-
-// ── Left commPanel — inbox + channels ──
-const INBOX_ITEMS = [
-  { id: 'all',      icon: 'solar:inbox-linear',                 label: 'All Calls' },
-  { id: 'incoming', icon: 'solar:incoming-call-rounded-linear', label: 'Incoming' },
-  { id: 'outgoing', icon: 'solar:outgoing-call-rounded-linear', label: 'Outgoing' },
-  { id: 'missed',   label: 'Missed Calls', isCustomIcon: true },
-  { id: 'voicemail',icon: 'solar:microphone-linear',            label: 'Voicemail' },
-  { id: 'starred',  icon: 'solar:star-linear',                  label: 'Starred' },
-  { id: 'archived', icon: 'solar:archive-linear',               label: 'Archived' },
-];
-
-const CHANNEL_ITEMS = [
-  { id: 'agents',   icon: 'solar:user-speak-linear',    label: 'Calling Agents' },
-  { id: 'support',  icon: 'solar:phone-calling-linear', label: 'Support Line' },
-  { id: 'clinical', icon: 'solar:stethoscope-linear',   label: 'Clinical Line' },
-];
-
-const CALL_LINES = [
-  { id: 'all',       label: 'All Call Lines' },
-  { id: 'support',   label: 'Support — (581) 555-0101' },
-  { id: 'clinical',  label: 'Clinical — (581) 555-0102' },
-  { id: 'billing',   label: 'Billing — (581) 555-0103' },
-];
-
-// ── Sample data ──
-const CALL_LIST = [
-  { id: 'c1',  name: 'Williamy Jammy',    status: 'Call Back',     time: 'Now',   dir: 'outgoing', pinned: true,  active: true  },
-  { id: 'c2',  name: 'Dawn Braun',        status: 'Call Back',     time: '08:44', dir: 'outgoing', pinned: true  },
-  { id: 'c3',  name: 'Natalie Welch',     status: 'Call Back',     time: '08:44', dir: 'outgoing', pinned: true  },
-  { id: 'c4',  name: 'Dr. Stacy Quigley', status: 'Missed Call',   time: '08:44', dir: 'missed'   },
-  { id: 'c5',  name: 'Natalie Welch',     status: 'Answered Call', time: '08:44', dir: 'incoming' },
-  { id: 'c6',  name: 'Toby Quigley',      status: 'Answered Call', time: '08:44', dir: 'incoming' },
-  { id: 'c7',  name: 'Natalie Welch',     status: 'Missed Call',   time: '08:44', dir: 'missed'   },
-  { id: 'c8',  name: 'Natalie Welch',     status: 'Missed Call',   time: '08:44', dir: 'missed'   },
-  { id: 'c9',  name: 'Dawn Braun',        status: 'Missed Call',   time: '08:44', dir: 'missed'   },
-  { id: 'c10', name: 'Natalie Welch',     status: 'Incoming',      time: '08:44', dir: 'incoming' },
-  { id: 'c11', name: 'Dr. Stacy Quigley', status: 'Missed Call',   time: '08:44', dir: 'missed'   },
-  { id: 'c12', name: 'Natalie Welch',     status: 'Answered Call', time: '08:44', dir: 'incoming' },
-];
-
-const CALLS_ROWS = [
-  { id: 'r1', dir: 'outgoing', agent: 'Anna',              isBot: true,  date: 'Nov 02 2023 12:42 PM', duration: '10 m 4s', ooo: '-', goalStatus: '3/4 Met', engagementScore: 92, patientId: 'p1' },
-  { id: 'r2', dir: 'missed',   agent: 'Anna',              isBot: true,  date: 'Nov 02 2023 12:42 PM', duration: '-',       ooo: '-', goalStatus: '-',      engagementScore: null, patientId: 'p2' },
-  { id: 'r3', dir: 'missed',   agent: 'Automation',        isBot: true,  date: 'Nov 02 2023 12:42 PM', duration: '-',       ooo: '-', goalStatus: '-',      engagementScore: null, patientId: 'p3' },
-  { id: 'r4', dir: 'answered', agent: 'Albert Flores',     isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '1 m 23s', ooo: '-', goalStatus: '2/4 Met', engagementScore: 78, patientId: 'p4' },
-  { id: 'r5', dir: 'outgoing', agent: 'Anna',              isBot: true,  date: 'Nov 02 2023 12:42 PM', duration: '4 m 12s', ooo: '-', goalStatus: '4/4 Met', engagementScore: 95, patientId: 'p5' },
-  { id: 'r6', dir: 'incoming', agent: 'Louise Koch',       isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '2 m 45s', ooo: '-', goalStatus: '3/4 Met', engagementScore: 82, patientId: 'p6' },
-  { id: 'r7', dir: 'declined', agent: 'Richard Floyd',     isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '-',       ooo: '-', goalStatus: '-',      engagementScore: null, patientId: 'p7' },
-  { id: 'r8', dir: 'incoming', agent: 'Dr. Courtney Henry',isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '2 m 21s', ooo: '-', goalStatus: '1/4 Met', engagementScore: 64, patientId: 'p8' },
-  { id: 'r9', dir: 'incoming', agent: 'Louise Koch',       isBot: false, date: 'Nov 02 2023 12:42 PM', duration: '1 m 23s', ooo: '-', goalStatus: '3/4 Met', engagementScore: 88, patientId: 'p9' },
-];
-
-import { CallTypeAvatar, DIR_ICON, DIR_LABEL } from '../../components/Avatar/CallTypeAvatar';
 
 // ── Helpers ──
 function getInitials(name) {
@@ -84,6 +31,30 @@ function getInitials(name) {
     .map(p => p[0])
     .join('')
     .toUpperCase();
+}
+
+function computeGoalStatus(goalsDetail) {
+  if (!Array.isArray(goalsDetail) || goalsDetail.length === 0) return null;
+  const passed = goalsDetail.filter(g => g.pass).length;
+  return { passed, total: goalsDetail.length, allMet: passed === goalsDetail.length };
+}
+
+function computeOOH(startedAt) {
+  if (!startedAt) return '-';
+  const d = new Date(startedAt);
+  if (isNaN(d.getTime())) return '-';
+  const h = d.getHours();
+  return (h < 9 || h >= 17) ? 'Yes' : 'No';
+}
+
+function formatCallDate(str) {
+  if (!str) return '-';
+  const d = new Date(str);
+  if (isNaN(d.getTime())) return str;
+  return d.toLocaleString('en-US', {
+    month: 'short', day: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
 }
 
 function CallDirBadge({ dir, size = 14 }) {
@@ -102,22 +73,48 @@ function CallDirBadge({ dir, size = 14 }) {
 
 function EngagementScoreBadge({ score }) {
   if (score == null) return <span className={styles.dateDash}>-</span>;
-  
-  let color = '#D72825'; // Poor
-  if (score >= 85) color = '#009B53'; // Excellent
-  else if (score >= 70) color = '#009B53'; // Good (using same green per card)
-  else if (score >= 30) color = '#D9A50B'; // Fair / Needs review
-  
+
+  let color = '#D72825';
+  if (score >= 85) color = '#009B53';
+  else if (score >= 70) color = '#009B53';
+  else if (score >= 30) color = '#D9A50B';
+
   return (
-    <span 
-      className={styles.engBadge} 
-      style={{ color: color, background: `${color}15`, borderColor: `${color}25` }}
+    <span
+      className={styles.engBadge}
+      style={{ color, background: `${color}15`, borderColor: `${color}25` }}
     >
       {score}%
     </span>
   );
 }
 
+// ── Skeleton components ──
+function CallListSkeleton() {
+  return (
+    <div className={styles.skeletonItem}>
+      <div className={styles.skeletonAvatar} />
+      <div className={styles.skeletonLines}>
+        <div className={[styles.skeletonLine, styles.skeletonLineWide].join(' ')} />
+        <div className={[styles.skeletonLine, styles.skeletonLineNarrow].join(' ')} />
+      </div>
+    </div>
+  );
+}
+
+function TableRowSkeleton() {
+  return (
+    <tr className={styles.skeletonRow}>
+      {[180, 140, 80, 100, 120, 60, 120].map((w, i) => (
+        <td key={i} className={styles.td}>
+          <div className={styles.skeletonCell} style={{ width: w }} />
+        </td>
+      ))}
+    </tr>
+  );
+}
+
+// ── Call list item ──
 function CallListItem({ entry, selected, onClick }) {
   return (
     <button
@@ -147,43 +144,58 @@ function CallListItem({ entry, selected, onClick }) {
   );
 }
 
+// ── Calls table row ──
 function CallsTableRow({ row, onClick }) {
-  const goalsMet = row.goalStatus !== '-' && row.goalStatus.includes('4/4');
-  const hasGoals = row.goalStatus !== '-';
+  const hasGoals = row.goalStatus != null;
+  const allMet = row.goalStatus?.allMet;
 
   return (
     <tr className={[styles.row, row.isNew ? styles.rowNew : ''].filter(Boolean).join(' ')} onClick={onClick}>
-      <td className={styles.td}>
+      <td className={`${styles.td} ${styles.tdStickyLeft}`}>
         <div className={styles.callsCell}>
           <CallTypeAvatar dir={row.dir} />
           <div className={styles.callsCellText}>
             <span className={styles.callDirText}>{DIR_LABEL[row.dir] || 'Call'}</span>
             <div className={styles.callsAgent}>
-              {row.isBot ? <AgentsIcon size={11} /> : <Icon name="solar:user-rounded-linear" size={11} color="var(--neutral-300)" />}
+              {row.isBot
+                ? <AgentsIcon size={11} />
+                : <Icon name="solar:user-rounded-linear" size={11} color="var(--neutral-300)" />}
               <span>{row.agent}</span>
             </div>
           </div>
         </div>
       </td>
       <td className={styles.td}><span className={styles.secondaryText}>{row.date}</span></td>
-      <td className={styles.td}><span className={styles.secondaryText}>{row.duration}</span></td>
+      <td className={styles.td}>
+        {row.duration != null
+          ? <span className={styles.secondaryText}>{row.duration}</span>
+          : <span className={styles.emDash}>—</span>}
+      </td>
       <td className={styles.td}>
         <div className={styles.goalStatusCell}>
-          {hasGoals && (
-            <Icon 
-              name={goalsMet ? "solar:check-circle-bold" : "solar:close-circle-bold"} 
-              size={14} 
-              color={goalsMet ? "var(--status-success)" : "var(--status-error)"} 
-            />
+          {hasGoals ? (
+            <>
+              <Icon
+                name={allMet ? 'solar:check-circle-linear' : 'solar:close-circle-linear'}
+                size={15}
+                color={allMet ? 'var(--status-success)' : 'var(--status-error)'}
+              />
+              <span className={styles.secondaryText}>{row.goalStatus.passed}/{row.goalStatus.total} Met</span>
+            </>
+          ) : (
+            <span className={styles.emDash}>—</span>
           )}
-          <span className={styles.secondaryText}>
-            {row.goalStatus}
-          </span>
         </div>
       </td>
-      <td className={styles.td}><EngagementScoreBadge score={row.engagementScore} /></td>
-      <td className={styles.td}><span className={styles.secondaryText}>{row.ooo}</span></td>
-      <td className={styles.td} onClick={e => e.stopPropagation()}>
+      <td className={styles.td}>
+        {row.engagementScore != null
+          ? <EngagementScoreBadge score={row.engagementScore} />
+          : <span className={styles.emDash}>—</span>}
+      </td>
+      <td className={styles.td}>
+        <span className={row.ooh === 'Yes' ? styles.oohYes : styles.secondaryText}>{row.ooh}</span>
+      </td>
+      <td className={`${styles.td} ${styles.tdStickyRight}`} onClick={e => e.stopPropagation()}>
         <div className={styles.actionsCell}>
           <ActionButton icon="solar:play-circle-linear"   size="L" tooltip="Play recording" />
           <span className={styles.actionDivider} />
@@ -204,33 +216,71 @@ export function CallsView() {
   const [dialNumber, setDialNumber] = useState('');
   const [callLine, setCallLine] = useState('all');
   const [showSearch, setShowSearch] = useState(false);
-  const showToast = useAppStore(s => s.showToast);
-  const openDetail = useAppStore(s => s.openDetail);
-  const detailPatient = useAppStore(s => s.detailPatient);
-  const fetchPatients = useAppStore(s => s.fetchPatients);
-  const fetchCallDetails = useAppStore(s => s.fetchCallDetails);
 
-  // Ensure patients + call details are loaded so the DetailDrawer can resolve data
-  useEffect(() => { fetchPatients(); fetchCallDetails(); }, [fetchPatients, fetchCallDetails]);
+  const showToast              = useAppStore(s => s.showToast);
+  const openDetail             = useAppStore(s => s.openDetail);
+  const detailPatient          = useAppStore(s => s.detailPatient);
+  const fetchPatients          = useAppStore(s => s.fetchPatients);
+  const fetchCallDetails       = useAppStore(s => s.fetchCallDetails);
+  const fetchMoreCallDetails   = useAppStore(s => s.fetchMoreCallDetails);
+  const fetchCallsConfig       = useAppStore(s => s.fetchCallsConfig);
 
-  const filteredList = CALL_LIST.filter(c => {
-    // 1. Filter by listFilter (Direction)
+  // Calls UI config from Supabase
+  const callNavItems       = useAppStore(s => s.callNavItems);
+  const callLines          = useAppStore(s => s.callLines);
+  const callSessions       = useAppStore(s => s.callSessions);
+  const callsConfigLoading = useAppStore(s => s.callsConfigLoading);
+
+  // Call records for the table
+  const callDetails        = useAppStore(s => s.callDetails);
+  const callDetailsLoading = useAppStore(s => s.callDetailsLoading);
+  const callDetailsHasMore = useAppStore(s => s.callDetailsHasMore);
+
+  useEffect(() => {
+    fetchPatients();
+    fetchCallDetails();
+    fetchCallsConfig();
+  }, [fetchPatients, fetchCallDetails, fetchCallsConfig]);
+
+  // Derive inbox items and channel items from the combined callNavItems array
+  const inboxItems   = callNavItems.filter(i => i.section === 'inbox');
+  const channelItems = callNavItems.filter(i => i.section === 'channel');
+
+  // Derive table rows from call_details — exclude live/ongoing records
+  const callsRows = callDetails
+    .filter(c => c.callType !== 'ongoing')
+    .map(c => {
+      const dir = c.direction || (c.callType === 'voicemail' ? 'missed' : c.callType === 'declined' ? 'declined' : 'outgoing');
+      const hasCall = dir === 'outgoing' || dir === 'incoming' || dir === 'answered';
+      return {
+        id: c.id,
+        dir,
+        agent: c.agentName || 'Anna',
+        isBot: c.isBot ?? (c.agentName === 'Anna' || c.agentName === 'Automation'),
+        date: formatCallDate(c.startedAt),
+        startedAt: c.startedAt,
+        duration: hasCall ? (c.duration || '-') : null,
+        ooh: computeOOH(c.startedAt),
+        goalStatus: hasCall ? computeGoalStatus(c.goalsDetail) : null,
+        engagementScore: hasCall ? (c.qualityScore?.overall ?? null) : null,
+        patientId: c.patientId,
+      };
+    });
+
+  const filteredList = callSessions.filter(c => {
     if (listFilter === 'incoming') {
-      // Missed and Declined come under Incoming as per request
       if (c.dir !== 'incoming' && c.dir !== 'missed' && c.dir !== 'declined') return false;
     } else if (listFilter === 'outgoing') {
       if (c.dir !== 'outgoing') return false;
     }
-
-    // 2. Filter by search
     if (!listSearch) return true;
     return c.name.toLowerCase().includes(listSearch.toLowerCase());
   });
 
   const activeCount = filteredList.filter(c => c.status === 'Call Back').length;
   const activeLabel =
-    INBOX_ITEMS.find(i => i.id === activeInbox)?.label
-    || CHANNEL_ITEMS.find(i => i.id === activeInbox)?.label
+    inboxItems.find(i => i.id === activeInbox)?.label
+    || channelItems.find(i => i.id === activeInbox)?.label
     || 'Calls';
 
   const handleRowClick = (row) => {
@@ -276,40 +326,54 @@ export function CallsView() {
           </div>
 
           <div className={styles.commSection}>Inbox</div>
-          {INBOX_ITEMS.map(item => {
-            const isActive = activeInbox === item.id;
-            const iconColor = isActive ? 'var(--primary-300)' : 'var(--neutral-300)';
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className={[styles.commMenuItem, isActive ? styles.active : ''].join(' ')}
-                onClick={() => setActiveInbox(item.id)}
-              >
-                {item.isCustomIcon
-                  ? <MissedCallIcon size={16} color={iconColor} />
-                  : <Icon name={item.icon} size={16} color={iconColor} />}
-                <span className={styles.commMenuLabel}>{item.label}</span>
-              </button>
-            );
-          })}
+          {callsConfigLoading
+            ? Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className={styles.skeletonNavItem}>
+                  <div className={styles.skeletonNavIcon} />
+                  <div className={styles.skeletonNavLabel} />
+                </div>
+              ))
+            : inboxItems.map(item => {
+                const isActive = activeInbox === item.id;
+                const iconColor = isActive ? 'var(--primary-300)' : 'var(--neutral-300)';
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={[styles.commMenuItem, isActive ? styles.active : ''].join(' ')}
+                    onClick={() => setActiveInbox(item.id)}
+                  >
+                    {item.isCustomIcon
+                      ? <MissedCallIcon size={16} color={iconColor} />
+                      : <Icon name={item.icon} size={16} color={iconColor} />}
+                    <span className={styles.commMenuLabel}>{item.label}</span>
+                  </button>
+                );
+              })}
 
           <div className={styles.commSection} style={{ marginTop: 8 }}>Channels</div>
-          {CHANNEL_ITEMS.map(item => {
-            const isActive = activeInbox === item.id;
-            const iconColor = isActive ? 'var(--primary-300)' : 'var(--neutral-300)';
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className={[styles.commMenuItem, isActive ? styles.active : ''].join(' ')}
-                onClick={() => setActiveInbox(item.id)}
-              >
-                <Icon name={item.icon} size={16} color={iconColor} />
-                <span className={styles.commMenuLabel}>{item.label}</span>
-              </button>
-            );
-          })}
+          {callsConfigLoading
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className={styles.skeletonNavItem}>
+                  <div className={styles.skeletonNavIcon} />
+                  <div className={styles.skeletonNavLabel} />
+                </div>
+              ))
+            : channelItems.map(item => {
+                const isActive = activeInbox === item.id;
+                const iconColor = isActive ? 'var(--primary-300)' : 'var(--neutral-300)';
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={[styles.commMenuItem, isActive ? styles.active : ''].join(' ')}
+                    onClick={() => setActiveInbox(item.id)}
+                  >
+                    <Icon name={item.icon} size={16} color={iconColor} />
+                    <span className={styles.commMenuLabel}>{item.label}</span>
+                  </button>
+                );
+              })}
         </div>
 
         {/* ── Middle: Call history list ── */}
@@ -332,27 +396,31 @@ export function CallsView() {
                 onClick={() => setShowSearch(!showSearch)}
               />
               <div className={styles.convDivider} />
-              <ActionButton icon="solar:refresh-linear"  size="L" tooltip="Refresh" />
+              <ActionButton icon="solar:refresh-linear" size="L" tooltip="Refresh" />
               <div className={styles.convDivider} />
-              <ActionButton icon="solar:filter-linear"   size="L" tooltip="Filter" />
+              <ActionButton icon="solar:filter-linear"  size="L" tooltip="Filter" />
             </div>
           </div>
 
           {/* Call line select */}
           <div className={styles.convSelectWrap}>
-            <Select value={callLine} onValueChange={setCallLine}>
-              <SelectTrigger className={styles.callLineTrigger}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CALL_LINES.map(line => (
-                  <SelectItem key={line.id} value={line.id}>{line.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {callsConfigLoading ? (
+              <div className={styles.skeletonSelect} />
+            ) : (
+              <Select value={callLine} onValueChange={setCallLine}>
+                <SelectTrigger className={styles.callLineTrigger}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {callLines.map(line => (
+                    <SelectItem key={line.id} value={line.id}>{line.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
-          {/* Search row — conditional based on showSearch */}
+          {/* Search row */}
           {showSearch && (
             <div className={styles.convSearch}>
               <div className={styles.convSearchWrap}>
@@ -386,14 +454,16 @@ export function CallsView() {
           </div>
 
           <div className={styles.convList}>
-            {filteredList.map(c => (
-              <CallListItem
-                key={c.id}
-                entry={c}
-                selected={activeCallId === c.id}
-                onClick={() => setActiveCallId(c.id)}
-              />
-            ))}
+            {callsConfigLoading
+              ? Array.from({ length: 6 }).map((_, i) => <CallListSkeleton key={i} />)
+              : filteredList.map(c => (
+                  <CallListItem
+                    key={c.id}
+                    entry={c}
+                    selected={activeCallId === c.id}
+                    onClick={() => setActiveCallId(c.id)}
+                  />
+                ))}
           </div>
 
           {/* Dial a Number */}
@@ -477,26 +547,41 @@ export function CallsView() {
           {/* To: subtitle */}
           <div className={styles.toRow}>To: +1 25648 84230</div>
 
-          {/* Calls table — semantic <table> matching WorklistTable/AllPatientsTable */}
+          {/* Calls table */}
           <div className={styles.tableWrap}>
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th style={{ ...thStyle, minWidth: 220 }}>Calls</th>
+                  <th style={{ ...thStyle, minWidth: 200, left: 0, zIndex: 3 }}>Calls</th>
                   <th style={thStyle}>Date &amp; Time</th>
                   <th style={thStyle}>Duration</th>
                   <th style={thStyle}>Goal Status</th>
                   <th style={thStyle}>Engagement Score</th>
                   <th style={thStyle}>Out of Office</th>
-                  <th style={{ ...thStyle, width: 180 }}>Actions</th>
+                  <th style={{ ...thStyle, width: 130, right: 0, zIndex: 3 }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {CALLS_ROWS.map(row => (
-                  <CallsTableRow key={row.id} row={row} onClick={() => handleRowClick(row)} />
-                ))}
+                {callDetailsLoading && callsRows.length === 0
+                  ? Array.from({ length: 7 }).map((_, i) => <TableRowSkeleton key={i} />)
+                  : callsRows.map((row, idx) => (
+                      <CallsTableRow key={row.id} row={row} idx={idx} onClick={() => handleRowClick(row)} />
+                    ))}
               </tbody>
             </table>
+            {/* Load More */}
+            {(callDetailsHasMore || (callDetailsLoading && callsRows.length > 0)) && (
+              <div className={styles.loadMoreWrap}>
+                <Button
+                  variant="ghost"
+                  size="S"
+                  onClick={fetchMoreCallDetails}
+                  disabled={callDetailsLoading}
+                >
+                  {callDetailsLoading ? 'Loading…' : 'Load More'}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

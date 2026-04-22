@@ -5,6 +5,7 @@ import { ActionButton } from '../ActionButton/ActionButton';
 import { Drawer } from '../Drawer/Drawer';
 import { useAppStore } from '../../store/useAppStore';
 import { EngagementCard } from '../EngagementCard/EngagementCard';
+import { GoalProgress } from '../GoalProgress/GoalProgress';
 import { CallTypeAvatar, DIR_LABEL } from '../Avatar/CallTypeAvatar';
 import styles from './DetailDrawer.module.css';
 
@@ -66,18 +67,22 @@ export function DetailDrawer() {
   if (!detailPatient) return null;
   const p = detailPatient;
 
-  // Resolve call data from call_details records
-  const completedCall = (detailPatientCalls || []).find(c => c.callType === 'completed');
+  // Resolve the specific call record for the clicked row, then fall back to first completed
+  const specificCall = activeCallRow?.id
+    ? (detailPatientCalls || []).find(c => c.id === activeCallRow.id)
+    : null;
+  const completedCall = specificCall || (detailPatientCalls || []).find(c => c.callType === 'completed');
   const callRecord = completedCall || {};
   const goalsDetail = callRecord.goalsDetail || [];
   const callSummary = callRecord.callSummary || null;
   const callTranscript = callRecord.callTranscript || [];
-  
+
   // Sync with activeCallRow if available
   const callDate = activeCallRow?.date || callRecord.startedAt || p.callDate || null;
   const callDurationFull = activeCallRow?.duration || callRecord.duration || p.callDurationFull || null;
-  const callDir = activeCallRow?.dir || (callRecord.callType === 'voicemail' ? 'missed' : 'outgoing');
+  const callDir = activeCallRow?.dir || callRecord.direction || (callRecord.callType === 'voicemail' ? 'missed' : callRecord.callType === 'declined' ? 'declined' : 'outgoing');
   const agentName = activeCallRow?.agent || callRecord.agentName || 'Anna';
+  const isMissedOrDeclined = callDir === 'missed' || callDir === 'declined';
 
   const toggleSection = (key) => setOpenSections(s => ({ ...s, [key]: !s[key] }));
   const progress = TOTAL_DURATION > 0 ? elapsed / TOTAL_DURATION : 0;
@@ -118,181 +123,168 @@ export function DetailDrawer() {
         </div>
       </div>
 
-      {/* ── Engagement Card (Replaces Compliance, Quality, Sentiment, Sub-agents, Intents) ── */}
-      {(callRecord.qualityScore || callRecord.sentimentScore || activeCallRow?.engagementScore) && (
-        <EngagementCard 
-          engagementScore={activeCallRow?.engagementScore ?? callRecord.qualityScore?.overall ?? 0}
-          sentimentScore={callRecord.sentimentScore?.overall || 0}
-          sentimentLabel={callRecord.sentimentScore?.label || 'neutral'}
-        />
-      )}
+      {/* ── Empty state for missed / declined calls ── */}
+      {isMissedOrDeclined ? (
+        <div className={styles.noCallState}>
+          <CallTypeAvatar dir={callDir} size={36} iconSize={18} />
+          <div className={styles.noCallStateTitle}>
+            {callDir === 'declined' ? 'Patient declined this call.' : 'Call was not connected.'}
+          </div>
+          <div className={styles.noCallStateDesc}>
+            No recording, transcript, goals, or summary available for this call.
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* ── Engagement Card ── */}
+          {(callRecord.qualityScore || callRecord.sentimentScore || activeCallRow?.engagementScore) && (
+            <EngagementCard
+              engagementScore={activeCallRow?.engagementScore ?? callRecord.qualityScore?.overall ?? 0}
+              sentimentScore={callRecord.sentimentScore?.overall || 0}
+              sentimentLabel={callRecord.sentimentScore?.label || 'neutral'}
+            />
+          )}
 
-      {/* ── Goals Tracking ── */}
-      <div className={styles.sectionHeader} onClick={() => toggleSection('goals')}>
-        <span className={styles.sectionTitle}>Goals Tracking</span>
-        <span className={`${styles.chevron} ${openSections.goals ? styles.chevronOpen : ''}`}>
-          <Icon name="solar:alt-arrow-right-linear" size={16} />
-        </span>
-      </div>
-      {openSections.goals && (
-        <div className={styles.goalsContainer}>
-          {goalsDetail?.length > 0 ? goalsDetail.map((g, i) => (
-            <div key={i} className={styles.goalRow}>
-              <span className={styles.goalIcon}>
-                <Icon name={g.pass ? "solar:check-circle-bold" : "solar:close-circle-bold"}
-                  size={18} color={g.pass ? "var(--status-success)" : "var(--status-error)"} />
-              </span>
-              <div className={styles.goalInfo}>
-                <div className={styles.goalName}>{g.name}</div>
-                <div className={styles.goalDesc}>{g.desc}</div>
-              </div>
-              <span className={`${styles.goalBadge} ${g.pass ? styles.pass : styles.fail}`}>
-                {g.pass ? 'Pass' : 'Fail'}
-              </span>
-            </div>
-          )) : (
+          {/* ── Goal Progress ── */}
+          {goalsDetail?.length > 0 && <GoalProgress goalsDetail={goalsDetail} />}
+
+          {/* ── Unity-Generated Call Summary ── */}
+          <div className={styles.sectionHeader} onClick={() => toggleSection('summary')}>
+            <span className={`${styles.sectionTitle} ${styles.purple}`}>
+              <Icon name="solar:magic-stick-3-bold" size={14} color="var(--primary-300)" />
+              Unity-Generated Call Summary
+            </span>
+            <span className={`${styles.chevron} ${openSections.summary ? styles.chevronOpen : ''}`}>
+              <Icon name="solar:alt-arrow-right-linear" size={16} />
+            </span>
+          </div>
+          {openSections.summary && !callSummary && (
             <div style={{ padding: '16px', fontSize: 13, color: 'var(--neutral-300)', textAlign: 'center' }}>
-              No goals data available for this patient yet.
+              No call summary generated yet. Summary will appear after a completed call.
             </div>
           )}
-        </div>
-      )}
-
-      {/* ── Unity-Generated Call Summary ── */}
-      <div className={styles.sectionHeader} onClick={() => toggleSection('summary')}>
-        <span className={`${styles.sectionTitle} ${styles.purple}`}>
-          <Icon name="solar:magic-stick-3-bold" size={14} color="var(--primary-300)" />
-          Unity-Generated Call Summary
-        </span>
-        <span className={`${styles.chevron} ${openSections.summary ? styles.chevronOpen : ''}`}>
-          <Icon name="solar:alt-arrow-right-linear" size={16} />
-        </span>
-      </div>
-      {openSections.summary && !callSummary && (
-        <div style={{ padding: '16px', fontSize: 13, color: 'var(--neutral-300)', textAlign: 'center' }}>
-          No call summary generated yet. Summary will appear after a completed call.
-        </div>
-      )}
-      {openSections.summary && callSummary && (
-        <div className={styles.summaryContainer}>
-          <div className={styles.summaryInner}>
-            <div className={styles.summaryLabel}>Key Points Discussed:</div>
-            <ul className={styles.summaryList}>
-              {callSummary.keyPoints.map((pt, i) => <li key={i}>{pt}</li>)}
-            </ul>
-            <div className={styles.summaryLabel} style={{ marginTop: 12 }}>Action Items:</div>
-            <ol className={styles.summaryList}>
-              {callSummary.actionItems.map((a, i) => <li key={i}>{a}</li>)}
-            </ol>
-            <div className={styles.summaryFooter}>
-              <span className={styles.generatedText}>Generated on: 03/24/26, 07:23 pm</span>
-              <div className={styles.summaryActions} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ActionButton icon="solar:refresh-linear" size="L" tooltip="Refresh" className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Refreshing summary...'); }} />
-                <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
-                <ActionButton icon="solar:copy-linear" size="L" tooltip="Copy" className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Copied to clipboard'); }} />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Call Recording & Transcript ── */}
-      <div className={styles.sectionHeader} onClick={() => toggleSection('transcript')}>
-        <span className={styles.sectionTitle}>Call Recording &amp; Transcript</span>
-        <span className={`${styles.chevron} ${openSections.transcript ? styles.chevronOpen : ''}`}>
-          <Icon name="solar:alt-arrow-right-linear" size={16} />
-        </span>
-      </div>
-      {openSections.transcript && (!callTranscript || callTranscript.length === 0) && (
-        <div style={{ padding: '16px', fontSize: 13, color: 'var(--neutral-300)', textAlign: 'center' }}>
-          No call recording available. Recording will appear after a completed call.
-        </div>
-      )}
-      {openSections.transcript && callTranscript?.length > 0 && (
-        <div className={styles.recordingContainer}>
-          {/* Audio Player */}
-          <div className={styles.audioPlayer}>
-            <span className={styles.audioTime}>
-              {playState === 'idle' ? `00:${p.callDurationFull || '10:04'}` : formatTime(elapsed)}
-            </span>
-            <div className={styles.waveformContainer}>
-              <div className={styles.waveform}>
-                {WAVE_BARS.map((h, i) => (
-                  <div
-                    key={i}
-                    className={`${styles.waveBar} ${i <= progressBarIdx && playState !== 'idle' ? styles.waveBarPlayed : styles.waveBarUnplayed}`}
-                    style={{ height: `${h}px` }}
-                  />
-                ))}
-              </div>
-            </div>
-            <div className={styles.audioButtons}>
-              {playState === 'idle' && (
-                <Button variant="primary" size="S" leadingIcon="solar:play-bold" className={styles.playBtn} onClick={startPlayback}>
-                  Play Recording
-                </Button>
-              )}
-              {playState === 'playing' && (
-                <>
-                  <Button variant="secondary" size="S" leadingIcon="solar:pause-bold" className={styles.pauseBtn} onClick={pausePlayback}>
-                    Pause
-                  </Button>
-                  <Button variant="ghost" size="S" leadingIcon="solar:stop-bold" className={styles.stopBtn} onClick={stopPlayback}>
-                    Stop
-                  </Button>
-                </>
-              )}
-              {playState === 'paused' && (
-                <>
-                  <Button variant="primary" size="S" leadingIcon="solar:play-bold" className={styles.playBtn} onClick={startPlayback}>
-                    Resume
-                  </Button>
-                  <Button variant="ghost" size="S" leadingIcon="solar:stop-bold" className={styles.stopBtn} onClick={stopPlayback}>
-                    Stop
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Transcript Sub-section */}
-          <div className={styles.transcriptSubHeader} onClick={() => setShowTranscript(v => !v)}>
-            <span className={styles.transcriptSubTitle}>Call Transcript</span>
-            <span className={`${styles.chevron} ${showTranscript ? styles.chevronOpen : ''}`}>
-              <Icon name="solar:alt-arrow-right-linear" size={14} color="var(--neutral-200)" />
-            </span>
-          </div>
-
-          {showTranscript && (
-            <div className={styles.transcriptBody}>
-              <div className={styles.transcriptDivider}><span>Today</span></div>
-              <div className={styles.connectionLine}>
-                <Icon name="solar:phone-calling-linear" size={14} />
-                Outgoing Call Connected from Anna <span className={styles.connTime}>9:28 PM</span>
-              </div>
-              {callTranscript.map((msg, i) => (
-                <div key={i} className={`${styles.message} ${styles[msg.sender]}`}>
-                  {msg.sender === 'agent' && (
-                    <div className={styles.msgAvatar}>
-                      <Icon name="solar:bot-bold" size={12} color="var(--primary-300)" />
-                    </div>
-                  )}
-                  <div className={styles.msgContent}>
-                    <div className={styles.msgHeader}>
-                      <span className={styles.msgSender}>{msg.name}</span>
-                      <button className={styles.msgMore}><Icon name="solar:menu-dots-linear" size={14} /></button>
-                    </div>
-                    <div className={styles.msgBubble}>{msg.text}</div>
-                    <div className={styles.msgTime}>
-                      Today, {msg.time}
-                      {msg.sender === 'patient' && <span className={styles.readReceipt}> ✓✓</span>}
-                    </div>
+          {openSections.summary && callSummary && (
+            <div className={styles.summaryContainer}>
+              <div className={styles.summaryInner}>
+                <div className={styles.summaryLabel}>Key Points Discussed:</div>
+                <ul className={styles.summaryList}>
+                  {callSummary.keyPoints.map((pt, i) => <li key={i}>{pt}</li>)}
+                </ul>
+                <div className={styles.summaryLabel} style={{ marginTop: 12 }}>Action Items:</div>
+                <ol className={styles.summaryList}>
+                  {callSummary.actionItems.map((a, i) => <li key={i}>{a}</li>)}
+                </ol>
+                <div className={styles.summaryFooter}>
+                  <span className={styles.generatedText}>Generated on: 03/24/26, 07:23 pm</span>
+                  <div className={styles.summaryActions} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <ActionButton icon="solar:refresh-linear" size="L" tooltip="Refresh" className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Refreshing summary...'); }} />
+                    <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
+                    <ActionButton icon="solar:copy-linear" size="L" tooltip="Copy" className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Copied to clipboard'); }} />
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
           )}
-        </div>
+
+          {/* ── Call Recording & Transcript ── */}
+          <div className={styles.sectionHeader} onClick={() => toggleSection('transcript')}>
+            <span className={styles.sectionTitle}>Call Recording &amp; Transcript</span>
+            <span className={`${styles.chevron} ${openSections.transcript ? styles.chevronOpen : ''}`}>
+              <Icon name="solar:alt-arrow-right-linear" size={16} />
+            </span>
+          </div>
+          {openSections.transcript && (!callTranscript || callTranscript.length === 0) && (
+            <div style={{ padding: '16px', fontSize: 13, color: 'var(--neutral-300)', textAlign: 'center' }}>
+              No call recording available. Recording will appear after a completed call.
+            </div>
+          )}
+          {openSections.transcript && callTranscript?.length > 0 && (
+            <div className={styles.recordingContainer}>
+              {/* Audio Player */}
+              <div className={styles.audioPlayer}>
+                <span className={styles.audioTime}>
+                  {playState === 'idle' ? `00:${p.callDurationFull || '10:04'}` : formatTime(elapsed)}
+                </span>
+                <div className={styles.waveformContainer}>
+                  <div className={styles.waveform}>
+                    {WAVE_BARS.map((h, i) => (
+                      <div
+                        key={i}
+                        className={`${styles.waveBar} ${i <= progressBarIdx && playState !== 'idle' ? styles.waveBarPlayed : styles.waveBarUnplayed}`}
+                        style={{ height: `${h}px` }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div className={styles.audioButtons}>
+                  {playState === 'idle' && (
+                    <Button variant="primary" size="S" leadingIcon="solar:play-bold" className={styles.playBtn} onClick={startPlayback}>
+                      Play Recording
+                    </Button>
+                  )}
+                  {playState === 'playing' && (
+                    <>
+                      <Button variant="secondary" size="S" leadingIcon="solar:pause-bold" className={styles.pauseBtn} onClick={pausePlayback}>
+                        Pause
+                      </Button>
+                      <Button variant="ghost" size="S" leadingIcon="solar:stop-bold" className={styles.stopBtn} onClick={stopPlayback}>
+                        Stop
+                      </Button>
+                    </>
+                  )}
+                  {playState === 'paused' && (
+                    <>
+                      <Button variant="primary" size="S" leadingIcon="solar:play-bold" className={styles.playBtn} onClick={startPlayback}>
+                        Resume
+                      </Button>
+                      <Button variant="ghost" size="S" leadingIcon="solar:stop-bold" className={styles.stopBtn} onClick={stopPlayback}>
+                        Stop
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Transcript Sub-section */}
+              <div className={styles.transcriptSubHeader} onClick={() => setShowTranscript(v => !v)}>
+                <span className={styles.transcriptSubTitle}>Call Transcript</span>
+                <span className={`${styles.chevron} ${showTranscript ? styles.chevronOpen : ''}`}>
+                  <Icon name="solar:alt-arrow-right-linear" size={14} color="var(--neutral-200)" />
+                </span>
+              </div>
+
+              {showTranscript && (
+                <div className={styles.transcriptBody}>
+                  <div className={styles.transcriptDivider}><span>Today</span></div>
+                  <div className={styles.connectionLine}>
+                    <Icon name="solar:phone-calling-linear" size={14} />
+                    {DIR_LABEL[callDir] || 'Outgoing'} Call Connected from {agentName} <span className={styles.connTime}>9:28 PM</span>
+                  </div>
+                  {callTranscript.map((msg, i) => (
+                    <div key={i} className={`${styles.message} ${styles[msg.sender]}`}>
+                      {msg.sender === 'agent' && (
+                        <div className={styles.msgAvatar}>
+                          <Icon name="solar:bot-bold" size={12} color="var(--primary-300)" />
+                        </div>
+                      )}
+                      <div className={styles.msgContent}>
+                        <div className={styles.msgHeader}>
+                          <span className={styles.msgSender}>{msg.name}</span>
+                          <button className={styles.msgMore}><Icon name="solar:menu-dots-linear" size={14} /></button>
+                        </div>
+                        <div className={styles.msgBubble}>{msg.text}</div>
+                        <div className={styles.msgTime}>
+                          Today, {msg.time}
+                          {msg.sender === 'patient' && <span className={styles.readReceipt}> ✓✓</span>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </>
       )}
     </Drawer>
   );

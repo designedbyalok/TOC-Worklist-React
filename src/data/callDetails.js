@@ -42,6 +42,9 @@ const QUALITY_DATA = {
   cd16: { qualityScore: { overall: 78, intentAccuracy: 82, outcomeAppropriateness: 76, escalationTimeliness: 74, complianceDisclosure: 80 }, sentimentScore: { overall: 60, label: 'neutral' } },
   cd18: { qualityScore: { overall: 82, intentAccuracy: 85, outcomeAppropriateness: 80, escalationTimeliness: 78, complianceDisclosure: 84 }, sentimentScore: { overall: 65, label: 'positive' } },
   cd21: { qualityScore: { overall: 96, intentAccuracy: 98, outcomeAppropriateness: 95, escalationTimeliness: 92, complianceDisclosure: 98 }, sentimentScore: { overall: 88, label: 'positive' } },
+  cdi1: { qualityScore: { overall: 88, intentAccuracy: 90, outcomeAppropriateness: 86, escalationTimeliness: 85, complianceDisclosure: 90 }, sentimentScore: { overall: 75, label: 'positive' } },
+  cdi2: { qualityScore: { overall: 65, intentAccuracy: 68, outcomeAppropriateness: 62, escalationTimeliness: 60, complianceDisclosure: 66 }, sentimentScore: { overall: 45, label: 'neutral' } },
+  cdi3: { qualityScore: { overall: 94, intentAccuracy: 96, outcomeAppropriateness: 92, escalationTimeliness: 90, complianceDisclosure: 95 }, sentimentScore: { overall: 82, label: 'positive' } },
 };
 
 // Escalation data for select calls
@@ -74,6 +77,7 @@ export function enrichCallRecord(record) {
 
   return {
     ...record,
+    direction: record.direction || (record.callType === 'voicemail' ? 'missed' : record.callType === 'declined' ? 'declined' : 'outgoing'),
     compliance: { ...base, ...patientOverride },
     qualityScore: quality?.qualityScore || null,
     sentimentScore: quality?.sentimentScore || null,
@@ -1511,7 +1515,176 @@ const _rawCallDetails = [
     outcome: null,
     attemptNumber: null,
     createdAt: '11/17/2025'
-  }
+  },
+
+  // ===== Incoming Calls =====
+  {
+    id: 'cdi1',
+    patientId: 'p1',
+    callType: 'completed',
+    direction: 'incoming',
+    agentName: 'Anna',
+    startedAt: '11/29/2025 07:30',
+    endedAt: '11/29/2025 07:34',
+    duration: '04:22',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Patient Outreach', desc: 'Patient called in for follow-up.', pass: true },
+      { name: 'Medication Clarification', desc: 'Medication dosage questions resolved.', pass: true },
+      { name: 'Appointment Confirmation', desc: 'Follow-up appointment confirmed.', pass: true },
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient called in early morning with question about evening medication dose.',
+        'Confirmed correct medication schedule and resolved dosage confusion.',
+        'Upcoming follow-up appointment reconfirmed for Thursday at 10 AM.',
+      ],
+      actionItems: [
+        'Send updated medication schedule to patient via app.',
+        'Confirm lab appointment for next week.',
+      ]
+    },
+    callTranscript: [
+      { sender: 'patient', name: 'Ralph Halvorson', text: "Hi, I had a question about my evening medication — I wasn't sure if I should take it with food.", time: '7:30 AM' },
+      { sender: 'agent', name: 'Anna', text: "Good morning Ralph. Your evening dose of lisinopril should be taken with or without food — whichever is easier for you.", time: '7:30 AM' },
+      { sender: 'patient', name: 'Ralph Halvorson', text: "That's good to know. And my follow-up appointment is still next Thursday?", time: '7:31 AM' },
+      { sender: 'agent', name: 'Anna', text: "Yes, confirmed for Thursday at 10 AM with your PCP. Is there anything else I can help with?", time: '7:31 AM' },
+    ],
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '11/29/2025'
+  },
+  {
+    id: 'cdi2',
+    patientId: 'p5',
+    callType: 'completed',
+    direction: 'incoming',
+    agentName: 'Anna',
+    startedAt: '12/01/2025 14:15',
+    endedAt: '12/01/2025 14:18',
+    duration: '03:45',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Symptom Check', desc: 'Patient symptoms reviewed.', pass: true },
+      { name: 'Medication Review', desc: 'Rescue inhaler usage reviewed.', pass: true },
+      { name: 'Specialist Referral', desc: 'Pulmonology referral scheduled.', pass: false },
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient called to report increased rescue inhaler use over the past 2 days.',
+        'Breathing improved but still using inhaler 3–4 times daily vs. usual twice.',
+        'Pulmonology referral could not be completed during this call.',
+      ],
+      actionItems: [
+        'Follow up on pulmonology referral status.',
+        'Monitor inhaler usage and escalate if symptoms worsen.',
+      ]
+    },
+    callTranscript: [
+      { sender: 'patient', name: 'Marcus Ziemann', text: "I've been using my inhaler more than usual the past couple days. Is that okay?", time: '2:15 PM' },
+      { sender: 'agent', name: 'Anna', text: "How many times a day are you using it, Marcus?", time: '2:15 PM' },
+      { sender: 'patient', name: 'Marcus Ziemann', text: "About 3 to 4 times. Usually just twice.", time: '2:16 PM' },
+      { sender: 'agent', name: 'Anna', text: "Let's monitor that closely. I'll flag this for a pulmonology referral review. If it gets worse, please call us immediately.", time: '2:16 PM' },
+    ],
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '12/01/2025'
+  },
+  {
+    id: 'cdi3',
+    patientId: 'p11',
+    callType: 'completed',
+    direction: 'incoming',
+    agentName: 'Anna',
+    startedAt: '12/02/2025 18:30',
+    endedAt: '12/02/2025 18:35',
+    duration: '05:10',
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: [
+      { name: 'Symptom Monitoring', desc: 'Post-procedure symptoms reviewed.', pass: true },
+      { name: 'Medication Adherence', desc: 'Antiplatelet medications confirmed.', pass: true },
+      { name: 'Activity Guidance', desc: 'Post-stent activity restrictions reviewed.', pass: true },
+    ],
+    callSummary: {
+      keyPoints: [
+        'Patient called in the evening to report feeling well after cardiac stent procedure.',
+        'Confirmed taking all antiplatelet medications as prescribed.',
+        'Discussed return-to-activity timeline and lifting restrictions.',
+      ],
+      actionItems: [
+        'Schedule 30-day post-procedure check-in call.',
+        'Send cardiac rehab schedule details.',
+      ]
+    },
+    callTranscript: [
+      { sender: 'patient', name: 'Peter Kim', text: "Just wanted to let you know I'm feeling much better. No chest pain at all.", time: '6:30 PM' },
+      { sender: 'agent', name: 'Anna', text: "That's excellent news, Peter! Have you been taking your aspirin and clopidogrel every day?", time: '6:30 PM' },
+      { sender: 'patient', name: 'Peter Kim', text: "Yes, every morning without fail. My wife makes sure of it.", time: '6:31 PM' },
+      { sender: 'agent', name: 'Anna', text: "Perfect. Remember, no heavy lifting for one more week. Your 30-day check-in is coming up soon.", time: '6:31 PM' },
+    ],
+    outcome: null,
+    attemptNumber: null,
+    createdAt: '12/02/2025'
+  },
+
+  // ===== Declined Calls =====
+  {
+    id: 'cdd1',
+    patientId: 'p4',
+    callType: 'declined',
+    direction: 'declined',
+    agentName: 'Anna',
+    startedAt: '11/06/2025 09:00',
+    endedAt: '11/06/2025 09:00',
+    duration: null,
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'Patient declined call',
+    attemptNumber: null,
+    createdAt: '11/06/2025'
+  },
+  {
+    id: 'cdd2',
+    patientId: 'p8',
+    callType: 'declined',
+    direction: 'declined',
+    agentName: 'Anna',
+    startedAt: '11/17/2025 16:45',
+    endedAt: '11/17/2025 16:45',
+    duration: null,
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'Patient declined call',
+    attemptNumber: null,
+    createdAt: '11/17/2025'
+  },
+  {
+    id: 'cdd3',
+    patientId: 'p21',
+    callType: 'declined',
+    direction: 'declined',
+    agentName: 'Anna',
+    startedAt: '11/07/2025 07:15',
+    endedAt: '11/07/2025 07:15',
+    duration: null,
+    liveGoals: null,
+    liveTranscript: null,
+    goalsDetail: null,
+    callSummary: null,
+    callTranscript: null,
+    outcome: 'Patient declined call',
+    attemptNumber: null,
+    createdAt: '11/07/2025'
+  },
 ];
 
 export const callDetails = _rawCallDetails.map(enrichCallRecord);

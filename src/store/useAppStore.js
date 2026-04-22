@@ -10,6 +10,7 @@ import { generateFlowFromPrompt } from '../lib/flowGenerator';
 import { kpiRowToJs, tsRowToJs, tableRowToJs, barRowToJs, configRowToJs, groupTimeSeries } from '../lib/analyticsMapper';
 import { domainDbToJs, domainJsToDb, componentDbToJs, componentJsToDb, auditLogDbToJs } from '../lib/embedMapper';
 import { FALLBACK_KPIS, FALLBACK_TIME_SERIES, FALLBACK_TABLES, FALLBACK_PROGRESS_BARS, FALLBACK_CONFIGS } from '../data/analyticsFallbacks';
+import { FALLBACK_INBOX_ITEMS, FALLBACK_CHANNEL_ITEMS, FALLBACK_CALL_LINES, FALLBACK_CALL_SESSIONS } from '../data/callsConfig';
 import { updateHash } from '../lib/router';
 import { applyTheme, getResolvedTheme, getStoredTheme, subscribeToSystem } from '../lib/theme';
 
@@ -178,7 +179,16 @@ export const useAppStore = create((set, get) => ({
   activeSubnavList: 'TOC',  // which SubNav list is selected
 
   // Call Details
+  _allCallDetails: [],   // full sorted dataset (DB + supplemental local)
   callDetails: [],
+  callDetailsLoading: true,
+  callDetailsHasMore: false,
+
+  // Calls UI config (nav items, phone lines, session list) — loaded from Supabase
+  callNavItems: [],       // inbox + channel nav items
+  callLines: [],          // phone line dropdown options
+  callSessions: [],       // middle-panel call list
+  callsConfigLoading: true,
 
   // System Health (Phase 3)
   systemHealth: { ehr: 'ok', retell: 'ok', redis: 'ok', supabase: 'ok' },
@@ -291,20 +301,92 @@ export const useAppStore = create((set, get) => ({
     }
   },
 
-  // ─── Supabase: Fetch call details ───
+  // ─── Supabase: Fetch call details — all records, client-side pagination ───
   fetchCallDetails: async () => {
+    const PAGE_SIZE = 10;
+    set({ callDetailsLoading: true });
+
     const { data, error } = await supabase
       .from('call_details')
       .select('*')
-      .order('created_at', { ascending: false });
+      .neq('call_type', 'ongoing')
+      .order('started_at', { ascending: false });
 
+    let combined;
     if (error) {
       console.warn('call_details fetch failed, using fallback:', error.message);
-      console.warn('Supabase call_details fetch failed:', error.message);
-      set({ callDetails: [] });
+      combined = fallbackCallDetails
+        .filter(c => c.callType !== 'ongoing')
+        .map(enrichCallRecord);
     } else {
-      set({ callDetails: data.map(c => enrichCallRecord(callDetailDbToJs(c))) });
+      const dbRecords = data.map(c => enrichCallRecord(callDetailDbToJs(c)));
+      const dbIds = new Set(dbRecords.map(r => r.id));
+      // Supplement with local-only records (incoming, declined) not yet seeded to DB
+      const supplemental = fallbackCallDetails
+        .filter(c => c.callType !== 'ongoing' && !dbIds.has(c.id))
+        .map(enrichCallRecord);
+      combined = [...dbRecords, ...supplemental];
     }
+
+    // Sort by startedAt desc — naturally mixes call types by date
+    combined.sort((a, b) => new Date(b.startedAt || 0) - new Date(a.startedAt || 0));
+
+    set({
+      _allCallDetails: combined,
+      callDetails: combined.slice(0, PAGE_SIZE),
+      callDetailsLoading: false,
+      callDetailsHasMore: combined.length > PAGE_SIZE,
+    });
+  },
+
+  fetchMoreCallDetails: () => {
+    const { _allCallDetails, callDetails, callDetailsLoading } = get();
+    if (callDetailsLoading) return;
+    const PAGE_SIZE = 10;
+    const offset = callDetails.length;
+    if (offset >= _allCallDetails.length) return;
+    set(s => ({
+      callDetails: [...s.callDetails, ..._allCallDetails.slice(offset, offset + PAGE_SIZE)],
+      callDetailsHasMore: offset + PAGE_SIZE < _allCallDetails.length,
+    }));
+  },
+
+  // ─── Supabase: Fetch calls UI config (nav items, phone lines, session list) ───
+  fetchCallsConfig: async () => {
+    set({ callsConfigLoading: true });
+    const [navRes, linesRes, sessRes] = await Promise.allSettled([
+      supabase.from('call_nav_items').select('*').order('sort_order'),
+      supabase.from('call_lines').select('*').order('sort_order'),
+      supabase.from('call_sessions').select('*').order('created_at'),
+    ]);
+
+    const mapNav = row => ({
+      id: row.id,
+      section: row.section,
+      icon: row.icon || null,
+      label: row.label,
+      isCustomIcon: row.is_custom_icon,
+      sortOrder: row.sort_order,
+    });
+    const mapLine = row => ({ id: row.id, label: row.label, phoneNumber: row.phone_number });
+    const mapSession = row => ({
+      id: row.id, name: row.name, status: row.status,
+      time: row.time, dir: row.dir, pinned: row.pinned, active: row.active,
+    });
+
+    const navData = navRes.status === 'fulfilled' ? (navRes.value.data || []) : [];
+    const linesData = linesRes.status === 'fulfilled' ? (linesRes.value.data || []) : [];
+    const sessData = sessRes.status === 'fulfilled' ? (sessRes.value.data || []) : [];
+
+    const allNav = navData.map(mapNav);
+    set({
+      callNavItems: allNav.filter(i => i.section === 'inbox').length
+        ? allNav
+        : [...FALLBACK_INBOX_ITEMS, ...FALLBACK_CHANNEL_ITEMS],
+      callLines: linesData.length ? linesData.map(mapLine) : FALLBACK_CALL_LINES,
+      callSessions: sessData.length ? sessData.map(mapSession) : FALLBACK_CALL_SESSIONS,
+      callsConfigLoading: false,
+    });
   },
 
   // Helper: get call records for a patient

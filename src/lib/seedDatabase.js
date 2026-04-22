@@ -13,6 +13,7 @@ import { FALLBACK_KPIS, FALLBACK_TIME_SERIES, FALLBACK_TABLES, FALLBACK_PROGRESS
 import { updatesToDb } from './patientMapper';
 import { callDetailJsToDb } from './callDetailsMapper';
 import { DOMAINS as fallbackDomains, COMPONENTS as fallbackComponents } from '../data/embeddedComponents';
+import { FALLBACK_INBOX_ITEMS, FALLBACK_CHANNEL_ITEMS, FALLBACK_CALL_LINES, FALLBACK_CALL_SESSIONS } from '../data/callsConfig';
 
 const SEED_FLAG = '__supabase_seeded';
 
@@ -408,6 +409,60 @@ async function seedAuditLogs() {
   else console.log(`[seed] Seeded ${rows.length} audit_logs`);
 }
 
+// ── Seed call_nav_items ──
+async function seedCallNavItems() {
+  if (!(await isTableEmpty('call_nav_items'))) return;
+  console.log('[seed] Seeding call_nav_items...');
+  const allItems = [...FALLBACK_INBOX_ITEMS, ...FALLBACK_CHANNEL_ITEMS];
+  const rows = allItems.map(item => ({
+    id: item.id,
+    section: item.section,
+    icon: item.icon || null,
+    label: item.label,
+    is_custom_icon: item.isCustomIcon,
+    sort_order: item.sortOrder,
+    is_active: true,
+  }));
+  const { error } = await supabase.from('call_nav_items').upsert(rows, { onConflict: 'id' });
+  if (error) console.warn('[seed] call_nav_items error:', error.message);
+  else console.log(`[seed] Seeded ${rows.length} call_nav_items`);
+}
+
+// ── Seed call_lines ──
+async function seedCallLines() {
+  if (!(await isTableEmpty('call_lines'))) return;
+  console.log('[seed] Seeding call_lines...');
+  const rows = FALLBACK_CALL_LINES.map((line, i) => ({
+    id: line.id,
+    label: line.label,
+    phone_number: line.phoneNumber || null,
+    sort_order: i + 1,
+    is_active: true,
+  }));
+  const { error } = await supabase.from('call_lines').upsert(rows, { onConflict: 'id' });
+  if (error) console.warn('[seed] call_lines error:', error.message);
+  else console.log(`[seed] Seeded ${rows.length} call_lines`);
+}
+
+// ── Seed call_sessions ──
+async function seedCallSessions() {
+  if (!(await isTableEmpty('call_sessions'))) return;
+  console.log('[seed] Seeding call_sessions...');
+  const rows = FALLBACK_CALL_SESSIONS.map(s => ({
+    id: s.id,
+    name: s.name,
+    status: s.status,
+    time: s.time,
+    dir: s.dir,
+    pinned: s.pinned,
+    active: s.active,
+    patient_id: null,
+  }));
+  const { error } = await supabase.from('call_sessions').upsert(rows, { onConflict: 'id' });
+  if (error) console.warn('[seed] call_sessions error:', error.message);
+  else console.log(`[seed] Seeded ${rows.length} call_sessions`);
+}
+
 export async function seedDatabaseIfEmpty() {
   // Only run once per session
   if (sessionStorage.getItem(SEED_FLAG)) return;
@@ -417,6 +472,9 @@ export async function seedDatabaseIfEmpty() {
   await Promise.allSettled([
     seedPatients(),
     seedCallDetails(),
+    seedCallNavItems(),
+    seedCallLines(),
+    seedCallSessions(),
     seedGoals(),
     seedChatGroups(),
     seedFaqs(),
