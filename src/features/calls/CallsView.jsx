@@ -93,10 +93,10 @@ function getInitials(name) {
 
 const DIR_ICON = {
   outgoing: { icon: 'solar:outgoing-call-rounded-linear', color: 'var(--primary-300)',        bg: 'var(--primary-100)',        border: 'var(--primary-200)' },
-  incoming: { icon: 'solar:incoming-call-rounded-linear', color: 'var(--accent-teal)',        bg: 'rgba(20, 184, 166, 0.1)',   border: 'rgba(20, 184, 166, 0.2)' },
-  answered: { icon: 'solar:phone-calling-linear',         color: 'var(--accent-light-green)', bg: 'rgba(5, 150, 105, 0.1)',   border: 'rgba(5, 150, 105, 0.2)' },
+  incoming: { icon: 'solar:incoming-call-rounded-linear', color: 'var(--status-success)',     bg: 'rgba(5, 150, 105, 0.1)',   border: 'rgba(5, 150, 105, 0.2)' },
+  answered: { icon: 'solar:phone-calling-linear',         color: 'var(--status-success)',     bg: 'rgba(5, 150, 105, 0.1)',   border: 'rgba(5, 150, 105, 0.2)' },
   missed:   { isMissed: true,                             color: 'var(--status-error)',       bg: 'rgba(220, 38, 38, 0.1)',    border: 'rgba(220, 38, 38, 0.2)' },
-  declined: { icon: 'solar:end-call-rounded-linear',      color: 'var(--status-error)',       bg: 'rgba(220, 38, 38, 0.1)',    border: 'rgba(220, 38, 38, 0.2)' },
+  declined: { icon: 'solar:close-circle-bold',            color: 'var(--status-error)',       bg: 'rgba(220, 38, 38, 0.1)',    border: 'rgba(220, 38, 38, 0.2)' },
 };
 
 function CallTypeAvatar({ dir }) {
