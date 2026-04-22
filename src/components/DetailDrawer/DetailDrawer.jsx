@@ -3,8 +3,8 @@ import { Icon } from '../Icon/Icon';
 import { Button } from '../Button/Button';
 import { ActionButton } from '../ActionButton/ActionButton';
 import { Drawer } from '../Drawer/Drawer';
-import { ComplianceBadges } from '../ComplianceBadges/ComplianceBadges';
 import { useAppStore } from '../../store/useAppStore';
+import { EngagementCard } from '../EngagementCard/EngagementCard';
 import styles from './DetailDrawer.module.css';
 
 /* ── Waveform data (seeded random heights for consistent look) ── */
@@ -112,106 +112,16 @@ export function DetailDrawer() {
         </div>
       </div>
 
-      {/* ── Compliance & Quality Section ── */}
-      <ComplianceBadges compliance={callRecord.compliance} />
-
-      {/* Engagement Score */}
-      {callRecord.qualityScore && (
-        <div className={styles.qualityCard}>
-          <div className={styles.qualityHeader}>
-            <Icon name="solar:star-bold" size={14} color="var(--status-warning)" />
-            <span className={styles.qualityLabel}>Engagement Score</span>
-            <span className={`${styles.qualityOverall} ${
-              callRecord.qualityScore.overall >= 85 ? styles.qualityGood :
-              callRecord.qualityScore.overall >= 70 ? styles.qualityFair : styles.qualityPoor
-            }`}>
-              {callRecord.qualityScore.overall}%
-            </span>
-          </div>
-          <div className={styles.qualityBars}>
-            {[
-              { label: 'Intent Accuracy', val: callRecord.qualityScore.intentAccuracy },
-              { label: 'Outcome', val: callRecord.qualityScore.outcomeAppropriateness },
-              { label: 'Escalation', val: callRecord.qualityScore.escalationTimeliness },
-              { label: 'Compliance', val: callRecord.qualityScore.complianceDisclosure },
-            ].map(b => (
-              <div key={b.label} className={styles.qualityBarRow}>
-                <span className={styles.qualityBarLabel}>{b.label}</span>
-                <div className={styles.qualityBarTrack}>
-                  <div className={styles.qualityBarFill} style={{ width: `${b.val}%`, background: b.val >= 85 ? 'var(--status-success)' : b.val >= 70 ? 'var(--status-warning)' : 'var(--status-error)' }} />
-                </div>
-                <span className={styles.qualityBarVal}>{b.val}%</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Sentiment Score */}
-      {callRecord.sentimentScore && (
-        <div className={styles.sentimentRow}>
-          <Icon name={
-            callRecord.sentimentScore.label === 'positive' ? 'solar:emoji-funny-circle-bold' :
-            callRecord.sentimentScore.label === 'negative' ? 'solar:emoji-sad-circle-bold' :
-            'solar:emoji-funny-square-bold'
-          } size={16} color={
-            callRecord.sentimentScore.label === 'positive' ? 'var(--status-success)' :
-            callRecord.sentimentScore.label === 'negative' ? 'var(--status-error)' : 'var(--status-warning)'
-          } />
-          <span className={styles.sentimentLabel}>Sentiment</span>
-          <span className={`${styles.sentimentValue} ${styles[`sentiment_${callRecord.sentimentScore.label}`]}`}>
-            {callRecord.sentimentScore.overall}% {callRecord.sentimentScore.label}
-          </span>
-        </div>
+      {/* ── Engagement Card (Replaces Compliance, Quality, Sentiment, Sub-agents, Intents) ── */}
+      {(callRecord.qualityScore || callRecord.sentimentScore) && (
+        <EngagementCard 
+          engagementScore={callRecord.qualityScore?.overall || 0}
+          sentimentScore={callRecord.sentimentScore?.overall || 0}
+          sentimentLabel={callRecord.sentimentScore?.label || 'neutral'}
+        />
       )}
 
       {/* Escalation Details */}
-      {callRecord.escalation && (
-        <div className={styles.escalationCard}>
-          <div className={styles.escalationHeader}>
-            <Icon name="solar:danger-triangle-bold" size={14} color="var(--status-error)" />
-            <span>Escalation Triggered</span>
-          </div>
-          <div className={styles.escalationDetail}>
-            <span className={styles.escalationTrigger}>
-              {callRecord.escalation.trigger === 'sentiment' && 'Negative Sentiment'}
-              {callRecord.escalation.trigger === 'confidence' && 'Low Confidence'}
-              {callRecord.escalation.trigger === 'loops' && 'Conversation Loop'}
-              {callRecord.escalation.trigger === 'max-turns' && 'Max Turns Reached'}
-              {callRecord.escalation.trigger === 'emergency' && 'Emergency Detected'}
-            </span>
-            <span className={styles.escalationDesc}>{callRecord.escalation.detail}</span>
-            {callRecord.escalation.confidence && (
-              <span className={styles.escalationMeta}>Confidence: {callRecord.escalation.confidence}%</span>
-            )}
-            {callRecord.escalation.sentiment && (
-              <span className={styles.escalationMeta}>Sentiment: {(callRecord.escalation.sentiment * 100).toFixed(0)}%</span>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Sub-Agents Invoked */}
-      {callRecord.subAgentsInvoked && (
-        <div className={styles.subAgentsRow}>
-          <span className={styles.subAgentsLabel}>Sub-Agents:</span>
-          {callRecord.subAgentsInvoked.map(sa => (
-            <span key={sa} className={styles.subAgentTag}>
-              <Icon name="solar:bot-bold" size={11} /> {sa}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Detected Intents */}
-      {callRecord.detectedIntents && (
-        <div className={styles.subAgentsRow}>
-          <span className={styles.subAgentsLabel}>Intents:</span>
-          {callRecord.detectedIntents.map(intent => (
-            <span key={intent} className={styles.intentTag}>{intent}</span>
-          ))}
-        </div>
-      )}
 
       {/* Security Badges */}
       {callRecord.security && (

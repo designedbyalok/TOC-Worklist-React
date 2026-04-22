@@ -88,49 +88,7 @@
 }
 .callCardBtn:hover { background: var(--neutral-100); color: var(--primary-300); }
 
-/* ── Quality Score Card ── */
-.qualityCard {
-  border: 0.5px solid var(--neutral-150);
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  background: var(--neutral-0);
-}
-.qualityHeader {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-.qualityLabel { font-size: 13px; font-weight: 500; color: var(--neutral-400); flex: 1; }
-.qualityOverall { font-size: 14px; font-weight: 500; }
-.qualityGood { color: var(--status-success); }
-.qualityFair { color: var(--status-warning); }
-.qualityPoor { color: var(--status-error); }
-.qualityBars { display: flex; flex-direction: column; gap: 6px; }
-.qualityBarRow { display: flex; align-items: center; gap: 8px; }
-.qualityBarLabel { font-size: 11px; color: var(--neutral-300); width: 80px; flex-shrink: 0; }
-.qualityBarTrack { flex: 1; height: 6px; background: var(--neutral-100); border-radius: 3px; overflow: hidden; }
-.qualityBarFill { height: 100%; border-radius: 3px; transition: width .3s; }
-.qualityBarVal { font-size: 11px; font-weight: 500; color: var(--neutral-400); width: 32px; text-align: right; }
-
 /* ── Sentiment Row ── */
-.sentimentRow {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border: 0.5px solid var(--neutral-150);
-  border-radius: 8px;
-  margin-bottom: 12px;
-  background: var(--neutral-0);
-}
-.sentimentLabel { font-size: 13px; color: var(--neutral-300); flex: 1; }
-.sentimentValue { font-size: 13px; font-weight: 500; }
-.sentiment_positive { color: var(--status-success); }
-.sentiment_neutral { color: var(--status-warning); }
-.sentiment_negative { color: var(--status-error); }
-
 /* ── Escalation Card ── */
 .escalationCard {
   border: 0.5px solid color-mix(in srgb, var(--status-error) 30%, transparent);
@@ -152,38 +110,6 @@
 .escalationTrigger { font-size: 12px; font-weight: 500; color: var(--status-error); }
 .escalationDesc { font-size: 12px; color: var(--neutral-300); }
 .escalationMeta { font-size: 11px; color: var(--neutral-200); }
-
-/* ── Sub-Agents & Intents ── */
-.subAgentsRow {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
-}
-.subAgentsLabel { font-size: 12px; font-weight: 500; color: var(--neutral-300); }
-.subAgentTag {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  background: var(--primary-100);
-  color: var(--primary-300);
-  border: 0.5px solid color-mix(in srgb, var(--primary-300) 20%, transparent);
-}
-.intentTag {
-  display: inline-flex;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 500;
-  background: var(--status-info-light);
-  color: var(--status-info);
-  border: 0.5px solid color-mix(in srgb, var(--status-info) 20%, transparent);
-}
 
 /* ── Security Row ── */
 .securityRow {
