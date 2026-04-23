@@ -331,64 +331,25 @@
 }
 
 .playBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  background: var(--primary-300);
-  color: var(--neutral-0);
-  border: none;
   border-radius: 24px;
+  padding: 8px 12px;
   font-size: 14px;
-  font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  flex-shrink: 0;
-  white-space: nowrap;
-  line-height: 1.2;
-  transition: background .15s;
 }
-.playBtn:hover { background: var(--primary-400); }
 
 .pauseBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  background: var(--neutral-150);
-  color: var(--neutral-500);
-  border: none;
   border-radius: 24px;
+  padding: 8px 12px;
   font-size: 14px;
-  font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  flex-shrink: 0;
-  white-space: nowrap;
-  line-height: 1.2;
-  transition: background .15s;
+  background: var(--neutral-150);
+  border: none;
 }
 .pauseBtn:hover { background: var(--neutral-200); }
 
 .stopBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  background: var(--status-error);
-  color: var(--neutral-0);
-  border: none;
   border-radius: 24px;
+  padding: 8px 12px;
   font-size: 14px;
-  font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  flex-shrink: 0;
-  white-space: nowrap;
-  line-height: 1.2;
-  transition: background .15s;
 }
-.stopBtn:hover { background: var(--button-danger-bg); }
 
 /* Transcript Sub-section */
 .transcriptSubHeader {

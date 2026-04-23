@@ -15,9 +15,10 @@ const WAVE_BARS = Array.from({ length: 80 }, (_, i) => {
   return 3 + (seed - Math.floor(seed)) * 12;
 });
 
-const TOTAL_DURATION = 604; // 10:04 in seconds
+const RECORDING_URL = "https://osnihfqqrcchsaqhagcx.supabase.co/storage/v1/object/sign/Call%20Recording/call_recording.mp3?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9hMzBhZDI5OS1mYjE0LTQ2ZjUtOTQ1NC0xOGM2OTNiNjEyMzkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJDYWxsIFJlY29yZGluZy9jYWxsX3JlY29yZGluZy5tcDMiLCJpYXQiOjE3NzY5MzA1MjMsImV4cCI6MTc3NzUzNTMyM30.jjYQNHs_zPGBSwpw6G4zUdn-oYinz8NkHvSRSP_YAIs";
 
 function formatTime(secs) {
+  if (!secs || isNaN(secs)) return '00:00';
   const m = Math.floor(secs / 60);
   const s = Math.floor(secs % 60);
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
@@ -33,36 +34,50 @@ export function DetailDrawer() {
   const [showTranscript, setShowTranscript] = useState(true);
 
   // Audio playback state
+  const audioRef = useRef(null);
   const [playState, setPlayState] = useState('idle'); // idle | playing | paused
   const [elapsed, setElapsed] = useState(0);
-  const timerRef = useRef(null);
+  const [duration, setDuration] = useState(0);
 
   const startPlayback = useCallback(() => {
-    setPlayState('playing');
-    timerRef.current = setInterval(() => {
-      setElapsed(prev => {
-        if (prev >= TOTAL_DURATION) {
-          clearInterval(timerRef.current);
-          setPlayState('idle');
-          return 0;
-        }
-        return prev + 1;
-      });
-    }, 1000);
+    if (audioRef.current) {
+      audioRef.current.play();
+      setPlayState('playing');
+    }
   }, []);
 
   const pausePlayback = useCallback(() => {
-    clearInterval(timerRef.current);
-    setPlayState('paused');
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setPlayState('paused');
+    }
   }, []);
 
   const stopPlayback = useCallback(() => {
-    clearInterval(timerRef.current);
-    setPlayState('idle');
-    setElapsed(0);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setPlayState('idle');
+      setElapsed(0);
+    }
   }, []);
 
-  useEffect(() => () => clearInterval(timerRef.current), []);
+  const onTimeUpdate = () => {
+    if (audioRef.current) {
+      setElapsed(audioRef.current.currentTime);
+    }
+  };
+
+  const onLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const onEnded = () => {
+    setPlayState('idle');
+    setElapsed(0);
+  };
 
   if (!detailPatient) return null;
   const p = detailPatient;
@@ -85,7 +100,7 @@ export function DetailDrawer() {
   const isMissedOrDeclined = callDir === 'missed' || callDir === 'declined';
 
   const toggleSection = (key) => setOpenSections(s => ({ ...s, [key]: !s[key] }));
-  const progress = TOTAL_DURATION > 0 ? elapsed / TOTAL_DURATION : 0;
+  const progress = duration > 0 ? elapsed / duration : 0;
   const progressBarIdx = Math.floor(progress * WAVE_BARS.length);
 
   return (
@@ -202,8 +217,16 @@ export function DetailDrawer() {
             <div className={styles.recordingContainer}>
               {/* Audio Player */}
               <div className={styles.audioPlayer}>
+                <audio
+                  ref={audioRef}
+                  src={RECORDING_URL}
+                  onTimeUpdate={onTimeUpdate}
+                  onLoadedMetadata={onLoadedMetadata}
+                  onEnded={onEnded}
+                  style={{ display: 'none' }}
+                />
                 <span className={styles.audioTime}>
-                  {playState === 'idle' ? `00:${p.callDurationFull || '10:04'}` : formatTime(elapsed)}
+                  {playState === 'idle' ? formatTime(duration) : formatTime(elapsed)}
                 </span>
                 <div className={styles.waveformContainer}>
                   <div className={styles.waveform}>
@@ -227,7 +250,7 @@ export function DetailDrawer() {
                       <Button variant="secondary" size="S" leadingIcon="solar:pause-bold" className={styles.pauseBtn} onClick={pausePlayback}>
                         Pause
                       </Button>
-                      <Button variant="ghost" size="S" leadingIcon="solar:stop-bold" className={styles.stopBtn} onClick={stopPlayback}>
+                      <Button variant="dangerFilled" size="S" leadingIcon="solar:stop-bold" className={styles.stopBtn} onClick={stopPlayback}>
                         Stop
                       </Button>
                     </>
@@ -237,7 +260,7 @@ export function DetailDrawer() {
                       <Button variant="primary" size="S" leadingIcon="solar:play-bold" className={styles.playBtn} onClick={startPlayback}>
                         Resume
                       </Button>
-                      <Button variant="ghost" size="S" leadingIcon="solar:stop-bold" className={styles.stopBtn} onClick={stopPlayback}>
+                      <Button variant="dangerFilled" size="S" leadingIcon="solar:stop-bold" className={styles.stopBtn} onClick={stopPlayback}>
                         Stop
                       </Button>
                     </>
