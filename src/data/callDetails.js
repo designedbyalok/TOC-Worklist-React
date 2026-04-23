@@ -621,7 +621,7 @@ const _rawCallDetails = [
     createdAt: '11/15/2025'
   },
 
-  // ===== p11 – Peter Kim (completed) =====
+  // ===== p11 – Clara Mitchell (completed) =====
   // Ongoing record
   {
     id: 'cd20',
@@ -656,37 +656,55 @@ const _rawCallDetails = [
     agentName: 'Anna',
     startedAt: '11/10/2025 09:30',
     endedAt: '11/10/2025 09:36',
-    duration: '06:12',
+    duration: '04:44',
     liveGoals: null,
     liveTranscript: null,
     goalsDetail: [
-      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
-      { name: 'Schedule ToC Appointment', desc: 'Book follow-up appointment with cardiologist.', pass: true },
-      { name: 'Medication Review', desc: 'Review post-stent antiplatelet medications.', pass: true }
+      { name: 'Patient Outreach', desc: 'Establish first contact regarding benefits.', pass: true },
+      { name: 'App Enrollment', desc: 'Help patient download and install Fold Care app.', pass: true },
+      { name: 'EHR Consent', desc: 'Securely share EHR access via Milu.', pass: true }
     ],
     callSummary: {
       keyPoints: [
-        'Patient recovering well from cardiac stent placement with no chest pain recurrence.',
-        'Confirmed taking dual antiplatelet therapy (aspirin + clopidogrel) as prescribed.',
-        'Follow-up with cardiologist scheduled for next week.',
-        'Advised to avoid heavy lifting for 2 more weeks per surgical guidelines.'
+        'Verified patient privacy with date of birth (February 21st, 1992).',
+        'Explained health benefits program "Collaborative Care" and "Fold Care" mobile app.',
+        'Discussed secure sharing of electronic health records through Milu tool.',
+        'Informed patient that participation is optional and data is protected.'
       ],
       actionItems: [
-        'Confirm cardiology follow-up appointment.',
-        'Send cardiac rehabilitation program information.',
-        'Schedule 30-day post-discharge check-in call.'
+        'Sent secure link for Fold Care app download via text message.',
+        'Sent Milu EHR consent form link via text message.',
+        'Advised patient to review and sign the consent form.'
       ]
     },
     callTranscript: [
-      { sender: 'agent', name: 'Anna', text: "Hello Peter, this is Anna from Fold Health calling for your post-discharge follow-up after your cardiac stent procedure. How are you feeling?", time: '9:30 AM' },
-      { sender: 'patient', name: 'Peter Kim', text: "Much better, thank you. The chest pain is completely gone now.", time: '9:30 AM' },
-      { sender: 'agent', name: 'Anna', text: "That's wonderful to hear. Have you been taking your aspirin and clopidogrel as prescribed by your cardiologist?", time: '9:31 AM' },
-      { sender: 'patient', name: 'Peter Kim', text: "Yes, every morning with breakfast. My wife helps me remember.", time: '9:31 AM' },
-      { sender: 'agent', name: 'Anna', text: "Great compliance, Peter. I see you have a cardiology follow-up scheduled. Remember to avoid heavy lifting for at least two more weeks. Is there anything else you need help with?", time: '9:32 AM' }
+      { sender: 'patient', name: 'Clara Mitchell', text: "Hello, this is Clara Mitchell speaking.", start: 0, end: 4, time: "9:30 AM" },
+      { sender: 'agent', name: 'Anna', text: "Hi Clara, this is Anna, an AI assistant calling from Collaborative Care. This call will be recorded for quality assurance and training purposes. I have a quick update regarding your healthcare benefits through Applied Laser Technologies. Is now a good time?", start: 5, end: 20, time: "9:30 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Hi Anna, yes, now is a good time. I can talk for a few minutes.", start: 21, end: 26, time: "9:30 AM" },
+      { sender: 'agent', name: 'Anna', text: "Before we can continue, for your privacy, could you please tell me your full date of birth including day, month, and year?", start: 27, end: 35, time: "9:31 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Sure, my date of birth is February 21st, 1992.", start: 36, end: 42, time: "9:31 AM" },
+      { sender: 'agent', name: 'Anna', text: "Thank you. I just want to make sure I heard that correctly. Did you say your date of birth is February 21st, 1992?", start: 43, end: 51, time: "9:31 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Yes, that’s correct, my date of birth is February 21st, 1992.", start: 52, end: 58, time: "9:31 AM" },
+      { sender: 'agent', name: 'Anna', text: "Um, let me verify that in our system. Just a moment please. Thank you, that's correct. Thanks, Clara. Just a quick reminder, your health benefits plan includes a program called Collaborative Care. It gives you access to many medical and prescription services at no cost. I'd like to help you access these benefits through our mobile app and electronic health record. Is that okay with you?", start: 59, end: 85, time: "9:32 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Yes, that's okay with me. I'd like to be able to use those benefits through the app.", start: 86, end: 93, time: "9:32 AM" },
+      { sender: 'agent', name: 'Anna', text: "Great Clara. So, um, Collaborative Care offers a free mobile app called Fold Care. It lets you see your coverage, access $0 care, and a bunch more. I can send you a secure link to download the app right now. Would that be okay?", start: 94, end: 112, time: "9:32 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Yes, that would be fine. Please go ahead and send me the secure link to download the app.", start: 113, end: 120, time: "9:33 AM" },
+      { sender: 'agent', name: 'Anna', text: "Great. Would you prefer I send the download link by text message, email, or both?", start: 121, end: 128, time: "9:33 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Um, text message is best for me, please. I'm on my cell right now.", start: 129, end: 136, time: "9:33 AM" },
+      { sender: 'agent', name: 'Anna', text: "Perfect. I've sent a link to your phone via text. You should receive it shortly. When you open the message, just tap the link and follow the instructions to install the app. If you run into any trouble, you can always contact the Collaborative Care team and we'll help you out. Okay, the app link is on its way. Now, um, I want to mention one more thing after you download the app. When you log in, it will ask you to approve access to your electronic health record through a tool called Milu. This helps your healthcare providers securely share important info with us to better coordinate your care and access those $0 benefits. Participation is optional and your information is protected. Can I tell you more about it?", start: 137, end: 179, time: "9:34 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Yes, please. I'd like to hear a bit more about how Milu works and what access it has.", start: 180, end: 187, time: "9:34 AM" },
+      { sender: 'agent', name: 'Anna', text: "By approving access to your electronic health record, it will allow your healthcare providers to securely share important health information with us so we can better coordinate and support your care. Your privacy is protected and only people involved in your care can see this information. Would you like me to send you the electronic health record consent form?", start: 188, end: 212, time: "9:35 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Yes, please send it. I'd like to review and most likely sign it so everything's connected.", start: 213, end: 220, time: "9:35 AM" },
+      { sender: 'agent', name: 'Anna', text: "Um, can I send the electronic health record consent form to you by text message, email, or both?", start: 221, end: 229, time: "9:35 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Text message is perfect for me, please. That's the easiest way for me to review and sign it.", start: 230, end: 237, time: "9:36 AM" },
+      { sender: 'agent', name: 'Anna', text: "I'm sending you a text message right now with the Milu consent form link. I've sent the consent form to your phone via text. You should get it shortly. When you open the text, just tap the link and you'll be able to read all the details and check the box if you consent. Take your time reviewing it, there's no rush at all. Thank you for taking the time to speak with me today. I appreciate it. Before we finish, do you have any other questions I can help with?", start: 238, end: 269, time: "9:36 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "No, I don't have any other questions right now. Thanks for explaining everything and for sending the links.", start: 270, end: 277, time: "9:37 AM" },
+      { sender: 'agent', name: 'Anna', text: "Just to quickly summarize, we have sent you the Fold Care app download link and the Milu consent form to your SMS only. Thank you for taking the time to speak with me today. I appreciate it. If you have any questions in the future, the Urgent Care team will be happy to help. Have a wonderful day and take care. Goodbye.", start: 278, end: 284, time: "9:37 AM" },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Thank you so much, Anna. I'll look out for the texts and review everything. Have a good day.", start: 285, end: 290, time: "9:37 AM" }
     ],
-    outcome: null,
-    attemptNumber: null,
-    createdAt: '11/10/2025'
+    outcome: 'Completed Enrollment',
+    attemptNumber: 1,
+    createdAt: '04/23/2026'
   },
 
   // ===== p12 – Maria Lopez (scheduled, has success in outreachDots) =====
@@ -1620,10 +1638,10 @@ const _rawCallDetails = [
       ]
     },
     callTranscript: [
-      { sender: 'patient', name: 'Peter Kim', text: "Just wanted to let you know I'm feeling much better. No chest pain at all.", time: '6:30 PM' },
-      { sender: 'agent', name: 'Anna', text: "That's excellent news, Peter! Have you been taking your aspirin and clopidogrel every day?", time: '6:30 PM' },
-      { sender: 'patient', name: 'Peter Kim', text: "Yes, every morning without fail. My wife makes sure of it.", time: '6:31 PM' },
-      { sender: 'agent', name: 'Anna', text: "Perfect. Remember, no heavy lifting for one more week. Your 30-day check-in is coming up soon.", time: '6:31 PM' },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Just wanted to let you know I've successfully signed the consent form and I'm exploring the app. It looks very helpful.", time: '6:30 PM' },
+      { sender: 'agent', name: 'Anna', text: "That's wonderful news, Clara! I'm glad the process was smooth. Have you been able to see the $0 care options yet?", time: '6:30 PM' },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Yes, I see them. It's great to have everything in one place.", time: '6:31 PM' },
+      { sender: 'agent', name: 'Anna', text: "Perfect. We'll check in again in a few weeks to see how you're liking the program. Have a great evening!", time: '6:31 PM' },
     ],
     outcome: null,
     attemptNumber: null,

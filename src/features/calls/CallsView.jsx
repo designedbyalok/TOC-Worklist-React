@@ -505,10 +505,10 @@ export function CallsView() {
           {/* Profile banner */}
           <div className={styles.profileBanner}>
             <div className={styles.profileContent}>
-              <Avatar variant="patient" initials="WJ" className={styles.profileAvatar} />
+              <Avatar variant="patient" initials="CM" className={styles.profileAvatar} />
               <div className={styles.profileInfo}>
                 <div className={styles.profileNameRow}>
-                  <span className={styles.profileName}>Williamy Jammy</span>
+                  <span className={styles.profileName}>Clara Mitchell</span>
                   <ActionButton
                     icon="solar:square-top-down-linear"
                     size="L"
@@ -519,9 +519,9 @@ export function CallsView() {
                 <div className={styles.profileMeta}>
                   <span>Patient</span>
                   <span className={styles.metaDot}>•</span>
-                  <span>Male</span>
+                  <span>Female</span>
                   <span className={styles.metaDot}>•</span>
-                  <span>31Y (03-29-1992)</span>
+                  <span>34Y (02-21-1992)</span>
                   <span className={styles.metaDot}>•</span>
                   <span>(581) 824-1591</span>
                 </div>

@@ -33,11 +33,14 @@ export function DetailDrawer() {
   const [openSections, setOpenSections] = useState({ goals: true, summary: true, transcript: true });
   const [showTranscript, setShowTranscript] = useState(true);
 
-  // Audio playback state
   const audioRef = useRef(null);
   const [playState, setPlayState] = useState('idle'); // idle | playing | paused
   const [elapsed, setElapsed] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  // Transcript refs for auto-scroll
+  const transcriptRefs = useRef({});
+  const transcriptContainerRef = useRef(null);
 
   const startPlayback = useCallback(() => {
     if (audioRef.current) {
@@ -86,6 +89,112 @@ export function DetailDrawer() {
     const pct = Math.max(0, Math.min(1, x / rect.width));
     audioRef.current.currentTime = pct * duration;
     setElapsed(audioRef.current.currentTime);
+  };
+
+  // Auto-scroll transcript logic
+  useEffect(() => {
+    if (playState !== 'playing' || !showTranscript) return;
+    
+    // Find active message index
+    const activeIdx = callTranscript.findIndex(m => elapsed >= m.start && elapsed <= m.end);
+    if (activeIdx !== -1) {
+      const node = transcriptRefs.current[activeIdx];
+      const container = transcriptContainerRef.current;
+      if (node && container) {
+        const nodeTop = node.offsetTop;
+        const nodeH = node.offsetHeight;
+        const containerH = container.clientHeight;
+        const target = nodeTop - containerH / 2 + nodeH / 2;
+        container.scrollTo({ top: Math.max(0, target), behavior: "smooth" });
+      }
+    }
+  }, [elapsed, playState, showTranscript]);
+
+  /* ── AI Summary Helpers ── */
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [justRefreshed, setJustRefreshed] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleRefreshSummary = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setIsRefreshing(false);
+      setJustRefreshed(true);
+      setTimeout(() => setJustRefreshed(false), 2000);
+    }, 2000);
+  };
+
+  const handleCopySummary = () => {
+    if (!callSummary) return;
+    const text = `Key Points Discussed:\n${callSummary.keyPoints.map(p => `• ${p}`).join('\n')}\n\nAction Items:\n${callSummary.actionItems.map(a => `• ${a}`).join('\n')}`;
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  };
+
+  const ShimmerSummary = () => (
+    <div style={{ padding: "14px 16px 16px" }}>
+      <div className={styles.shimmerLine} style={{ width: "42%", marginBottom: 12 }} />
+      <div className={styles.shimmerLine} style={{ width: "94%", marginBottom: 8 }} />
+      <div className={styles.shimmerLine} style={{ width: "86%", marginBottom: 8 }} />
+      <div className={styles.shimmerLine} style={{ width: "72%", marginBottom: 16 }} />
+      <div className={styles.shimmerLine} style={{ width: "32%", marginBottom: 12 }} />
+      <div className={styles.shimmerLine} style={{ width: "80%", marginBottom: 8 }} />
+      <div className={styles.shimmerLine} style={{ width: "64%" }} />
+    </div>
+  );
+
+  const Typewriter = ({ text, speed = 10, onDone }) => {
+    const [n, setN] = useState(0);
+    useEffect(() => {
+      if (n >= text.length) { onDone?.(); return; }
+      const id = setTimeout(() => setN(n + 1), speed);
+      return () => clearTimeout(id);
+    }, [n, text, speed]);
+    return <>{text.slice(0, n)}{n < text.length && <span className={styles.typeCursor} />}</>;
+  };
+
+  const SummaryContent = ({ data, animate }) => {
+    const [phase, setPhase] = useState(animate ? 0 : 99);
+    useEffect(() => { if (animate) setPhase(0); else setPhase(99); }, [animate]);
+
+    const lines = [];
+    lines.push({ kind: "heading", text: "Key Points Discussed:" });
+    data.keyPoints.forEach(it => lines.push({ kind: "item", text: it }));
+    lines.push({ kind: "heading", text: "Action Items:" });
+    data.actionItems.forEach(it => lines.push({ kind: "item", text: it }));
+
+    return (
+      <div style={{ padding: "14px 16px 14px" }}>
+        {lines.map((l, i) => {
+          const visible = !animate || i <= phase;
+          const active = animate && i === phase;
+          if (!visible) return <div key={i} style={{ height: l.kind === "heading" ? 22 : 20 }} />;
+          return (
+            <div key={i} style={{
+              margin: l.kind === "heading" ? (i === 0 ? "0 0 6px" : "12px 0 6px") : "3px 0",
+              paddingLeft: l.kind === "item" ? 16 : 0,
+              position: "relative",
+              fontSize: 13.5,
+              fontWeight: l.kind === "heading" ? 600 : 400,
+              color: "var(--neutral-400)",
+              lineHeight: 1.5,
+              opacity: animate && i > phase ? 0 : 1,
+              transition: "opacity 260ms ease",
+            }}>
+              {l.kind === "item" && (
+                <span style={{
+                  position: "absolute", left: 2, top: "0.65em",
+                  width: 3, height: 3, borderRadius: "50%",
+                  background: "var(--primary-300)",
+                }} />
+              )}
+              {active ? <Typewriter text={l.text} onDone={() => setPhase(p => p + 1)} /> : l.text}
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
   if (!detailPatient) return null;
@@ -174,37 +283,45 @@ export function DetailDrawer() {
 
           {/* ── Unity-Generated Call Summary ── */}
           <div className={styles.sectionHeader} onClick={() => toggleSection('summary')}>
-            <span className={`${styles.sectionTitle} ${styles.purple}`}>
-              <Icon name="solar:magic-stick-3-bold" size={14} color="var(--primary-300)" />
-              Unity-Generated Call Summary
-            </span>
-            <span className={`${styles.chevron} ${openSections.summary ? styles.chevronOpen : ''}`}>
-              <Icon name="solar:alt-arrow-right-linear" size={16} />
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span className={styles.sparkle} style={{ color: "#FF57CD" }}><Icon name="solar:magic-stick-3-bold" size={14} /></span>
+              <span className={styles.aiGradientText} style={{ fontSize: 13, fontWeight: 600 }}>
+                Unity-Generated Call Summary
+              </span>
+              <span className={`${styles.chevron} ${openSections.summary ? styles.chevronOpen : ''}`}>
+                <Icon name="solar:alt-arrow-right-linear" size={16} />
+              </span>
+            </div>
+            {isRefreshing && (
+              <span style={{ fontSize: 12, color: "var(--neutral-300)", display:"inline-flex", alignItems:"center", gap:6 }}>
+                <span className={styles.liveBars}><span/><span/><span/><span/></span>
+                <span className={styles.aiGradientText} style={{fontWeight:500}}>Regenerating…</span>
+              </span>
+            )}
           </div>
+
           {openSections.summary && !callSummary && (
             <div style={{ padding: '16px', fontSize: 13, color: 'var(--neutral-300)', textAlign: 'center' }}>
               No call summary generated yet. Summary will appear after a completed call.
             </div>
           )}
           {openSections.summary && callSummary && (
-            <div className={styles.summaryContainer}>
-              <div className={styles.summaryInner}>
-                <div className={styles.summaryLabel}>Key Points Discussed:</div>
-                <ul className={styles.summaryList}>
-                  {callSummary.keyPoints.map((pt, i) => <li key={i}>{pt}</li>)}
-                </ul>
-                <div className={styles.summaryLabel} style={{ marginTop: 12 }}>Action Items:</div>
-                <ol className={styles.summaryList}>
-                  {callSummary.actionItems.map((a, i) => <li key={i}>{a}</li>)}
-                </ol>
-                <div className={styles.summaryFooter}>
-                  <span className={styles.generatedText}>Generated on: 03/24/26, 07:23 pm</span>
-                  <div className={styles.summaryActions} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <ActionButton icon="solar:refresh-linear" size="L" tooltip="Refresh" className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Refreshing summary...'); }} />
-                    <span style={{ width: 1, height: 16, background: 'var(--neutral-150)', flexShrink: 0 }} />
-                    <ActionButton icon="solar:copy-linear" size="L" tooltip="Copy" className={styles.summaryBtn} onClick={(e) => { e.stopPropagation(); showToast('Copied to clipboard'); }} />
-                  </div>
+            <div className={`${styles.summaryCard} ${isRefreshing ? styles.summaryCardRefreshing : ''}`}>
+              {isRefreshing ? <ShimmerSummary /> : <SummaryContent data={callSummary} animate={justRefreshed} />}
+              
+              <div className={`${styles.summaryFooter} ${isRefreshing ? styles.summaryFooterRefreshing : ''}`}>
+                <div className={styles.footerInfo}>
+                  <Icon name="solar:clock-circle-linear" size={14} />
+                  <span>Generated on 03/24/26, 07:23 pm</span>
+                </div>
+                <div className={styles.footerActions}>
+                  <button className={styles.iconBtn} onClick={(e) => { e.stopPropagation(); handleRefreshSummary(); }} disabled={isRefreshing}>
+                    <Icon name="solar:refresh-linear" size={14} style={isRefreshing ? { animation: "ai-shift 1s linear infinite" } : {}} />
+                  </button>
+                  <div className={styles.summaryDivider} />
+                  <button className={styles.iconBtn} onClick={(e) => { e.stopPropagation(); handleCopySummary(); }}>
+                    {copied ? <span className={styles.copyFb}><Icon name="solar:check-read-linear" size={14} /></span> : <Icon name="solar:copy-linear" size={14} />}
+                  </button>
                 </div>
               </div>
             </div>
@@ -286,32 +403,48 @@ export function DetailDrawer() {
               </div>
 
               {showTranscript && (
-                <div className={styles.transcriptBody}>
+                <div className={styles.transcriptBody} ref={transcriptContainerRef}>
                   <div className={styles.transcriptDivider}><span>Today</span></div>
-                  <div className={styles.connectionLine}>
-                    <Icon name="solar:phone-calling-linear" size={14} />
-                    {DIR_LABEL[callDir] || 'Outgoing'} Call Connected from {agentName} <span className={styles.connTime}>9:28 PM</span>
-                  </div>
-                  {callTranscript.map((msg, i) => (
-                    <div key={i} className={`${styles.message} ${styles[msg.sender]}`}>
-                      {msg.sender === 'agent' && (
-                        <div className={styles.msgAvatar}>
-                          <Icon name="solar:bot-bold" size={12} color="var(--primary-300)" />
+                  {callTranscript.map((msg, i) => {
+                    const isActive = elapsed >= msg.start && elapsed <= msg.end;
+                    const isSystem = msg.sender === 'system';
+                    
+                    return (
+                      <div 
+                        key={i} 
+                        ref={el => transcriptRefs.current[i] = el}
+                        className={`${styles.message} ${styles[msg.sender] || ''} ${isActive ? styles.messageActive : ''}`}
+                      >
+                        {!isSystem && msg.sender === 'agent' && (
+                          <div className={styles.msgAvatar}>
+                            <Icon name="solar:bot-bold" size={12} color="var(--primary-300)" />
+                          </div>
+                        )}
+                        <div className={styles.msgContent}>
+                          {!isSystem && (
+                            <div className={styles.msgHeader}>
+                              <span className={styles.msgSender}>{msg.name}</span>
+                              <button className={styles.msgMore}><Icon name="solar:menu-dots-linear" size={14} /></button>
+                            </div>
+                          )}
+                          <div className={styles.msgBubble}>{msg.text}</div>
+                          {!isSystem && (
+                            <div className={styles.msgTime}>
+                              Today, {msg.time}
+                              {msg.sender === 'patient' && <span className={styles.readReceipt}> ✓✓</span>}
+                            </div>
+                          )}
                         </div>
-                      )}
-                      <div className={styles.msgContent}>
-                        <div className={styles.msgHeader}>
-                          <span className={styles.msgSender}>{msg.name}</span>
-                          <button className={styles.msgMore}><Icon name="solar:menu-dots-linear" size={14} /></button>
-                        </div>
-                        <div className={styles.msgBubble}>{msg.text}</div>
-                        <div className={styles.msgTime}>
-                          Today, {msg.time}
-                          {msg.sender === 'patient' && <span className={styles.readReceipt}> ✓✓</span>}
-                        </div>
+                        {!isSystem && msg.sender === 'patient' && (
+                          <div className={styles.msgAvatar} style={{ background: 'var(--primary-100)', marginTop: 18 }}>
+                            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--primary-400)' }}>
+                              {msg.name.split(' ').map(n => n[0]).join('')}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

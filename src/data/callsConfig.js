@@ -25,7 +25,7 @@ export const FALLBACK_CALL_LINES = [
 ];
 
 export const FALLBACK_CALL_SESSIONS = [
-  { id: 'c1',  name: 'Williamy Jammy',    status: 'Call Back',     time: 'Now',   dir: 'outgoing', pinned: true,  active: true  },
+  { id: 'c1',  name: 'Clara Mitchell',    status: 'Call Back',     time: 'Now',   dir: 'outgoing', pinned: true,  active: true  },
   { id: 'c2',  name: 'Dawn Braun',        status: 'Call Back',     time: '08:44', dir: 'outgoing', pinned: true,  active: false },
   { id: 'c3',  name: 'Natalie Welch',     status: 'Call Back',     time: '08:44', dir: 'outgoing', pinned: true,  active: false },
   { id: 'c4',  name: 'Dr. Stacy Quigley', status: 'Missed Call',   time: '08:44', dir: 'missed',   pinned: false, active: false },

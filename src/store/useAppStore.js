@@ -277,17 +277,22 @@ export const useAppStore = create((set, get) => ({
         patientsError: error.message,
       });
     } else {
-      const patients = data.map(dbToJs).map(p => ({
-        ...p,
+      const patients = data.map(dbToJs).map(p => {
+        const isPeter = p.name === 'Peter Kim' || p.id === 'p11';
+        return {
+          ...p,
+          name: isPeter ? 'Clara Mitchell' : p.name,
+          initials: isPeter ? 'CM' : p.initials,
         // Reset transient agent/call state on fresh load —
         // queue should be empty until agents are explicitly invoked
         // But preserve agent assignment for completed patients so they show in queue
         agentAssigned: p.status === 'completed' ? (p.agentAssigned || 'Anna') : '',
         agentRole: p.status === 'completed' ? (p.agentRole || 'TOC Outreach') : '',
-        onCall: false,
-        status: (p.status === 'oncall' || p.status === 'queued') ? 'scheduled' : p.status,
-        callDuration: (p.status === 'oncall') ? null : p.callDuration,
-      }));
+          onCall: false,
+          status: (p.status === 'oncall' || p.status === 'queued') ? 'scheduled' : p.status,
+          callDuration: (p.status === 'oncall') ? null : p.callDuration,
+        };
+      });
       // Sort by numeric part of id (p1, p2, ... p10, p11, ...)
       patients.sort((a, b) => {
         const na = parseInt(a.id.replace(/\D/g, ''), 10);
@@ -370,7 +375,9 @@ export const useAppStore = create((set, get) => ({
     });
     const mapLine = row => ({ id: row.id, label: row.label, phoneNumber: row.phone_number });
     const mapSession = row => ({
-      id: row.id, name: row.name, status: row.status,
+      id: row.id,
+      name: row.name === 'Williamy Jammy' ? 'Clara Mitchell' : row.name,
+      status: row.status,
       time: row.time, dir: row.dir, pinned: row.pinned, active: row.active,
     });
 

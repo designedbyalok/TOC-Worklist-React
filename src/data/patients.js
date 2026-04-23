@@ -329,45 +329,45 @@ const _rawPatients = [
     ]
   },
   {
-    id: 'p11', initials: 'PK', name: 'Peter Kim',
-    gender: 'M', age: '68y 3m', memberId: '#2468029990004', enrolled: true, language: 'ko',
+    id: 'p11', initials: 'CM', name: 'Clara Mitchell',
+    gender: 'F', age: '34y 2m', memberId: '#2468029990011', enrolled: true, language: 'en',
     agentAssigned: '', agentRole: '', outreachDots: ['success','success','success'],
     lace: 'Low', tocType: 'IP',
     outreachType: '7d', outreachLeft: '6d left', onCall: false, callDuration: null,
     status: 'completed', goals: { met: 3, total: 3 },
-    nextAction: 'All goals met – discharge complete',
+    nextAction: 'All goals met – enrollment complete',
     aiInsights: [
-      { label: 'Post-Surgical', cls: 'ai-tag-care', icon: 'solar:clipboard-heart-bold' }
+      { label: 'Benefits Enrolled', cls: 'ai-tag-care', icon: 'solar:clipboard-check-bold' }
     ],
     tocStatus: 'enrolled', dueOn: '07/20/2025', outreachAttended: 3, outreachDate: '11/10/25', nextOutreach: '11/17/2025',
     startDate: '08/01/2025', lastAdmission: '09/01/2025', assignee: 'Robin Bang', assigneeInitials: 'RB',
     readmission: 'No', tasks: 0, carePlanStatus: 'updated',
-    dischargeDate: '10/28/2025', facility: 'Mercy Hospital', admitReason: 'Cardiac stent placement', attempts: [],
+    dischargeDate: '10/28/2025', facility: 'Applied Laser Technologies', admitReason: 'Healthcare Benefits Update', attempts: [],
     goalsDetail: [
-      { name: 'Patient Outreach', desc: 'Establish first contact within 2 business days of discharge.', pass: true },
-      { name: 'Schedule ToC Appointment', desc: 'Book follow-up appointment with cardiologist.', pass: true },
-      { name: 'Medication Review', desc: 'Review post-stent antiplatelet medications.', pass: true }
+      { name: 'Patient Outreach', desc: 'Establish first contact regarding benefits.', pass: true },
+      { name: 'App Enrollment', desc: 'Help patient download and install Fold Care app.', pass: true },
+      { name: 'EHR Consent', desc: 'Securely share EHR access via Milu.', pass: true }
     ],
     callSummary: {
       keyPoints: [
-        'Patient recovering well from cardiac stent placement with no chest pain recurrence.',
-        'Confirmed taking dual antiplatelet therapy (aspirin + clopidogrel) as prescribed.',
-        'Follow-up with cardiologist scheduled for next week.',
-        'Advised to avoid heavy lifting for 2 more weeks per surgical guidelines.'
+        'Patient recovering well with new healthcare benefits access.',
+        'Confirmed DOB (February 21st, 1992) and interest in Collaborative Care.',
+        'Discussed Fold Care app and secure EHR sharing via Milu.',
+        'Informed patient that data protection and optionality are guaranteed.'
       ],
       actionItems: [
-        'Confirm cardiology follow-up appointment.',
-        'Send cardiac rehabilitation program information.',
-        'Schedule 30-day post-discharge check-in call.'
+        'Confirm Fold Care app installation.',
+        'Verify Milu EHR consent signature status.',
+        'Schedule follow-up check-in for app navigation support.'
       ]
     },
     callDate: '11/10/2025 09:30', callDurationFull: '06:12',
     callTranscript: [
-      { sender: 'agent', name: 'Anna', text: "Hello Peter, this is Anna from Fold Health calling for your post-discharge follow-up after your cardiac stent procedure. How are you feeling?", time: '9:30 AM' },
-      { sender: 'patient', name: 'Peter Kim', text: "Much better, thank you. The chest pain is completely gone now.", time: '9:30 AM' },
-      { sender: 'agent', name: 'Anna', text: "That's wonderful to hear. Have you been taking your aspirin and clopidogrel as prescribed by your cardiologist?", time: '9:31 AM' },
-      { sender: 'patient', name: 'Peter Kim', text: "Yes, every morning with breakfast. My wife helps me remember.", time: '9:31 AM' },
-      { sender: 'agent', name: 'Anna', text: "Great compliance, Peter. I see you have a cardiology follow-up scheduled. Remember to avoid heavy lifting for at least two more weeks. Is there anything else you need help with?", time: '9:32 AM' }
+      { sender: 'agent', name: 'Anna', text: "Hello Clara, this is Anna from Fold Health calling regarding your healthcare benefits enrollment. How are you today?", time: '9:30 AM' },
+      { sender: 'patient', name: 'Clara Mitchell', text: "I'm doing well, thank you. I'm interested in hearing about those benefits.", time: '9:30 AM' },
+      { sender: 'agent', name: 'Anna', text: "That's great. I see we have some new features in the Fold Care app including $0 medical services. Have you had a chance to look at the app yet?", time: '9:31 AM' },
+      { sender: 'patient', name: 'Clara Mitchell', text: "Not yet, I was waiting for the secure link you mentioned.", time: '9:31 AM' },
+      { sender: 'agent', name: 'Anna', text: "Of course, Clara. I'll send that over right now along with the Milu consent form for your records.", time: '9:32 AM' }
     ]
   },
   {
