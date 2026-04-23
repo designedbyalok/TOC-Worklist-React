@@ -10,7 +10,7 @@ import { CallTypeAvatar, DIR_LABEL } from '../Avatar/CallTypeAvatar';
 import styles from './DetailDrawer.module.css';
 
 /* ── Waveform data (seeded random heights for consistent look) ── */
-const WAVE_BARS = Array.from({ length: 80 }, (_, i) => {
+const WAVE_BARS = Array.from({ length: 120 }, (_, i) => {
   const seed = Math.sin(i * 12.9898 + 78.233) * 43758.5453;
   return 3 + (seed - Math.floor(seed)) * 12;
 });
@@ -77,6 +77,15 @@ export function DetailDrawer() {
   const onEnded = () => {
     setPlayState('idle');
     setElapsed(0);
+  };
+
+  const handleSeek = (e) => {
+    if (!audioRef.current || duration === 0) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(1, x / rect.width));
+    audioRef.current.currentTime = pct * duration;
+    setElapsed(audioRef.current.currentTime);
   };
 
   if (!detailPatient) return null;
@@ -228,7 +237,7 @@ export function DetailDrawer() {
                 <span className={styles.audioTime}>
                   {playState === 'idle' ? formatTime(duration) : formatTime(elapsed)}
                 </span>
-                <div className={styles.waveformContainer}>
+                <div className={styles.waveformContainer} onClick={handleSeek}>
                   <div className={styles.waveform}>
                     {WAVE_BARS.map((h, i) => (
                       <div

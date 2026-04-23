@@ -283,13 +283,14 @@
   overflow: hidden;
   height: 27px;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .waveform {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 1.5px;
+  justify-content: space-between;
   height: 15px;
   overflow: hidden;
   position: relative;
