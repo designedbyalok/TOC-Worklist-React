@@ -87,6 +87,19 @@
   cursor: not-allowed;
 }
 
+/* Ghost variant — no border/ring; only a subtle hover/open background. */
+.triggerGhost {
+  border-color: transparent;
+  background: transparent;
+}
+.triggerGhost:hover:not(:disabled),
+.triggerGhost:focus,
+.triggerGhost[aria-expanded="true"] {
+  border-color: transparent;
+  background: var(--neutral-75);
+  box-shadow: none;
+}
+
 /* Error variant — red border, and hover/focus/open paint a 2px
    --status-error-light ring (matches Input's error hover state). */
 .triggerError,

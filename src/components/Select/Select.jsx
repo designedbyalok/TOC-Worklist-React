@@ -19,7 +19,7 @@ import styles from './Select.module.css';
  *  - onChange   (value) => void
  *  - placeholder (string)
  *  - disabled   (boolean)
- *  - variant    'default' | 'error'
+ *  - variant    'default' | 'error' | 'ghost' (borderless, hover-only bg)
  *  - className  (string)
  *  - style      (object)        — inline style on the outer wrap (e.g. widths)
  *  - id         (string)        — passes through to the trigger button
@@ -229,6 +229,7 @@ export function Select({
         type="button"
         className={[
           styles.trigger,
+          variant === 'ghost' ? styles.triggerGhost : '',
           isError ? styles.triggerError : '',
           (multiple ? selectedMulti.length === 0 : !selected) ? styles.triggerPlaceholder : '',
         ].filter(Boolean).join(' ')}

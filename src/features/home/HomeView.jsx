@@ -108,6 +108,7 @@ export function HomeView() {
           options={VIEW_OPTIONS}
           value={view}
           onChange={changeView}
+          variant="ghost"
           leadingIcon={view === 'today' ? 'solar:sun-linear' : 'solar:chart-linear'}
           style={{ width: 148 }}
         />
