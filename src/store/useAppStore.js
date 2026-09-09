@@ -9115,6 +9115,7 @@ export const useAppStore = create((set, get) => ({
 
     const mappedMembers = data.map(m => ({
       id: m.id,
+      patientId: m.patient_id,
       memberId: m.member_id,
       name: m.name,
       in: m.initials,
