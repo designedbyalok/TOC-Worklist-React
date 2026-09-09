@@ -1,11 +1,30 @@
 .today {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  padding: var(--space-4) var(--space-5) var(--space-6);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fixed top region — greeting, Panel Pulse, and the program tab strip, on a
+   white background through the tab strip. Never scrolls; the table below owns
+   the scroll. */
+.top {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  padding: var(--space-4) var(--space-5) var(--space-4);
+  background: var(--neutral-0);
+  border-bottom: 0.5px solid var(--neutral-150);
+}
+
+/* Table region — fills the remaining height; WorklistShell scrolls inside it. */
+.tableRegion {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── Header strip ───────────────────────────────────────────── */
@@ -198,74 +217,47 @@
   font-size: var(--font-xs);
 }
 
-/* ── Feed ───────────────────────────────────────────────────── */
-.feed {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
+/* ── Table cells ────────────────────────────────────────────── */
+/* Row + sticky wrappers + member cell come straight from the shared worklist
+   base, so the Today table reads identically to TOC / HCC / CCM. */
 .row {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-5);
-  padding: calc(var(--space-3) + var(--space-1) / 2) var(--space-4);
-  background: var(--neutral-0);
-  border: 0.5px solid var(--neutral-150);
-  border-radius: 12px;
+  composes: row rowClickable from '../../../components/WorklistShell/WorklistRow.module.css';
+}
+.stickyLeft { composes: stickyLeft from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.stickyRight { composes: stickyRight from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.membersTd { composes: membersTd from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.patientCell { composes: patientCell from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.patientName { composes: patientName from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.patientNameLink { composes: patientNameLink from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.patientDemo { composes: patientDemo from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.patientMeta { composes: patientMeta from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.foldId { composes: foldId from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.langBadge { composes: langBadge from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.langTooltip { composes: langTooltip from '../../../components/WorklistShell/WorklistRow.module.css'; }
+.actionsCell { composes: actionsCell from '../../../components/WorklistShell/WorklistRow.module.css'; }
+
+/* Body cells share the base .td padding/typography; NBA is the one multi-line
+   column, so it wraps and top-aligns while the rest stay middle-aligned. */
+.programsTd,
+.statusTd,
+.actionsTd {
+  composes: td from '../../../components/WorklistShell/WorklistRow.module.css';
+}
+.nbaTd {
+  composes: td from '../../../components/WorklistShell/WorklistRow.module.css';
+  white-space: normal;
+  vertical-align: top;
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
 }
 
-/* Urgency accent: a colored inset bar on the left edge. Uses inset shadow, not
-   a thick left border, so the card keeps its hairline on all four sides and
-   rows stay aligned whether or not they carry an accent. */
-.accOverdue { box-shadow: inset 3px 0 0 var(--status-error); }
-.accWatch { box-shadow: inset 3px 0 0 var(--status-warning); }
+.programList { display: flex; gap: var(--space-1); flex-wrap: wrap; }
 
-/* identity zone */
-.identity {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  width: 232px;
-  flex-shrink: 0;
-}
-
-.idText { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
-
-.nameRow { display: flex; align-items: baseline; gap: calc(var(--space-1) + var(--space-1) / 2); }
-
-.name {
-  padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  font-size: var(--font-md);
-  font-weight: 600;
-  color: var(--neutral-500);
-}
-
-.name:hover { color: var(--primary-300); text-decoration: underline; }
-
-.age { font-size: var(--font-sm); color: var(--neutral-400); }
-
-.subline {
-  font-size: var(--font-sm);
-  color: var(--neutral-400);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.programs { display: flex; gap: var(--space-1); flex-wrap: wrap; margin-top: calc(var(--space-1) / 4); }
-
-/* center zone */
-.center {
-  flex: 1;
-  min-width: 0;
+.nbaStack {
   display: flex;
   flex-direction: column;
   gap: calc(var(--space-1) + var(--space-1) / 2);
+  min-width: 0;
 }
 
 .agentChip {
@@ -303,16 +295,6 @@
   text-align: left;
 }
 
-/* right zone */
-.right {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: calc(var(--space-3) + var(--space-1) / 2);
-}
-
-.actionBtns { display: flex; align-items: center; gap: calc(var(--space-1) / 2); }
-
 /* empty */
 .empty {
   display: flex;
@@ -335,10 +317,10 @@
   .adherence { grid-column: 1 / -1; }
 }
 
-/* Phone / narrow: stack the header, and stack each NBA row into a single
-   column so nothing is pushed off-screen behind a horizontal scroll. */
+/* Phone / narrow: stack the header. The table keeps its columns and scrolls
+   horizontally within its own region (Member + Actions stay pinned). */
 @media (max-width: 700px) {
-  .today { padding: var(--space-3); gap: var(--space-3); }
+  .top { padding: var(--space-3); gap: var(--space-3); }
 
   .header { flex-direction: column; align-items: stretch; gap: var(--space-3); }
   .headStats {
@@ -358,12 +340,6 @@
      grid column wider than the screen. */
   .adherenceLegend { flex-wrap: wrap; row-gap: calc(var(--space-1) + var(--space-1) / 2); }
   .panelHealthLink { margin-left: 0; }
-
-  /* NBA row → vertical card. Identity, story, and the risk/actions cluster
-     stack; the cluster spreads risk-left / actions-right on its own line. */
-  .row { flex-direction: column; align-items: stretch; gap: var(--space-3); }
-  .identity { width: auto; }
-  .right { justify-content: space-between; }
 }
 
 /* Very narrow: one stat card per row keeps the numbers legible. minmax(0,1fr)

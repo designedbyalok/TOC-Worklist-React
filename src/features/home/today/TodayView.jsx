@@ -7,10 +7,25 @@ import { Avatar } from '../../../components/Avatar/Avatar';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { TabStrip } from '../../../components/TabStrip/TabStrip';
 import { Link } from '../../../components/Link/Link';
-import { CardSkeleton } from '../../../components/CardSkeleton/CardSkeleton';
+import { WorklistShell } from '../../../components/WorklistShell/WorklistShell';
+import { FoldIdTag } from '../../../components/FoldIdTag/FoldIdTag';
+import { Tooltip } from '../../../components/Tooltip/Tooltip';
+import { formatDobDisplay, deriveDob } from '../../../lib/patientDob';
 import { toast } from '../../../components/Toast/sonnerToast';
 import { NBA_ITEMS, PANEL_TODAY } from './nbaData';
 import styles from './TodayView.module.css';
+
+const LANG_MAP = { en: 'English', es: 'Spanish', zh: 'Chinese', yue: 'Cantonese', ko: 'Korean', vi: 'Vietnamese', hi: 'Hindi', pa: 'Punjabi' };
+
+// Member | Programs | Next Best Action | Status | Actions. Member pins left and
+// Actions pins right (toc parity) so both stay in view when the table scrolls.
+const TODAY_COLUMNS = [
+  { key: 'member', label: 'Member', sticky: 'left', width: 288 },
+  { key: 'programs', label: 'Programs', width: 168 },
+  { key: 'nba', label: 'Next Best Action' },
+  { key: 'status', label: 'Status', width: 120, align: 'left' },
+  { key: 'actions', label: 'Actions', sticky: 'right', width: 176, align: 'left' },
+];
 
 // The four Panel Pulse buckets, in display order. `match` maps a card to the
 // feed rows it filters to; `accent` picks the number + border color token.
@@ -58,16 +73,15 @@ function bindScenarios(scenarios, patients) {
       age: p?.age ?? sc.fallbackAge,
       payer: p?.coverageType || sc.fallbackPayer,
       provider: p?.pcp || sc.fallbackProvider,
+      // Member-cell identity — mirrors the toc worklist row.
+      gender: p?.gender || 'F',
+      memberId: p?.memberId || '',
+      language: p?.language || 'en',
+      dob: p?.dob || null,
+      initials: p?.initials || initials(name),
       reason: sc.reason.replace('{first}', firstName(name)),
     };
   });
-}
-
-// Left-accent: overdue rows read red, High/Rising rows amber, the rest flat.
-function accentClass(item) {
-  if (item.urgency === 'overdue') return styles.accOverdue;
-  if (item.riskTier === 'High' || item.riskTier === 'Rising') return styles.accWatch;
-  return '';
 }
 
 function greeting() {
@@ -121,52 +135,91 @@ function AdherenceCard({ onOpen }) {
   );
 }
 
-function NbaRow({ item, onSnooze, onSoon, onOpen }) {
+// Member cell — identical structure to the toc worklist row (Avatar + name
+// link + (gender•age) DOB tooltip + FoldId • language badge), composing the
+// shared WorklistRow member-cell classes.
+function MemberCell({ item, onOpen, showToast }) {
+  const open = (e) => { e.stopPropagation(); onOpen(item); };
+  const dobLabel = formatDobDisplay(item.dob) || deriveDob(item.age, item.patientName);
+  return (
+    <td
+      className={`${styles.membersTd} ${styles.stickyLeft}`}
+      style={{ left: 0, cursor: 'pointer' }}
+      onClick={open}
+      role="button"
+      tabIndex={0}
+      title="Open patient"
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(e); } }}
+    >
+      <div className={styles.patientCell}>
+        <Avatar variant="patient" initials={item.initials} />
+        <div>
+          <div className={styles.patientName}>
+            <button className={styles.patientNameLink} onClick={open} tabIndex={-1}>{item.patientName}</button>{' '}
+            <Tooltip label={dobLabel ? `DOB: ${dobLabel}` : ''} placement="bottom">
+              <span className={styles.patientDemo}>({item.gender}•{item.age})</span>
+            </Tooltip>
+          </div>
+          <div className={styles.patientMeta}>
+            <span onClick={e => e.stopPropagation()} style={{ display: 'inline-flex' }}>
+              <FoldIdTag id={item.memberId} className={styles.foldId} showToast={showToast} />
+            </span>{' '}•{' '}
+            <button type="button" className={styles.langBadge} onClick={e => e.stopPropagation()} tabIndex={-1}>
+              {(item.language || 'en').toUpperCase()}
+              <span className={styles.langTooltip}>Preferred Language: {LANG_MAP[item.language] || 'English'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </td>
+  );
+}
+
+function TodayRow({ item, onSnooze, onSoon, onOpen, showToast }) {
   const open = () => onOpen(item);
   return (
-    <div className={[styles.row, accentClass(item)].filter(Boolean).join(' ')}>
-      <div className={styles.identity}>
-        <Avatar type="initial" variant="patient" size="M" initials={initials(item.patientName)} />
-        <div className={styles.idText}>
-          <div className={styles.nameRow}>
-            <button type="button" className={styles.name} onClick={open}>{item.patientName}</button>
-            <span className={styles.age}>{item.age}</span>
-          </div>
-          <div className={styles.subline}>{item.payer} · {item.provider}</div>
-          <div className={styles.programs}>
-            {item.programs.map((p) => <Badge key={p} tone="grey" size="S" label={p} />)}
-          </div>
-        </div>
-      </div>
+    <tr className={styles.row} onClick={open}>
+      <MemberCell item={item} onOpen={onOpen} showToast={showToast} />
 
-      <div className={styles.center}>
-        {item.isAgent && (
-          <div className={styles.agentChip}>
-            <Icon name="solar:magic-stick-3-linear" size={12} />
-            <span className={styles.agentName}>{item.agentName} · Unity agent</span>
-            {item.agentStatus && <span className={styles.agentStatus}>· {item.agentStatus}</span>}
-          </div>
-        )}
-        <div className={styles.reasonLine}>
-          <Icon name={item.reasonIcon || 'solar:info-circle-linear'} size={15} className={styles.reasonIcon} />
-          <span className={styles.reason}>{item.reason}</span>
+      <td className={styles.programsTd}>
+        <div className={styles.programList}>
+          {item.programs.map((p) => <Badge key={p} tone="grey" size="S" label={p} />)}
         </div>
-        <Link className={styles.suggestedLink} onClick={open}>
-          <Icon name="solar:arrow-right-linear" size={13} />
-          {item.suggestedAction}
-        </Link>
-      </div>
+      </td>
 
-      <div className={styles.right}>
+      <td className={styles.nbaTd}>
+        <div className={styles.nbaStack}>
+          {item.isAgent && (
+            <div className={styles.agentChip}>
+              <Icon name="solar:magic-stick-3-linear" size={12} />
+              <span className={styles.agentName}>{item.agentName} · Unity agent</span>
+              {item.agentStatus && <span className={styles.agentStatus}>· {item.agentStatus}</span>}
+            </div>
+          )}
+          <div className={styles.reasonLine}>
+            <Icon name={item.reasonIcon || 'solar:info-circle-linear'} size={15} className={styles.reasonIcon} />
+            <span className={styles.reason}>{item.reason}</span>
+          </div>
+          <Link className={styles.suggestedLink} onClick={(e) => { e.stopPropagation(); open(); }}>
+            <Icon name="solar:arrow-right-linear" size={13} />
+            {item.suggestedAction}
+          </Link>
+        </div>
+      </td>
+
+      <td className={styles.statusTd}>
         <Badge tone={RISK_TONE[item.riskTier] || 'grey'} size="M" label={item.riskTier} />
-        <div className={styles.actionBtns}>
+      </td>
+
+      <td className={`${styles.actionsTd} ${styles.stickyRight}`} onClick={e => e.stopPropagation()}>
+        <div className={styles.actionsCell}>
           <ActionButton size="S" icon="solar:phone-calling-linear" tooltip="Call" onClick={() => onSoon('Call')} />
           <ActionButton size="S" icon="solar:chat-round-linear" tooltip="Text" onClick={() => onSoon('Text')} />
           <ActionButton size="S" icon="solar:alarm-linear" tooltip="Snooze" onClick={() => onSnooze(item)} />
           <ActionButton size="S" icon="solar:users-group-rounded-linear" tooltip="Reassign" onClick={() => onSoon('Reassign')} />
         </div>
-      </div>
-    </div>
+      </td>
+    </tr>
   );
 }
 
@@ -175,11 +228,14 @@ export function TodayView() {
   const patientsLoading = useAppStore((s) => s.allPatientsLoading);
   const fetchAllPatients = useAppStore((s) => s.fetchAllPatients);
   const navigateToPatient = useAppStore((s) => s.navigateToPatient);
+  const showToast = useAppStore((s) => s.showToast);
   const userName = useAppStore((s) => s.currentUserProfile?.name);
 
   const [pulse, setPulse] = useState(null);   // active Panel Pulse bucket
   const [lens, setLens] = useState('All');     // program lens
   const [dismissed, setDismissed] = useState(() => new Set()); // snoozed row ids
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   useEffect(() => { fetchAllPatients(); }, [fetchAllPatients]);
 
@@ -204,6 +260,14 @@ export function TodayView() {
     return true;
   }), [rows, pulse, lens]);
 
+  // Snap back to page 1 whenever the active filter changes the result set.
+  useEffect(() => { setPage(1); }, [lens, pulse]);
+
+  const paged = useMemo(
+    () => filtered.slice((page - 1) * perPage, page * perPage),
+    [filtered, page, perPage],
+  );
+
   const openPatient = (item) => {
     if (item.patientId) navigateToPatient(item.patientId, { profileTab: 'Monitoring' });
     else toast('Patient profile is still loading.');
@@ -217,6 +281,9 @@ export function TodayView() {
 
   return (
     <div className={styles.today}>
+      {/* Fixed top region — white background through the tab strip. Only the
+          table below scrolls. */}
+      <div className={styles.top}>
       {/* Header strip */}
       <div className={styles.header}>
         <div className={styles.greetBlock}>
@@ -269,23 +336,33 @@ export function TodayView() {
 
       {/* Program lens — standard app tab bar */}
       <TabStrip items={LENS_TABS} activeKey={lens} onChange={setLens} fullWidth={false} />
+      </div>
 
-      {/* Feed */}
-      {showSkeleton ? (
-        <div className={styles.feed}><CardSkeleton /><CardSkeleton /><CardSkeleton /></div>
-      ) : filtered.length === 0 ? (
-        <div className={styles.empty}>
-          <Icon name="solar:check-circle-linear" size={28} />
-          <p className={styles.emptyTitle}>Queue clear.</p>
-          <p className={styles.emptyBody}>No actions match this filter right now. Nice work.</p>
-        </div>
-      ) : (
-        <div className={styles.feed}>
-          {filtered.map((it) => (
-            <NbaRow key={it.id} item={it} onSnooze={onSnooze} onSoon={onSoon} onOpen={openPatient} />
-          ))}
-        </div>
-      )}
+      {/* Scrolling table — Member | Programs | Next Best Action | Status | Actions */}
+      <div className={styles.tableRegion}>
+        <WorklistShell
+          header={null}
+          columns={TODAY_COLUMNS}
+          rows={paged}
+          loading={showSkeleton}
+          minTableWidth={1040}
+          page={page}
+          perPage={perPage}
+          totalItems={filtered.length}
+          onPageChange={setPage}
+          onPageSizeChange={(n) => { setPerPage(n); setPage(1); }}
+          emptyState={(
+            <div className={styles.empty}>
+              <Icon name="solar:check-circle-linear" size={28} />
+              <p className={styles.emptyTitle}>Queue clear.</p>
+              <p className={styles.emptyBody}>No actions match this filter right now. Nice work.</p>
+            </div>
+          )}
+          renderRow={(it) => (
+            <TodayRow key={it.id} item={it} onSnooze={onSnooze} onSoon={onSoon} onOpen={openPatient} showToast={showToast} />
+          )}
+        />
+      </div>
     </div>
   );
 }
