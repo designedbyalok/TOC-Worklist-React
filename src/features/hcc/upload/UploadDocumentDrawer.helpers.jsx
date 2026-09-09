@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '../../../components/Button/Button';
 import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { CloseButton } from '../../../components/CloseButton/CloseButton';
 import { MenuPopover } from '../../../components/MenuPopover/MenuPopover';
@@ -326,10 +327,10 @@ export function RecordSection({ title, iconName, iconColor, rightAction, rows, o
         >
           <Icon name={iconName} size={14} color={iconColor} />
           <span>{title}</span>
-          <Icon
-            name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'}
+          <DownChevronIcon
             size={12}
             color="var(--neutral-400)"
+            style={collapsed ? { transform: 'rotate(-90deg)' } : undefined}
           />
         </button>
         {rightAction && !collapsed && (
@@ -531,10 +532,10 @@ export function WhatHappensNext() {
       <button type="button" className={styles.whatNextHead} onClick={() => setOpen(v => !v)}>
         <Icon name="solar:lightbulb-bolt-linear" size={14} color="var(--status-info, #145ECC)" />
         <span className={styles.whatNextHeadLabel}>What happens next?</span>
-        <Icon
-          name={open ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'}
+        <DownChevronIcon
           size={12}
           color="var(--status-info, #145ECC)"
+          style={!open ? { transform: 'rotate(-90deg)' } : undefined}
         />
       </button>
       {open && (

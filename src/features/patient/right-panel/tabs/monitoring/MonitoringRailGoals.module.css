@@ -1,0 +1,84 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.railGroupLabel {
+  font-size: var(--font-base);
+  font-weight: 500;
+  color: var(--neutral-400);
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.colHead,
+.row {
+  display: grid;
+  grid-template-columns:
+    calc(var(--space-6) + var(--space-1))
+    minmax(0, 1fr)
+    minmax(var(--space-16), calc(var(--space-16) + var(--space-8) + var(--space-2)));
+  align-items: center;
+  column-gap: var(--space-2);
+}
+
+.colHead {
+  padding: var(--space-1) 0;
+  border-bottom: 0.5px solid var(--neutral-150);
+}
+
+.colHead span {
+  font-size: var(--font-sm);
+  color: var(--neutral-300);
+}
+
+.row {
+  padding: var(--space-3) 0;
+  border-bottom: 0.5px solid var(--neutral-100);
+  cursor: pointer;
+  border-radius: var(--space-2);
+}
+
+.row:hover {
+  background: var(--neutral-50);
+}
+
+.pCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.priorityBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.titleCell {
+  min-width: 0;
+}
+
+.statusCell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.empty {
+  font-size: var(--font-sm);
+  color: var(--neutral-300);
+  padding: var(--space-2) 0;
+  line-height: var(--leading-normal);
+}

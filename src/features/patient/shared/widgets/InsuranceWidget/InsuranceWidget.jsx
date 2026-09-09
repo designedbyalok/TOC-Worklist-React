@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from '../../../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../../../components/Icon/DownChevronIcon';
 import { ActionButton } from '../../../../../components/ActionButton/ActionButton';
 import { Avatar } from '../../../../../components/Avatar/Avatar';
 import { Badge } from '../../../../../components/Badge/Badge';
@@ -29,10 +30,10 @@ export function InsuranceWidget() {
     <div className={styles.widget}>
       <div className={styles.header}>
         <button className={styles.titleBtn} onClick={() => setCollapsed(v => !v)}>
-          <Icon
-            name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'}
+          <DownChevronIcon
             size={13}
             color="var(--neutral-300)"
+            style={collapsed ? { transform: 'rotate(-90deg)' } : undefined}
           />
           <span className={styles.title}>Insurance</span>
         </button>

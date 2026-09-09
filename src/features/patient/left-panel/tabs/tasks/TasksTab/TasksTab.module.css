@@ -12,6 +12,10 @@
   padding: 12px 16px 16px;
 }
 
+.compact {
+  container-type: inline-size;
+}
+
 .empty {
   font-size: var(--font-base);
   color: var(--neutral-300);
@@ -129,6 +133,21 @@
   color: var(--neutral-400);
   line-height: 1.35;
 }
+.taskTitleBtn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: var(--font-base);
+  color: var(--neutral-400);
+  line-height: 1.35;
+  cursor: pointer;
+}
+.taskTitleBtn:hover {
+  color: var(--neutral-500);
+}
 .taskTitleDone {
   color: var(--neutral-500);
 }
@@ -169,4 +188,59 @@
 }
 .dueOverdue {
   color: var(--status-error);
+}
+
+.compact .colHead,
+.compact .row {
+  grid-template-columns:
+    calc(var(--space-6) + var(--space-1))
+    minmax(0, 1fr)
+    var(--space-8)
+    minmax(calc(var(--space-12) + var(--space-1)), calc(var(--space-16) + var(--space-2)))
+    minmax(calc(var(--space-16) + var(--space-1)), calc(var(--space-16) + var(--space-6)));
+  column-gap: var(--space-2);
+  align-items: center;
+}
+
+.compact .colHead span {
+  font-size: var(--font-sm);
+}
+
+.compact .checkCell,
+.compact .pCell {
+  padding-top: 0;
+  align-items: center;
+}
+
+.compact .assigneeCell {
+  min-width: 0;
+  align-items: center;
+}
+
+.compact .pCell button {
+  padding: 0;
+  margin: 0;
+}
+
+.compact .dueCell {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.compact .dueCell > div {
+  width: 100%;
+  min-width: 0;
+}
+
+.compact .dueCell button {
+  width: 100%;
+  max-width: 100%;
+}
+
+@container (max-width: 360px) {
+  .compact .colHead .assigneeCell,
+  .compact .colHead .dueCell {
+    font-size: var(--font-sm);
+  }
 }

@@ -3,10 +3,16 @@ import { useAppStore } from '../../../../../store/useAppStore';
 import { Badge } from '../../../../../components/Badge/Badge';
 import { Button } from '../../../../../components/Button/Button';
 import { Icon } from '../../../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../../../components/Icon/DownChevronIcon';
 import { Link } from '../../../../../components/Link/Link';
 import { Toggle } from '../../../../../components/Toggle/Toggle';
 import { Alert } from '../../../../../components/Alert/Alert';
 import { toast } from '../../../../../components/Toast/sonnerToast';
+import { TasksTab } from '../../../left-panel/tabs/tasks/TasksTab/TasksTab';
+import { groupTasksForTab } from '../../../left-panel/tabs/tasks/TasksTab/groupTasksForTab';
+import { TaskDetailDrawer } from '../../../../tasks/TaskDetailDrawer';
+import { ensureMonitoringTasksForPatient, monitoringTasksToTabData } from './monitoringData';
+import { MonitoringRailGoals } from './MonitoringRailGoals';
 import styles from './MonitoringTab.module.css';
 
 const STORY_FILTERS = [
@@ -78,8 +84,7 @@ function ProgramCard({ program, defaultExpanded, onAction }) {
           <Icon name="solar:calendar-linear" size={13} />
           {program.next}
         </span>
-        <Icon
-          name="solar:alt-arrow-down-linear"
+        <DownChevronIcon
           size={16}
           className={[styles.programChevron, expanded ? styles.programChevronOpen : ''].filter(Boolean).join(' ')}
         />
@@ -115,10 +120,42 @@ export function MonitoringTab({ patient }) {
   const fetchPatientMonitoring = useAppStore((s) => s.fetchPatientMonitoring);
   const setPatientProfileTab = useAppStore((s) => s.setPatientProfileTab);
   const setCareManagementTab = useAppStore((s) => s.setCareManagementTab);
+  const allTasks = useAppStore((s) => s.tasks);
+  const createTask = useAppStore((s) => s.createTask);
+  const fetchTasks = useAppStore((s) => s.fetchTasks);
   const [railWidth, setRailWidth] = useState(DEFAULT_RAIL_WIDTH);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
   const bodyRowRef = useRef(null);
 
+  const memberTasks = useMemo(() => {
+    if (!patient) return [];
+    const memberKey = patient.memberId ? String(patient.memberId) : null;
+    return (allTasks || []).filter(
+      (t) => (memberKey && String(t.patient_id) === memberKey)
+        || (patient.id && String(t.patient_id) === String(patient.id))
+        || (patient.name && t.member === patient.name)
+        || (memberKey && t.source_key?.startsWith(`monitoring-${memberKey}-`)),
+    );
+  }, [allTasks, patient]);
+
+  const tasksTabData = useMemo(() => {
+    if (memberTasks.length > 0) return groupTasksForTab(memberTasks);
+    return monitoringTasksToTabData(data?.tasks);
+  }, [memberTasks, data?.tasks]);
+
+  const liveSelectedTask = selectedTaskId
+    ? (allTasks || []).find((t) => t.id === selectedTaskId) || null
+    : null;
+
   useEffect(() => { if (memberId) fetchPatientMonitoring(memberId); }, [memberId, fetchPatientMonitoring]);
+  useEffect(() => { fetchTasks?.(); }, [fetchTasks]);
+  useEffect(() => {
+    if (!patient?.id || !data?.tasks?.length) return;
+    ensureMonitoringTasksForPatient(patient, data.tasks, {
+      getState: useAppStore.getState,
+      createTask,
+    });
+  }, [patient, data?.tasks, createTask]);
 
   const startRailResize = useCallback((e) => {
     e.preventDefault();
@@ -257,23 +294,19 @@ export function MonitoringTab({ patient }) {
             Build EHR summary
           </Link>
 
-          <RailGroup label="Open tasks">
-            {data.tasks.map((t, i) => (
-              <RailCard key={i} subTone={t.tone}>
-                <span className={styles.railCardTitle}>{t.title}</span>
-                {t.sub && <span className={styles.railCardSub}>{t.sub}</span>}
-              </RailCard>
-            ))}
-          </RailGroup>
+          <div className={styles.railGroup}>
+            <div className={styles.railGroupLabel}>Open tasks</div>
+            <TasksTab
+              hideToolbar
+              interactive
+              compact
+              className={styles.railTasks}
+              data={tasksTabData}
+              onTaskClick={(task) => { if (task?.id) setSelectedTaskId(task.id); }}
+            />
+          </div>
 
-          <RailGroup label="Active goals">
-            {data.goals.map((g, i) => (
-              <RailCard key={i}>
-                <span className={styles.railCardBody}>“{g.text}”</span>
-                {g.conf && <span className={styles.railCardMeta}>conf {g.conf}</span>}
-              </RailCard>
-            ))}
-          </RailGroup>
+          <MonitoringRailGoals patient={patient} />
 
           <RailGroup label="Care gaps">
             {data.gaps.map((g, i) => (
@@ -286,6 +319,13 @@ export function MonitoringTab({ patient }) {
           </RailGroup>
         </aside>
       </div>
+      {liveSelectedTask && (
+        <TaskDetailDrawer
+          task={liveSelectedTask}
+          onClose={() => setSelectedTaskId(null)}
+          onSelectTask={(t) => setSelectedTaskId(t?.id ?? null)}
+        />
+      )}
     </div>
   );
 }
@@ -386,8 +426,7 @@ function StorySection({ events }) {
                       aria-label={isCollapsed ? 'Expand story event' : 'Collapse story event'}
                       onClick={() => setCollapsed((prev) => ({ ...prev, [rowKey]: !prev[rowKey] }))}
                     >
-                      <Icon
-                        name="solar:alt-arrow-down-linear"
+                      <DownChevronIcon
                         size={14}
                         className={isCollapsed ? styles.storyChevronCollapsed : styles.storyChevron}
                       />

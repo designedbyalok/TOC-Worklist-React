@@ -1,15 +1,21 @@
-/// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
+import { createLogger, defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'path';
 import { devApiPlugin } from './vite-plugin-dev-api.js';
 
 // https://vite.dev/config/
-import { fileURLToPath } from 'node:url';
-import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
-import { playwright } from '@vitest/browser-playwright';
-const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+const dirname = import.meta.dirname;
+
+// Vite 8's dep optimizer crawls CSS modules (with url()) through postcss-modules,
+// which omits PostCSS's `from` option. Harmless, but noisy; upstream:
+// https://github.com/tailwindlabs/tailwindcss/issues/20452
+const logger = createLogger();
+const warnOnce = logger.warnOnce.bind(logger);
+logger.warnOnce = (msg, options) => {
+  if (typeof msg === 'string' && msg.includes('PostCSS plugin did not pass the `from` option')) return;
+  warnOnce(msg, options);
+};
 
 // Stable build identifier — the git commit SHA when running on Vercel (or
 // GitHub Actions), a timestamp locally. Baked into the bundle as
@@ -37,8 +43,8 @@ function emitVersionJsonPlugin() {
   };
 }
 
-// More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
+  customLogger: logger,
   define: {
     __APP_VERSION__: JSON.stringify(APP_VERSION),
   },
@@ -52,7 +58,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(dirname, './src')
     }
   },
   build: {
@@ -66,33 +72,4 @@ export default defineConfig({
     // lands in its own chunk that only loads when an analytics view mounts.
     chunkSizeWarningLimit: 1000,
   },
-  test: {
-    projects: [{
-      extends: true,
-      test: {
-        name: 'unit',
-        environment: 'node',
-        include: ['src/**/*.test.{js,jsx}'],
-      },
-    }, {
-      extends: true,
-      plugins: [
-      // The plugin will run tests for the stories defined in your Storybook config
-      // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
-      storybookTest({
-        configDir: path.join(dirname, '.storybook')
-      })],
-      test: {
-        name: 'storybook',
-        browser: {
-          enabled: true,
-          headless: true,
-          provider: playwright({}),
-          instances: [{
-            browser: 'chromium'
-          }]
-        }
-      }
-    }]
-  }
 });

@@ -1,5 +1,6 @@
 import { useState, useMemo, useId, cloneElement, isValidElement } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import { Badge } from '../../../components/Badge/Badge';
 import { Button } from '../../../components/Button/Button';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
@@ -743,7 +744,7 @@ function StepConfigure({ data, onChange, embedDomains }) {
             fontFamily: "'Inter', sans-serif", fontSize: 'var(--font-md)', fontWeight: 500, color: 'var(--neutral-400)',
           }}
         >
-          <Icon name={advancedOpen ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'} size={14} color="#6F7A90" />
+          <DownChevronIcon size={14} color="#6F7A90" style={!advancedOpen ? { transform: 'rotate(-90deg)' } : undefined} />
           Additional Settings
           <span style={{ fontSize: 'var(--font-xs)', fontWeight: 400, color: 'var(--neutral-200)', marginLeft: 'auto' }}>
             {advancedOpen ? 'Collapse' : 'Expand'}
@@ -844,7 +845,7 @@ function StepPreview({ data, onChange, embedDomains }) {
           }}
         >
           <span style={{ fontSize: 'var(--font-md)', fontWeight: 500, color: 'var(--neutral-400)', flex: 1 }}>{data.name || 'Widget'}</span>
-          <Icon name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'} size={12} color="#8A94A8" />
+          <DownChevronIcon size={12} color="#8A94A8" style={collapsed ? { transform: 'rotate(-90deg)' } : undefined} />
         </button>
 
         {/* Collapsible content */}

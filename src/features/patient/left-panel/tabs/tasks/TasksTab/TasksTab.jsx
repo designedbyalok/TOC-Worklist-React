@@ -1,12 +1,46 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Icon } from '../../../../../../components/Icon/Icon';
 import { ActionButton } from '../../../../../../components/ActionButton/ActionButton';
 import { PriorityIcon } from '../../../../../../components/PriorityIcon/PriorityIcon';
 import { AssigneeChange } from '../../../../../../components/AssigneeChange/AssigneeChange';
+import { useAppStore } from '../../../../../../store/useAppStore';
+import { TaskDatePicker, DetailDropdown } from '../../../../../../features/tasks/TasksViewDropdowns';
+import { PRIORITY_OPTIONS, getInitials, isOverdue } from '../../../../../../features/tasks/TasksView.utils';
 import { PATIENT_TASKS_MOCK } from '../../../../data/patientTasksMock';
 import styles from './TasksTab.module.css';
 
 const SCOPES = ['My Tasks', "Patient's Task"];
+
+function useAssigneeOptions() {
+  const taskProfiles = useAppStore(s => s.taskProfiles);
+  const currentUserProfile = useAppStore(s => s.currentUserProfile);
+  return useMemo(() => {
+    const list = [];
+    const seen = new Set();
+    if (currentUserProfile?.id) {
+      list.push({
+        id: currentUserProfile.id,
+        name: `${currentUserProfile.name} (You)`,
+        initials: getInitials(currentUserProfile.name),
+        role: currentUserProfile.role,
+        _realName: currentUserProfile.name,
+      });
+      seen.add(currentUserProfile.id);
+    }
+    (taskProfiles || []).forEach((p) => {
+      if (seen.has(p.id)) return;
+      list.push({
+        id: p.id,
+        name: p.name,
+        initials: getInitials(p.name),
+        role: p.role,
+        _realName: p.name,
+      });
+      seen.add(p.id);
+    });
+    return list;
+  }, [taskProfiles, currentUserProfile]);
+}
 
 function fmtDue(iso) {
   if (!iso) return '';
@@ -31,7 +65,7 @@ function MetaCounts({ task }) {
   );
 }
 
-function TaskRow({ task, done, onToggle, onClick }) {
+function StaticTaskRow({ task, done, onToggle, onClick }) {
   const hasMeta = task.subtasks > 0 || task.attachments > 0 || task.comments > 0;
   return (
     <div
@@ -66,7 +100,97 @@ function TaskRow({ task, done, onToggle, onClick }) {
   );
 }
 
-function TaskSection({ title, tasks, done, overdue, onToggle, onTaskClick }) {
+function InteractiveTaskRow({ task, storeTask, done, onToggle, onOpenTask, compact }) {
+  const updateTask = useAppStore(s => s.updateTask);
+  const showToast = useAppStore(s => s.showToast);
+  const assigneeOptions = useAssigneeOptions();
+  const hasMeta = task.subtasks > 0 || task.attachments > 0 || task.comments > 0;
+  const overdue = storeTask ? isOverdue(storeTask) : task.overdue;
+
+  if (!storeTask) {
+    return (
+      <StaticTaskRow
+        task={task}
+        done={done}
+        onToggle={onToggle}
+      />
+    );
+  }
+
+  return (
+    <div className={styles.row}>
+      <div className={styles.checkCell}>
+        {done ? (
+          <button className={styles.checkBtn} onClick={onToggle} aria-label="Mark incomplete">
+            <Icon name="solar:check-circle-bold" size={20} color="var(--status-success)" />
+          </button>
+        ) : (
+          <button className={styles.checkEmpty} onClick={onToggle} aria-label="Mark complete" />
+        )}
+      </div>
+      <div className={styles.nameCell}>
+        <button
+          type="button"
+          className={`${styles.taskTitleBtn} ${done ? styles.taskTitleDone : ''}`}
+          onClick={() => onOpenTask?.(storeTask)}
+        >
+          {task.title}
+        </button>
+        {done && <span className={styles.completedOn}>Completed on {task.completedOn}</span>}
+        {hasMeta && <MetaCounts task={task} />}
+      </div>
+      <div className={styles.pCell}>
+        <DetailDropdown
+          value={storeTask.priority}
+          options={PRIORITY_OPTIONS}
+          searchable={false}
+          align="right"
+          onSelect={(v) => { updateTask(storeTask.id, { priority: v }); showToast(`Priority set to ${v}`); }}
+          renderOption={(opt) => (
+            <><PriorityIcon priority={opt} size={16} /> <span style={{ textTransform: 'capitalize' }}>{opt}</span></>
+          )}
+        >
+          <PriorityIcon priority={storeTask.priority} size={16} />
+        </DetailDropdown>
+      </div>
+      <div className={styles.assigneeCell}>
+        <AssigneeChange
+          name={storeTask.assigned_to || undefined}
+          initials={storeTask.assigned_to ? getInitials(storeTask.assigned_to) : undefined}
+          unassigned={!storeTask.assigned_to}
+          unassignedLabel="Assign"
+          size={compact ? 'S' : 'M'}
+          showRole={false}
+          avatarOnly={compact}
+          fillContainer={!compact}
+          users={assigneeOptions}
+          onSelect={(u) => {
+            const realName = u._realName || u.name;
+            updateTask(storeTask.id, { assigned_to: realName, assigned_to_id: u.id || null, pool: null });
+            showToast(`Assigned to ${realName}`);
+          }}
+        />
+      </div>
+      <div className={`${styles.dueCell} ${overdue ? styles.dueOverdue : ''}`}>
+        <TaskDatePicker
+          compact={compact}
+          value={storeTask.due_date}
+          overdue={overdue}
+          onSelect={(v) => { updateTask(storeTask.id, { due_date: v }); showToast('Due date updated'); }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function TaskRow(props) {
+  if (props.interactive) return <InteractiveTaskRow {...props} />;
+  return <StaticTaskRow {...props} onClick={props.onTaskClick ? () => props.onTaskClick(props.task) : undefined} />;
+}
+
+function TaskSection({
+  title, tasks, done, overdue, onToggle, onTaskClick, interactive, resolveStoreTask, compact,
+}) {
   if (!tasks.length) return null;
   return (
     <div className={styles.section}>
@@ -81,10 +205,14 @@ function TaskSection({ title, tasks, done, overdue, onToggle, onTaskClick }) {
       {tasks.map(t => (
         <TaskRow
           key={t.id}
+          interactive={interactive}
+          compact={compact}
           task={{ ...t, overdue }}
+          storeTask={resolveStoreTask?.(t.id)}
           done={done}
           onToggle={() => onToggle(t.id)}
-          onClick={onTaskClick ? () => onTaskClick({ ...t, overdue }, { done, overdue }) : undefined}
+          onTaskClick={onTaskClick}
+          onOpenTask={onTaskClick}
         />
       ))}
     </div>
@@ -95,16 +223,33 @@ export function TasksTab({
   data = PATIENT_TASKS_MOCK,
   scopes = SCOPES,
   hideToolbar = false,
+  interactive = false,
+  compact = false,
+  className,
   completedIds: completedIdsProp,
   onToggle: onToggleProp,
   onTaskClick,
 }) {
   const [scope, setScope] = useState(scopes[0]);
   const [localCompleted, setLocalCompleted] = useState(() => new Set());
+  const allTasks = useAppStore(s => s.tasks);
+  const updateTask = useAppStore(s => s.updateTask);
   const completedIds = completedIdsProp ?? localCompleted;
+
+  const resolveStoreTask = (id) => allTasks.find(t => String(t.id) === String(id));
 
   const toggle = (id) => {
     if (onToggleProp) { onToggleProp(id); return; }
+    if (interactive) {
+      const storeTask = resolveStoreTask(id);
+      if (!storeTask) return;
+      if (storeTask.status === 'completed') {
+        updateTask(id, { status: 'pending', completed_at: null });
+      } else {
+        updateTask(id, { status: 'completed', completed_at: new Date().toISOString() });
+      }
+      return;
+    }
     setLocalCompleted(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
   };
 
@@ -116,8 +261,22 @@ export function TasksTab({
   const completed = [...(data.completed || []), ...locallyCompleted];
   const empty = !pending.length && !overdue.length && !completed.length;
 
+  const rootClass = [
+    hideToolbar ? styles.tabFlush : styles.tab,
+    compact ? styles.compact : '',
+    className,
+  ].filter(Boolean).join(' ');
+
+  const sectionProps = {
+    interactive,
+    compact,
+    resolveStoreTask,
+    onToggle: toggle,
+    onTaskClick,
+  };
+
   return (
-    <div className={hideToolbar ? styles.tabFlush : styles.tab}>
+    <div className={rootClass}>
       {!hideToolbar && (
         <div className={styles.toolbar}>
           <div className={styles.scopeTabs}>
@@ -139,9 +298,9 @@ export function TasksTab({
         </div>
       )}
 
-      <TaskSection title="Pending" tasks={pending} done={false} overdue={false} onToggle={toggle} onTaskClick={onTaskClick} />
-      <TaskSection title="Overdue" tasks={overdue} done={false} overdue onToggle={toggle} onTaskClick={onTaskClick} />
-      <TaskSection title="Completed" tasks={completed} done onToggle={toggle} onTaskClick={onTaskClick} />
+      <TaskSection title="Pending" tasks={pending} done={false} overdue={false} {...sectionProps} />
+      <TaskSection title="Overdue" tasks={overdue} done={false} overdue {...sectionProps} />
+      <TaskSection title="Completed" tasks={completed} done {...sectionProps} />
       {empty && <div className={styles.empty}>No tasks match your search or filters.</div>}
     </div>
   );

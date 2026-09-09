@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import { Button } from '../../../components/Button/Button';
 import { Avatar } from '../../../components/Avatar/Avatar';
 import { Input } from '../../../components/Input/Input';
@@ -676,10 +677,10 @@ export function EncounterBlock({ enc, status, isFirst, onPatch, onDelete, onCite
           aria-expanded={!collapsed}
           aria-label={collapsed ? 'Expand DOS' : 'Collapse DOS'}
         >
-          <Icon
-            name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'}
+          <DownChevronIcon
             size={12}
             color="var(--neutral-400)"
+            style={collapsed ? { transform: 'rotate(-90deg)' } : undefined}
           />
         </button>
         <span className={styles.dosCardTitle}>DOS: {enc.dos || '—'}</span>

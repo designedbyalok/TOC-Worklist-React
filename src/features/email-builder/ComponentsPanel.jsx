@@ -3,6 +3,7 @@ import { useDraggable, DndContext, DragOverlay, PointerSensor, useSensor, useSen
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Icon } from '../../components/Icon/Icon';
+import { DownChevronIcon } from '../../components/Icon/DownChevronIcon';
 import { useAppStore } from '../../store/useAppStore';
 import { HEADER_PRESETS, FOOTER_PRESETS } from './headerFooterLibrary';
 import { buildParentMap, computeDropPosition } from './blockHelpers';
@@ -425,7 +426,7 @@ function ColumnGroup({ parentId, columnIdx, childrenIds, depth, ctx }) {
           onPointerDown={(e) => e.stopPropagation()}
           aria-label={expanded ? 'Collapse' : 'Expand'}
         >
-          <Icon name={expanded ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'} size={12} color="currentColor" />
+          <DownChevronIcon size={12} color="currentColor" style={!expanded ? { transform: 'rotate(-90deg)' } : undefined} />
         </button>
         <Icon name="solar:folder-open-linear" size={14} color="currentColor" />
         <span className={styles.layerRowText}>{label}</span>
@@ -489,7 +490,7 @@ function LayerRow({ id, block, depth, ctx }) {
             onPointerDown={(e) => e.stopPropagation()}
             aria-label={expanded ? 'Collapse' : 'Expand'}
           >
-            <Icon name={expanded ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'} size={12} color="currentColor" />
+            <DownChevronIcon size={12} color="currentColor" style={!expanded ? { transform: 'rotate(-90deg)' } : undefined} />
           </button>
         ) : (
           <span style={{ width: 16, flexShrink: 0 }} />

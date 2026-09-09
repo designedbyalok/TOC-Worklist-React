@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { POS_BY_VT, PROVIDER_POOL_BY_VT } from '../reference/visitTypes';
 import { DOS_CUSTOM, isDosOnAnyRow, canSaveCard, buildEffectiveDosOptions, resolveDosEntry, populateFieldsFromEntry, todayIso } from './IcdCard.utils';
@@ -146,10 +147,10 @@ export function IcdCard({
           onClick={() => onUpdate({ collapsed: !card.collapsed })}
           aria-label={card.collapsed ? 'Expand' : 'Collapse'}
         >
-          <Icon
-            name={card.collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'}
+          <DownChevronIcon
             size={16}
             color="var(--neutral-400)"
+            style={card.collapsed ? { transform: 'rotate(-90deg)' } : undefined}
           />
         </button>
         <div className={styles.cardHeaderMain}>

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { sanitizeRichText } from '../../../lib/sanitizeHtml';
 import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import { Input } from '../../../components/Input/Input';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
 import { Tooltip } from '../../../components/Tooltip/Tooltip';
@@ -166,10 +167,10 @@ export function CollapsibleSection({ icon, title, children }) {
       >
         <Icon name={icon} size={16} color="var(--primary-300)" />
         <span className={styles.sectionTitle}>{title}</span>
-        <Icon
-          name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'}
+        <DownChevronIcon
           size={12}
           color="var(--neutral-300)"
+          style={collapsed ? { transform: 'rotate(-90deg)' } : undefined}
         />
       </button>
       <div className={`${styles.collapseOuter} ${collapsed ? styles.collapsed : ''}`}>

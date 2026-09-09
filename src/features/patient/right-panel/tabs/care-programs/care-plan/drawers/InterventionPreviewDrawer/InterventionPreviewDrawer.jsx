@@ -171,7 +171,7 @@ function AccordionHead({ title, open, onToggle, onAdd, addTooltip, canEdit }) {
     <div className={styles.accHead}>
       <button type="button" className={styles.accToggle} onClick={onToggle} aria-expanded={open}>
         <span className={`${styles.accChevron} ${open ? styles.accChevronOpen : ''}`}>
-          <Icon name="solar:alt-arrow-down-linear" size={12} color="var(--neutral-300)" />
+          <DownChevronIcon size={12} color="var(--neutral-300)" />
         </span>
         <span className={styles.accTitle}>{title}</span>
       </button>

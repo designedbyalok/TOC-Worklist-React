@@ -1,4 +1,5 @@
 import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import { Input } from '../../../components/Input/Input';
 import { Select } from '../../../components/Select/Select';
 import { Switch } from '../../../components/Switch/Switch';
@@ -69,10 +70,10 @@ export function TierForm({ tier, index, expanded, isActive, onToggle, onUpdate, 
     <div className={`${styles.tierAccordion} ${expanded ? styles.tierAccordionExpanded : ''} ${isActive ? styles.tierAccordionActive : ''}`}>
       {/* Tier header */}
       <div className={styles.tierHeader} onClick={onToggle}>
-        <Icon
-          name={expanded ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'}
+        <DownChevronIcon
           size={16}
           color="var(--neutral-300)"
+          style={!expanded ? { transform: 'rotate(-90deg)' } : undefined}
         />
         <span className={styles.tierHeaderLabel}>Tier {index + 1}:</span>
         <div className={styles.tierNameInputWrap} onClick={e => e.stopPropagation()}>

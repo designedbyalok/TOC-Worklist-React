@@ -1096,6 +1096,15 @@
   background: var(--neutral-50);
 }
 
+.detailValueCompact {
+  padding: 0;
+  margin: 0;
+  gap: 0;
+  font-size: var(--font-base);
+  line-height: 1.35;
+  justify-content: flex-start;
+}
+
 .detailValueLabels {
   display: flex;
   align-items: center;

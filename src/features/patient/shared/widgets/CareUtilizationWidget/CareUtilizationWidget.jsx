@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from '../../../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../../../components/Icon/DownChevronIcon';
 import styles from './CareUtilizationWidget.module.css';
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -20,10 +21,10 @@ export function CareUtilizationWidget() {
       {/* Header — outside the bordered box */}
       <div className={styles.header}>
         <button className={styles.titleBtn} onClick={() => setCollapsed(v => !v)}>
-          <Icon
-            name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'}
+          <DownChevronIcon
             size={13}
             color="var(--neutral-400)"
+            style={collapsed ? { transform: 'rotate(-90deg)' } : undefined}
           />
           <span className={styles.title}>Care Utilization Summary</span>
         </button>

@@ -126,6 +126,66 @@ export const MONITORING_SEED = {
   },
 };
 
+const TONE_TO_PRIORITY = { error: 'high', warning: 'medium', default: 'low' };
+
+export function monitoringTaskSourceKey(memberId, index) {
+  return `monitoring-${memberId}-${index}`;
+}
+
+function formatDueMmDdYyyy(date) {
+  return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}-${date.getFullYear()}`;
+}
+
+export function buildMonitoringTaskPayload(patient, snapshotTask, index) {
+  const today = new Date();
+  const memberId = String(patient.memberId || patient.id);
+  const tone = snapshotTask.tone || 'default';
+  return {
+    name: snapshotTask.title,
+    status: tone === 'error' ? 'missed' : 'pending',
+    priority: TONE_TO_PRIORITY[tone] || 'medium',
+    due_date: tone === 'error' ? formatDueMmDdYyyy(today) : '',
+    patient_id: patient.id,
+    member: patient.name,
+    program_code: 'TCM',
+    source_key: monitoringTaskSourceKey(memberId, index),
+  };
+}
+
+/** Idempotently materialize monitoring snapshot tasks into the shared task store. */
+export async function ensureMonitoringTasksForPatient(patient, snapshotTasks, { getState, createTask }) {
+  if (!patient?.id || !snapshotTasks?.length || !createTask) return;
+  const memberId = String(patient.memberId || patient.id);
+  for (let i = 0; i < snapshotTasks.length; i++) {
+    const sourceKey = monitoringTaskSourceKey(memberId, i);
+    const exists = getState().tasks.some((t) => t.source_key === sourceKey);
+    if (exists) continue;
+    await createTask(buildMonitoringTaskPayload(patient, snapshotTasks[i], i), { skipAudit: true });
+  }
+}
+
+/** Map monitoring snapshot rail tasks into the TasksTab data shape. */
+export function monitoringTasksToTabData(tasks) {
+  const pending = [];
+  const overdue = [];
+  (tasks || []).forEach((t, i) => {
+    const item = {
+      id: `monitoring-rail-${i}`,
+      title: t.title,
+      priority: TONE_TO_PRIORITY[t.tone] || 'medium',
+      due: '',
+      subtasks: 0,
+      attachments: 0,
+      comments: 0,
+      assignee: '',
+      assigneeInitials: '',
+    };
+    if (t.tone === 'error') overdue.push(item);
+    else pending.push(item);
+  });
+  return { pending, overdue, completed: [] };
+}
+
 // app object → Supabase row (snake_case). Used by scripts/seed.js.
 export function monitoringToRow(m) {
   return {

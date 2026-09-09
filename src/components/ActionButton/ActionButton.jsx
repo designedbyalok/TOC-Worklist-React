@@ -1,5 +1,6 @@
 import { forwardRef } from 'react';
 import { Icon } from '../Icon/Icon';
+import { DownChevronIcon } from '../Icon/DownChevronIcon';
 import styles from './ActionButton.module.css';
 
 /**
@@ -100,8 +101,7 @@ export const ActionButton = forwardRef(function ActionButton({
 
       {/* Dropdown chevron */}
       {chevron && (
-        <Icon
-          name="solar:alt-arrow-down-linear"
+        <DownChevronIcon
           size={10}
           color={resolvedColor}
           className={`${styles.chevron} ${chevronOpen ? styles.chevronOpen : ''}`}

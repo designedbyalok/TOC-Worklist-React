@@ -27,8 +27,36 @@ import { CarePlanIcon } from './CarePlanIcon';
 import { SubtaskIcon } from './SubtaskIcon';
 import { MemberConsentIcon } from './MemberConsentIcon';
 import { LinkIcon } from './LinkIcon';
+import { DownChevronIcon } from './DownChevronIcon';
+
+const DOWN_CHEVRON_NAMES = new Set([
+  'solar:alt-arrow-down-linear',
+  'solar:arrow-down-linear',
+  'solar:alt-arrow-down-bold',
+  'solar:arrow-down-bold',
+]);
+
+const UP_CHEVRON_NAMES = new Set([
+  'solar:alt-arrow-up-linear',
+  'solar:arrow-up-linear',
+  'solar:alt-arrow-up-bold',
+  'solar:arrow-up-bold',
+]);
 
 export function Icon({ name, size = 18, color, style, className }) {
+  if (DOWN_CHEVRON_NAMES.has(name)) {
+    return <DownChevronIcon size={size} color={color} style={style} className={className} />;
+  }
+  if (UP_CHEVRON_NAMES.has(name)) {
+    return (
+      <DownChevronIcon
+        size={size}
+        color={color}
+        className={className}
+        style={{ ...style, transform: 'rotate(180deg)' }}
+      />
+    );
+  }
   if (name === 'custom:filter') return <FilterIcon size={size} color={color} />;
   if (name === 'custom:menu-dots') return <MenuDotsIcon size={size} color={color} />;
   if (name === 'custom:history') return <HistoryIcon size={size} color={color} />;

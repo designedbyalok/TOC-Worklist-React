@@ -4,6 +4,7 @@ import { ACCEPT_EXT, ACCEPT_MIME, CHOOSER_OPTIONS } from './UploadDocumentDrawer
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { Button } from '../../../components/Button/Button';
 import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import { CloseButton } from '../../../components/CloseButton/CloseButton';
 import { Avatar } from '../../../components/Avatar/Avatar';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
@@ -938,10 +939,10 @@ function SingleDosCard({ block, providerOptions, patient, onPatch, onRemove, sho
           aria-label={collapsed ? 'Expand DOS' : 'Collapse DOS'}
           aria-expanded={!collapsed}
         >
-          <Icon
-            name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'}
+          <DownChevronIcon
             size={16}
             color="var(--neutral-400)"
+            style={collapsed ? { transform: 'rotate(-90deg)' } : undefined}
           />
         </button>
         <span className={styles.singleDosTitle}>DOS: {block.dos || '-'}</span>

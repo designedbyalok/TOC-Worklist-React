@@ -1,4 +1,4 @@
-import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import styles from './DiagPanel.module.css';
 
 export function IcdSection({ title, count, open, onToggle, badge, children }) {
@@ -9,10 +9,10 @@ export function IcdSection({ title, count, open, onToggle, badge, children }) {
           {title} ({count})
         </span>
         {badge}
-        <Icon
-          name={open ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'}
+        <DownChevronIcon
           size={12}
           color="var(--neutral-300)"
+          style={!open ? { transform: 'rotate(-90deg)' } : undefined}
         />
       </button>
       {open && (

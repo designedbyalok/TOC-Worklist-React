@@ -11,6 +11,7 @@ import { ClinicalNotesTab } from './ClinicalNotesTab';
 import { ClinicalNotePreviewBody } from './ClinicalNotePreviewBody';
 import { MeasureInfoBody } from './MeasureInfoBody';
 import { TasksTab } from '../patient/left-panel/tabs/tasks/TasksTab/TasksTab';
+import { groupTasksForTab } from '../patient/left-panel/tabs/tasks/TasksTab/groupTasksForTab';
 import { TaskDetailDrawer } from '../tasks/TaskDetailDrawer';
 import { useAddTaskDrawer } from '../tasks/useAddTaskDrawer';
 import { AddTaskDrawerBody } from '../tasks/AddTaskDrawerBody';
@@ -31,43 +32,6 @@ import { useAppStore } from '../../store/useAppStore';
 import { TABS, MORE_ACTIONS, toActivityLogEntries } from './CareGapDetailDrawer.utils';
 import { CareGapDetailDrawerHeader } from './CareGapDetailDrawerHeader';
 import styles from './CareGapDetailDrawer.module.css';
-
-// Adapt store `tasks` rows to the { pending, overdue, completed } shape
-// TasksTab consumes. Task titles come from `name`, due from due_date,
-// priority passes through, and overdue is a simple date comparison —
-// mirrors the classification used on the P360 tasks tab so the two
-// surfaces stay in sync visually.
-function groupTasksForTab(tasks) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const pending = [];
-  const overdue = [];
-  const completed = [];
-  (tasks || []).forEach((t) => {
-    const shared = {
-      id: t.id,
-      title: t.name || 'Task',
-      priority: t.priority || 'medium',
-      due: t.due_date || '',
-      subtasks: t.subtasks || 0,
-      attachments: t.attachments || 0,
-      comments: t.comments || 0,
-      assignee: t.assigned_to || '',
-      assigneeInitials: t.assigned_to ? t.assigned_to.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '',
-    };
-    if (t.status === 'completed') {
-      completed.push({ ...shared, completedOn: t.completed_at || t.updated_at || '' });
-      return;
-    }
-    const dueDate = t.due_date ? new Date(t.due_date) : null;
-    if (dueDate && !Number.isNaN(dueDate.getTime()) && dueDate < today) {
-      overdue.push(shared);
-    } else {
-      pending.push(shared);
-    }
-  });
-  return { pending, overdue, completed };
-}
 
 // Compact MM/DD/YYYY formatter used by the preview subtitle. Kept local
 // so the drawer file doesn't reach into date-utils modules for a one-off.

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ActionButton } from '../../../../../../components/ActionButton/ActionButton';
 import { Icon } from '../../../../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../../../../components/Icon/DownChevronIcon';
 import styles from './PAMIHxTab.module.css';
 
 const NOOP = () => {};
@@ -108,7 +109,7 @@ function SectionHeader({ title, actions, collapsed, onToggle }) {
       <span className={styles.sectionTitle}>{title}</span>
       {onToggle && (
         <button className={styles.collapseToggle} onClick={onToggle} aria-expanded={!collapsed} aria-label={collapsed ? `Expand ${title}` : `Collapse ${title}`}>
-          <Icon name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'} size={12} color="var(--neutral-200)" />
+          <DownChevronIcon size={12} color="var(--neutral-200)" style={collapsed ? { transform: 'rotate(-90deg)' } : undefined} />
         </button>
       )}
       {actions && <div className={styles.sectionActions}>{actions}</div>}

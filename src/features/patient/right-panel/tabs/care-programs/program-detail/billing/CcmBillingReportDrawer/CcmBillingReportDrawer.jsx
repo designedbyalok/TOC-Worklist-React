@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Drawer } from '../../../../../../../../components/Drawer/Drawer';
 import { Button } from '../../../../../../../../components/Button/Button';
 import { Icon } from '../../../../../../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../../../../../../components/Icon/DownChevronIcon';
 import { PatientBanner } from '../../../../../../../../components/PatientBanner/PatientBanner';
 import { useAppStore } from '../../../../../../../../store/useAppStore';
 import { secondsToTime } from '../../../../../../data/ccmBillingMock';
@@ -132,10 +133,10 @@ export function CcmBillingReportDrawer({ report, onClose }) {
         >
           <span className={styles.clinicalTitle}>
             Clinical Activities
-            <Icon
-              name={clinicalOpen ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'}
+            <DownChevronIcon
               size={16}
               color="var(--neutral-300)"
+              style={!clinicalOpen ? { transform: 'rotate(-90deg)' } : undefined}
             />
           </span>
           <span className={styles.clinicalTotal}>{secondsToTime(activitiesTotal)} mins</span>

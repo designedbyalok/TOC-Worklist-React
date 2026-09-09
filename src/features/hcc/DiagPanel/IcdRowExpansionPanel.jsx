@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import { Button } from '../../../components/Button/Button';
 import { getMeatNoteFromDb } from '../data/confidence';
 import styles from './IcdRow.module.css';
@@ -33,10 +34,10 @@ export function IcdRowExpansionPanel({
             className={styles.expandHeaderLeft}
             onClick={() => setConfOpen(o => !o)}
           >
-            <Icon
-              name={confOpen ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'}
+            <DownChevronIcon
               size={12}
               color="var(--neutral-300)"
+              style={!confOpen ? { transform: 'rotate(-90deg)' } : undefined}
             />
             <span className={styles.expandTitle}>Confidence Score</span>
             <span
@@ -90,10 +91,10 @@ export function IcdRowExpansionPanel({
             setMeatOpen(o => !o);
           }}
         >
-          <Icon
-            name={meatOpen ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'}
+          <DownChevronIcon
             size={12}
             color="var(--neutral-400)"
+            style={!meatOpen ? { transform: 'rotate(-90deg)' } : undefined}
           />
           <span className={styles.expandTitleLg}>MEAT Note</span>
           <span className={styles.readyBadge}>

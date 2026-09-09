@@ -8,7 +8,7 @@ import { MONTH_NAMES, formatDateFriendly, parseTaskDate } from './TasksView.util
 import { usePopoverPosition } from './usePopoverPosition';
 import styles from './TasksView.module.css';
 
-export function TaskDatePicker({ value, onSelect, overdue }) {
+export function TaskDatePicker({ value, onSelect, overdue, compact = false }) {
   const [open, setOpen] = useState(false);
   const [viewDate, setViewDate] = useState(() => {
     const parsed = parseTaskDate(value);
@@ -38,15 +38,21 @@ export function TaskDatePicker({ value, onSelect, overdue }) {
   const isToday = (d) => d === todayDay && month === todayMonth && year === todayYear;
   const isSelected = (d) => d === selectedDay && month === selectedMonth && year === selectedYear;
 
+  const textColor = overdue
+    ? 'var(--status-error)'
+    : (value ? (compact ? 'var(--neutral-400)' : 'var(--neutral-300)') : 'var(--neutral-200)');
+
   return (
     <div style={{ position: 'relative' }}>
       <button
         ref={btnRef}
-        className={styles.detailValue}
-        style={{ color: overdue ? 'var(--status-error)' : (value ? 'var(--neutral-300)' : 'var(--neutral-200)') }}
+        className={[styles.detailValue, compact && styles.detailValueCompact].filter(Boolean).join(' ')}
+        style={{ color: textColor }}
         onClick={e => { e.stopPropagation(); setOpen(v => !v); }}
       >
-        <Icon name="solar:calendar-linear" size={16} color={overdue ? 'var(--status-error)' : (value ? 'var(--neutral-300)' : 'var(--neutral-200)')} />
+        {!compact && (
+          <Icon name="solar:calendar-linear" size={16} color={textColor} />
+        )}
         <span>{formatDateFriendly(value)}</span>
       </button>
       {open && pos && createPortal(

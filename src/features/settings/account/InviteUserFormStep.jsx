@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import { Button } from '../../../components/Button/Button';
 import { Drawer } from '../../../components/Drawer/Drawer';
 import { Input } from '../../../components/Input/Input';
@@ -63,7 +63,7 @@ export function InviteUserFormStep({ onClose, form, set, showAdditional, setShow
         </div>
 
         <button className={styles.additionalToggle} onClick={() => setShowAdditional(v => !v)}>
-          Additional Fields <Icon name={showAdditional ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'} size={14} color="var(--neutral-400)" />
+          Additional Fields <DownChevronIcon size={14} color="var(--neutral-400)" style={!showAdditional ? { transform: 'rotate(-90deg)' } : undefined} />
         </button>
 
         {showAdditional && (

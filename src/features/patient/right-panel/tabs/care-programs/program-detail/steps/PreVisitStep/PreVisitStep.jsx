@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from '../../../../../../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../../../../../../components/Icon/DownChevronIcon';
 import { AddIconMinimalist } from '../../../../../../../../components/Icon/AddIconMinimalist';
 import { Avatar } from '../../../../../../../../components/Avatar/Avatar';
 import { ActionButton } from '../../../../../../../../components/ActionButton/ActionButton';
@@ -15,10 +16,10 @@ function Section({ title, right, children }) {
     <div className={styles.section}>
       <div className={styles.sectionHead}>
         <button type="button" className={styles.sectionToggle} onClick={() => setOpen(o => !o)}>
-          <Icon
-            name={open ? 'solar:alt-arrow-down-linear' : 'solar:alt-arrow-right-linear'}
+          <DownChevronIcon
             size={16}
             color="var(--neutral-300)"
+            style={!open ? { transform: 'rotate(-90deg)' } : undefined}
           />
           <span className={styles.sectionTitle}>{title}</span>
         </button>

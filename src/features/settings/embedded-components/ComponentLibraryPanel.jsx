@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../../../components/Icon/Icon';
+import { DownChevronIcon } from '../../../components/Icon/DownChevronIcon';
 import { CloseButton } from '../../../components/CloseButton/CloseButton';
 import { Badge } from '../../../components/Badge/Badge';
 import { ActionButton } from '../../../components/ActionButton/ActionButton';
@@ -225,7 +226,7 @@ function PreviewDrawer({ comp, onClose }) {
         >
           <span style={{ fontSize: 'var(--font-md)', fontWeight: 500, color: 'var(--neutral-400)', flex: 1 }}>{comp.name}</span>
           <Badge variant="compliance-warn" label="External" />
-          <Icon name={collapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-down-linear'} size={12} color="var(--neutral-200)" />
+          <DownChevronIcon size={12} color="var(--neutral-200)" style={collapsed ? { transform: 'rotate(-90deg)' } : undefined} />
         </button>
 
         {!collapsed && (
