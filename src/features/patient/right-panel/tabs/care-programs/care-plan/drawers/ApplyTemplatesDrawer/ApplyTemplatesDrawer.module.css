@@ -17,6 +17,17 @@
   gap: var(--space-4);
 }
 
+/* Search fills the row; the Condition filter chip sits to its right. */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.controls > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -37,10 +48,45 @@
   flex: 1;
   min-width: 0;
 }
+/* Condition column — fixed width so the cells align under the sortable head.
+   The head is a button (click to cycle sort) but reads as plain header text. */
+.tableHeadCondition {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  width: 160px;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+.tableHeadCondition:hover {
+  color: var(--neutral-300);
+}
+.tableHeadCondition:focus-visible {
+  outline: 2px solid var(--primary-200);
+  outline-offset: 1px;
+  border-radius: var(--space-1);
+}
 .tableHeadPriority {
   width: 104px;
   flex-shrink: 0;
   padding-left: var(--space-3);
+}
+
+.sortGlyph {
+  color: var(--neutral-200);
+  flex-shrink: 0;
+}
+.sortGlyphActive {
+  color: var(--neutral-400);
+}
+.sortGlyphHidden {
+  opacity: 0;
 }
 
 .row {
@@ -75,6 +121,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Condition value — aligns under the Condition head column width. */
+.conditionCell {
+  width: 160px;
+  flex-shrink: 0;
+  font-size: var(--font-base);
+  color: var(--neutral-300);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.conditionEmpty {
+  color: var(--neutral-200);
+}
+
+/* "Selected" group heading + hairline, mirroring the Barriers drawer. */
+.groupLabel {
+  font-size: var(--font-base);
+  color: var(--neutral-300);
+  padding: 0 var(--space-2);
+}
+.groupDivider {
+  height: 0.5px;
+  background: var(--neutral-150);
 }
 
 .priorityGroup {

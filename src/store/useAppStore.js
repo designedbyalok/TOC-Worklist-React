@@ -3852,6 +3852,19 @@ export const useAppStore = create((set, get) => ({
 
     const ok = await get().setPatientCarePlanAppliedTemplates(patientId, program, nextIds, priorityUpdates);
     if (!ok) return false;
+
+    // Surface each applied template's clinical condition(s) on the plan header
+    // so they show on the plan and in the share / download preview. Additive
+    // union with any manually-added conditions; savePatientCarePlanConditions
+    // trims + dedupes case-insensitively.
+    const existingConds = (get().patientCarePlans[key]?.plan?.conditions || []).map(c => c.label);
+    const seenConds = new Set(existingConds.map(c => c.trim().toLowerCase()));
+    const templateConds = nextIds.flatMap(id => (templates.find(t => t.id === id)?.conditions) || []);
+    const newConds = templateConds.filter(c => c && !seenConds.has(c.trim().toLowerCase()));
+    if (newConds.length) {
+      await get().savePatientCarePlanConditions(patientId, program, [...existingConds, ...newConds]);
+    }
+
     const added = toAdd.length;
     const removed = prevIds.filter(id => !nextIds.includes(id)).length;
     if (added) get().showToast(`Applied ${added} template${added === 1 ? '' : 's'}`);

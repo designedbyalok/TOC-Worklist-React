@@ -297,11 +297,9 @@ export function CarePlanView({ patientId, program }) {
     barriers: [],
   }), [live, measurements]);
 
-  const [conditionsViewOpen, setConditionsViewOpen] = useState(false);
   const [problemOpen, setProblemOpen] = useState(false);
   const [problemText, setProblemText] = useState('');
   const [trendsOpen, setTrendsOpen] = useState(false);
-  const MAX_VISIBLE_CONDITIONS = 4;
   // Collapsible GBI sections (chevron in each section header).
   // Remember which GBI sections are collapsed across visits (per-device UI pref).
   const [openSections, setOpenSections] = useState(() => {
@@ -434,22 +432,6 @@ export function CarePlanView({ patientId, program }) {
     [data.interventions, filters, templateScope], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  const conditionCounts = useMemo(() => {
-    const counts = new Map();
-    const bump = (label) => {
-      if (!label) return;
-      counts.set(label, (counts.get(label) || 0) + 1);
-    };
-    for (const g of data.goals) (g.conditions || []).forEach(bump);
-    for (const i of data.interventions) (i.conditions || []).forEach(bump);
-    for (const b of data.barriers || []) (b.conditions || []).forEach(bump);
-    if (!counts.size) {
-      const total = data.goals.length + data.interventions.length + (data.barriers?.length || 0);
-      if (total && data.conditions[0]) counts.set(data.conditions[0].label, total);
-    }
-    return counts;
-  }, [data.goals, data.interventions, data.barriers, data.conditions]);
-
   // Rollup for the summary strip: counts, status mix, avg goal progress. Reads
   // the filtered lists, so picking a template chip (or any filter) restates the
   // line for what is actually on screen rather than the whole plan.
@@ -480,8 +462,6 @@ export function CarePlanView({ patientId, program }) {
     };
   }, [filteredGoals, filteredInterventions, filteredBarriers]);
 
-  const visibleConditions = data.conditions.slice(0, MAX_VISIBLE_CONDITIONS);
-  const hiddenConditionCount = Math.max(0, data.conditionTotal - visibleConditions.length);
   // Badge count: how many of a template's goals are actually on this plan, not
   // how many its library definition lists. The two differ while a template is
   // still being reconciled, or when a goal it brought was removed since.
@@ -883,15 +863,6 @@ export function CarePlanView({ patientId, program }) {
     />
   );
 
-  // Condition/problem chip interactions — View All, remove, add. All persist to
-  // the plan header row (conditions array) and update the cache immediately.
-  const handleRemoveCondition = async (label) => {
-    if (!canEdit || !live?.plan) return;
-    const next = (live.plan.conditions || []).map(c => c.label).filter(l => l !== label);
-    const ok = await savePatientCarePlanConditions(patientId, program, next);
-    if (ok) showToast(`Removed "${label}"`);
-  };
-
   const doAddProblem = async () => {
     const label = problemText.trim();
     if (!label || !live?.plan) return;
@@ -902,7 +873,6 @@ export function CarePlanView({ patientId, program }) {
     if (ok) showToast(`Added "${label}"`);
   };
 
-  const handleViewAllConditions = () => setConditionsViewOpen(true);
   const handleNewProblems = () => { setProblemText(''); setProblemOpen(true); };
   const handleTemplates = () => setTemplatesDrawerOpen(true);
   const handleApplyTemplates = async (ids, priorities) => {
@@ -943,46 +913,9 @@ export function CarePlanView({ patientId, program }) {
           onSelect={(id) => setTemplateFilterId(prev => (prev === id ? null : id))}
           onRemove={handleRemoveTemplate}
         />
-        {(visibleConditions.length > 0 || hiddenConditionCount > 0) && (
-        <div className={styles.problemsBar}>
-          <div className={styles.conditionRow}>
-            <div className={styles.chips}>
-              {visibleConditions.map(c => {
-                const count = conditionCounts.get(c.label) ?? 0;
-                const isAlert = !!(c.primary || c.alert);
-                return (
-                  <span
-                    key={c.label}
-                    className={`${styles.chip} ${isAlert ? styles.chipAlert : styles.chipDefault}`}
-                  >
-                    {isAlert ? (
-                      <Icon name="solar:danger-circle-linear" size={12} color="var(--status-error)" className={styles.chipAlertIcon} />
-                    ) : null}
-                    <span className={styles.chipLabel}>{c.label}</span>
-                    <span className={styles.chipCount}>{count}</span>
-                    {c.removable ? (
-                      <>
-                        <span className={styles.chipInnerDivider} aria-hidden="true" />
-                        <button type="button" className={styles.chipRemove} onClick={() => handleRemoveCondition(c.label)} aria-label={`Remove ${c.label}`} disabled={!canEdit}>
-                          <Icon name="solar:close-linear" size={16} color="var(--neutral-300)" />
-                        </button>
-                      </>
-                    ) : null}
-                  </span>
-                );
-              })}
-              {hiddenConditionCount > 0 ? (
-                <button type="button" className={`${styles.chip} ${styles.chipDefault} ${styles.chipOverflow}`} onClick={handleViewAllConditions}>
-                  +{hiddenConditionCount}
-                </button>
-              ) : null}
-            </div>
-            <div className={styles.conditionActions}>
-              {/* Templates moved to header before Sign & Share */}
-            </div>
-          </div>
-        </div>
-        )}
+        {/* Conditions are intentionally not surfaced in the plan header; they
+            still travel with the plan and appear in the Share / Download
+            preview (see CarePlanShareDrawer). */}
       </div>
 
       <div className={styles.scrollArea}>
@@ -1507,28 +1440,6 @@ export function CarePlanView({ patientId, program }) {
             priority: barrierDrawer.barrier?.priority || 'medium',
           })}
         />
-      )}
-
-      {conditionsViewOpen && (
-        <Drawer title="All Conditions" onClose={() => setConditionsViewOpen(false)} noCloseDivider headerRight={<span className={styles.headerDivider} />}>
-          <div className={styles.drawerBody}>
-            <p className={styles.drawerHint}>{data.conditionTotal} conditions on this plan — {data.conditions.length} shown in the header. Remove any chip above or manage them here.</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
-              {data.conditions.map(c => {
-                const count = conditionCounts.get(c.label) ?? 0;
-                const isAlert = !!(c.primary || c.alert);
-                return (
-                <span key={c.label} className={`${styles.chip} ${isAlert ? styles.chipAlert : styles.chipDefault}`}>
-                  <span className={styles.chipLabel}>{c.label}</span>
-                  <span className={styles.chipCount}>{count}</span>
-                  <button type="button" className={styles.chipRemove} onClick={() => handleRemoveCondition(c.label)} aria-label={`Remove ${c.label}`} disabled={!canEdit}>
-                    <Icon name="solar:close-linear" size={16} color="var(--neutral-300)" />
-                  </button>
-                </span>
-              );})}
-            </div>
-          </div>
-        </Drawer>
       )}
 
       {shareOpen && (

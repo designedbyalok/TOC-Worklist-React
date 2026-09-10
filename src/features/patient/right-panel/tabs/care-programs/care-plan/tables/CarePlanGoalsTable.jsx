@@ -13,7 +13,7 @@ import {
   GbiStatusButton,
 } from './carePlanTableShared';
 import { enrichGoalRows } from './carePlanTableSort';
-import { normalizeCategory } from '../../../../../../settings/care-plan-library/lib';
+import { normalizeCategory, goalCategoryIcon } from '../../../../../../settings/care-plan-library/lib';
 import styles from './carePlanTables.module.css';
 
 // MM/DD/YYYY, matches the grey read-only date look used across the
@@ -114,7 +114,7 @@ export function CarePlanGoalsTable({
             </td>
             <td className={styles.titleTd}>
               <GbiNameCell
-                icon={g.icon}
+                icon={goalCategoryIcon(g.category)}
                 iconTitle={g.category ? normalizeCategory(g.category) : 'Goal'}
                 title={g.title}
                 meta={g.subtitle || null}

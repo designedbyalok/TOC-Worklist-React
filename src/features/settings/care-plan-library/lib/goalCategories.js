@@ -15,3 +15,20 @@ const LEGACY_CATEGORY_MAP = {
 };
 
 export const normalizeCategory = (c) => LEGACY_CATEGORY_MAP[c] || c || GOAL_CATEGORIES[0];
+
+// Leading glyph for a goal row, keyed to its (normalized) category so the icon
+// always matches the category tooltip. Vitals read as a heart-pulse, Labs a
+// test tube, Diet a donut, Exercise a running figure, Assessment a clipboard;
+// Others (and anything unmapped) fall back to a generic target.
+const CATEGORY_ICON = {
+  Vitals: 'solar:heart-pulse-linear',
+  Labs: 'solar:test-tube-linear',
+  Diet: 'solar:donut-linear',
+  Exercise: 'solar:running-linear',
+  Assessment: 'solar:clipboard-list-linear',
+  Others: 'solar:target-linear',
+};
+
+// An uncategorized goal keeps the generic target (its tooltip reads "Goal"),
+// rather than defaulting to the first enum category's icon.
+export const goalCategoryIcon = (c) => (c ? CATEGORY_ICON[normalizeCategory(c)] : CATEGORY_ICON.Others) || CATEGORY_ICON.Others;

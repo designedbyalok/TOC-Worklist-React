@@ -31,6 +31,7 @@ import { enrichGoalRows, enrichInterventionRows } from '../../tables/carePlanTab
 import { CARE_PLAN_INTERVENTION_ICONS } from '../../lib/carePlanInterventionMenu';
 import { assigneeAvatarVariant } from '../../tables/CarePlanInterventionsTable';
 import { KIND_LABELS } from '../../../../../../../settings/care-plan-library/interventions/shared/interventionKinds';
+import { normalizeCategory, goalCategoryIcon } from '../../../../../../../settings/care-plan-library/lib';
 import { GoalPreviewDrawer } from '../../drawers/GoalPreviewDrawer/GoalPreviewDrawer';
 import { InterventionPreviewDrawer } from '../../drawers/InterventionPreviewDrawer/InterventionPreviewDrawer';
 import { BarrierDetailDrawer } from '../../drawers/BarrierDetailDrawer/BarrierDetailDrawer';
@@ -379,7 +380,8 @@ function GoalsTable({ rows, onOpen, onPriorityMenu, onStatusMenu, programOverlap
             </td>
             <td className={sharedRow.titleTd}>
               <GbiNameCell
-                icon={g.icon}
+                icon={goalCategoryIcon(g.category)}
+                iconTitle={g.category ? normalizeCategory(g.category) : 'Goal'}
                 title={g.title}
                 meta={g.subtitle || null}
                 layout="stacked"
