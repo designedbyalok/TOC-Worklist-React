@@ -55,47 +55,41 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Center the icon against the row's text; the connecting line is drawn as one
+     continuous rule behind it (::before) so the icon position no longer depends
+     on the fixed top segment. */
+  justify-content: center;
   width: var(--space-5);
   flex-shrink: 0;
-  padding-top: var(--space-3);
   align-self: stretch;
+  position: relative;
 }
 
+/* Continuous vertical spine line behind the centered icon. */
+.spineCol::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--neutral-150);
+}
+
+/* The inline line segments are replaced by the continuous ::before rule. */
 .spineLine,
 .spineLineGrow,
-.spineLineEnd {
-  width: 1px;
-  background: var(--neutral-150);
-  flex-shrink: 0;
-}
-
-.spineLine {
-  height: var(--space-5);
-  margin-bottom: calc(var(--space-1) / -4);
-}
-
+.spineLineEnd,
 .spineLineShort {
-  width: 1px;
-  height: var(--space-5);
-  background: var(--neutral-150);
-  flex-shrink: 0;
-  margin-bottom: calc(var(--space-1) / -4);
-}
-
-.spineLineGrow {
-  flex: 1;
-  min-height: var(--space-3);
-  margin-top: calc(var(--space-1) / -4);
-}
-
-.spineLineEnd {
-  flex: 1;
-  min-height: var(--space-3);
-  margin-top: calc(var(--space-1) / -4);
+  display: none;
 }
 
 .spineAvatar {
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  /* Mask the line where it passes behind the icon. */
+  background: var(--neutral-0);
+  border-radius: 50%;
 }
 
 /* Collapsed stack — summary card over full peek activity rows */

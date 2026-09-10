@@ -2653,6 +2653,58 @@ export const useAppStore = create((set, get) => ({
       patientProgramActivityLoadedFor: { ...s.patientProgramActivityLoadedFor, [resolvedId]: true },
     }));
   },
+
+  // Append one real event to a patient's Program Activity Log. Called from the
+  // program mutations (status change, enrollment, document add, …) so the log
+  // reflects what actually happened, grouped by program. Optimistic: prepends
+  // to the in-memory list immediately, then persists fire-and-forget.
+  logProgramActivity: ({ patientId, programCode, title, activityKind = 'document', statusLabel = '', statusType = 'neutral', occurredAt } = {}) => {
+    if (!programCode || !title) return;
+    const state = get();
+    const pid = resolvePatientStoreId(state, patientId || state.selectedPatientId);
+    if (!pid) return;
+    const actorName = state.currentUserProfile?.name || 'You';
+    const actorInitials = actorName.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'YOU';
+    const iso = occurredAt || new Date().toISOString();
+    const row = {
+      id: crypto.randomUUID(),
+      programCode,
+      programName: `${programCode} Program Updates`,
+      occurredAt: iso,
+      actorName,
+      actorInitials,
+      title,
+      statusLabel,
+      statusType,
+      activityKind,
+    };
+    // Only touch the list if it's already been loaded for this patient, so a
+    // later fetch doesn't produce a duplicate of a row we optimistically added.
+    if (get().patientProgramActivityLoadedFor[pid]) {
+      set(s => ({
+        patientProgramActivity: {
+          ...s.patientProgramActivity,
+          [pid]: [row, ...(s.patientProgramActivity[pid] || [])],
+        },
+      }));
+    }
+    supabase.from('patient_program_activity').insert({
+      id:              row.id,
+      patient_id:      pid,
+      program_code:    row.programCode,
+      program_name:    row.programName,
+      occurred_at:     iso,
+      actor_name:      actorName,
+      actor_initials:  actorInitials,
+      title,
+      status_label:    statusLabel,
+      status_type:     statusType,
+      activity_kind:   activityKind,
+    }).then(({ error }) => {
+      if (error) console.warn('logProgramActivity — insert failed:', error.message);
+    });
+  },
+
   fetchCareProgramsForPatient: async (patientId) => {
     if (!patientId) return;
     if (get().careProgramsLoadedFor[patientId]) return;
@@ -2731,6 +2783,17 @@ export const useAppStore = create((set, get) => ({
     // SNP enrollment implies SNP-worklist membership — keep the two in sync.
     if (program && entry.code === 'SNP') {
       get().ensureSnpWorklistMembership(patientId);
+    }
+    // Enrolling a program is a program activity.
+    if (program) {
+      get().logProgramActivity({
+        patientId,
+        programCode: program.code,
+        title: `${program.code} Program Enrolled`,
+        activityKind: 'status',
+        statusLabel: 'New',
+        statusType: 'success',
+      });
     }
     // Persist. Fire-and-forget — the optimistic local update already
     // rendered the row; a slow network shouldn't block the UI.
@@ -4200,10 +4263,12 @@ export const useAppStore = create((set, get) => ({
     const now = new Date();
     const stamp = `${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}/${now.getFullYear()}`;
     let updated;
+    let prevStatus;
     set((state) => {
       const list = state.careProgramsByPatient[patientId] || [];
       const next = list.map((p) => {
         if (p.id !== programId) return p;
+        prevStatus = p.status;
         updated = { ...p, ...patch, lastUpdated: stamp };
         return updated;
       });
@@ -4211,6 +4276,18 @@ export const useAppStore = create((set, get) => ({
         careProgramsByPatient: { ...state.careProgramsByPatient, [patientId]: next },
       };
     });
+    // A status change is a program activity — log it so the Program Activity Log
+    // reflects it, grouped under the program.
+    if (updated && patch.status && patch.status !== prevStatus) {
+      get().logProgramActivity({
+        patientId,
+        programCode: updated.code,
+        title: `${updated.code} Program Status Change`,
+        activityKind: 'status',
+        statusLabel: patch.status,
+        statusType: 'warning',
+      });
+    }
     if (updated) {
       supabase.from('patient_care_programs').upsert({
         id:            updated.id,
@@ -4322,6 +4399,14 @@ export const useAppStore = create((set, get) => ({
     // Optimistic local append — dedup by id so a later fetch can't double it.
     set(s => ({ programDocuments: [nextDoc, ...s.programDocuments.filter(d => d.id !== doc.id)] }));
     persistProgramDocument(nextDoc, file);
+    if (doc.programCode) {
+      get().logProgramActivity({
+        patientId: doc.patientId,
+        programCode: doc.programCode,
+        title: `${doc.name || 'Document'} Added`,
+        activityKind: 'document',
+      });
+    }
   },
 
   // Table

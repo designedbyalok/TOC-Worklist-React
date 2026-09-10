@@ -41,6 +41,7 @@ export function CareProgramsTabTable({
   return (
     <WorklistShell
       header={null}
+      embedded
       columns={PROGRAM_COLUMNS}
       rows={visible}
       selectedIds={[...selectedIdSet]}

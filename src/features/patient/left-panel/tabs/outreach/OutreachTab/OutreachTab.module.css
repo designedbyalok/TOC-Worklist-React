@@ -3,9 +3,9 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  /* Grow to content and let the profile panel (.scrollContent) own the single
+     vertical scroll — no nested scroller inside the tab. */
   overflow-x: hidden;
-  overflow-y: auto;
-  height: 100%;
   box-sizing: border-box;
   background: var(--neutral-0);
 }
@@ -97,6 +97,7 @@
 
 .fieldDropdownValue {
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -541,7 +542,9 @@
 /* 2-column field grid */
 .callFieldsGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0,1fr) lets the columns shrink below their content so long dropdown
+     values ellipsis instead of overflowing the form. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px 12px;
 }
 
@@ -549,6 +552,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .callFieldLabel {

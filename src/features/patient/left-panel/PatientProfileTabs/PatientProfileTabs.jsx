@@ -257,7 +257,7 @@ export function PatientProfileTabs({ patientId, patient, variant = 'full' }) {
 
         {activeIdx === 3 && <CommsTab />}
 
-        {activeIdx === 4 && <OutreachTab />}
+        {activeIdx === 4 && <OutreachTab memberName={patient?.name} />}
 
         {activeIdx === 5 && <SummaryTab />}
 

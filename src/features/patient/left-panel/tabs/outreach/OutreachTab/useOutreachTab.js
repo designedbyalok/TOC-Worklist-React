@@ -1,6 +1,7 @@
 import { useRef, useState, useMemo } from 'react';
 import { useAppStore } from '../../../../../../store/useAppStore';
 import { toast } from '../../../../../../components/Toast/sonnerToast';
+import { getOpenIcdsForMember } from '../../../../../hcc/data/icds';
 import { INITIAL_LOG_GROUPS } from '../../../../data/outreachLogMock';
 import {
   PROGRAMS,
@@ -24,8 +25,18 @@ export function useOutreachTab({
   // Optional override — TOC / HEDIS drawers pass the row's patient so
   // ScheduleDrawer doesn't depend on the profile-tab selectedPatientId.
   patientId: patientIdProp,
+  // Patient name — used to source this patient's open HCC gaps for the
+  // "HCC Gaps" mode (same data the Diagnosis Gaps panel shows).
+  memberName,
 } = {}) {
   const PROGRAM_OPTIONS = [...new Set([...(programs && programs.length ? programs : PROGRAMS), ...defaultPrograms])];
+  // This patient's distinct open HCC gap codes (e.g. "HCC 37").
+  const HCC_GAP_OPTIONS = useMemo(
+    () => (memberName
+      ? [...new Set(getOpenIcdsForMember(memberName).all.map(i => i.hcc).filter(Boolean))]
+      : []),
+    [memberName],
+  );
   const CALLED_TO_OPTIONS = recipientOptions && recipientOptions.length
     ? recipientOptions
     : ['Dr. Katherine Moss (581 824-1591)', 'Carlos Hernandez (555 000-0000)'];
@@ -130,6 +141,12 @@ export function useOutreachTab({
   const handleLogForChange = (key) => {
     setLogFor(key);
     setType(key === 'hcc-gaps' ? 'Call' : 'General');
+    // The pill options differ between modes (programs vs HCC gaps), so clear any
+    // prior selection and its note panels when switching.
+    setSelectedProgs([]);
+    setSeparateNotes(false);
+    setPanels({});
+    setSharedPanel({ expanded: true, outcomes: [], note: '', outcomeOpen: false });
   };
 
   const resetForm = () => {
@@ -250,6 +267,7 @@ export function useOutreachTab({
 
   return {
     PROGRAM_OPTIONS,
+    HCC_GAP_OPTIONS,
     CALLED_TO_OPTIONS,
     patientId,
     scopedProgram,

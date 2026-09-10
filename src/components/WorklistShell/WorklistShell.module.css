@@ -73,11 +73,17 @@
   min-height: auto;
   overflow: visible;
 }
-.tableScrollEmbedded {
+/* Compound selector (both classes are applied together) so it beats the plain
+   `.tableScroll` rule below regardless of source order — otherwise the embedded
+   table keeps `.tableScroll`'s flex:1 + overflow:auto and scrolls internally. */
+.tableScroll.tableScrollEmbedded {
   flex: 0 0 auto;
   min-height: auto;
   overflow-x: auto;
-  overflow-y: visible;
+  /* hidden (not visible) so it pairs with overflow-x:auto without the browser
+     forcing overflow-y back to `auto`; the container is content-height, so the
+     only thing clipped is the horizontal scrollbar's own strip. */
+  overflow-y: hidden;
 }
 .tableScrollEmbeddedFlush {
   flex: 0 0 auto;

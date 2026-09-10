@@ -96,7 +96,7 @@ function ActivityStack({ entry, isLast }) {
             <div className={styles.summaryText}>
               <span className={styles.programTitle}>{entry.programName}</span>
               <span className={styles.summaryMeta}>
-                {entry.count} {entry.count === 1 ? 'Activity' : 'Activities'} • {entry.userCount} {entry.userCount === 1 ? 'User' : 'Users'}
+                {entry.count} {entry.count === 1 ? 'Activity' : 'Activities'}
               </span>
             </div>
             <Badge tone="primary" size="XS" label={entry.programCode} />

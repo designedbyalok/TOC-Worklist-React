@@ -59,8 +59,8 @@ export function OutreachTab(props) {
           callDurationSec={tab.callDurationSec}
           setCallDurationSec={tab.setCallDurationSec}
           CALLED_TO_OPTIONS={tab.CALLED_TO_OPTIONS}
-          programsLabel={programsLabel}
-          PROGRAM_OPTIONS={tab.PROGRAM_OPTIONS}
+          programsLabel={tab.isHccGaps ? 'Select HCC Gaps' : programsLabel}
+          PROGRAM_OPTIONS={tab.isHccGaps ? tab.HCC_GAP_OPTIONS : tab.PROGRAM_OPTIONS}
           selectedProgs={tab.selectedProgs}
           toggleProgram={tab.toggleProgram}
           outcome={tab.outcome}

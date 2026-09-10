@@ -159,16 +159,23 @@ export function OutreachTabForm({
             </Tooltip>
           </div>
           <div className={styles.programs}>
-            {PROGRAM_OPTIONS.map(prog => (
-              <button
-                key={prog}
-                className={`${styles.progPill} ${selectedProgs.includes(prog) ? styles.progPillSelected : ''}`}
-                onClick={() => toggleProgram(prog)}
-                type="button"
-              >
-                {prog}
-              </button>
-            ))}
+            {PROGRAM_OPTIONS.map(prog => {
+              // In HCC mode the option value is the full gap label (kept for the
+              // logged note); the badge shows just the HCC number.
+              const m = isHccGaps ? String(prog).match(/HCC\s+(\d+)/i) : null;
+              const label = m ? m[1] : prog;
+              return (
+                <button
+                  key={prog}
+                  className={`${styles.progPill} ${selectedProgs.includes(prog) ? styles.progPillSelected : ''}`}
+                  onClick={() => toggleProgram(prog)}
+                  type="button"
+                  title={isHccGaps ? prog : undefined}
+                >
+                  {label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
