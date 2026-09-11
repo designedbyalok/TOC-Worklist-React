@@ -2,6 +2,31 @@
 .body { display: flex; flex: 1; min-height: 0; overflow: hidden; }
 .rightPanel { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
 
+/* Left panel collapse/expand — the width animates while a fixed-width inner
+   clips, so the panel slides away (and its content fades + eases left) rather
+   than snapping. Easing is an expo-out curve for a soft, premium settle. */
+.leftPanel {
+  flex-shrink: 0;
+  min-width: 0;
+  overflow: hidden;
+  transition: width 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: width;
+}
+.leftPanelInner {
+  height: 100%;
+  transition: opacity 0.32s cubic-bezier(0.32, 0.72, 0, 1),
+              transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.leftPanelCollapsed .leftPanelInner {
+  opacity: 0;
+  transform: translateX(-12px);
+}
+.dragHandleHidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
 /* Drag handle between panels — 0.5px neutral divider; 1px primary on hover.
    ::before widens the invisible hit area so neighboring panes stay flush. */
 .dragHandle {
@@ -54,6 +79,37 @@
   pointer-events: none;
 }
 .tabContent { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Left-panel content flowed into the (now full-width) right panel on collapse.
+   Cap the width and center it so a narrow form/table stays comfortable to read
+   instead of stretching edge to edge; on narrower viewports it fills as usual. */
+.centeredContent {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  /* Flowed-in content eases up + fades as it arrives; the transform clears
+     when the animation ends so sticky children behave normally after. */
+  animation: flowContentIn 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.centeredContent > * {
+  width: 100%;
+  max-width: 900px;
+  min-height: 0;
+}
+@keyframes flowContentIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leftPanel,
+  .leftPanelInner,
+  .dragHandleHidden { transition: none; }
+  .centeredContent { animation: none; }
+}
 .placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; flex: 1; padding: 48px; }
 .placeholderTitle { font-size: var(--font-lg); font-weight: 500; color: var(--neutral-300); }
 .placeholderText { font-size: var(--font-md); color: var(--neutral-200); }

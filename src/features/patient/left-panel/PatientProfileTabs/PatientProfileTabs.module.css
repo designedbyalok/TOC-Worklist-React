@@ -10,6 +10,11 @@
   overflow: hidden;
 }
 
+/* THE single vertical scroller for every tab body rendered below. A tab's own
+   root must grow to its content (no `height: 100%` + `overflow-y: auto`) — a
+   self-scrolling tab nests a second scrollbar inside this one (double
+   scrollbar). Follow the OutreachTab/VitalsLabsTab wrapper pattern for new
+   tabs. */
 .scrollContent {
   flex: 1;
   min-height: 0;

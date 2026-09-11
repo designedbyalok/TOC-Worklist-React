@@ -13,6 +13,7 @@ import { ProfileTab } from './left-panel/tabs/profile/ProfileTab/ProfileTab';
 import { TasksTab } from './left-panel/tabs/tasks/TasksTab/TasksTab';
 import { CcmTimerWidget } from './shell/CcmTimerWidget/CcmTimerWidget';
 import { CcmTimerDockProvider } from './shell/CcmTimerWidget/CcmTimerDockContext';
+import { CARE_GAP_TABS } from './data/careGapsMock';
 import styles from './PatientDetailView.module.css';
 
 function TabPlaceholder({ tabName }) {
@@ -88,8 +89,49 @@ export function PatientDetailView() {
   const setActiveTab = useAppStore(s => s.setPatientProfileTab);
   const [leftWidth, setLeftWidth] = useState(496);
   const [leftCollapsed, setLeftCollapsed] = useState(false);
+  // Left-panel tab, lifted here so it survives collapse: when the panel is
+  // collapsed its tabs flow into the right-panel tab bar and its content
+  // renders in the right panel. `showingLeftContent` is only meaningful while
+  // collapsed — true means a flowed-in left tab is the active view.
+  const [leftTab, setLeftTab] = useState(CARE_GAP_TABS[0]);
+  const [showingLeftContent, setShowingLeftContent] = useState(false);
   const dragging = useRef(false);
   const bodyRef = useRef(null);
+
+  // Collapsed: the tab bar is the merged [right tabs, …left tabs]. Route a
+  // click to the correct side and record which content the right panel shows.
+  const handleRightTabChange = useCallback((key) => {
+    if (leftCollapsed && CARE_GAP_TABS.includes(key)) {
+      setLeftTab(key);
+      setShowingLeftContent(true);
+    } else {
+      setActiveTab(key);
+      setShowingLeftContent(false);
+    }
+  }, [leftCollapsed, setActiveTab]);
+
+  // Toggling the panel flows the left tabs back to the left panel; the right
+  // panel returns to its own active tab.
+  const toggleLeft = useCallback(() => {
+    setLeftCollapsed(c => {
+      if (c) setShowingLeftContent(false); // expanding → right panel shows a right tab
+      return !c;
+    });
+  }, []);
+
+  // While collapsed and viewing a flowed-in left tab, the tab bar's active key
+  // is that left tab; otherwise it's the right tab.
+  const barActiveTab = leftCollapsed && showingLeftContent ? leftTab : activeTab;
+
+  // Keep the left panel mounted through the collapse animation so it slides
+  // out (width + fade) instead of snapping, then unmount it. On expand it
+  // mounts immediately and slides back in.
+  const [leftMounted, setLeftMounted] = useState(!leftCollapsed);
+  useEffect(() => {
+    if (!leftCollapsed) { setLeftMounted(true); return undefined; }
+    const t = setTimeout(() => setLeftMounted(false), 320); // matches CSS width transition
+    return () => clearTimeout(t);
+  }, [leftCollapsed]);
 
   const handleMouseDown = useCallback((e) => {
     e.preventDefault();
@@ -204,26 +246,55 @@ export function PatientDetailView() {
       <PatientP360Banner patient={patientWithAppStatus} />
       <CcmTimerWidget />
       <div className={styles.body} ref={bodyRef}>
-        {!leftCollapsed && (
+        {leftMounted && (
           <>
-            <div style={{ width: leftWidth, minWidth: 300, maxWidth: 700, flexShrink: 0 }}>
-              <PatientProfileTabs patientId={selectedPatientId} patient={patientWithAppStatus} />
+            <div
+              className={`${styles.leftPanel} ${leftCollapsed ? styles.leftPanelCollapsed : ''}`}
+              style={{ width: leftCollapsed ? 0 : leftWidth }}
+            >
+              {/* Fixed-width inner keeps the content's shape while the outer
+                  clips it, so collapse reads as a slide rather than a reflow. */}
+              <div className={styles.leftPanelInner} style={{ width: leftWidth }}>
+                <PatientProfileTabs
+                  patientId={selectedPatientId}
+                  patient={patientWithAppStatus}
+                  activeTab={leftTab}
+                  onTabChange={setLeftTab}
+                />
+              </div>
             </div>
-            {/* Drag handle */}
-            <div className={styles.dragHandle} onMouseDown={handleMouseDown}>
+            {/* Drag handle — fades with the panel it borders. */}
+            <div
+              className={`${styles.dragHandle} ${leftCollapsed ? styles.dragHandleHidden : ''}`}
+              onMouseDown={handleMouseDown}
+            >
               <div className={styles.dragHandleLine} />
             </div>
           </>
         )}
         <div className={styles.rightPanel}>
           <ProfileTabBar
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
+            activeTab={barActiveTab}
+            onTabChange={handleRightTabChange}
             leftCollapsed={leftCollapsed}
-            onToggleLeft={() => setLeftCollapsed(c => !c)}
+            onToggleLeft={toggleLeft}
+            extraTabs={leftCollapsed ? CARE_GAP_TABS : undefined}
           />
           <div className={styles.tabContent}>
-            {activeTab === 'Overview' ? (
+            {leftCollapsed && showingLeftContent ? (
+              // Left tabs flowed into this panel: render the left content here,
+              // capped + centered so a narrow form doesn't stretch across the
+              // now-full-width panel.
+              <div className={styles.centeredContent}>
+                <PatientProfileTabs
+                  patientId={selectedPatientId}
+                  patient={patientWithAppStatus}
+                  activeTab={leftTab}
+                  onTabChange={setLeftTab}
+                  showTabBar={false}
+                />
+              </div>
+            ) : activeTab === 'Overview' ? (
               <OverviewTab />
             ) : activeTab === 'Monitoring' ? (
               <MonitoringTab patient={patientWithAppStatus} />

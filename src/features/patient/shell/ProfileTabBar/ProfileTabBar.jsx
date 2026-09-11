@@ -6,7 +6,13 @@ import styles from './ProfileTabBar.module.css';
 
 const TAB_ITEMS = PROFILE_TABS.map(tab => ({ key: tab, label: tab }));
 
-export function ProfileTabBar({ activeTab, onTabChange, leftCollapsed = false, onToggleLeft }) {
+export function ProfileTabBar({ activeTab, onTabChange, leftCollapsed = false, onToggleLeft, extraTabs }) {
+  // When the left panel is collapsed its tabs flow into this bar, leading the
+  // primary tabs so the order reads left-panel first (Gaps → PAMI/Hx →
+  // Vitals/Labs → …), then the right-panel tabs.
+  const items = extraTabs && extraTabs.length
+    ? [...extraTabs.map(tab => ({ key: tab, label: tab })), ...TAB_ITEMS]
+    : TAB_ITEMS;
   return (
     <div className={styles.tabBar}>
       <SidebarCollapseHint enabled={!leftCollapsed}>
@@ -22,7 +28,7 @@ export function ProfileTabBar({ activeTab, onTabChange, leftCollapsed = false, o
       <span className={styles.divider} />
       <div className={styles.tabsArea}>
         <OverflowTabStrip
-          items={TAB_ITEMS}
+          items={items}
           activeKey={activeTab}
           onChange={onTabChange}
         />

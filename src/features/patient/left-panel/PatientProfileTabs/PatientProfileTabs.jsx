@@ -23,10 +23,24 @@ import styles from './PatientProfileTabs.module.css';
 // In the P360 (full-page) surface the right panel already hosts Tasks and
 // Profile, so the left-panel tab strip drops them to avoid duplicate nav.
 // In the QuickView drawer there IS no right panel, so we keep the full set.
-export function PatientProfileTabs({ patientId, patient, variant = 'full' }) {
+export function PatientProfileTabs({
+  patientId,
+  patient,
+  variant = 'full',
+  // Controlled mode: when `activeTab`/`onTabChange` are supplied the parent
+  // owns the active tab (used when the left tabs flow into the right panel's
+  // tab bar on collapse). Uncontrolled otherwise.
+  activeTab: controlledActiveTab,
+  onTabChange,
+  // Hide the panel's own tab strip when the tabs are hosted elsewhere (the
+  // right-panel tab bar) — the sticky note + content still render.
+  showTabBar = true,
+}) {
   const tabs = variant === 'drawer' ? CARE_GAP_TABS_DRAWER : CARE_GAP_TABS;
   const tabItems = useMemo(() => tabs.map(tab => ({ key: tab, label: tab })), [tabs]);
-  const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [internalTab, setInternalTab] = useState(tabs[0]);
+  const activeTab = controlledActiveTab ?? internalTab;
+  const setActiveTab = onTabChange ?? setInternalTab;
   const [selectedGaps, setSelectedGaps] = useState([]);
   const [gapsCollapsed, setGapsCollapsed] = useState(false);
   const [diagnosisCollapsed, setDiagnosisCollapsed] = useState(false);
@@ -85,8 +99,9 @@ export function PatientProfileTabs({ patientId, patient, variant = 'full' }) {
 
   return (
     <div className={styles.panel}>
-      {/* Sticky tab bar OR search input */}
-      {searching ? (
+      {/* Sticky tab bar OR search input. Hidden when the tabs are hosted by
+          the right-panel tab bar (collapsed layout). */}
+      {showTabBar && (searching ? (
         <div className={styles.searchBar}>
           <input aria-label="Search gaps"
             ref={searchRef}
@@ -117,7 +132,7 @@ export function PatientProfileTabs({ patientId, patient, variant = 'full' }) {
             onClick={() => setSearching(true)}
           />
         </div>
-      )}
+      ))}
 
       {/* Scrollable content */}
       <div className={`${styles.scrollContent} ${styles.flushContent}`}>
