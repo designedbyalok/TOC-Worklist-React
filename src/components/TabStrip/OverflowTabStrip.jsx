@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../Icon/Icon';
 import { TabStrip } from './TabStrip';
@@ -16,8 +16,12 @@ export function OverflowTabStrip({ items, activeKey, onChange }) {
   const rowRef = useRef(null);
   const measurerRef = useRef(null);
   const moreBtnRef = useRef(null);
+  const menuRef = useRef(null);
   const [visibleCount, setVisibleCount] = useState(items.length);
   const [moreOpen, setMoreOpen] = useState(false);
+  // Clamped fixed-position for the overflow dropdown, computed after it mounts
+  // so it never runs off the right/bottom edge of the viewport.
+  const [menuPos, setMenuPos] = useState(null);
 
   const measure = useCallback(() => {
     const measurer = measurerRef.current;
@@ -70,6 +74,27 @@ export function OverflowTabStrip({ items, activeKey, onChange }) {
     return () => document.removeEventListener('click', close);
   }, [moreOpen]);
 
+  // Position the dropdown once it's in the DOM: align it under the trigger,
+  // but pull it left when a right-edge trigger would push the menu off-screen,
+  // and flip it above when it would run past the bottom. Runs before paint so
+  // there's no visible jump.
+  useLayoutEffect(() => {
+    if (!moreOpen) { setMenuPos(null); return; }
+    const btn = moreBtnRef.current?.getBoundingClientRect();
+    const menu = menuRef.current?.getBoundingClientRect();
+    if (!btn || !menu) return;
+    const margin = 8;
+    let left = btn.left;
+    if (left + menu.width > window.innerWidth - margin) {
+      left = Math.max(margin, window.innerWidth - menu.width - margin);
+    }
+    let top = btn.bottom + 4;
+    if (top + menu.height > window.innerHeight - margin) {
+      top = Math.max(margin, btn.top - menu.height - 4);
+    }
+    setMenuPos({ top, left });
+  }, [moreOpen, visibleCount, items.length]);
+
   const activeIdx = items.findIndex(t => t.key === activeKey);
   let displayTabs = items;
   if (activeIdx >= visibleCount) {
@@ -120,12 +145,16 @@ export function OverflowTabStrip({ items, activeKey, onChange }) {
           </div>
           {moreOpen && moreBtnRef.current && createPortal(
             <div
+              ref={menuRef}
               className={styles.moreDropdown}
               role="menu"
               style={{
                 position: 'fixed',
-                top: moreBtnRef.current.getBoundingClientRect().bottom + 4,
-                left: moreBtnRef.current.getBoundingClientRect().left,
+                top: menuPos ? menuPos.top : moreBtnRef.current.getBoundingClientRect().bottom + 4,
+                left: menuPos ? menuPos.left : moreBtnRef.current.getBoundingClientRect().left,
+                // Hidden for the one frame between mount and measurement so the
+                // menu never flashes at an off-screen position.
+                visibility: menuPos ? 'visible' : 'hidden',
               }}
             >
               {overflow.map(tab => (

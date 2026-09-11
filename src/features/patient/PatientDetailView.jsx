@@ -16,6 +16,21 @@ import { CcmTimerDockProvider } from './shell/CcmTimerWidget/CcmTimerDockContext
 import { CARE_GAP_TABS } from './data/careGapsMock';
 import styles from './PatientDetailView.module.css';
 
+// Left-panel collapse is remembered per user (keyed by profile id) in
+// localStorage so it survives reloads. A `:last` mirror holds the most recent
+// choice on this device and seeds the first paint before the user profile has
+// loaded, so a single-user browser never flickers open→closed on reload.
+const COLLAPSE_KEY = 'patientLeftPanelCollapsed';
+function readCollapse(id) {
+  try { return localStorage.getItem(`${COLLAPSE_KEY}:${id}`); } catch { return null; }
+}
+function writeCollapse(id, value) {
+  try {
+    localStorage.setItem(`${COLLAPSE_KEY}:${id}`, String(value));
+    localStorage.setItem(`${COLLAPSE_KEY}:last`, String(value));
+  } catch { /* storage unavailable (private mode) */ }
+}
+
 function TabPlaceholder({ tabName }) {
   return (
     <div className={styles.placeholder}>
@@ -87,8 +102,11 @@ export function PatientDetailView() {
   // worklist's "View billing" button) can deep-link into a specific tab.
   const activeTab = useAppStore(s => s.patientProfileTab);
   const setActiveTab = useAppStore(s => s.setPatientProfileTab);
+  const currentUserId = useAppStore(s => s.currentUserProfile?.id);
   const [leftWidth, setLeftWidth] = useState(496);
-  const [leftCollapsed, setLeftCollapsed] = useState(false);
+  // Seed from the device's most recent choice so the first paint matches;
+  // the per-user value is reconciled once the profile id resolves (below).
+  const [leftCollapsed, setLeftCollapsed] = useState(() => readCollapse('last') === 'true');
   // Left-panel tab, lifted here so it survives collapse: when the panel is
   // collapsed its tabs flow into the right-panel tab bar and its content
   // renders in the right panel. `showingLeftContent` is only meaningful while
@@ -110,14 +128,24 @@ export function PatientDetailView() {
     }
   }, [leftCollapsed, setActiveTab]);
 
+  // Once the signed-in user is known, load their saved collapse state (only if
+  // they have one — a new user keeps the device default until they toggle).
+  useEffect(() => {
+    if (!currentUserId) return;
+    const saved = readCollapse(currentUserId);
+    if (saved !== null) setLeftCollapsed(saved === 'true');
+  }, [currentUserId]);
+
   // Toggling the panel flows the left tabs back to the left panel; the right
-  // panel returns to its own active tab.
+  // panel returns to its own active tab, and the choice is persisted per user.
   const toggleLeft = useCallback(() => {
     setLeftCollapsed(c => {
+      const next = !c;
+      writeCollapse(currentUserId || 'anon', next);
       if (c) setShowingLeftContent(false); // expanding → right panel shows a right tab
-      return !c;
+      return next;
     });
-  }, []);
+  }, [currentUserId]);
 
   // While collapsed and viewing a flowed-in left tab, the tab bar's active key
   // is that left tab; otherwise it's the right tab.
