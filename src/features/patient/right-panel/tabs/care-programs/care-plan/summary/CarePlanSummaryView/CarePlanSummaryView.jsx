@@ -41,53 +41,35 @@ import styles from './CarePlanSummaryView.module.css';
 const GBI_STATUSES = ['Not Started', 'In Progress', 'On Hold', 'Met', 'Not Met'];
 const PRIORITIES = ['high', 'medium', 'low'];
 
-// Mock summarizer output — three canned recap variants the Summarize
-// affordance cycles through. Real AI generation slots in here later
-// without touching the render layer.
-function mockProgramSummaries(patientName) {
-  const name = patientName || 'this patient';
-  return [
-    {
-      intro: `Last 2 months activity summary for patient "${name}"`,
-      points: [
-        { title: 'BMI Maintenance', body: 'Moderate exercise adherence leads to a 5% improvement in physical activity, though taste perception challenges slow dietary progress.' },
-        { title: 'Blood Pressure Management', body: 'Daily monitoring shows a 10% improvement in blood pressure stability and early recognition of low blood pressure risks.' },
-        { title: 'Routine Lab Tests', body: 'No delays in hypertension-related lab tests, ensuring consistent health monitoring.' },
-        { title: 'Dietary Adjustments', body: "Despite taste challenges, there's a 15% improvement in hypertension-friendly dietary choices." },
-        { title: 'Mental Health Monitoring', body: 'Regular PHQ-9 tracking helps in early identification of mental health concerns.' },
-      ],
-      actions: [
-        'Collaborate with a dietitian for personalized meal plans to address taste barriers.',
-        'Integrate motivational tools or activity trackers to improve exercise consistency.',
-        'Offer guidance on using blood pressure monitoring devices and schedule follow-ups to review data trends.',
-        'Set automated reminders for upcoming hypertension-related lab tests.',
-        'Provide educational material on hypertension and schedule monthly follow-ups to adjust the care plan and address progress.',
-      ],
-    },
-    {
-      intro: `Recent care plan activity for "${name}"`,
-      points: [
-        { title: 'Goal Progress', body: 'Two out of three active goals are trending upward, with sustained progress on blood pressure and weight targets.' },
-        { title: 'Barrier Resolution', body: 'One transportation barrier closed after connecting the patient to a local ride-share program.' },
-        { title: 'Care Team Handoffs', body: 'Coder handed off two encounters to compliance last week; no outstanding record requests remain.' },
-      ],
-      actions: [
-        'Schedule a 15-minute check-in with the care manager next week to reconfirm dietary plan.',
-        'Send patient education content on managing edema for the CCM program.',
-      ],
-    },
-    {
-      intro: `Program roll-up for "${name}" over the last 30 days`,
-      points: [
-        { title: 'CCM', body: 'Two goal updates and one barrier closed since the last review.' },
-        { title: 'TCM', body: 'One intervention updated; discharge follow-up call was completed on time.' },
-      ],
-      actions: [
-        'Reassess the TCM discharge plan in the next review.',
-        'Confirm CCM consent renewal is still on file.',
-      ],
-    },
-  ];
+// Compact the cross-program snapshot into the small JSON the summary API
+// sends to the model — titles + status + the few fields that shape a recap,
+// nothing patient-identifying beyond the name already on screen.
+function buildSummaryPayload({ patientName, programs, conditions, goals, interventions, barriers }) {
+  const progName = (p) => p?.name || p?.code || 'Program';
+  return {
+    patientName: patientName || 'the patient',
+    programs: (programs || []).map(p => ({ name: progName(p), status: p?.status || null })),
+    conditions: (conditions || []).map(c => (typeof c === 'string' ? c : c?.label)).filter(Boolean),
+    goals: (goals || []).map(g => ({ title: g.title, status: g.status, progress: g.progress ?? null, priority: g.priority || null, program: g.programCode || null })),
+    interventions: (interventions || []).map(i => ({ title: i.title, status: i.status, assignee: i.assignee?.name || null, program: i.programCode || null })),
+    barriers: (barriers || []).map(b => ({ title: b.title, status: b.status, program: b.programCode || null })),
+  };
+}
+
+// Call the server-side Gemini proxy (keeps the API key off the client) and
+// return one { intro, points, actions } summary. Throws a user-readable
+// message the caller can toast.
+async function fetchCarePlanSummary(payload) {
+  const res = await fetch('/api/care-plan-summary', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || !json.summary) {
+    throw new Error(json?.error?.message || 'Could not generate the summary. Please try again.');
+  }
+  return json.summary;
 }
 
 // Person cell — shared Avatar primitive + name, so PCM / PCP renders
@@ -816,27 +798,48 @@ export function CarePlanSummaryView({
   }, [programs, patientCarePlans, patientCarePlanAudit, patientId, currentPatient?.pcp]);
   const showToast = useAppStore(s => s.showToast);
 
-  // Summarize — three-state (idle → loading → ready). Ready renders a
-  // mock AI recap card below the table with pagination + copy /
-  // refresh / delete affordances. Real generation lives behind the
-  // handler so a live model can slot in later without changing the UI.
+  // Summarize — three-state (idle → loading → ready). Generation goes through
+  // the /api/care-plan-summary proxy (Gemini), which keeps the API key
+  // server-side. Ready renders the recap card below the table; Regenerate
+  // asks the model for a fresh take and appends it so the pager can flip
+  // between them.
   const [summaryState, setSummaryState] = useState('idle');
   const [summaries, setSummaries] = useState([]);
   const [summaryIndex, setSummaryIndex] = useState(0);
-  const summarizePrograms = () => {
+  const summarizePrograms = async () => {
     if (summaryState === 'loading') return;
+    if (goals.length + interventions.length + barriers.length === 0) {
+      showToast?.('No care plan content to summarize yet');
+      return;
+    }
     setSummaryState('loading');
-    const seed = mockProgramSummaries(currentPatient?.name || 'the patient');
-    setTimeout(() => {
-      setSummaries(seed);
+    try {
+      const summary = await fetchCarePlanSummary(buildSummaryPayload({
+        patientName: currentPatient?.name, programs, conditions, goals, interventions, barriers,
+      }));
+      setSummaries([summary]);
       setSummaryIndex(0);
       setSummaryState('ready');
-    }, 1200);
+    } catch (err) {
+      showToast?.(err.message || 'Could not generate the summary');
+      setSummaryState('idle');
+    }
   };
-  const regenerateSummary = () => {
+  const regenerateSummary = async () => {
     if (summaryState !== 'ready') return;
-    setSummaryIndex(i => (i + 1) % Math.max(summaries.length, 1));
     showToast?.('Regenerating summary…');
+    try {
+      const summary = await fetchCarePlanSummary(buildSummaryPayload({
+        patientName: currentPatient?.name, programs, conditions, goals, interventions, barriers,
+      }));
+      setSummaries(prev => {
+        const next = [...prev, summary];
+        setSummaryIndex(next.length - 1);
+        return next;
+      });
+    } catch (err) {
+      showToast?.(err.message || 'Could not regenerate the summary');
+    }
   };
   const copySummary = () => {
     const s = summaries[summaryIndex];
